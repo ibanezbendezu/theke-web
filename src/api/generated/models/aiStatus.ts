@@ -6,9 +6,11 @@
  */
 import type { AiConsentStatus } from './aiConsentStatus';
 import type { AiQuotaStatus } from './aiQuotaStatus';
+import type { AiStatusProviderAvailability } from './aiStatusProviderAvailability';
 
 export interface AiStatus {
   enabled: boolean;
+  providerAvailability: AiStatusProviderAvailability;
   consent: AiConsentStatus;
   quota: AiQuotaStatus;
 }

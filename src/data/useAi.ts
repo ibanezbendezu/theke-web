@@ -7,6 +7,7 @@ import type {
   AiPreflightResult,
   AiSettingsInput,
   AiStatus,
+  AiScopePreparation,
 } from '../api/generated/models';
 
 interface Envelope<T> {
@@ -14,6 +15,8 @@ interface Envelope<T> {
 }
 
 export type { RelationSuggestion } from '../api/generated/models';
+
+export const isProviderPending = (status: AiStatus | undefined) => status?.providerAvailability?.available === false;
 
 export function useRelationSuggestion() {
   const { getToken } = useAuth();
@@ -28,6 +31,34 @@ export function useRelationSuggestion() {
       return response.data;
     },
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['private', 'ai-status'] }),
+  });
+}
+
+export function usePrepareGroupGuidance() {
+  const { getToken } = useAuth();
+  return useMutation({
+    mutationFn: async (input: { diagramId: string; groupId: string }) => {
+      const response = await thekeFetch<Envelope<AiScopePreparation>>('/v1/ai/group-guidance/prepare', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${await getToken()}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      return response.data;
+    },
+  });
+}
+
+export function usePrepareDiagramReview() {
+  const { getToken } = useAuth();
+  return useMutation({
+    mutationFn: async (input: { diagramId: string; nodeIds?: string[] }) => {
+      const response = await thekeFetch<Envelope<AiScopePreparation>>('/v1/ai/diagram-review/prepare', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${await getToken()}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      return response.data;
+    },
   });
 }
 

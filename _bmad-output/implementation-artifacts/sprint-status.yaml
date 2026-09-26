@@ -18,7 +18,7 @@
 # - Code Review valida la implementación antes de marcarla done.
 
 generated: 09-21-2026 09:45
-last_updated: 09-24-2026
+last_updated: 09-25-2026
 project: Theke
 project_key: NOKEY
 tracking_system: file-system
@@ -60,9 +60,9 @@ development_status:
 
   epic-4: in-progress
   4-1-activar-ia-con-consentimiento-y-alcance-explícitos: done
-  4-2-recibir-y-decidir-sugerencias-para-relaciones: in-progress
-  4-3-recibir-orientación-al-organizar-grupos: backlog
-  4-4-revisar-una-selección-o-un-diagrama-bajo-demanda: backlog
+  4-2-recibir-y-decidir-sugerencias-para-relaciones: in-progress # proveedor aplazado; preparación humana en curso
+  4-3-recibir-orientación-al-organizar-grupos: in-progress
+  4-4-revisar-una-selección-o-un-diagrama-bajo-demanda: in-progress
   epic-4-retrospective: optional
 
   epic-5: backlog

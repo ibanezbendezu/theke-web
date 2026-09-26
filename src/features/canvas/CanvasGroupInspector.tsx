@@ -1,7 +1,14 @@
+import { useState } from 'react';
+import { AIGuidanceCard } from '../../components/ai/AIGuidanceCard';
 import { Button } from '../../components/ui/Button';
+import { usePrepareGroupGuidance } from '../../data/useAi';
+import type { AiScopePreparation } from '../../api/generated/models';
 import { useCanvasStore } from '../../store/useCanvasStore';
 
-export function CanvasGroupInspector({ groupId }: { groupId: string }) {
+export function CanvasGroupInspector({ groupId, diagramId }: { groupId: string; diagramId: string }) {
+  const prepare = usePrepareGroupGuidance();
+  const [scope, setScope] = useState<AiScopePreparation | null>(null);
+  const [scopeError, setScopeError] = useState('');
   const nodes = useCanvasStore(state => state.nodes);
   const updateNodeData = useCanvasStore(state => state.updateNodeData);
   const moveNodeToGroup = useCanvasStore(state => state.moveNodeToGroup);
@@ -15,6 +22,17 @@ export function CanvasGroupInspector({ groupId }: { groupId: string }) {
     <label className="block">Nombre<input className="mt-1 w-full rounded border border-border bg-background p-2" value={typeof group.data.label === 'string' ? group.data.label : ''} maxLength={120} onChange={event => updateNodeData(groupId, { label: event.target.value })}/></label>
     <section aria-label="Miembros del grupo"><h3 className="font-medium">Miembros ({members.length})</h3>{members.map(node => <div key={node.id} className="mt-2 flex items-center gap-2"><span className="min-w-0 flex-1 truncate">{name(node)}</span><Button onClick={() => moveNodeToGroup(node.id)}>Quitar</Button></div>)}</section>
     {available.length > 0 && <section aria-label="Añadir al grupo"><h3 className="font-medium">Añadir elemento</h3>{available.map(node => <div key={node.id} className="mt-2 flex items-center gap-2"><span className="min-w-0 flex-1 truncate">{name(node)}</span><Button onClick={() => moveNodeToGroup(node.id, groupId)}>Añadir</Button></div>)}</section>}
+    <section aria-label="Alcance de orientación" className="space-y-2">
+      <h3 className="font-medium">Preparar orientación del grupo</h3>
+      <p className="text-xs text-outline">Se usa la última versión guardada del Diagrama. Guarda tus cambios para actualizar el alcance.</p>
+      <Button type="button" disabled={prepare.isPending} onClick={() => { setScope(null); setScopeError(''); prepare.mutate({ diagramId, groupId }, { onSuccess: setScope, onError: () => setScopeError('No se pudo preparar el alcance. Revisa el Diagrama guardado.') }); }}>Revisar alcance guardado</Button>
+      {scopeError && <p role="alert">{scopeError}</p>}
+      {scope && <><p role="status">Integración de IA pendiente. {scope.resourceIds.length} recurso(s) elegible(s); no se han generado sugerencias.</p>
+        {scope.excluded.length > 0 && <ul aria-label="Miembros excluidos">{scope.excluded.map((item, index) => <li key={`${item.nodeId}-${index}`}>{item.nodeId}: {item.reason}</li>)}</ul>}
+        {scope.limitations.map(item => <p key={item} className="text-xs text-outline">{item}</p>)}
+        <AIGuidanceCard actionTitle="Orientación del grupo pendiente" selectedResourceIds={scope.resourceIds} />
+      </>}
+    </section>
     <Button variant="outline" onClick={() => ungroupNode(groupId)}>Desagrupar sin mover elementos</Button>
   </div>;
 }

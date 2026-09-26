@@ -58,6 +58,7 @@ export function AIGuidanceCard({
 
   const isConsented = status?.consent?.isConsented ?? false;
   const isEnabled = status?.enabled ?? false;
+  const providerPending = status?.providerAvailability?.available === false;
   const dailyRemaining = status?.quota?.dailyRuns?.remaining ?? 0;
   const monthlyRemaining = status?.quota?.monthlyBudget?.remainingUsd ?? 0;
 
@@ -102,6 +103,8 @@ export function AIGuidanceCard({
               <Badge className="bg-surface-variant text-outline">
                 IA Desactivada
               </Badge>
+            ) : providerPending ? (
+              <Badge className="bg-amber-500/10 text-amber-600 border border-amber-500/20">Integración pendiente</Badge>
             ) : dailyRemaining <= 0 ? (
               <Badge className="bg-red-500/10 text-red-600 border border-red-500/20">
                 Límite diario alcanzado
@@ -119,6 +122,7 @@ export function AIGuidanceCard({
         </div>
 
         {/* Alcance de recursos */}
+        {providerPending && <p role="status" className="text-xs text-outline">El proveedor de IA todavía no está disponible. Tu consentimiento se conserva y puedes seguir editando manualmente.</p>}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs font-medium text-on-background">
             <span>Alcance explícito ({selectedResourceIds.length} recursos seleccionados)</span>
@@ -241,6 +245,7 @@ export function AIGuidanceCard({
                     isLoading ||
                     selectedResourceIds.length === 0 ||
                     !assessment?.allowed ||
+                    providerPending ||
                     preflight.isPending
                   }
                   onClick={onExecute}

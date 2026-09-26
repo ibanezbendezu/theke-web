@@ -7,8 +7,11 @@
 import type {
   AccessibilityInput,
   AiConsentInput,
+  AiDiagramScopeInput,
+  AiGroupScopeInput,
   AiPreflightInput,
   AiPreflightResponse,
+  AiScopeResponse,
   AiSettingsInput,
   AiStatusResponse,
   ApiErrorResponse,
@@ -2755,6 +2758,124 @@ return thekeFetch<suggestAiRelationResponse>(getSuggestAiRelationUrl(),
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(relationSuggestionInput)
+  }
+);}
+
+
+
+export type prepareAiGroupGuidanceResponse201 = {
+  data: AiScopeResponse
+  status: 201
+}
+
+export type prepareAiGroupGuidanceResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
+export type prepareAiGroupGuidanceResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type prepareAiGroupGuidanceResponseSuccess = (prepareAiGroupGuidanceResponse201) & {
+  headers: Headers;
+};
+export type prepareAiGroupGuidanceResponseError = (prepareAiGroupGuidanceResponse400 | prepareAiGroupGuidanceResponse401) & {
+  headers: Headers;
+};
+
+export type prepareAiGroupGuidanceResponse = (prepareAiGroupGuidanceResponseSuccess | prepareAiGroupGuidanceResponseError)
+
+export const getPrepareAiGroupGuidanceUrl = () => {
+
+
+
+
+  return `/v1/ai/group-guidance/prepare`
+}
+
+export const prepareAiGroupGuidance = async (aiGroupScopeInput: AiGroupScopeInput, options?: Parameters<typeof thekeFetch>[1]): Promise<prepareAiGroupGuidanceResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<prepareAiGroupGuidanceResponse>(getPrepareAiGroupGuidanceUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(aiGroupScopeInput)
+  }
+);}
+
+
+
+export type prepareAiDiagramReviewResponse201 = {
+  data: AiScopeResponse
+  status: 201
+}
+
+export type prepareAiDiagramReviewResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
+export type prepareAiDiagramReviewResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type prepareAiDiagramReviewResponseSuccess = (prepareAiDiagramReviewResponse201) & {
+  headers: Headers;
+};
+export type prepareAiDiagramReviewResponseError = (prepareAiDiagramReviewResponse400 | prepareAiDiagramReviewResponse401) & {
+  headers: Headers;
+};
+
+export type prepareAiDiagramReviewResponse = (prepareAiDiagramReviewResponseSuccess | prepareAiDiagramReviewResponseError)
+
+export const getPrepareAiDiagramReviewUrl = () => {
+
+
+
+
+  return `/v1/ai/diagram-review/prepare`
+}
+
+export const prepareAiDiagramReview = async (aiDiagramScopeInput: AiDiagramScopeInput, options?: Parameters<typeof thekeFetch>[1]): Promise<prepareAiDiagramReviewResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<prepareAiDiagramReviewResponse>(getPrepareAiDiagramReviewUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(aiDiagramScopeInput)
   }
 );}
 

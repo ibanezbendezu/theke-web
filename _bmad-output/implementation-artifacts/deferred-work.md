@@ -13,3 +13,6 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-9-archivar-o-eliminar-con-impacto-visible.md`
   summary: Cerrar el gate operativo del piloto: Railway snapshots/PITR, backup nocturno PostgreSQL/objetos en Backblaze B2 con Object Lock, restore drill mensual y export ZIP previa a eliminación de contenido o cuenta.
   evidence: Requiere cuentas, credenciales, política aprobada y ejecución en infraestructura externa; `theke-api/docs/data-retention-and-recovery.md` define el checklist y prohíbe declarar el piloto listo antes de cerrarlo.
+- source_spec: `_bmad-output/implementation-artifacts/spec-4-2-recibir-y-decidir-sugerencias-para-relaciones.md`
+  summary: Habilitar deliberadamente el proveedor de IA tras verificar credenciales y privacidad; implementar SSE, aceptación de tipo/dirección con auditoría y prueba de inferencia real.
+  evidence: La inferencia permanece cerrada por defecto mediante `AI_PROVIDER_ENABLED`; las Stories 4.2–4.4 siguen abiertas y las preparaciones no envían recursos ni generan sugerencias.

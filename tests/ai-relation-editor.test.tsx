@@ -58,4 +58,17 @@ describe('decisión humana sobre sugerencias de IA', () => {
       evidence: [expect.objectContaining({ resourceId: 'resource-1', excerpt: 'Texto citado' })],
     })));
   });
+
+  it('permite informar un error localmente sin enviar ni guardar datos y conservar el borrador manual', async () => {
+    state.infer.mockResolvedValue({ ...suggestion, typeKey: 'supports', direction: 'undirected' });
+    show();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Etiqueta' }), { target: { value: 'Edición propia' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Solicitar sugerencia' }));
+    expect(await screen.findByText(/Tipo o dirección pendientes/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Informar error' }));
+    expect(screen.getByText(/No se enviará contenido privado/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Descartar' }));
+    expect(screen.getByRole('textbox', { name: 'Etiqueta' })).toHaveValue('Edición propia');
+    expect(state.update).not.toHaveBeenCalled();
+  });
 });

@@ -21,15 +21,18 @@ Permitir al autor solicitar asistencia de IA fundamentada al relacionar dos recu
 
 - [x] Endpoint y servicio de inferencia de relaciones con OpenAI Responses (`gpt-5.6-terra`) respetando el consentimiento y alcance.
 - [ ] Transmisión streaming de sugerencias estructuradas (tipo, dirección, etiqueta, explicación, citas y dudas).
-- [ ] Integración en `RelationEditor` y `AIGuidanceCard` con controles interactivos de Aceptar/Editar/Descartar/Informar error (borrador, edición y descarte implementados; falta informe de error y aceptación explícita de tipo/dirección).
+- [ ] Integración en `RelationEditor` y `AIGuidanceCard` con controles interactivos de Aceptar/Editar/Descartar/Informar error (revisión local sin transmisión de reportes; falta aceptación explícita de tipo/dirección y canal de reportes con privacidad aprobada).
 - [ ] Registro de procedencia y trazabilidad en el modelo canónico de Relaciones.
 - [ ] Pruebas unitarias, de streaming y de componentes de UI.
 
 ## Avance de implementación
 
+- Integración con proveedor aplazada: `AI_PROVIDER_ENABLED` desactivado por defecto bloquea el endpoint antes de cualquier envío, incluso con clave configurada; estado y preflight informan `PROVIDER_PENDING` sin revocar consentimiento. No se muestran sugerencias simuladas en producción.
+
 - Endpoint no streaming con verificación de consentimiento, alcance por Cuenta, citas literales y registro de consumo; pruebas unitarias de bloqueo y respuesta malformada.
 - Tarjeta con preflight obligatorio y revisión separada del conocimiento canónico: aplicar una sugerencia solo rellena un borrador que debe guardarse manualmente.
-- Pendiente antes de declarar `done`: SSE autenticado y recuperación de desconexión, informe de errores, aceptación explícita de tipo/dirección y pruebas de interacción del editor y de streaming.
+- El informe de error es local y no transmite datos privados; para aceptar tipo/dirección diferentes hace falta ampliar el comando canónico `RelationService.update()` o añadir uno nuevo con revisión esperada, autorización por Cuenta, validación y auditoría de decisión humana. No se aplican silenciosamente.
+- Pendiente antes de declarar `done`: habilitación deliberada y prueba real del proveedor, SSE autenticado y recuperación de desconexión, aceptación explícita de tipo/dirección con comando canónico y auditoría, y pruebas de streaming.
 
 ## Verificación
 
