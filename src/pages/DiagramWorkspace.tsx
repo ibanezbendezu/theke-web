@@ -24,7 +24,7 @@ function snapshot(): DiagramDocument {
 const fingerprint = (document: DiagramDocument) => JSON.stringify(document);
 type SaveStatus = 'saved' | 'saving' | 'offline' | 'conflict' | 'storage-error';
 
-export function DiagramWorkspace({ diagram, refetch, onAddResource, onDropResource, onDropFiles, onPickFiles, onCanvasReady }: { diagram: Diagram; refetch: () => Promise<{ data?: Diagram }>; onAddResource: (position?: { x: number; y: number }) => void; onDropResource: (resourceId: string, position: { x: number; y: number }) => void; onDropFiles?: (files: File[], position: { x: number; y: number }) => void; onPickFiles?: (position?: { x: number; y: number }) => void; onCanvasReady?: () => void }) {
+export function DiagramWorkspace({ diagram, refetch, onAddResource, onDropResource, onDropFiles, onPickFiles, onCanvasReady, onSaveStateChange }: { diagram: Diagram; refetch: () => Promise<{ data?: Diagram }>; onAddResource: (position?: { x: number; y: number }) => void; onDropResource: (resourceId: string, position: { x: number; y: number }) => void; onDropFiles?: (files: File[], position: { x: number; y: number }) => void; onPickFiles?: (position?: { x: number; y: number }) => void; onCanvasReady?: () => void; onSaveStateChange?: (saved: boolean) => void }) {
   const { userId } = useAuth(); const client = useQueryClient(); const draftKey = `${userId}:${diagram.id}`; const save = useSaveDiagramDocument(diagram.id); const saveRef = useRef(save);
   const createRelation = useCreateRelation(diagram.id);
   const available = useAvailableRelations(diagram.id);
@@ -42,6 +42,7 @@ export function DiagramWorkspace({ diagram, refetch, onAddResource, onDropResour
   const remote = useMemo(() => { try { return { document: migrateCanvasDocument(diagram.document), error: '' }; } catch (error) { return { document: null, error: error instanceof Error ? error.message : 'No se pudo abrir el documento.' }; } }, [diagram.document]);
   const initialRemote = useRef(remote);
   const [choice, setChoice] = useState<'checking' | 'draft' | 'ready'>('checking'); const [document, setDocument] = useState<DiagramDocument | null>(null); const [status, setStatus] = useState<SaveStatus>('saved'); const [conflict, setConflict] = useState(false);
+  useEffect(() => { onSaveStateChange?.(choice === 'ready' && status === 'saved'); return () => onSaveStateChange?.(false); }, [choice, status, onSaveStateChange]);
   const revisionRef = useRef(diagram.revision); const confirmedRef = useRef(remote.document ? fingerprint(remote.document) : ''); const latestRef = useRef<CanvasDraft | null>(null); const retryRef = useRef<CanvasDraft | null>(null); const savingRef = useRef(false); const blockedRef = useRef(false); const unsubscribeRef = useRef<(() => void) | null>(null); const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null); const journalQueue = useRef<Promise<unknown>>(Promise.resolve()); const pumpRef = useRef<() => Promise<void>>(async () => {});
   const queueWrite = useCallback((draft: CanvasDraft) => { journalQueue.current = journalQueue.current.catch(() => {}).then(() => writeCanvasDraft(draft)).catch(() => setStatus('storage-error')); }, []);
   const schedule = useCallback((delay = 700) => { if (timerRef.current) clearTimeout(timerRef.current); timerRef.current = setTimeout(() => void pumpRef.current(), delay); }, []);

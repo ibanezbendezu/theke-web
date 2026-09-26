@@ -1,4 +1,4 @@
-import { ChevronLeft, ListTree, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, ScanSearch, Upload } from 'lucide-react';
+import { ChevronLeft, ListTree, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, ScanSearch, Share2, Upload } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
@@ -21,6 +21,7 @@ import { CanvasAnnotationInspector } from '../features/canvas/CanvasAnnotationIn
 import { CanvasBackgroundInspector } from '../features/canvas/CanvasPresentationInspector';
 import { CanvasSemanticView } from '../features/canvas/CanvasSemanticView';
 import { CanvasRelationInspector } from '../features/canvas/CanvasRelationInspector';
+import { SharePreviewDialog } from '../features/canvas/SharePreviewDialog';
 
 export function DiagramEditor() {
   const { diagramId } = useParams();
@@ -32,6 +33,15 @@ function DiagramEditorCore() {
   const [pickerOpen, setPickerOpen] = useState(false); const [preferred, setPreferred] = useState<{ x: number; y: number } | undefined>(); const [duplicate, setDuplicate] = useState<{ resourceId: string; position?: { x: number; y: number } } | null>(null);
   const [readyDiagramId, setReadyDiagramId] = useState<string | null>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [sharePreviewOpen, setSharePreviewOpen] = useState(false);
+  const [canvasSaved, setCanvasSaved] = useState(false);
+  const [previewEpoch, setPreviewEpoch] = useState(0);
+  const savedRef = useRef(false);
+  const onSaveStateChange = useCallback((saved: boolean) => {
+    if (savedRef.current && !saved) setPreviewEpoch(epoch => epoch + 1);
+    savedRef.current = saved;
+    setCanvasSaved(saved);
+  }, []);
   const [reviewScope, setReviewScope] = useState<AiScopePreparation | null>(null);
   const [reviewError, setReviewError] = useState('');
   const review = usePrepareDiagramReview();
@@ -63,12 +73,13 @@ function DiagramEditorCore() {
         <Button size="icon" title={leftOpen ? 'Ocultar recursos' : 'Mostrar recursos'} aria-label={leftOpen ? 'Ocultar recursos' : 'Mostrar recursos'} icon={leftOpen ? PanelLeftClose : PanelLeftOpen} onClick={() => setLeftOpen(value => !value)} />
         <Button size="icon" title={semanticOpen ? 'Ocultar vista semántica' : 'Mostrar vista semántica'} aria-label={semanticOpen ? 'Ocultar vista semántica' : 'Mostrar vista semántica'} aria-pressed={semanticOpen} icon={ListTree} onClick={() => setSemanticOpen(value => !value)} />
         <Button size="icon" title="Revisar alcance de IA" aria-label="Revisar alcance de IA" icon={ScanSearch} onClick={() => { setReviewOpen(true); setReviewScope(null); setReviewError(''); }} />
+        {!diagram.data.archivedAt && <Button size="icon" title="Previsualizar contenido compartible" aria-label="Previsualizar contenido compartible" icon={Share2} onClick={() => setSharePreviewOpen(true)} />}
         <Button size="icon" title={rightOpen ? 'Ocultar propiedades' : 'Mostrar propiedades'} aria-label={rightOpen ? 'Ocultar propiedades' : 'Mostrar propiedades'} icon={rightOpen ? PanelRightClose : PanelRightOpen} onClick={() => setRightOpen(!rightOpen)} />
         {!diagram.data.archivedAt && <Button size="icon" title="Cargar archivos en el canvas" aria-label="Cargar archivos en el canvas" icon={Upload} onClick={() => pickFiles()} />}
       </nav>
       {leftOpen && (diagram.data.archivedAt ? <aside className="w-56 shrink-0 border-r border-border p-3">Recursos</aside> : readyDiagramId === diagram.data.id ? <CanvasResourcePanel projectId={diagram.data.projectId} onAdd={() => openPicker()} onSelect={id => tryAdd(id)} onSelectFolder={addFolder} /> : <aside className="w-56 shrink-0 border-r border-border p-3 text-xs text-outline">Cargando recursos del canvas…</aside>)}
       {semanticOpen && readyDiagramId === diagram.data.id && <CanvasSemanticView projectId={diagram.data.projectId} />}
-      <section className="min-w-0 flex-1" aria-label="Lienzo">{diagram.data.archivedAt ? <div className="relative h-full"><div className="pointer-events-none h-full"><CanvasEditor document={diagram.data.document} /></div><p role="status" className="absolute right-3 top-3 rounded border border-border bg-background px-3 py-2 text-sm">Diagrama archivado. Restáuralo desde el proyecto para editar.</p></div> : <DiagramWorkspace diagram={diagram.data} refetch={diagram.refetch} onAddResource={openPicker} onDropResource={tryAdd} onDropFiles={uploadAt} onPickFiles={pickFiles} onCanvasReady={canvasReady} />}</section>
+      <section className="min-w-0 flex-1" aria-label="Lienzo">{diagram.data.archivedAt ? <div className="relative h-full"><div className="pointer-events-none h-full"><CanvasEditor document={diagram.data.document} /></div><p role="status" className="absolute right-3 top-3 rounded border border-border bg-background px-3 py-2 text-sm">Diagrama archivado. Restáuralo desde el proyecto para editar.</p></div> : <DiagramWorkspace diagram={diagram.data} refetch={diagram.refetch} onAddResource={openPicker} onDropResource={tryAdd} onDropFiles={uploadAt} onPickFiles={pickFiles} onCanvasReady={canvasReady} onSaveStateChange={onSaveStateChange} />}</section>
       {rightOpen && <aside className="w-[304px] shrink-0 overflow-auto border-l border-border p-3" aria-label="Propiedades">{selectedRelationEdge ? <CanvasRelationInspector key={selectedRelationEdge.id} relationId={selectedRelationEdge.data!.relationId as string} edgeId={selectedRelationEdge.id} sourceNodeId={selectedRelationEdge.source} targetNodeId={selectedRelationEdge.target} /> : selectedResource ? <CanvasResourceInspector key={selectedResource.id} nodeId={selectedResource.id} resourceId={selectedResource.data.resourceId as string} caption={typeof selectedResource.data.caption === 'string' ? selectedResource.data.caption : ''} /> : selectedFolder ? <CanvasFolderInspector key={selectedFolder.id} nodeId={selectedFolder.id} projectId={diagram.data.projectId} folderId={selectedFolder.data.folderId as string} caption={typeof selectedFolder.data.caption === 'string' ? selectedFolder.data.caption : ''} onAddResource={id => tryAdd(id)} /> : selectedGroup ? <CanvasGroupInspector key={selectedGroup.id} groupId={selectedGroup.id} diagramId={diagram.data.id} /> : selectedAnnotation ? <CanvasAnnotationInspector nodeId={selectedAnnotation.id} /> : <><CanvasBackgroundInspector/><p className="mt-3 text-xs text-outline">Selecciona un elemento para editarlo.</p></>}</aside>}
     </div>
     {pickerOpen && <CanvasResourcePicker projectId={diagram.data.projectId} usedIds={usedIds} onClose={() => setPickerOpen(false)} onSelect={id => tryAdd(id, preferred)} onFocus={focusExisting} />}
@@ -84,6 +95,7 @@ function DiagramEditorCore() {
         <AIGuidanceCard actionTitle="Revisión pendiente" selectedResourceIds={reviewScope.resourceIds} />
       </section>}
     </CanvasDialog>}
+    {sharePreviewOpen && <SharePreviewDialog key={previewEpoch} diagramId={diagram.data.id} canPreview={canvasSaved && readyDiagramId === diagramId} onClose={() => setSharePreviewOpen(false)} />}
     {uploadPickerOpen && <CanvasDialog titleId="upload-position-title" onClose={() => setUploadPickerOpen(false)} className="max-w-sm"><h2 id="upload-position-title" className="font-semibold">Cargar en el canvas</h2><p className="mt-2 text-sm text-outline">Indica la ubicación inicial o usa el centro visible.</p><div className="mt-4 flex gap-2"><label className="text-sm">X<input type="number" className="mt-1 w-full rounded border border-border bg-background p-2" value={uploadPosition.x} onChange={event => setUploadPosition(value => ({ ...value, x: Number(event.target.value) }))}/></label><label className="text-sm">Y<input type="number" className="mt-1 w-full rounded border border-border bg-background p-2" value={uploadPosition.y} onChange={event => setUploadPosition(value => ({ ...value, y: Number(event.target.value) }))}/></label></div><div className="mt-4 flex justify-end gap-2"><Button onClick={() => setUploadPickerOpen(false)}>Cancelar</Button><Button variant="primary" onClick={() => fileInput.current?.click()}>Seleccionar archivos</Button></div></CanvasDialog>}
     <input ref={fileInput} className="sr-only" type="file" multiple aria-label="Seleccionar archivos para el canvas" onChange={event => { if (event.target.files?.length) { uploadAt([...event.target.files], uploadPosition); setUploadPickerOpen(false); } event.target.value = ''; }} />
     <CanvasUploadTray batches={uploads.batches} retry={uploads.retry} undo={uploads.undo} createGroup={uploads.createGroup} />

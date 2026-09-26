@@ -57,6 +57,7 @@ import type {
   ResourcePlacementInput,
   ResourceReferencesResponse,
   ResourceResponse,
+  SharePreviewResponse,
   UnauthorizedResponse,
   UpdateRelationInput,
   UpdateResourceMetadataInput,
@@ -1499,6 +1500,56 @@ return thekeFetch<saveDiagramDocumentResponse>(getSaveDiagramDocumentUrl(id),
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(diagramSaveInput)
+  }
+);}
+
+
+
+export type getDiagramSharePreviewResponse200 = {
+  data: SharePreviewResponse
+  status: 200
+}
+
+export type getDiagramSharePreviewResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type getDiagramSharePreviewResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type getDiagramSharePreviewResponse409 = {
+  data: ApiErrorResponse
+  status: 409
+}
+
+export type getDiagramSharePreviewResponseSuccess = (getDiagramSharePreviewResponse200) & {
+  headers: Headers;
+};
+export type getDiagramSharePreviewResponseError = (getDiagramSharePreviewResponse401 | getDiagramSharePreviewResponse404 | getDiagramSharePreviewResponse409) & {
+  headers: Headers;
+};
+
+export type getDiagramSharePreviewResponse = (getDiagramSharePreviewResponseSuccess | getDiagramSharePreviewResponseError)
+
+export const getGetDiagramSharePreviewUrl = (id: string,) => {
+
+
+
+
+  return `/v1/diagrams/${id}/share-preview`
+}
+
+export const getDiagramSharePreview = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getDiagramSharePreviewResponse> => {
+
+  return thekeFetch<getDiagramSharePreviewResponse>(getGetDiagramSharePreviewUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 
