@@ -15,6 +15,7 @@ vi.mock('@clerk/clerk-react', () => ({
   SignUp: (props: { signInUrl: string }) => <a href={props.signInUrl}>Ya tengo cuenta</a>,
 }));
 vi.mock('../../src/data/useCurrentAccount', () => ({ useCurrentAccount: () => state.account }));
+vi.mock('../../src/data/useAi', () => ({ useAiStatus: () => ({ data: { enabled: false } }), useAiActions: () => ({ settings: { mutate: vi.fn() }, revoke: { mutate: vi.fn() } }) }));
 
 describe('recorrido de autenticación sin credenciales externas', () => {
   it('redirige una ruta privada signed-out a acceso sin montar contenido privado', () => {

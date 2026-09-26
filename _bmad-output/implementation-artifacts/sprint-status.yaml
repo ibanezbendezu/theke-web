@@ -25,7 +25,7 @@ tracking_system: file-system
 story_location: "_bmad-output/implementation-artifacts"
 
 development_status:
-  epic-1: in-progress
+  epic-1: done
   1-1-acceder-al-espacio-privado: done
   1-2-crear-y-administrar-proyectos: done
   1-3-crear-y-editar-notas-canónicas: done
@@ -34,10 +34,10 @@ development_status:
   1-6-consultar-recursos-según-su-tipo: done
   1-7-guardar-enlaces-web-como-recursos: done
   1-8-buscar-y-filtrar-la-biblioteca: done
-  1-9-archivar-o-eliminar-con-impacto-visible: review
+  1-9-archivar-o-eliminar-con-impacto-visible: done
   epic-1-retrospective: optional
 
-  epic-2: in-progress
+  epic-2: done
   2-1-crear-y-administrar-diagramas-en-el-editor: done
   2-2-guardar-y-recuperar-la-composición-del-canvas: done
   2-3-añadir-recursos-existentes-al-canvas: done
@@ -58,9 +58,9 @@ development_status:
   3-5-estructurar-metadatos-y-enlaces-de-conocimiento: done
   epic-3-retrospective: optional
 
-  epic-4: backlog
-  4-1-activar-ia-con-consentimiento-y-alcance-explícitos: backlog
-  4-2-recibir-y-decidir-sugerencias-para-relaciones: backlog
+  epic-4: in-progress
+  4-1-activar-ia-con-consentimiento-y-alcance-explícitos: done
+  4-2-recibir-y-decidir-sugerencias-para-relaciones: ready-for-dev
   4-3-recibir-orientación-al-organizar-grupos: backlog
   4-4-revisar-una-selección-o-un-diagrama-bajo-demanda: backlog
   epic-4-retrospective: optional

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ApiError, thekeFetch } from '../src/api/httpClient';
+import { thekeFetch } from '../src/api/httpClient';
 import { safeDestination } from '../src/features/auth/safeDestination';
 
 beforeEach(() => vi.stubEnv('VITE_API_URL', 'https://api.test/'));
@@ -26,12 +26,12 @@ describe('acceso privado', () => {
 
   it('preserva el error uniforme y requestId para una recuperación segura', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ error: { code: 'UNAUTHORIZED', message: 'Sesión vencida', requestId: 'req-401' } }), { status: 401 })));
-    await expect(thekeFetch('/v1/me', { headers: { Authorization: 'Bearer expired' } })).rejects.toMatchObject<ApiError>({ status: 401, payload: { error: { code: 'UNAUTHORIZED', message: 'Sesión vencida', requestId: 'req-401' } } });
+    await expect(thekeFetch('/v1/me', { headers: { Authorization: 'Bearer expired' } })).rejects.toMatchObject({ status: 401, payload: { error: { code: 'UNAUTHORIZED', message: 'Sesión vencida', requestId: 'req-401' } } });
   });
 
   it('estructura fallos vacíos o no JSON con status y requestId del header', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response('upstream unavailable', { status: 502, statusText: 'Bad Gateway', headers: { 'x-request-id': 'req-502' } })));
-    await expect(thekeFetch('/v1/me')).rejects.toMatchObject<ApiError>({ status: 502, payload: { error: { code: 'HTTP_502', message: 'Bad Gateway', requestId: 'req-502' } } });
+    await expect(thekeFetch('/v1/me')).rejects.toMatchObject({ status: 502, payload: { error: { code: 'HTTP_502', message: 'Bad Gateway', requestId: 'req-502' } } });
   });
 
   it('rechaza una base API ausente antes de enviar la solicitud', async () => {

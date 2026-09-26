@@ -6,6 +6,11 @@
  */
 import type {
   AccessibilityInput,
+  AiConsentInput,
+  AiPreflightInput,
+  AiPreflightResponse,
+  AiSettingsInput,
+  AiStatusResponse,
   ApiErrorResponse,
   AvailableRelationListResponse,
   BadRequestResponse,
@@ -2491,5 +2496,262 @@ return thekeFetch<updateResourceAccessibilityResponse>(getUpdateResourceAccessib
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(accessibilityInput)
+  }
+);}
+
+
+
+export type getAiStatusResponse200 = {
+  data: AiStatusResponse
+  status: 200
+}
+
+export type getAiStatusResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type getAiStatusResponseSuccess = (getAiStatusResponse200) & {
+  headers: Headers;
+};
+export type getAiStatusResponseError = (getAiStatusResponse401) & {
+  headers: Headers;
+};
+
+export type getAiStatusResponse = (getAiStatusResponseSuccess | getAiStatusResponseError)
+
+export const getGetAiStatusUrl = () => {
+
+
+
+
+  return `/v1/ai/status`
+}
+
+export const getAiStatus = async ( options?: Parameters<typeof thekeFetch>[1]): Promise<getAiStatusResponse> => {
+
+  return thekeFetch<getAiStatusResponse>(getGetAiStatusUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type updateAiConsentResponse200 = {
+  data: AiStatusResponse
+  status: 200
+}
+
+export type updateAiConsentResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
+export type updateAiConsentResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type updateAiConsentResponseSuccess = (updateAiConsentResponse200) & {
+  headers: Headers;
+};
+export type updateAiConsentResponseError = (updateAiConsentResponse400 | updateAiConsentResponse401) & {
+  headers: Headers;
+};
+
+export type updateAiConsentResponse = (updateAiConsentResponseSuccess | updateAiConsentResponseError)
+
+export const getUpdateAiConsentUrl = () => {
+
+
+
+
+  return `/v1/ai/consent`
+}
+
+export const updateAiConsent = async (aiConsentInput: AiConsentInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateAiConsentResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<updateAiConsentResponse>(getUpdateAiConsentUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(aiConsentInput)
+  }
+);}
+
+
+
+export type revokeAiConsentResponse200 = {
+  data: AiStatusResponse
+  status: 200
+}
+
+export type revokeAiConsentResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type revokeAiConsentResponseSuccess = (revokeAiConsentResponse200) & {
+  headers: Headers;
+};
+export type revokeAiConsentResponseError = (revokeAiConsentResponse401) & {
+  headers: Headers;
+};
+
+export type revokeAiConsentResponse = (revokeAiConsentResponseSuccess | revokeAiConsentResponseError)
+
+export const getRevokeAiConsentUrl = () => {
+
+
+
+
+  return `/v1/ai/revoke-consent`
+}
+
+export const revokeAiConsent = async ( options?: Parameters<typeof thekeFetch>[1]): Promise<revokeAiConsentResponse> => {
+
+  return thekeFetch<revokeAiConsentResponse>(getRevokeAiConsentUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export type updateAiSettingsResponse200 = {
+  data: AiStatusResponse
+  status: 200
+}
+
+export type updateAiSettingsResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
+export type updateAiSettingsResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type updateAiSettingsResponseSuccess = (updateAiSettingsResponse200) & {
+  headers: Headers;
+};
+export type updateAiSettingsResponseError = (updateAiSettingsResponse400 | updateAiSettingsResponse401) & {
+  headers: Headers;
+};
+
+export type updateAiSettingsResponse = (updateAiSettingsResponseSuccess | updateAiSettingsResponseError)
+
+export const getUpdateAiSettingsUrl = () => {
+
+
+
+
+  return `/v1/ai/settings`
+}
+
+export const updateAiSettings = async (aiSettingsInput: AiSettingsInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateAiSettingsResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<updateAiSettingsResponse>(getUpdateAiSettingsUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(aiSettingsInput)
+  }
+);}
+
+
+
+export type preflightAiCheckResponse200 = {
+  data: AiPreflightResponse
+  status: 200
+}
+
+export type preflightAiCheckResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
+export type preflightAiCheckResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type preflightAiCheckResponseSuccess = (preflightAiCheckResponse200) & {
+  headers: Headers;
+};
+export type preflightAiCheckResponseError = (preflightAiCheckResponse400 | preflightAiCheckResponse401) & {
+  headers: Headers;
+};
+
+export type preflightAiCheckResponse = (preflightAiCheckResponseSuccess | preflightAiCheckResponseError)
+
+export const getPreflightAiCheckUrl = () => {
+
+
+
+
+  return `/v1/ai/preflight-check`
+}
+
+export const preflightAiCheck = async (aiPreflightInput: AiPreflightInput, options?: Parameters<typeof thekeFetch>[1]): Promise<preflightAiCheckResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<preflightAiCheckResponse>(getPreflightAiCheckUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(aiPreflightInput)
   }
 );}

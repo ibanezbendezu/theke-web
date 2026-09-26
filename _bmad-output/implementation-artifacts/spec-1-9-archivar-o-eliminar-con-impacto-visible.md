@@ -2,7 +2,7 @@
 title: 'Archivar o eliminar con impacto visible'
 type: 'feature'
 created: '2026-09-24'
-status: 'review'
+status: 'done'
 ---
 
 ## Intent

@@ -16,6 +16,7 @@ vi.mock('../src/data/useUploads', () => ({
 vi.mock('../src/data/useResources', () => ({
   useResources: () => ({ data: { pages: [{ data: [], meta: { nextCursor: null } }] }, isPending: false, isFetching: false, isError: false, hasNextPage: false }),
   useResource: () => ({ data: resourceState.detail, isPending: false, isError: false }),
+  useResourceKnowledge: () => ({ references: { data: { outgoing: [], incoming: [] }, isPending: false }, definitions: { data: [], isPending: false }, save: { mutateAsync: vi.fn(), isPending: false } }),
   useResourceAccess: () => ({ data: { url: 'https://example.test/preview' }, isPending: false, isError: false }),
   useResourceActions: () => ({ access: vi.fn().mockResolvedValue({ url: 'https://example.test/file' }), accessibility: { mutateAsync: vi.fn(), isPending: false } }),
   useLinkActions: () => ({ create: { mutateAsync: vi.fn(), isPending: false }, update: { mutateAsync: vi.fn(), isPending: false }, retry: { mutateAsync: vi.fn(), isPending: false } }),

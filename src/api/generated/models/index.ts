@@ -7,6 +7,18 @@
 
 export * from './accessibilityInput';
 export * from './account';
+export * from './aiConsentInput';
+export * from './aiConsentStatus';
+export * from './aiPolicy';
+export * from './aiPreflightInput';
+export * from './aiPreflightResponse';
+export * from './aiPreflightResult';
+export * from './aiQuotaStatus';
+export * from './aiQuotaStatusDailyRuns';
+export * from './aiQuotaStatusMonthlyBudget';
+export * from './aiSettingsInput';
+export * from './aiStatus';
+export * from './aiStatusResponse';
 export * from './apiError';
 export * from './apiErrorResponse';
 export * from './availableRelation';
@@ -72,6 +84,8 @@ export * from './noteVersion';
 export * from './notFoundResponse';
 export * from './organization';
 export * from './organizationResponse';
+export * from './preflightResourceAssessment';
+export * from './preflightResourceAssessmentType';
 export * from './project';
 export * from './projectInput';
 export * from './projectListResponse';
