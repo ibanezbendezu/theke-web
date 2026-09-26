@@ -13,6 +13,24 @@ interface Envelope<T> {
   data: T;
 }
 
+export type { RelationSuggestion } from '../api/generated/models';
+
+export function useRelationSuggestion() {
+  const { getToken } = useAuth();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (relationId: string) => {
+      const response = await thekeFetch<Envelope<import('../api/generated/models').RelationSuggestion>>('/v1/ai/relation-suggestions', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${await getToken()}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ relationId }),
+      });
+      return response.data;
+    },
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['private', 'ai-status'] }),
+  });
+}
+
 export function useAiStatus() {
   const { getToken, userId } = useAuth();
   return useQuery({

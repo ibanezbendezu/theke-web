@@ -183,6 +183,17 @@ describe('Gobernanza de IA y Componentes de Consentimiento', () => {
     expect(screen.getByRole('button', { name: 'Condiciones' })).toBeInTheDocument();
   });
 
+  it('no ejecuta una inferencia hasta que el alcance haya superado preflight', () => {
+    mockState.status.enabled = true;
+    mockState.status.consent.isConsented = true;
+    const execute = vi.fn();
+    render(<QueryClientProvider client={queryClient}><AIGuidanceCard selectedResourceIds={['res-1', 'res-2']} onExecute={execute} /></QueryClientProvider>);
+    const action = screen.getByRole('button', { name: 'Ejecutar análisis' });
+    expect(action).toBeDisabled();
+    fireEvent.click(action);
+    expect(execute).not.toHaveBeenCalled();
+  });
+
   it('permite revocar consentimiento en el diálogo de configuración', async () => {
     mockState.status = {
       enabled: true,

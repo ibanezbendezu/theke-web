@@ -45,6 +45,8 @@ import type {
   ProjectResourceListResponse,
   ProjectResponse,
   RelationDetailResponse,
+  RelationSuggestionInput,
+  RelationSuggestionResponse,
   RelationTypeListResponse,
   ResourceAccessResponse,
   ResourceListResponse,
@@ -2694,6 +2696,65 @@ return thekeFetch<updateAiSettingsResponse>(getUpdateAiSettingsUrl(),
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(aiSettingsInput)
+  }
+);}
+
+
+
+export type suggestAiRelationResponse200 = {
+  data: RelationSuggestionResponse
+  status: 200
+}
+
+export type suggestAiRelationResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
+export type suggestAiRelationResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type suggestAiRelationResponseSuccess = (suggestAiRelationResponse200) & {
+  headers: Headers;
+};
+export type suggestAiRelationResponseError = (suggestAiRelationResponse400 | suggestAiRelationResponse401) & {
+  headers: Headers;
+};
+
+export type suggestAiRelationResponse = (suggestAiRelationResponseSuccess | suggestAiRelationResponseError)
+
+export const getSuggestAiRelationUrl = () => {
+
+
+
+
+  return `/v1/ai/relation-suggestions`
+}
+
+export const suggestAiRelation = async (relationSuggestionInput: RelationSuggestionInput, options?: Parameters<typeof thekeFetch>[1]): Promise<suggestAiRelationResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<suggestAiRelationResponse>(getSuggestAiRelationUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(relationSuggestionInput)
   }
 );}
 

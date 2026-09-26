@@ -40,6 +40,7 @@ export function AIGuidanceCard({
 
   useEffect(() => {
     let active = true;
+    setAssessment(null);
     if (selectedResourceIds.length > 0 && status?.enabled && status?.consent?.isConsented) {
       preflight.mutate(
         { resourceIds: selectedResourceIds },
@@ -49,8 +50,6 @@ export function AIGuidanceCard({
           },
         },
       );
-    } else {
-      setAssessment(null);
     }
     return () => {
       active = false;
@@ -241,7 +240,7 @@ export function AIGuidanceCard({
                   disabled={
                     isLoading ||
                     selectedResourceIds.length === 0 ||
-                    (assessment ? !assessment.allowed : false) ||
+                    !assessment?.allowed ||
                     preflight.isPending
                   }
                   onClick={onExecute}

@@ -1,7 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiError } from '../../api/httpClient';
+import { AIGuidanceCard } from '../../components/ai/AIGuidanceCard';
 import { Button } from '../../components/ui/Button';
+import { useRelationSuggestion, type RelationSuggestion } from '../../data/useAi';
 import { useResources } from '../../data/useResources';
 import { useRelation, useUpdateRelation, type RelationDetail, type UpdateRelationInput } from '../../data/useRelations';
 import { CanvasDialog } from './CanvasDialog';
@@ -28,11 +30,25 @@ function RelationEditorForm({ detail, reload, onClose }: { detail: RelationDetai
   const [busy, setBusy] = useState(false);
   const [conflict, setConflict] = useState(false);
   const [error, setError] = useState('');
+  const [suggestion, setSuggestion] = useState<RelationSuggestion | null>(null);
+  const [humanEdited, setHumanEdited] = useState(false);
+  const inference = useRelationSuggestion();
   const resources = useResources({ query: search.trim() });
   const client = useQueryClient();
   const mutation = useUpdateRelation(detail.id);
   const candidates = resources.data?.pages.flatMap(page => page.data).filter(item => !draft.evidence.some(citation => citation.resourceId === item.id)) ?? [];
   const changeEvidence = (index: number, field: 'excerpt' | 'note' | 'pageNumber', value: string) => setDraft(current => ({ ...current, evidence: current.evidence.map((item, position) => position === index ? { ...item, [field]: value, ...(field === 'excerpt' ? { startOffset: undefined, endOffset: undefined } : {}) } : item) }));
+  const requestSuggestion = async () => {
+    setError(''); setSuggestion(null);
+    try { setSuggestion(await inference.mutateAsync(detail.id)); }
+    catch (reason) { setError(reason instanceof Error ? reason.message : 'No se pudo obtener una sugerencia. Puedes seguir editando manualmente.'); }
+  };
+  const applySuggestion = () => {
+    if (!suggestion) return;
+    const evidence = suggestion.evidence.map(item => ({ resourceId: item.resourceId, title: item.resourceId === detail.sourceResourceId ? detail.source.title : detail.target.title, excerpt: item.excerpt, note: '', pageNumber: '' }));
+    setDraft(current => ({ ...current, label: suggestion.label, explanation: suggestion.explanation, provenance: `Sugerencia de ${suggestion.provider}/${suggestion.model} (${suggestion.createdAt}); insumos: ${detail.source.title}, ${detail.target.title}; revisión humana antes de guardar`, evidence, evidenceStatus: evidence.length ? 'confirmed' : 'needs_evidence' }));
+    setHumanEdited(true); setSuggestion(null);
+  };
   const save = async (event: FormEvent) => {
     event.preventDefault(); setBusy(true); setError('');
     try {
@@ -55,6 +71,20 @@ function RelationEditorForm({ detail, reload, onClose }: { detail: RelationDetai
       <h3 className="font-medium">Vínculo entre Recursos</h3>
       <p className="mt-1">{detail.source.title} {detail.direction === 'directed' ? '→' : '↔'} {detail.target.title}</p>
       <p className="text-outline">Tipo: {detail.typeLabel} · {detail.direction === 'directed' ? 'Dirigida' : 'No dirigida'}</p>
+    </section>
+    <section aria-label="Sugerencia de IA" className="space-y-3">
+      <AIGuidanceCard selectedResourceIds={[detail.sourceResourceId, detail.targetResourceId]} actionTitle="Sugerir una relación" executeLabel="Solicitar sugerencia" onExecute={() => void requestSuggestion()} isLoading={inference.isPending} />
+      {suggestion && <div className="space-y-2 rounded border border-border p-3" aria-label="Sugerencia sin guardar">
+        <h3 className="font-medium">Sugerencia sin guardar</h3>
+        <p>Tipo: {suggestion.typeKey} · Dirección: {suggestion.direction === 'directed' ? 'Dirigida' : 'No dirigida'}</p>
+        <p>Etiqueta: {suggestion.label}</p><p>Explicación: {suggestion.explanation}</p>
+        {suggestion.uncertainty && <p role="status">Incertidumbre: {suggestion.uncertainty}</p>}
+        <ul aria-label="Citas propuestas">{suggestion.evidence.map((item, index) => <li key={`${item.resourceId}-${index}`}>{item.resourceId === detail.sourceResourceId ? detail.source.title : detail.target.title}: “{item.excerpt}”</li>)}</ul>
+        <p className="text-xs text-outline">{suggestion.provider}/{suggestion.model} · {new Date(suggestion.createdAt).toLocaleString()} · insumos: {detail.source.title}, {detail.target.title}. Comprueba cada cita antes de guardar.</p>
+        {(suggestion.typeKey !== detail.typeKey || suggestion.direction !== detail.direction) && <p role="status">El tipo o la dirección propuestos difieren de esta relación; no se cambiarán automáticamente. Para usarlos, crea una relación manualmente.</p>}
+        <div className="flex gap-2"><Button type="button" onClick={applySuggestion}>Editar y aceptar en borrador</Button><Button type="button" onClick={() => setSuggestion(null)}>Descartar</Button></div>
+      </div>}
+      {humanEdited && <p role="status">Sugerencia aplicada al borrador; revisa los datos y pulsa Guardar Relación para confirmar.</p>}
     </section>
     <section aria-label="Contenido canónico" className="space-y-3">
       <div><h3 className="font-medium">Datos de la Relación</h3><p className="text-xs text-outline">Estos datos pertenecen a la Cuenta y se comparten entre Diagramas. El estilo y la visibilidad de cada línea son locales.</p></div>
