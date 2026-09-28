@@ -17,6 +17,7 @@ vi.mock('../src/data/useSharePreview', () => ({ useSharePreview: () => {
   const [data, setData] = useState<unknown>();
   return { data, isPending: false, isError: false, reset: () => setData(undefined), mutate: () => { state.requested(); setData({
     diagramName: 'Mapa', revision: 4, fingerprint: 'reviewed-digest',
+    layout: { nodes: [{ id: 'r0', resourceId: 'one', x: 10, y: 20 }, { id: 'r1', resourceId: 'two', x: 240, y: 20 }], edges: [{ id: 'e0', relationId: 'rel', source: 'r0', target: 'r1' }] },
     resources: [{ id: 'one', title: 'Nota visible', type: 'note', description: 'Resumen', content: state.changed ? 'Texto corregido' : 'Texto publicado', url: null, mediaType: null, accessibilityText: null }, { id: 'two', title: 'Audio', type: 'file', description: null, content: null, url: null, mediaType: 'audio/mpeg', accessibilityText: null }],
     relations: [{ id: 'rel', sourceResourceId: 'one', targetResourceId: 'two', direction: 'directed', typeKey: 'supports', label: 'Sustenta', explanation: 'Referencia visible' }],
     warnings: state.ready ? [] : [{ resourceId: 'two', field: 'accessibilityText', message: 'Falta descripción.' }], ready: state.ready,

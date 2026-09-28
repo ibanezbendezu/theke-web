@@ -4,6 +4,7 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
+import type { PublicRelationEvidence } from './publicRelationEvidence';
 import type { SharePreviewRelationDirection } from './sharePreviewRelationDirection';
 
 export interface SharePreviewRelation {
@@ -16,4 +17,5 @@ export interface SharePreviewRelation {
   label: string | null;
   /** @nullable */
   explanation: string | null;
+  evidence?: PublicRelationEvidence[];
 }

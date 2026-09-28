@@ -22,3 +22,6 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-5-3-administrar-un-compartido-vivo-y-revocable.md`
   summary: En la Story 6.2, exigir `commentsEnabled` del Compartido activo antes de aceptar nuevos comentarios y conservar los comentarios anteriores al desactivarlo.
   evidence: La Story 5.3 guarda y publica la configuración, pero todavía no existe el endpoint de comentarios. La Story 5.3 queda en review hasta revisar también el flujo real con Clerk y navegador.
+- source_spec: `_bmad-output/implementation-artifacts/spec-5-4-explorar-un-diagrama-publico-sin-editarlo.md`
+  summary: Verificar el Canvas público con una publicación real en navegador, navegación por teclado, alto contraste, movimiento reducido y tiempo de contenido útil en banda ancha.
+  evidence: La proyección y la UI están implementadas con pruebas focalizadas, pero el navegador de automatización no estuvo disponible en esta sesión. La Story 5.4 permanece in-progress.

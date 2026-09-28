@@ -4,6 +4,7 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
+import type { PublicLayout } from './publicLayout';
 import type { SharePreviewRelation } from './sharePreviewRelation';
 import type { SharePreviewResource } from './sharePreviewResource';
 import type { SharePreviewWarning } from './sharePreviewWarning';
@@ -13,6 +14,7 @@ export interface SharePreview {
   revision: number;
   resources: SharePreviewResource[];
   relations: SharePreviewRelation[];
+  layout: PublicLayout;
   /** @pattern ^[a-f0-9]{64}$ */
   fingerprint: string;
   warnings: SharePreviewWarning[];

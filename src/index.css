@@ -60,3 +60,28 @@
 .cl-socialButtonsBlockButtonText {
   color: var(--on-background) !important;
 }
+
+.public-share .react-flow__node:focus-visible,
+.public-share .react-flow__edge:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-share *, .public-share *::before, .public-share *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .public-share .react-flow__node {
+    background: Canvas !important;
+    color: CanvasText !important;
+    border: 2px solid CanvasText !important;
+  }
+  .public-share .react-flow__edge path { stroke: CanvasText !important; }
+  .public-share .react-flow__edge-textbg { fill: Canvas !important; }
+  .public-share .react-flow__edge-text { fill: CanvasText !important; }
+}
