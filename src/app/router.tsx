@@ -10,8 +10,10 @@ import { AccessPage } from '../features/auth/AccessPage';
 import { PrivateRoute } from '../features/auth/PrivateRoute';
 import { RegisterPage } from '../features/auth/RegisterPage';
 import { DiagramEditor } from '../pages/DiagramEditor';
+import { PublicShare } from '../pages/PublicShare';
 
 export const router = createBrowserRouter([
+    { path: '/share/:token', element: <PublicShare /> },
     { path: '/access', element: <AccessPage /> },
     { path: '/register', element: <RegisterPage /> },
     {

@@ -16,3 +16,9 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-4-2-recibir-y-decidir-sugerencias-para-relaciones.md`
   summary: Habilitar deliberadamente el proveedor de IA tras verificar credenciales y privacidad; implementar SSE, aceptación de tipo/dirección con auditoría y prueba de inferencia real.
   evidence: La inferencia permanece cerrada por defecto mediante `AI_PROVIDER_ENABLED`; las Stories 4.2–4.4 siguen abiertas y las preparaciones no envían recursos ni generan sugerencias.
+- source_spec: `_bmad-output/implementation-artifacts/spec-5-2-publicar-mediante-un-enlace-no-listado.md`
+  summary: Configurar `SHARE_TOKEN_SECRET` de forma estable en el despliegue y verificar TLS, Clerk y apertura pública real sin sesión.
+  evidence: Se generó un secreto local aleatorio de 48 bytes en `theke-api/.env`, ignorado por Git. El servidor ya entrega archivos con token validado sin exponer el bucket, audita publicación y reintentos, y las migraciones 0017/0018 se aplicaron al PostgreSQL de desarrollo. La prueba de integración usa PostgreSQL; queda pendiente la comprobación operativa de la Story 5.2 antes de marcarla done.
+- source_spec: `_bmad-output/implementation-artifacts/spec-5-3-administrar-un-compartido-vivo-y-revocable.md`
+  summary: En la Story 6.2, exigir `commentsEnabled` del Compartido activo antes de aceptar nuevos comentarios y conservar los comentarios anteriores al desactivarlo.
+  evidence: La Story 5.3 guarda y publica la configuración, pero todavía no existe el endpoint de comentarios. La Story 5.3 queda en review hasta revisar también el flujo real con Clerk y navegador.

@@ -6,6 +6,7 @@
  */
 import type {
   AccessibilityInput,
+  ActiveShareResponse,
   AiConsentInput,
   AiDiagramScopeInput,
   AiGroupScopeInput,
@@ -47,6 +48,11 @@ import type {
   ProjectListResponse,
   ProjectResourceListResponse,
   ProjectResponse,
+  PublicShareResponse,
+  PublishShareInput,
+  PublishShareResponse,
+  RefreshShareInput,
+  RefreshShareResponse,
   RelationDetailResponse,
   RelationSuggestionInput,
   RelationSuggestionResponse,
@@ -57,6 +63,10 @@ import type {
   ResourcePlacementInput,
   ResourceReferencesResponse,
   ResourceResponse,
+  RevokeShareInput,
+  RevokeShareResponse,
+  ShareCommentsInput,
+  ShareCommentsResponse,
   SharePreviewResponse,
   UnauthorizedResponse,
   UpdateRelationInput,
@@ -1545,6 +1555,408 @@ export const getGetDiagramSharePreviewUrl = (id: string,) => {
 export const getDiagramSharePreview = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getDiagramSharePreviewResponse> => {
 
   return thekeFetch<getDiagramSharePreviewResponse>(getGetDiagramSharePreviewUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type publishDiagramShareResponse201 = {
+  data: PublishShareResponse
+  status: 201
+}
+
+export type publishDiagramShareResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
+export type publishDiagramShareResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type publishDiagramShareResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type publishDiagramShareResponse409 = {
+  data: ApiErrorResponse
+  status: 409
+}
+
+export type publishDiagramShareResponseSuccess = (publishDiagramShareResponse201) & {
+  headers: Headers;
+};
+export type publishDiagramShareResponseError = (publishDiagramShareResponse400 | publishDiagramShareResponse401 | publishDiagramShareResponse404 | publishDiagramShareResponse409) & {
+  headers: Headers;
+};
+
+export type publishDiagramShareResponse = (publishDiagramShareResponseSuccess | publishDiagramShareResponseError)
+
+export const getPublishDiagramShareUrl = (id: string,) => {
+
+
+
+
+  return `/v1/diagrams/${id}/shares`
+}
+
+export const publishDiagramShare = async (id: string,
+    publishShareInput: PublishShareInput, options?: Parameters<typeof thekeFetch>[1]): Promise<publishDiagramShareResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<publishDiagramShareResponse>(getPublishDiagramShareUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(publishShareInput)
+  }
+);}
+
+
+
+export type getActiveDiagramShareResponse200 = {
+  data: ActiveShareResponse
+  status: 200
+}
+
+export type getActiveDiagramShareResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type getActiveDiagramShareResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type getActiveDiagramShareResponseSuccess = (getActiveDiagramShareResponse200) & {
+  headers: Headers;
+};
+export type getActiveDiagramShareResponseError = (getActiveDiagramShareResponse401 | getActiveDiagramShareResponse404) & {
+  headers: Headers;
+};
+
+export type getActiveDiagramShareResponse = (getActiveDiagramShareResponseSuccess | getActiveDiagramShareResponseError)
+
+export const getGetActiveDiagramShareUrl = (id: string,) => {
+
+
+
+
+  return `/v1/diagrams/${id}/shares/active`
+}
+
+export const getActiveDiagramShare = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getActiveDiagramShareResponse> => {
+
+  return thekeFetch<getActiveDiagramShareResponse>(getGetActiveDiagramShareUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type setDiagramShareCommentsResponse200 = {
+  data: ShareCommentsResponse
+  status: 200
+}
+
+export type setDiagramShareCommentsResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
+export type setDiagramShareCommentsResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type setDiagramShareCommentsResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type setDiagramShareCommentsResponseSuccess = (setDiagramShareCommentsResponse200) & {
+  headers: Headers;
+};
+export type setDiagramShareCommentsResponseError = (setDiagramShareCommentsResponse400 | setDiagramShareCommentsResponse401 | setDiagramShareCommentsResponse404) & {
+  headers: Headers;
+};
+
+export type setDiagramShareCommentsResponse = (setDiagramShareCommentsResponseSuccess | setDiagramShareCommentsResponseError)
+
+export const getSetDiagramShareCommentsUrl = (id: string,) => {
+
+
+
+
+  return `/v1/diagrams/${id}/shares/active/comments`
+}
+
+export const setDiagramShareComments = async (id: string,
+    shareCommentsInput: ShareCommentsInput, options?: Parameters<typeof thekeFetch>[1]): Promise<setDiagramShareCommentsResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<setDiagramShareCommentsResponse>(getSetDiagramShareCommentsUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(shareCommentsInput)
+  }
+);}
+
+
+
+export type refreshDiagramShareResponse200 = {
+  data: RefreshShareResponse
+  status: 200
+}
+
+export type refreshDiagramShareResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
+export type refreshDiagramShareResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type refreshDiagramShareResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type refreshDiagramShareResponse409 = {
+  data: ApiErrorResponse
+  status: 409
+}
+
+export type refreshDiagramShareResponseSuccess = (refreshDiagramShareResponse200) & {
+  headers: Headers;
+};
+export type refreshDiagramShareResponseError = (refreshDiagramShareResponse400 | refreshDiagramShareResponse401 | refreshDiagramShareResponse404 | refreshDiagramShareResponse409) & {
+  headers: Headers;
+};
+
+export type refreshDiagramShareResponse = (refreshDiagramShareResponseSuccess | refreshDiagramShareResponseError)
+
+export const getRefreshDiagramShareUrl = (id: string,) => {
+
+
+
+
+  return `/v1/diagrams/${id}/shares/active/projection`
+}
+
+export const refreshDiagramShare = async (id: string,
+    refreshShareInput: RefreshShareInput, options?: Parameters<typeof thekeFetch>[1]): Promise<refreshDiagramShareResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<refreshDiagramShareResponse>(getRefreshDiagramShareUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(refreshShareInput)
+  }
+);}
+
+
+
+export type revokeDiagramShareResponse201 = {
+  data: RevokeShareResponse
+  status: 201
+}
+
+export type revokeDiagramShareResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
+export type revokeDiagramShareResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type revokeDiagramShareResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type revokeDiagramShareResponse409 = {
+  data: ApiErrorResponse
+  status: 409
+}
+
+export type revokeDiagramShareResponseSuccess = (revokeDiagramShareResponse201) & {
+  headers: Headers;
+};
+export type revokeDiagramShareResponseError = (revokeDiagramShareResponse400 | revokeDiagramShareResponse401 | revokeDiagramShareResponse404 | revokeDiagramShareResponse409) & {
+  headers: Headers;
+};
+
+export type revokeDiagramShareResponse = (revokeDiagramShareResponseSuccess | revokeDiagramShareResponseError)
+
+export const getRevokeDiagramShareUrl = (id: string,) => {
+
+
+
+
+  return `/v1/diagrams/${id}/shares/active/revoke`
+}
+
+export const revokeDiagramShare = async (id: string,
+    revokeShareInput: RevokeShareInput, options?: Parameters<typeof thekeFetch>[1]): Promise<revokeDiagramShareResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<revokeDiagramShareResponse>(getRevokeDiagramShareUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(revokeShareInput)
+  }
+);}
+
+
+
+export type getPublicShareResponse200 = {
+  data: PublicShareResponse
+  status: 200
+}
+
+export type getPublicShareResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type getPublicShareResponseSuccess = (getPublicShareResponse200) & {
+  headers: Headers;
+};
+export type getPublicShareResponseError = (getPublicShareResponse404) & {
+  headers: Headers;
+};
+
+export type getPublicShareResponse = (getPublicShareResponseSuccess | getPublicShareResponseError)
+
+export const getGetPublicShareUrl = (token: string,) => {
+
+
+
+
+  return `/v1/public/shares/${token}`
+}
+
+export const getPublicShare = async (token: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getPublicShareResponse> => {
+
+  return thekeFetch<getPublicShareResponse>(getGetPublicShareUrl(token),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getPublicShareResourceContentResponse200 = {
+  data: Blob
+  status: 200
+}
+
+export type getPublicShareResourceContentResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type getPublicShareResourceContentResponseSuccess = (getPublicShareResourceContentResponse200) & {
+  headers: Headers;
+};
+export type getPublicShareResourceContentResponseError = (getPublicShareResourceContentResponse404) & {
+  headers: Headers;
+};
+
+export type getPublicShareResourceContentResponse = (getPublicShareResourceContentResponseSuccess | getPublicShareResourceContentResponseError)
+
+export const getGetPublicShareResourceContentUrl = (token: string,
+    resourceId: string,) => {
+
+
+
+
+  return `/v1/public/shares/${token}/resources/${resourceId}/content`
+}
+
+export const getPublicShareResourceContent = async (token: string,
+    resourceId: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getPublicShareResourceContentResponse> => {
+
+  return thekeFetch<getPublicShareResourceContentResponse>(getGetPublicShareResourceContentUrl(token,resourceId),
   {
     ...options,
     method: 'GET'

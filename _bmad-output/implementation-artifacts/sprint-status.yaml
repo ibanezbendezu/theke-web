@@ -18,7 +18,7 @@
 # - Code Review valida la implementación antes de marcarla done.
 
 generated: 09-21-2026 09:45
-last_updated: 09-25-2026
+last_updated: 09-28-2026
 project: Theke
 project_key: NOKEY
 tracking_system: file-system
@@ -67,8 +67,8 @@ development_status:
 
   epic-5: in-progress
   5-1-previsualizar-exactamente-lo-que-se-publicará: done
-  5-2-publicar-mediante-un-enlace-no-listado: backlog
-  5-3-administrar-un-compartido-vivo-y-revocable: backlog
+  5-2-publicar-mediante-un-enlace-no-listado: review
+  5-3-administrar-un-compartido-vivo-y-revocable: review
   5-4-explorar-un-diagrama-público-sin-editarlo: backlog
   5-5-abrir-recursos-públicos-en-cualquier-dispositivo: backlog
   epic-5-retrospective: optional

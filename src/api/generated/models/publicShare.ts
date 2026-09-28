@@ -6,15 +6,11 @@
  */
 import type { SharePreviewRelation } from './sharePreviewRelation';
 import type { SharePreviewResource } from './sharePreviewResource';
-import type { SharePreviewWarning } from './sharePreviewWarning';
 
-export interface SharePreview {
+export interface PublicShare {
   diagramName: string;
   revision: number;
   resources: SharePreviewResource[];
   relations: SharePreviewRelation[];
-  /** @pattern ^[a-f0-9]{64}$ */
-  fingerprint: string;
-  warnings: SharePreviewWarning[];
-  ready: boolean;
+  commentsEnabled: boolean;
 }

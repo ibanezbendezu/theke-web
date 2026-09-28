@@ -2,13 +2,25 @@ import { useState } from 'react';
 import type { SharePreview } from '../../api/generated/models';
 import { Button } from '../../components/ui/Button';
 import { useSharePreview } from '../../data/useSharePreview';
+import { usePublishShare } from '../../data/usePublishShare';
+import { useShareManagement } from '../../data/useShareManagement';
 import { CanvasDialog } from './CanvasDialog';
 
 export function SharePreviewDialog({ diagramId, canPreview, onClose }: { diagramId: string; canPreview: boolean; onClose: () => void }) {
   const preview = useSharePreview(diagramId);
+  const publish = usePublishShare(diagramId);
+  const management = useShareManagement(diagramId);
   const [previous, setPrevious] = useState<SharePreview | null>(null);
-  const calculate = () => { if (!canPreview) return; setPrevious(preview.data ?? null); preview.reset(); preview.mutate(); };
+  const [operationKey, setOperationKey] = useState(() => crypto.randomUUID());
+  const [approved, setApproved] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [revokeConfirmation, setRevokeConfirmation] = useState('');
+  const calculate = () => { if (!canPreview) return; setPrevious(preview.data ?? null); publish.reset(); setApproved(false); setOperationKey(crypto.randomUUID()); preview.reset(); preview.mutate(); };
   const data = canPreview && !preview.isPending && !preview.isError ? preview.data : null;
+  const fingerprint = data?.fingerprint;
+  const activeShare = management.active.data?.active ? management.active.data : null;
+  const relativeUrl = activeShare?.url ?? publish.data?.url;
+  const shareUrl = relativeUrl && /^\/share\/[A-Za-z0-9_-]{43}$/.test(relativeUrl) ? `${window.location.origin}${relativeUrl}` : null;
   const titles = new Map(data?.resources.map(item => [item.id, item.title]));
   const differences: string[] = [];
   if (previous && data) {
@@ -23,7 +35,7 @@ export function SharePreviewDialog({ diagramId, canPreview, onClose }: { diagram
   }
   return <CanvasDialog titleId="share-preview-title" onClose={onClose} className="max-w-3xl">
     <h2 id="share-preview-title" className="font-semibold">Previsualización privada para compartir</h2>
-    <p className="mt-2 text-sm text-outline">Solo se calcula desde el Diagrama guardado. Ningún enlace público se activa. Guarda los cambios y vuelve a calcular para revisar una versión nueva.</p>
+    <p className="mt-2 text-sm text-outline">Solo se calcula desde el Diagrama guardado. El enlace público se activa únicamente al confirmar Publicar. Guarda los cambios y vuelve a calcular para revisar una versión nueva.</p>
     <div className="mt-3 flex flex-wrap gap-2"><Button disabled={!canPreview || preview.isPending} onClick={calculate}>{data ? 'Recalcular inventario' : 'Calcular inventario guardado'}</Button><Button onClick={onClose}>Volver al editor</Button></div>
     {!canPreview && <p role="status" className="mt-3">Hay cambios locales pendientes o el Canvas no está listo. Espera a que aparezca «Guardado» antes de calcular.</p>}
     {preview.isPending && <p role="status">Calculando previsualización…</p>}
@@ -38,6 +50,28 @@ export function SharePreviewDialog({ diagramId, canPreview, onClose }: { diagram
       </section>
       <section aria-label="Relaciones expuestas"><h3 className="font-semibold">Relaciones ({data.relations.length})</h3><ul>{data.relations.map(item => <li key={item.id} className="mt-2 rounded border border-border p-2">{titles.get(item.sourceResourceId)} {item.direction === 'directed' ? '→' : '↔'} {titles.get(item.targetResourceId)} · {item.label || item.typeKey}{item.explanation && <p>{item.explanation}</p>}</li>)}</ul></section>
       <section aria-label="Advertencias de accesibilidad"><h3 className="font-semibold">Advertencias ({data.warnings.length})</h3><ul>{data.warnings.map((item, index) => <li key={`${item.resourceId}-${item.field}-${index}`}>{titles.get(item.resourceId) ?? 'Recurso no disponible'} · {item.field}: {item.message}</li>)}</ul></section>
+      {data.ready && fingerprint && !activeShare && !shareUrl && <div className="space-y-2 border-t border-border pt-3">
+        <label className="flex items-center gap-2"><input type="checkbox" checked={approved} onChange={event => setApproved(event.target.checked)} />He revisado los Recursos, Relaciones y campos que se harán públicos.</label>
+        <Button variant="primary" disabled={!canPreview || !approved || publish.isPending || management.active.isPending} onClick={() => publish.mutate({ fingerprint, idempotencyKey: operationKey }, { onSuccess: () => void management.refresh() })}>Publicar enlace no listado</Button>
+      </div>}
+      {publish.isError && <p role="alert">No se pudo publicar. Si cambió el contenido, recalcula el inventario y vuelve a confirmarlo.</p>}
+      {publish.data && !shareUrl && <p role="alert">No se pudo verificar el enlace devuelto. No lo compartas.</p>}
+    </section>}
+    {management.active.isError && <p role="alert">No se pudo consultar el Compartido activo. Vuelve a abrir este panel.</p>}
+    {shareUrl && <section aria-label="Enlace compartido" className="space-y-3 rounded border border-border p-4 text-sm"><h3 className="font-semibold">Enlace no listado activo</h3><p>Quien tenga este enlace podrá leer la revisión pública {activeShare?.revision ?? data?.revision}.</p><input aria-label="Enlace para compartir" readOnly className="w-full rounded border border-border bg-background p-2" value={shareUrl} onFocus={event => event.target.select()} /><Button onClick={() => void navigator.clipboard.writeText(shareUrl).then(() => setCopied(true)).catch(() => setCopied(false))}>Copiar enlace</Button>{copied && <p role="status">Enlace copiado.</p>}
+      {activeShare && <>
+        <label className="flex items-center gap-2"><input type="checkbox" checked={activeShare.commentsEnabled} disabled={management.comments.isPending} onChange={event => management.comments.mutate({ enabled: event.target.checked })} />Permitir nuevos comentarios en este enlace</label>
+        {management.comments.isError && <p role="alert">No se pudo cambiar la configuración de comentarios. Inténtalo de nuevo.</p>}
+        <div className="space-y-2 border-t border-border pt-3"><p>La actualización reemplaza el contenido público completo y conserva este enlace. Guarda el Canvas, calcula el inventario y revisa los cambios antes de actualizar.</p>
+          <Button disabled={!canPreview || !data?.ready || !fingerprint || fingerprint === activeShare.fingerprint || management.update.isPending} onClick={() => { if (fingerprint) management.update.mutate({ fingerprint, expectedPublishedFingerprint: activeShare.fingerprint }); }}>Actualizar revisión pública</Button>
+          {management.update.isError && <p role="alert">No se pudo actualizar. La revisión pública anterior sigue disponible; recalcula el inventario y vuelve a intentarlo.</p>}
+        </div>
+        <div className="space-y-2 border-t border-border pt-3"><p>Revocar invalida este enlace y cierra su hilo de comentarios. El Diagrama privado y su historial permanecen intactos. Si publicas de nuevo se creará otro enlace.</p>
+          <label className="block">Escribe REVOCAR para confirmar<input aria-label="Confirmar revocación" className="mt-1 w-full rounded border border-border bg-background p-2" value={revokeConfirmation} onChange={event => setRevokeConfirmation(event.target.value)} /></label>
+          <Button disabled={revokeConfirmation !== 'REVOCAR' || management.revoke.isPending} onClick={() => management.revoke.mutate({ expectedPublishedFingerprint: activeShare.fingerprint, confirmation: 'REVOCAR' }, { onSuccess: () => { publish.reset(); setOperationKey(crypto.randomUUID()); setApproved(false); setCopied(false); setRevokeConfirmation(''); } })}>Revocar enlace</Button>
+          {management.revoke.isError && <p role="alert">No se pudo revocar. Consulta el estado actualizado antes de reintentar.</p>}
+        </div>
+      </>}
     </section>}
   </CanvasDialog>;
 }
