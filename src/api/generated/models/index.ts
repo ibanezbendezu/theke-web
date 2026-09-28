@@ -60,6 +60,8 @@ export * from './folderInput';
 export * from './folderResponse';
 export * from './getImpactAction';
 export * from './getImpactParams';
+export * from './getPublicShareResourceContentDownload';
+export * from './getPublicShareResourceContentParams';
 export * from './getResourceAccessMode';
 export * from './getResourceAccessParams';
 export * from './impact';

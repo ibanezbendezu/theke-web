@@ -28,6 +28,7 @@ import type {
   FolderInput,
   FolderResponse,
   GetImpactParams,
+  GetPublicShareResourceContentParams,
   GetResourceAccessParams,
   ImpactConfirmationInput,
   ImpactResponse,
@@ -1945,18 +1946,27 @@ export type getPublicShareResourceContentResponseError = (getPublicShareResource
 export type getPublicShareResourceContentResponse = (getPublicShareResourceContentResponseSuccess | getPublicShareResourceContentResponseError)
 
 export const getGetPublicShareResourceContentUrl = (token: string,
-    resourceId: string,) => {
+    resourceId: string,
+    params?: GetPublicShareResourceContentParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/v1/public/shares/${token}/resources/${resourceId}/content`
+  return stringifiedParams.length > 0 ? `/v1/public/shares/${token}/resources/${resourceId}/content?${stringifiedParams}` : `/v1/public/shares/${token}/resources/${resourceId}/content`
 }
 
 export const getPublicShareResourceContent = async (token: string,
-    resourceId: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getPublicShareResourceContentResponse> => {
+    resourceId: string,
+    params?: GetPublicShareResourceContentParams, options?: Parameters<typeof thekeFetch>[1]): Promise<getPublicShareResourceContentResponse> => {
 
-  return thekeFetch<getPublicShareResourceContentResponse>(getGetPublicShareResourceContentUrl(token,resourceId),
+  return thekeFetch<getPublicShareResourceContentResponse>(getGetPublicShareResourceContentUrl(token,resourceId,params),
   {
     ...options,
     method: 'GET'

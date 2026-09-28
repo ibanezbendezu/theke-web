@@ -25,3 +25,6 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-5-4-explorar-un-diagrama-publico-sin-editarlo.md`
   summary: Verificar el Canvas público con una publicación real en navegador, navegación por teclado, alto contraste, movimiento reducido y tiempo de contenido útil en banda ancha.
   evidence: La proyección y la UI están implementadas con pruebas focalizadas, pero el navegador de automatización no estuvo disponible en esta sesión. La Story 5.4 permanece in-progress.
+- source_spec: `_bmad-output/implementation-artifacts/spec-5-5-abrir-recursos-publicos-en-cualquier-dispositivo.md`
+  summary: Revisar visualmente el compartido real a 320 CSS px, tablet y escritorio; comprobar foco, controles táctiles y alternativas multimedia; decidir cómo representar subtítulos sincronizados para video antes de la épica 6.
+  evidence: El visor, la descarga y la revalidación por solicitud están implementados y probados de forma focalizada. Falta navegador disponible para validar la experiencia real y el modelo publicado solo contiene alternativa textual para video.

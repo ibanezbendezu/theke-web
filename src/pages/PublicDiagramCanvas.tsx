@@ -52,13 +52,13 @@ export function PublicDiagramCanvas({ data, selection, onSelect }: { data: Publi
 
 export function PublicSemanticList({ resources, relations, selection, onSelect }: { resources: SharePreviewResource[]; relations: SharePreviewRelation[]; selection: PublicSelection; onSelect: (value: PublicSelection) => void }) {
   const titles = new Map(resources.map(item => [item.id, item.title]));
-  return <section aria-label="Vista semántica" className="space-y-3 rounded border border-border bg-surface p-4">
+  return <section aria-label="Vista semántica" className="min-w-0 space-y-3 rounded border border-border bg-surface p-4 [overflow-wrap:anywhere]">
     <h2 className="font-semibold">Vista semántica</h2>
     <h3 className="text-sm font-semibold">Recursos</h3>
     {resources.length === 0 && <p>Sin recursos publicados.</p>}
-    <ul className="space-y-1">{resources.map(item => <li key={item.id}><button className="w-full rounded border border-border bg-background p-2 text-left focus-visible:outline-2 focus-visible:outline-primary" aria-pressed={selection?.kind === 'resource' && selection.id === item.id} onClick={() => onSelect({ kind: 'resource', id: item.id })}>{item.title} · {item.type}</button></li>)}</ul>
+    <ul className="space-y-1">{resources.map(item => <li key={item.id}><button className="w-full break-words rounded border border-border bg-background p-2 text-left focus-visible:outline-2 focus-visible:outline-primary" aria-pressed={selection?.kind === 'resource' && selection.id === item.id} onClick={() => onSelect({ kind: 'resource', id: item.id })}>{item.title} · {item.type}</button></li>)}</ul>
     <h3 className="text-sm font-semibold">Relaciones</h3>
     {relations.length === 0 && <p>Sin relaciones publicadas.</p>}
-    <ul className="space-y-1">{relations.map(item => <li key={item.id}><button className="w-full rounded border border-border bg-background p-2 text-left focus-visible:outline-2 focus-visible:outline-primary" aria-pressed={selection?.kind === 'relation' && selection.id === item.id} onClick={() => onSelect({ kind: 'relation', id: item.id })}>{titles.get(item.sourceResourceId)} {item.direction === 'directed' ? '→' : '↔'} {titles.get(item.targetResourceId)} · {item.label || item.typeKey}</button></li>)}</ul>
+    <ul className="space-y-1">{relations.map(item => <li key={item.id}><button className="w-full break-words rounded border border-border bg-background p-2 text-left focus-visible:outline-2 focus-visible:outline-primary" aria-pressed={selection?.kind === 'relation' && selection.id === item.id} onClick={() => onSelect({ kind: 'relation', id: item.id })}>{titles.get(item.sourceResourceId)} {item.direction === 'directed' ? '→' : '↔'} {titles.get(item.targetResourceId)} · {item.label || item.typeKey}</button></li>)}</ul>
   </section>;
 }

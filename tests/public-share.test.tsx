@@ -44,8 +44,23 @@ it('muestra archivos mediante la API pública sin recibir claves de almacenamien
   fireEvent.click(screen.getByRole('button', { name: 'Imagen · file' }));
   const image = await screen.findByRole('img', { name: 'Descripción de la imagen' });
   expect(image.getAttribute('src')).toBe('http://localhost:3000/v1/public/shares/example-token/resources/11111111-1111-4111-8111-111111111111/content');
+  fireEvent.error(image);
+  expect(screen.getByRole('alert')).toHaveTextContent('No se pudo cargar la vista previa');
+  expect(screen.getByRole('link', { name: 'Descargar archivo' }).getAttribute('href')).toBe('http://localhost:3000/v1/public/shares/example-token/resources/11111111-1111-4111-8111-111111111111/content?download=1');
+  fireEvent.click(screen.getByRole('button', { name: 'Reintentar vista previa' }));
+  expect(screen.getByRole('img').getAttribute('src')).toContain('?retry=1');
   expect(document.body.innerHTML).not.toContain('storageKey');
   vi.unstubAllEnvs();
+});
+
+it('ofrece abrir y descargar cuando el formato no admite vista previa', async () => {
+  fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: 'two', type: 'file', title: 'Archivo', url: null, content: null, description: null, mediaType: 'application/zip', accessibilityText: 'Archivo comprimido' }], relations: [] } }) });
+  page();
+  fireEvent.click(await screen.findByRole('button', { name: 'Mostrar vista semántica' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Archivo · file' }));
+  expect(screen.getByText('Este formato no tiene vista previa en el navegador.')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Abrir archivo' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Descargar archivo' })).toBeInTheDocument();
 });
 
 it('permite inspeccionar relaciones y navegar a sus extremos desde la vista semántica', async () => {
