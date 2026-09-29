@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Folder } from 'lucide-react';
+import { Network } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { CollectionItem } from '../components/ui/CollectionItem';
 import { ImpactDialog, type ImpactRequest } from '../components/ui/ImpactDialog';
@@ -26,14 +26,14 @@ export function Dashboard() {
       setViewMode={setViewMode}
       groups={<><CollectionGroup active={group === 'projects'} onClick={() => setGroup('projects')}>Proyectos</CollectionGroup><CollectionGroup active={group === 'recent'} onClick={() => setGroup('recent')}>Recientes</CollectionGroup></>}
       onNew={() => navigate('/projects?create=1')}
-      newLabel="Crear proyecto"
+      newLabel="Crear mapa"
     />
-    {projects.isPending && <p role="status" className="text-sm text-outline">Cargando proyectos…</p>}
+    {projects.isPending && <p role="status" className="text-sm text-outline">Cargando proyectosÃ¢â‚¬Â¦</p>}
     {projects.isError && <div role="alert" className="text-sm"><p>No se pudieron cargar los proyectos.</p><Button className="mt-2" onClick={() => projects.refetch()}>Reintentar</Button></div>}
-    {!projects.isPending && !projects.isError && items.length === 0 && <div className="py-14 text-sm text-outline"><p>Aún no tienes proyectos.</p><Button className="mt-2" onClick={() => navigate('/projects?create=1')}>Crear proyecto</Button></div>}
-    {items.length > 0 && <div className={viewMode === 'grid' ? 'grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : ''}>{items.map(project => <CollectionItem key={project.id} view={viewMode} title={project.name} detail="Proyecto" date={new Date(project.updatedAt).toLocaleDateString()} icon={<Folder size={18} />} preview={<Folder size={42} />} onOpen={() => navigate(`/projects/${project.id}`)} actions={[{ label: 'Abrir', onSelect: () => navigate(`/projects/${project.id}`) }, { label: 'Renombrar', onSelect: () => setRenaming(project) }, { label: 'Archivar', onSelect: () => setImpact({ entityType: 'project', id: project.id, action: 'archive' }) }, { label: 'Eliminar', destructive: true, onSelect: () => setImpact({ entityType: 'project', id: project.id, action: 'delete' }) }]} />)}</div>}
-    {group === 'projects' && projects.hasNextPage && <Button className="mt-5" disabled={projects.isFetchingNextPage} onClick={() => projects.fetchNextPage()}>{projects.isFetchingNextPage ? 'Cargando…' : 'Cargar más'}</Button>}
+    {!projects.isPending && !projects.isError && items.length === 0 && <div className="py-14 text-sm text-outline"><p>AÃƒÂºn no tienes mapas.</p><Button className="mt-2" onClick={() => navigate('/projects?create=1')}>Crear mapa</Button></div>}
+    {items.length > 0 && <div className={viewMode === 'grid' ? 'grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : ''}>{items.map(project => <CollectionItem key={project.id} view={viewMode} title={project.name} detail="Mapa" date={new Date(project.updatedAt).toLocaleDateString()} icon={<Network size={18} />} preview={<Network size={42} />} onOpen={() => navigate(`/projects/${project.id}`)} actions={[{ label: 'Abrir', onSelect: () => navigate(`/projects/${project.id}`) }, { label: 'Renombrar', onSelect: () => setRenaming(project) }, { label: 'Archivar', onSelect: () => setImpact({ entityType: 'project', id: project.id, action: 'archive' }) }, { label: 'Eliminar', destructive: true, onSelect: () => setImpact({ entityType: 'project', id: project.id, action: 'delete' }) }]} />)}</div>}
+    {group === 'projects' && projects.hasNextPage && <Button className="mt-5" disabled={projects.isFetchingNextPage} onClick={() => projects.fetchNextPage()}>{projects.isFetchingNextPage ? 'CargandoÃ¢â‚¬Â¦' : 'Cargar mÃƒÂ¡s'}</Button>}
     {impact && <ImpactDialog request={impact} onClose={() => setImpact(null)} onDone={() => setImpact(null)} />}
-    {renaming && <NameDialog title="Renombrar proyecto" initialValue={renaming.name} onClose={() => setRenaming(null)} onSave={name => actions.rename.mutateAsync({ id: renaming.id, name }).then(() => undefined)} />}
+    {renaming && <NameDialog title="Renombrar mapa" initialValue={renaming.name} onClose={() => setRenaming(null)} onSave={name => actions.rename.mutateAsync({ id: renaming.id, name }).then(() => undefined)} />}
   </section>;
 }

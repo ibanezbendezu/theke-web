@@ -6,6 +6,7 @@ import { Placeholder } from '../components/ui/Placeholder';
 import { Dashboard } from '../pages/Dashboard';
 import { Library } from '../pages/Library';
 import { Projects } from '../pages/Projects';
+import { ProjectEntry } from '../pages/ProjectEntry';
 import { AccessPage } from '../features/auth/AccessPage';
 import { PrivateRoute } from '../features/auth/PrivateRoute';
 import { RegisterPage } from '../features/auth/RegisterPage';
@@ -29,9 +30,10 @@ export const router = createBrowserRouter([
                 element: <Library/>,
             },
             {
-                path: 'projects/*',
+                path: 'projects',
                 element: <Projects/>,
             },
+            { path: 'projects/:projectId', element: <ProjectEntry/> },
             { path: 'account-error', element: <Placeholder title="No se pudo cargar la cuenta" /> },
         ],
     },

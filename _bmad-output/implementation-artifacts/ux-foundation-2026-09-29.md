@@ -14,7 +14,7 @@ Estado: **en curso**. Trabajo transversal de implementación previo a la épica 
 ## Entrega por etapas
 
 1. Base compartida y colecciones privadas: **implementada; pendiente revisión visual en navegador**.
-2. Proyecto detallado, otras pantallas privadas, Canvas y vista compartida: **implementada; pendiente revisión visual en navegador**. El detalle de Proyecto ofrece lista/galería de Diagramas con los controles compartidos; el detalle de Biblioteca, sus metadatos, los inspectores del Canvas y la vista pública usan superficies tonales.
+2. Otras pantallas privadas, Canvas y vista compartida: **implementada; pendiente revisión visual en navegador**. Proyectos abre directamente el Diagrama único de cada mapa; el detalle de Biblioteca, sus metadatos, los inspectores del Canvas y la vista pública usan superficies tonales.
 3. Verificación de recorridos y tamaños de pantalla; cierre de los criterios abiertos de las historias 5.2–5.5.
 4. Inicio de la épica 6 de comentarios contextuales.
 
@@ -22,7 +22,7 @@ Estado: **en curso**. Trabajo transversal de implementación previo a la épica 
 
 - `npm run build`: correcto.
 - ESLint sobre todos los archivos de código modificados: correcto.
-- Lint global: mantiene 3 errores y 2 advertencias anteriores en `src/components/ai/AIConsentDialog.tsx`, `AIGuidanceCard.tsx` y `AISettingsDialog.tsx`.
+- Lint global: correcto tras ajustar los efectos de los componentes de IA.
 - Revisión visual: pendiente porque @Browser no expone navegador en esta sesión.
 
 El estado de las historias de las épicas 4 y 5 permanece como figura en `sprint-status.yaml`; este trabajo visual no las marca como terminadas.
@@ -31,14 +31,20 @@ El estado de las historias de las épicas 4 y 5 permanece como figura en `sprint
 
 - Inicio, Proyectos, Biblioteca y las colecciones dentro del Proyecto comparten filas y tarjetas casi cuadradas. Cada elemento ofrece «…» y menú por clic derecho.
 - Biblioteca muestra archivos y carpetas de la Cuenta, sin filtros de Proyecto. El «+» abre el diálogo de carga con zona de arrastre y botón central. La franja de carga permanente salió de la página.
-- Las carpetas de Biblioteca son independientes de las carpetas de la colección de Proyectos y de las carpetas internas de cada Proyecto. La migración `theke-api/drizzle/0020_collection_folders.sql` y los endpoints están implementados; **la migración no se ha aplicado** a la base remota configurada en este workspace.
-- En la lista de Proyectos, los proyectos se pueden mover a carpetas por arrastre o menú en lista y galería. Crear carpeta está en el menú contextual del área. Dentro de cada Proyecto, los Recursos conservan sus propias carpetas y también se pueden arrastrar. La pantalla de Proyectos no incorpora carga de archivos.
+- Las carpetas de Biblioteca son independientes de las carpetas de la colección de Proyectos y de las carpetas internas de cada Proyecto. La migración `theke-api/drizzle/0020_collection_folders.sql` y los endpoints están implementados y aplicados a la base configurada.
+- En la lista de Proyectos, los proyectos se pueden mover a carpetas por arrastre o menú en lista y galería. Crear carpeta está en el menú contextual del área. Dentro de cada mapa, el panel izquierdo del Canvas organiza Recursos y Carpetas. La pantalla de Proyectos no incorpora carga de archivos.
 - Diálogos privados y del Canvas usan fondo desenfocado y superficies sin contorno exterior.
 - Pendiente: comprobar flujos con datos reales y revisar la composición visual en navegador. @Browser no expone navegador en esta sesión.
+
+## Un mapa por Proyecto
+
+- Proyecto y Diagrama se crean juntos. Al abrir un Proyecto desde Inicio, Proyectos o recientes se entra directamente a su editor.
+- Cada mapa conserva selección y carpetas propias aunque comparta los mismos Recursos canónicos con otro mapa. La migración `theke-api/drizzle/0021_one_map_per_project.sql` separó los diagramas anteriores y estableció un Diagrama no eliminado por Proyecto.
+- El panel izquierdo del editor contiene Recursos y Carpetas; el panel derecho contiene propiedades de la selección.
 
 ## Verificación de la segunda etapa parcial
 
 - `npm run build`: correcto.
 - ESLint sobre los cuatro archivos modificados: correcto.
-- Lint global: conserva los mismos 3 errores y 2 advertencias previos en componentes de IA.
+- Lint global: correcto.
 - Navegador: pendiente, porque @Browser no expone una pestaña en esta sesión.

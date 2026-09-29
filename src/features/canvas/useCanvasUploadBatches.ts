@@ -2,18 +2,19 @@ import { useEffect, useRef, useState } from 'react';
 import { useUploads } from '../../data/useUploads';
 import { transferUpload } from '../../data/uploadTransfer';
 import { useCanvasStore } from '../../store/useCanvasStore';
+import { useOrganizationActions } from '../../data/useOrganization';
 
 interface Entry { id: string; file: File; uploadId?: string; status: string; progress: number; error?: string; represented?: boolean }
 export interface CanvasUploadBatch { id: string; position: { x: number; y: number }; entries: Entry[]; nodeIds: string[]; groupId?: string; undone: boolean }
 const finished = new Set(['ready', 'rejected', 'failed', 'cancelled']);
 
-export function useCanvasUploadBatches() {
-  const api = useUploads(); const [batches, setBatches] = useState<CanvasUploadBatch[]>([]); const represented = useRef(new Set<string>());
+export function useCanvasUploadBatches(projectId: string) {
+  const api = useUploads(); const organization = useOrganizationActions(projectId); const [batches, setBatches] = useState<CanvasUploadBatch[]>([]); const represented = useRef(new Set<string>());
   const patch = (batchId: string, entryId: string, value: Partial<Entry>) => setBatches(current => current.map(batch => batch.id === batchId ? { ...batch, entries: batch.entries.map(entry => entry.id === entryId ? { ...entry, ...value } : entry) } : batch));
   const start = async (batchId: string, entry: Entry) => {
     try {
       patch(batchId, entry.id, { uploadId: undefined, status: 'initiated', progress: 0, error: undefined });
-      const created = await api.create(entry.file, crypto.randomUUID()); patch(batchId, entry.id, { uploadId: created.id, status: 'uploading' });
+      const created = await api.create(entry.file, crypto.randomUUID()); await organization.addResources.mutateAsync([created.resourceId]); patch(batchId, entry.id, { uploadId: created.id, status: 'uploading' });
       if (!created.uploadUrl) throw new Error('No se recibió una URL de carga.');
       await transferUpload(entry.file, created.uploadUrl, progress => patch(batchId, entry.id, { progress }));
       patch(batchId, entry.id, { status: 'finalizing', progress: 100 }); await api.finalize(created.id); patch(batchId, entry.id, { status: 'uploaded' });

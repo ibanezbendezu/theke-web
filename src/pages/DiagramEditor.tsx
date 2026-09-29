@@ -7,6 +7,7 @@ import { usePrepareDiagramReview } from '../data/useAi';
 import type { AiScopePreparation } from '../api/generated/models';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { useDiagram } from '../data/useDiagrams';
+import { useOrganizationActions } from '../data/useOrganization';
 import { DiagramWorkspace } from './DiagramWorkspace';
 import { CanvasEditor } from '../features/canvas/CanvasEditor';
 import { CanvasResourcePanel, CanvasResourcePicker } from '../features/canvas/CanvasResources';
@@ -29,7 +30,7 @@ export function DiagramEditor() {
 }
 
 function DiagramEditorCore() {
-  const { projectId, diagramId } = useParams(); const navigate = useNavigate(); const diagram = useDiagram(diagramId); const [leftOpen, setLeftOpen] = useState(true); const [semanticOpen, setSemanticOpen] = useState(false); const rightOpen = useCanvasStore(state => state.inspectorOpen); const setRightOpen = useCanvasStore(state => state.setInspectorOpen);
+  const { projectId, diagramId } = useParams(); const navigate = useNavigate(); const diagram = useDiagram(diagramId); const organization = useOrganizationActions(projectId ?? ''); const [leftOpen, setLeftOpen] = useState(true); const [semanticOpen, setSemanticOpen] = useState(false); const rightOpen = useCanvasStore(state => state.inspectorOpen); const setRightOpen = useCanvasStore(state => state.setInspectorOpen);
   const [pickerOpen, setPickerOpen] = useState(false); const [preferred, setPreferred] = useState<{ x: number; y: number } | undefined>(); const [duplicate, setDuplicate] = useState<{ resourceId: string; position?: { x: number; y: number } } | null>(null);
   const [readyDiagramId, setReadyDiagramId] = useState<string | null>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -44,10 +45,11 @@ function DiagramEditorCore() {
   }, []);
   const [reviewScope, setReviewScope] = useState<AiScopePreparation | null>(null);
   const [reviewError, setReviewError] = useState('');
+  const [resourceError, setResourceError] = useState('');
   const review = usePrepareDiagramReview();
   const [uploadPickerOpen, setUploadPickerOpen] = useState(false); const [uploadPosition, setUploadPosition] = useState({ x: 0, y: 0 });
   const canvasReady = useCallback(() => setReadyDiagramId(diagramId ?? null), [diagramId]);
-  const uploads = useCanvasUploadBatches(); const fileInput = useRef<HTMLInputElement>(null);
+  const uploads = useCanvasUploadBatches(projectId ?? ''); const fileInput = useRef<HTMLInputElement>(null);
   const pickFiles = (position?: { x: number; y: number }) => { const viewport = useCanvasStore.getState().viewport; setUploadPosition(position ?? { x: Math.round((window.innerWidth / 2 - viewport.x) / viewport.zoom), y: Math.round((window.innerHeight / 2 - viewport.y) / viewport.zoom) }); setUploadPickerOpen(true); };
   const uploadAt = (files: File[], position?: { x: number; y: number }) => { const viewport = useCanvasStore.getState().viewport; uploads.addFiles(files, position ?? { x: (window.innerWidth / 2 - viewport.x) / viewport.zoom, y: (window.innerHeight / 2 - viewport.y) / viewport.zoom }); };
   const nodes = useCanvasStore(state => state.nodes); const edges = useCanvasStore(state => state.edges); const usedIds = new Set(nodes.map(node => node.data?.resourceId).filter((id): id is string => typeof id === 'string'));
@@ -57,7 +59,7 @@ function DiagramEditorCore() {
   const selectedGroup = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'container') : undefined;
   const selectedAnnotation = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'annotation') : undefined;
   const openPicker = (position?: { x: number; y: number }) => { setPreferred(position); setPickerOpen(true); };
-  const addDirect = (resourceId: string, position?: { x: number; y: number }) => { useCanvasStore.getState().addResourceRepresentation(resourceId, position); setDuplicate(null); setPickerOpen(false); };
+  const addDirect = (resourceId: string, position?: { x: number; y: number }) => { void organization.addResources.mutateAsync([resourceId]).then(() => { useCanvasStore.getState().addResourceRepresentation(resourceId, position); setResourceError(''); setDuplicate(null); setPickerOpen(false); }).catch(() => setResourceError('No se pudo añadir el recurso al mapa.')); };
   const tryAdd = (resourceId: string, position?: { x: number; y: number }) => { if (usedIds.has(resourceId)) setDuplicate({ resourceId, position }); else addDirect(resourceId, position); };
   const focusExisting = (resourceId: string) => { const existing = useCanvasStore.getState().nodes.find(node => node.data?.resourceId === resourceId); if (existing) useCanvasStore.getState().focusNode(existing.id); setDuplicate(null); setPickerOpen(false); };
   const addFolder = (folderId: string) => { const existing = useCanvasStore.getState().nodes.find(node => node.type === 'folder' && node.data?.folderId === folderId); if (existing) { useCanvasStore.getState().focusNode(existing.id); useCanvasStore.getState().setInspectorOpen(true); } else if (diagram.data) useCanvasStore.getState().addFolderRepresentation(folderId, diagram.data.projectId); };
@@ -65,9 +67,10 @@ function DiagramEditorCore() {
   if (diagram.isError || !diagram.data) return <div role="alert" className="p-6"><p>No se pudo abrir el diagrama.</p><Button className="mt-3" onClick={() => diagram.refetch()}>Reintentar</Button></div>;
   return <main className="flex h-screen min-h-0 flex-col bg-background text-on-background">
     <header className="flex h-[46px] shrink-0 items-center gap-2 bg-background/90 px-3">
-      <Button size="icon" title="Volver al proyecto" aria-label="Volver al proyecto" icon={ChevronLeft} onClick={() => navigate(`/projects/${projectId}`)} />
+      <Button size="icon" title="Volver a proyectos" aria-label="Volver a proyectos" icon={ChevronLeft} onClick={() => navigate('/projects')} />
       <h1 className="min-w-0 flex-1 truncate text-sm font-semibold">{diagram.data.name}</h1><ThemeToggle />
     </header>
+    {resourceError && <p role="alert" className="px-3 py-1 text-xs text-red-600">{resourceError}</p>}
     <div className="flex min-h-0 flex-1">
       <nav aria-label="Herramientas del editor" className="flex w-11 shrink-0 flex-col items-center gap-1 bg-surface-variant/55 py-1">
         <Button size="icon" title={leftOpen ? 'Ocultar recursos' : 'Mostrar recursos'} aria-label={leftOpen ? 'Ocultar recursos' : 'Mostrar recursos'} icon={leftOpen ? PanelLeftClose : PanelLeftOpen} onClick={() => setLeftOpen(value => !value)} />

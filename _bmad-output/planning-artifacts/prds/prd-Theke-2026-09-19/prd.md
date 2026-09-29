@@ -79,8 +79,8 @@ El usuario necesita:
 ## Conceptos del producto
 
 - **Biblioteca:** catálogo canónico de Recursos de una cuenta. Un Recurso mantiene la misma identidad cuando se utiliza en distintos Proyectos.
-- **Proyecto:** contenedor de un tema; organiza una selección de Recursos de la Biblioteca en Carpetas y Diagramas propios.
-- **Diagrama:** representación guardada de una selección de conocimiento. El MVP admite grafos.
+- **Proyecto:** mapa independiente con su propia selección y organización de Recursos de la Biblioteca. Cada Proyecto tiene un Diagrama; dos mapas pueden usar exactamente las mismas fuentes sin pertenecer al mismo Proyecto.
+- **Diagrama:** composición guardada del mapa de un Proyecto. El MVP admite grafos.
 - **Canvas:** superficie de edición de un diagrama.
 - **Recurso:** contenido canónico almacenado en la biblioteca.
 - **Representación:** aparición de un recurso dentro de un diagrama, con posición y presentación propias.
@@ -118,7 +118,7 @@ Daniel recibe la retroalimentación en contexto y en una lista, la resuelve o el
 ### Gestión de cuenta, proyectos y biblioteca
 
 - **FR-1 — Cuenta de autor:** una persona puede crear una cuenta, autenticarse, cerrar sesión y recuperar el acceso para conservar su trabajo. Cada operación comunica éxito o error sin perder trabajo ya guardado. Realiza UJ-1.
-- **FR-2 — Proyecto:** el autor puede crear, renombrar, abrir, archivar y eliminar un Proyecto. Archivar lo retira de las vistas activas sin borrar contenido; eliminar exige mostrar Diagramas, referencias a Recursos y Compartidos afectados y solicitar confirmación.
+- **FR-2 — Proyecto:** el autor puede crear, renombrar, abrir, archivar y eliminar un Proyecto. Crear genera su Diagrama en la misma operación y abrir lleva directamente al editor. Archivar lo retira de las vistas activas sin borrar contenido; eliminar exige mostrar el Diagrama, referencias a Recursos y Compartidos afectados y solicitar confirmación.
 - **FR-3 — Biblioteca:** cada cuenta dispone de una Biblioteca canónica persistente, accesible sin abrir un Diagrama. Cada Proyecto mantiene una selección y organización propia de Recursos de esa Biblioteca.
 - **FR-4 — Carpetas:** el autor puede crear, renombrar, mover y archivar Carpetas dentro de un Proyecto, y organizar en ellas referencias a Recursos sin cambiar ni duplicar la identidad canónica de estos.
 - **FR-5 — Búsqueda y filtrado:** el autor puede localizar Recursos por nombre, tipo y Carpeta.
@@ -129,7 +129,7 @@ Daniel recibe la retroalimentación en contexto y en una lista, la resuelve o el
 
 ### Diagramas y edición visual
 
-- **FR-10 — Creación de diagrama:** el autor puede crear, renombrar, abrir, duplicar, archivar y eliminar un Diagrama de grafo dentro de un Proyecto.
+- **FR-10 — Mapa y Diagrama:** cada Proyecto contiene exactamente un Diagrama de grafo. Duplicar un Diagrama crea otro Proyecto independiente; ambos pueden reutilizar los mismos Recursos canónicos. Renombrar o archivar el mapa mantiene sincronizados Proyecto y Diagrama.
 - **FR-11 — Persistencia del canvas:** Theke conserva automáticamente Representaciones, posiciones, tamaños, estilos, Relaciones visibles, Grupos y Anotaciones visuales para retomarlos en otra sesión.
 - **FR-12 — Incorporación al canvas:** el autor puede añadir Recursos mediante arrastre desde la Biblioteca, carga directa sobre el Canvas o controles visibles. El menú contextual actúa como atajo, no como única vía.
 - **FR-13 — Carga directa:** al soltar archivos externos sobre el Canvas, Theke crea los Recursos y sus Representaciones. Una carga múltiple evita solapamientos y no crea Relaciones implícitas.

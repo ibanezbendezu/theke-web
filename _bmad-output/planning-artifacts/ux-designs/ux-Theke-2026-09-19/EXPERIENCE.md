@@ -43,7 +43,7 @@ El frontend actual es punto de partida, no contrato completo. Arquitectura debe 
 |---|---|---|
 | **Inicio** | Apertura autenticada / `App Sidebar` | Trabajo reciente y continuación rápida. |
 | **Proyectos** | `App Sidebar` | Temas activos y archivados; crear y administrar Proyectos. |
-| **Proyecto** | `Project Card` o fila | Diagramas, Carpetas y Recursos usados en un tema. |
+| **Proyecto** | `Project Card` o fila | Abre directamente su único Diagrama. Sus Recursos y Carpetas se organizan en el panel izquierdo del editor. |
 | **Biblioteca** | `App Sidebar` | Catálogo canónico de Recursos de la cuenta, búsqueda y filtros. |
 | **Canvas** | Diagrama dentro de Proyecto | Construcción del grafo, composición y anotación. |
 | **Vista compartida** | Enlace no listado | Explorar el Diagrama, abrir Recursos y comentar sin editar la composición. |
@@ -54,7 +54,7 @@ Explorar/Comunidad queda fuera del MVP y no aparece como destino inactivo.
 ### Arquitectura del Canvas
 
 - `App Sidebar`: navegación global persistente estilo Notion, con Inicio, Proyectos, Biblioteca y accesos recientes; búsqueda global como último control al pie, debajo de la cuenta. No cambia al entrar en Biblioteca ni en un Proyecto; puede colapsarse para ampliar el Canvas.
-- Encabezado propio del Diagrama: volver al Proyecto, nombre del Diagrama, `Save Status`, previsualizar/publicar y acciones propias del Diagrama, integrado en el área principal. La topbar global no aparece en esta vista.
+- Encabezado propio del Diagrama: volver a Proyectos, nombre del mapa, `Save Status`, previsualizar/publicar y acciones propias del Diagrama, integrado en el área principal. La topbar global no aparece en esta vista.
 - Panel contextual de Biblioteca: al abrir una Carpeta desde el Canvas muestra ruta, búsqueda, conteo, filtros de tipo, lista compacta e incorporación individual o múltiple; puede colapsar sin perder contexto y no sustituye la barra global.
 - Centro: Canvas de grafo, `Canvas Toolbar`, botón visible Añadir, Recursos, Carpetas, Grupos, Relaciones y Anotaciones.
 - Panel derecho: `Context Panel` acoplable. Cambia entre detalle de Recurso, edición local, guía de IA y comentarios; solo muestra un contexto principal a la vez y puede colapsar para maximizar el Canvas.
@@ -180,7 +180,7 @@ Daniel puede editar, aceptar, descartar o reportar. Aceptar nunca ejecuta más d
 | Superficie autenticada con error | Inicio/Proyectos/Proyecto/Biblioteca | `State Message` persistente con Reintentar; conserva contenido anterior si existe. |
 | Acceso autenticado denegado | Proyecto/Recurso/Diagrama | Explica falta de acceso sin revelar metadatos privados y ofrece volver a una superficie segura. |
 | Sin Proyectos | Proyectos | Una explicación y acción Crear Proyecto. Sin contenido de ejemplo. |
-| Proyecto vacío | Proyecto | Crear Diagrama o añadir Recursos existentes. |
+| Mapa vacío | Canvas | Añadir Recursos existentes desde el panel izquierdo o desde la Biblioteca. |
 | Biblioteca vacía | Biblioteca | Subir recurso, crear Nota o añadir Enlace; explica que la Biblioteca es global. |
 | Búsqueda sin coincidencias | Biblioteca/panel izquierdo | Mantiene filtros visibles, indica “No hay recursos con estos filtros” y permite limpiarlos. |
 | Canvas vacío | Canvas | Bienvenida discreta acordada; recuperable desde ayuda, nunca modal obligatoria. |
