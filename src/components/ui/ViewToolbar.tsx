@@ -1,52 +1,36 @@
-import { List, LayoutGrid, ArrowUpDown, Plus } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { LayoutGrid, List, Plus } from 'lucide-react';
+import { cn } from '../../lib/utils';
 
 interface ViewToolbarProps {
-    viewMode: 'grid' | 'list';
-    setViewMode: (mode: 'grid' | 'list') => void;
-    onSort?: () => void;
-    onNew?: () => void;
+  viewMode: 'grid' | 'list';
+  setViewMode: (mode: 'grid' | 'list') => void;
+  groups?: ReactNode;
+  search?: ReactNode;
+  onNew?: () => void;
+  newLabel?: string;
 }
 
-export function ViewToolbar({ viewMode, setViewMode, onSort, onNew }: ViewToolbarProps) {
-    return (
-        <div className="flex items-center justify-end mb-4">
-            <div className="flex items-center gap-1.5">
+export function ViewToolbar({ viewMode, setViewMode, groups, search, onNew, newLabel = 'Añadir' }: ViewToolbarProps) {
+  const control = 'grid h-9 w-9 shrink-0 place-items-center rounded-md text-outline hover:bg-surface-variant hover:text-on-background focus-visible:outline-2 focus-visible:outline-primary';
 
-                {/* Selector de Vistas (List / Grid) */}
-                <div className="flex items-center bg-surface-variant rounded-md p-0.5 border border-border mr-1">
-                    <button
-                        onClick={() => setViewMode('list')}
-                        className={`p-1 rounded-[4px] transition-colors ${viewMode === 'list' ? 'bg-background shadow-sm text-on-background' : 'text-outline hover:text-on-background'}`}
-                        title="Vista de lista"
-                    >
-                        <List size={16} />
-                    </button>
-                    <button
-                        onClick={() => setViewMode('grid')}
-                        className={`p-1 rounded-[4px] transition-colors ${viewMode === 'grid' ? 'bg-background shadow-sm text-on-background' : 'text-outline hover:text-on-background'}`}
-                        title="Vista de galería"
-                    >
-                        <LayoutGrid size={16} />
-                    </button>
-                </div>
+  return (
+    <div className="mb-6 flex min-h-9 flex-wrap items-center gap-2">
+      {groups && <div className="flex min-w-0 flex-wrap items-center gap-0.5">{groups}</div>}
+      <div className="min-w-0 flex-1" />
+      {search && <div className="order-3 w-full min-w-[180px] lg:order-none lg:w-auto lg:max-w-[340px] lg:flex-[1_1_230px]">{search}</div>}
+      <div className="flex shrink-0 items-center gap-0.5" role="group" aria-label="Vista de la colección">
+        <button type="button" className={cn(control, viewMode === 'list' && 'bg-surface-variant text-on-background')} onClick={() => setViewMode('list')} aria-label="Vista de lista" aria-pressed={viewMode === 'list'}><List size={18} /></button>
+        <button type="button" className={cn(control, viewMode === 'grid' && 'bg-surface-variant text-on-background')} onClick={() => setViewMode('grid')} aria-label="Vista de galería" aria-pressed={viewMode === 'grid'}><LayoutGrid size={18} /></button>
+        {onNew && <button type="button" className={cn(control, 'ml-1')} onClick={onNew} aria-label={newLabel} title={newLabel}><Plus size={20} /></button>}
+      </div>
+    </div>
+  );
+}
 
-                {/* Acciones Rápidas (Íconos) */}
-                <button
-                    onClick={onSort}
-                    className="p-1.5 rounded-md text-outline hover:text-on-background hover:bg-surface-variant transition-colors"
-                    title="Ordenar"
-                >
-                    <ArrowUpDown size={16} />
-                </button>
-
-                <button
-                    onClick={onNew}
-                    className="p-1.5 rounded-md text-[#2383E2] hover:bg-[#2383E2]/10 transition-colors"
-                    title="Nuevo elemento"
-                >
-                    <Plus size={18} strokeWidth={2.5} />
-                </button>
-            </div>
-        </div>
-    );
+export function CollectionGroup({ active, children, onClick }: { active: boolean; children: ReactNode; onClick: () => void }) {
+  return <button type="button" onClick={onClick} aria-pressed={active} className={cn(
+    'min-h-9 rounded-md px-3 text-sm text-outline hover:bg-surface-variant hover:text-on-background focus-visible:outline-2 focus-visible:outline-primary',
+    active && 'bg-surface-variant font-medium text-on-background',
+  )}>{children}</button>;
 }

@@ -6,6 +6,8 @@ import { useCurrentAccount } from '../../data/useCurrentAccount';
 import { clearPrivateCache } from '../../data/queryClient';
 import { AISettingsDialog } from '../ai/AISettingsDialog';
 import { useAiStatus } from '../../data/useAi';
+import { useProject } from '../../data/useProjects';
+import { useResource } from '../../data/useResources';
 
 interface TopbarProps {
     isSidebarOpen: boolean;
@@ -27,9 +29,11 @@ export function Topbar({ isSidebarOpen, setIsOpen }: TopbarProps) {
 
     // Convertimos la URL "/library/conquistadores" en un array: ['library', 'conquistadores']
     const pathnames = location.pathname.split('/').filter((x) => x);
+    const project = useProject(pathnames[0] === 'projects' ? pathnames[1] : undefined);
+    const resource = useResource(pathnames[0] === 'library' ? pathnames[1] : undefined);
 
     return (
-        <header className="flex items-center justify-between h-12 px-3 w-full flex-shrink-0 bg-background text-on-background border-b border-border/30">
+        <header className="flex h-[46px] w-full flex-shrink-0 items-center justify-between bg-background px-5 text-on-background">
 
             <div className="flex items-center gap-1 overflow-hidden">
                 {!isSidebarOpen && (
@@ -37,6 +41,7 @@ export function Topbar({ isSidebarOpen, setIsOpen }: TopbarProps) {
                         onClick={() => setIsOpen(true)}
                         className="p-1.5 mr-1 rounded-[4px] hover:bg-surface-variant text-outline hover:text-on-background transition-colors"
                         title="Abrir menú"
+                        aria-label="Abrir barra lateral"
                     >
                         <Menu size={18} />
                     </button>
@@ -56,14 +61,14 @@ export function Topbar({ isSidebarOpen, setIsOpen }: TopbarProps) {
                         const isKnownRoute = routeDictionary[value];
 
                         // Si es una ruta base conocida, usamos su diccionario. Si es una carpeta dinámica, capitalizamos el nombre.
-                        const name = isKnownRoute ? isKnownRoute.name : decodeURIComponent(value).charAt(0).toUpperCase() + decodeURIComponent(value).slice(1);
+                        const name = isKnownRoute ? isKnownRoute.name : pathnames[0] === 'projects' && index === 1 ? project.data?.name ?? 'Proyecto' : pathnames[0] === 'library' && index === 1 ? resource.data?.title ?? 'Recurso' : decodeURIComponent(value).charAt(0).toUpperCase() + decodeURIComponent(value).slice(1);
                         const Icon = isKnownRoute ? isKnownRoute.icon : Folder;
 
                         return (
                             <React.Fragment key={to}>
                                 <span className="text-outline/40 mx-0.5 select-none">/</span>
                                 <Link to={to} className="flex items-center gap-1.5 px-2 py-1 rounded-[4px] hover:bg-surface-variant cursor-pointer transition-colors max-w-[150px]">
-                                    <Icon size={16} className={`${isKnownRoute ? 'text-outline' : 'text-primary'} flex-shrink-0`} />
+                                    <Icon size={16} className="flex-shrink-0 text-outline" />
                                     <span className="font-medium truncate">{name}</span>
                                 </Link>
                             </React.Fragment>
@@ -76,7 +81,7 @@ export function Topbar({ isSidebarOpen, setIsOpen }: TopbarProps) {
                 <button
                     onClick={() => setAiDialogOpen(true)}
                     className={`p-1.5 rounded-[4px] hover:bg-surface-variant transition-colors flex items-center gap-1 text-xs font-medium ${
-                        aiStatus?.enabled ? 'text-primary' : 'text-outline hover:text-on-background'
+                        aiStatus?.enabled ? 'text-on-background' : 'text-outline hover:text-on-background'
                     }`}
                     title="Configuración y privacidad de IA"
                     aria-label="Configuración de IA"

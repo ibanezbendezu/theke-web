@@ -1,77 +1,69 @@
-import React from 'react';
-import { LayoutGrid, FileText, Folder, ChevronsLeft } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
-import { cn } from '../../lib/utils';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
-import { ThemeToggle } from '../ui/ThemeToggle'; // <--- Importamos el botón del tema
+import { useState } from 'react';
+import { Folder, LayoutGrid, LibraryBig, PanelLeftClose, Search } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useCurrentAccount } from '../../data/useCurrentAccount';
+import { useProjects } from '../../data/useProjects';
+import { cn } from '../../lib/utils';
+import { ThemeToggle } from '../ui/ThemeToggle';
 
-interface NavItemProps {
-    to: string;
-    icon: React.ElementType;
-    label: string;
-}
+const destinations = [
+  { to: '/', label: 'Inicio', icon: LayoutGrid, end: true },
+  { to: '/projects', label: 'Proyectos', icon: Folder, end: false },
+  { to: '/library', label: 'Biblioteca', icon: LibraryBig, end: false },
+];
 
-const NavItem = ({ to, icon: Icon, label }: NavItemProps) => {
-    const location = useLocation();
-    const isActive = location.pathname === to;
+export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (value: boolean) => void }) {
+  const account = useCurrentAccount();
+  const projects = useProjects('active');
+  const navigate = useNavigate();
+  const [search, setSearch] = useState('');
+  const recent = (projects.data?.pages.flatMap(page => page.data) ?? []).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 4);
 
-    return (
-        <Link
-            to={to}
-            className={cn(
-                "flex items-center gap-2 px-3 py-1.5 rounded-[4px] text-[14px] font-medium transition-colors mb-0.5",
-                "hover:bg-surface-variant text-on-background",
-                isActive ? "bg-surface-variant font-semibold" : "text-outline hover:text-on-background"
-            )}
-        >
-            <Icon size={16} className={cn("flex-shrink-0", isActive ? "text-on-background" : "text-outline")} strokeWidth={2} />
-            <span className="truncate">{label}</span>
-        </Link>
-    );
-};
+  return (
+    <>
+      {isOpen && <button type="button" className="fixed inset-0 z-30 bg-black/50 md:hidden" aria-label="Cerrar navegación" onClick={() => setIsOpen(false)} />}
+      <aside className={cn(
+        'z-40 flex h-full shrink-0 flex-col overflow-hidden bg-surface transition-[width,transform] duration-150 md:relative',
+        'fixed inset-y-0 left-0 w-[272px] md:translate-x-0',
+        isOpen ? 'translate-x-0 md:w-[272px]' : '-translate-x-full md:w-0',
+      )} aria-label="Navegación principal">
+        <div className="flex min-w-[272px] items-center justify-between px-5 pb-5 pt-4">
+          <div className="flex items-center gap-2.5 text-sm font-semibold">
+            <span className="grid h-6 w-6 place-items-center rounded-md bg-surface-variant text-xs" aria-hidden="true">T</span>
+            <span>Theke</span>
+          </div>
+          <button type="button" onClick={() => setIsOpen(false)} className="grid h-9 w-9 place-items-center rounded-md text-outline hover:bg-surface-variant hover:text-on-background focus-visible:outline-2 focus-visible:outline-primary" aria-label="Cerrar barra lateral"><PanelLeftClose size={17} /></button>
+        </div>
 
-export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: boolean) => void }) {
-    const account = useCurrentAccount();
-    return (
-        <aside
-            className={cn(
-                "group relative flex-shrink-0 bg-surface flex flex-col transition-all duration-300 ease-in-out border-r border-border",
-                isOpen ? "w-[240px]" : "w-0 opacity-0 overflow-hidden border-none"
-            )}
-        >
-            <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => setIsOpen(false)}
-                className="absolute top-3 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-border/50 text-outline hover:text-on-background"
-                icon={ChevronsLeft}
-            />
+        <nav className="min-w-[272px] space-y-0.5 px-3" aria-label="Secciones">
+          {destinations.map(({ to, label, icon: Icon, end }) => (
+            <NavLink key={to} to={to} end={end} onClick={() => { if (window.innerWidth < 768) setIsOpen(false); }} className={({ isActive }) => cn(
+              'flex min-h-9 items-center gap-3 rounded-md px-3 text-sm text-outline hover:bg-surface-variant hover:text-on-background focus-visible:outline-2 focus-visible:outline-primary',
+              isActive && 'bg-surface-variant font-medium text-on-background',
+            )}><Icon size={17} aria-hidden="true" /><span>{label}</span></NavLink>
+          ))}
+        </nav>
 
-            {/* Selector de Espacio de Trabajo */}
-            <div className="px-3 py-3 flex items-center gap-2 hover:bg-surface-variant cursor-pointer transition-colors mt-1">
-                <div className="w-5 h-5 rounded-[3px] bg-primary text-on-primary flex items-center justify-center text-[10px] font-bold" aria-hidden="true">T</div>
-                <span className="text-[14px] font-semibold truncate text-on-background">{account.data?.account.name ?? 'Theke'}</span>
-            </div>
+        {recent.length > 0 && <><div className="mt-7 min-w-[272px] px-6 text-xs font-medium text-outline">Recientes</div>
+          <div className="mt-2 min-w-[272px] px-3 text-sm text-outline">
+            {recent.map(project => <NavLink key={project.id} to={`/projects/${project.id}`} onClick={() => { if (window.innerWidth < 768) setIsOpen(false); }} className="block truncate rounded-md px-3 py-1.5 hover:bg-surface-variant hover:text-on-background focus-visible:outline-2 focus-visible:outline-primary">{project.name}</NavLink>)}
+          </div></>}
 
-            {/* Acciones Rápidas */}
-            <div className="px-2 mb-4 mt-2 space-y-1">
-                <div className="px-1 mb-2"><Input placeholder="Buscar..." className="h-7 text-xs bg-background shadow-sm" /></div>
-            </div>
-
-            {/* Navegación Principal */}
-            <nav className="flex-1 px-2 overflow-y-auto">
-                <div className="pt-2 pb-1.5 px-3 text-[11px] font-semibold text-outline tracking-wider">MI UNIDAD</div>
-                <NavItem to="/" icon={LayoutGrid} label="Inicio" />
-                <NavItem to="/library" icon={FileText} label="Biblioteca" />
-                <NavItem to="/projects" icon={Folder} label="Proyectos" />
-            </nav>
-
-            {/* Footer del Sidebar (mt-auto empuja esto hacia abajo) */}
-            <div className="mt-auto p-3 border-t border-border/50">
-                <ThemeToggle />
-            </div>
-        </aside>
-    );
+        <div className="min-h-6 flex-1" />
+        <div className="min-w-[272px] px-3 pb-2">
+          <div className="flex min-h-11 items-center gap-2 rounded-md px-3 text-sm text-on-background">
+            <span className="grid h-7 w-7 place-items-center rounded-md bg-surface-variant text-xs font-semibold" aria-hidden="true">{(account.data?.account.name ?? 'T').charAt(0).toUpperCase()}</span>
+            <span className="min-w-0 flex-1 truncate">{account.data?.account.name ?? 'Mi espacio de Theke'}</span>
+            <ThemeToggle />
+          </div>
+        </div>
+        <form className="min-w-[272px] px-3 pb-3" role="search" onSubmit={event => { event.preventDefault(); navigate(`/library${search.trim() ? `?q=${encodeURIComponent(search.trim())}` : ''}`); if (window.innerWidth < 768) setIsOpen(false); }}>
+          <label className="flex h-9 items-center gap-2 rounded-md bg-surface-variant px-3 text-outline focus-within:outline-2 focus-within:outline-primary">
+            <Search size={16} aria-hidden="true" />
+            <input value={search} onChange={event => setSearch(event.target.value)} aria-label="Buscar recursos" placeholder="Buscar recursos" className="min-w-0 flex-1 border-0 bg-transparent text-sm text-on-background outline-none placeholder:text-outline" />
+          </label>
+        </form>
+      </aside>
+    </>
+  );
 }

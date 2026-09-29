@@ -1,28 +1,19 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from '../components/layout/Sidebar';
-import { Topbar } from '../components/layout/Topbar'; // <--- Importamos la barra
+import { Topbar } from '../components/layout/Topbar';
 
 export function AppLayout() {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 768);
 
     return (
-        <div className="flex h-screen w-full bg-background overflow-hidden">
-
-            {/* Sidebar Modularizado */}
+        <div className="flex h-screen w-full overflow-hidden bg-background">
             <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-
-            {/* Contenedor Principal */}
-            <main className="flex-1 flex flex-col h-full min-w-0 bg-background">
-
-                {/* Barra Superior estilo Notion (Breadcrumbs y opciones) */}
+            <main className="flex h-full min-w-0 flex-1 flex-col bg-background">
                 <Topbar isSidebarOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-
-                {/* Área de contenido desplazable (Dashboard, Library, etc.) */}
                 <div className="flex-1 overflow-y-auto">
                     <Outlet />
                 </div>
-
             </main>
         </div>
     );

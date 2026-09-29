@@ -6,7 +6,8 @@ import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { ImpactDialog, type ImpactRequest } from '../components/ui/ImpactDialog';
-import { ViewToolbar } from '../components/ui/ViewToolbar';
+import { CollectionGroup, ViewToolbar } from '../components/ui/ViewToolbar';
+import { useCollectionView } from '../components/ui/useCollectionView';
 import { type Project, useProject, useProjectActions, useProjects } from '../data/useProjects';
 import { useOrganization, useOrganizationActions } from '../data/useOrganization';
 import { useNotes } from '../data/useNotes';
@@ -15,9 +16,9 @@ import { useDiagramActions, useDiagrams } from '../data/useDiagrams';
 const MAX_NAME_LENGTH = 120;
 
 export function Projects() {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useCollectionView('projects', 'list');
   const [status, setStatus] = useState<'active' | 'archived'>('active');
-  const [editing, setEditing] = useState<Project | 'new' | null>(null);
+  const [editing, setEditing] = useState<Project | 'new' | null>(() => new URLSearchParams(window.location.search).has('create') ? 'new' : null);
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [impactRequest, setImpactRequest] = useState<ImpactRequest | null>(null);
@@ -32,7 +33,7 @@ export function Projects() {
 
   useEffect(() => { if (editing) inputRef.current?.focus(); }, [editing]);
   const edit = (project: Project | 'new') => { setEditing(project); setName(project === 'new' ? '' : project.name); setError(''); };
-  const close = () => { setEditing(null); setError(''); };
+  const close = () => { setEditing(null); setError(''); if (new URLSearchParams(location.search).has('create')) navigate('/projects', { replace: true }); };
   const save = async (event: FormEvent) => {
     event.preventDefault();
     const value = name.trim();
@@ -44,7 +45,7 @@ export function Projects() {
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'No se pudo guardar.'); }
   };
 
-  if (projectId) return <section className="w-full px-6 md:px-8 py-6">
+  if (projectId) return <section className="w-full px-4 py-7 md:px-8">
     <Button onClick={() => navigate('/projects')}>← Proyectos</Button>
     {detail.isPending && <p role="status" className="mt-5 text-outline">Cargando proyecto…</p>}
     {detail.isError && <div role="alert" className="mt-5"><p className="text-red-600">No se pudo abrir el proyecto.</p><Button variant="outline" onClick={() => detail.refetch()}>Reintentar</Button></div>}
@@ -55,24 +56,17 @@ export function Projects() {
     )}
   </section>;
 
-  return <section className="w-full px-6 md:px-8 py-6 pb-32" aria-labelledby="projects-title">
-    <div className="flex items-center justify-between gap-4 mb-4">
-      <div><h1 id="projects-title" className="text-xl font-semibold">Proyectos</h1><p className="text-sm text-outline">Separa y retoma tus temas de trabajo.</p></div>
-      <ViewToolbar viewMode={viewMode} setViewMode={setViewMode} onNew={() => edit('new')} />
-    </div>
-    <div className="flex gap-2 mb-5" aria-label="Estado de proyectos">
-      <Button variant={status === 'active' ? 'secondary' : 'ghost'} onClick={() => setStatus('active')}>Activos</Button>
-      <Button variant={status === 'archived' ? 'secondary' : 'ghost'} onClick={() => setStatus('archived')}>Archivados</Button>
-    </div>
+  return <section className="w-full px-4 pb-20 pt-7 md:px-8" aria-label="Proyectos">
+    <ViewToolbar viewMode={viewMode} setViewMode={setViewMode} onNew={() => edit('new')} newLabel="Crear proyecto" groups={<><CollectionGroup active={status === 'active'} onClick={() => setStatus('active')}>Activos</CollectionGroup><CollectionGroup active={status === 'archived'} onClick={() => setStatus('archived')}>Archivados</CollectionGroup></>} />
     {query.isPending && <p role="status" className="text-outline">Cargando proyectos…</p>}
     {query.isError && <div role="alert"><p className="text-red-600">No se pudieron cargar los proyectos.</p><Button variant="outline" onClick={() => query.refetch()}>Reintentar</Button></div>}
-    {!query.isPending && !query.isError && items.length === 0 && <div className="rounded-lg border border-dashed border-border p-10 text-center">
+    {!query.isPending && !query.isError && items.length === 0 && <div className="py-14 text-center">
       <Folder className="mx-auto text-outline" size={36} /><h2 className="mt-3 font-medium">{status === 'active' ? 'Aún no tienes proyectos' : 'No hay proyectos archivados'}</h2>
       <p className="mt-1 text-sm text-outline">{status === 'active' ? 'Un proyecto reúne el trabajo de un tema en un solo lugar.' : 'Los proyectos que archives aparecerán aquí.'}</p>
-      {status === 'active' && <Button className="mt-4" variant="primary" onClick={() => edit('new')}>Crear primer proyecto</Button>}
+      {status === 'active' && <Button className="mt-4" onClick={() => edit('new')}>Crear primer proyecto</Button>}
     </div>}
-    {items.length > 0 && (viewMode === 'grid' ? <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-      {items.map(project => <div key={project.id}><Card title={project.name} subtitle={new Date(project.updatedAt).toLocaleDateString()} icon={<Folder size={32} />} onClick={() => navigate(`/projects/${project.id}`)} /><Actions project={project} status={status} rename={() => edit(project)} archive={() => setImpactRequest({ entityType: 'project', id: project.id, action: 'archive' })} remove={() => setImpactRequest({ entityType: 'project', id: project.id, action: 'delete' })} restore={() => actions.restore.mutate(project.id)} /></div>)}
+    {items.length > 0 && (viewMode === 'grid' ? <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      {items.map(project => <div key={project.id}><Card title={project.name} subtitle={new Date(project.updatedAt).toLocaleDateString()} icon={<Folder size={17} />} onClick={() => navigate(`/projects/${project.id}`)} /><Actions project={project} status={status} rename={() => edit(project)} archive={() => setImpactRequest({ entityType: 'project', id: project.id, action: 'archive' })} remove={() => setImpactRequest({ entityType: 'project', id: project.id, action: 'delete' })} restore={() => actions.restore.mutate(project.id)} /></div>)}
     </div> : <div className="divide-y divide-border border-y border-border">
       {items.map(project => <div key={project.id} className="flex items-center gap-3 py-2"><button className="flex flex-1 items-center gap-2 text-left hover:underline focus-visible:outline-2" onClick={() => navigate(`/projects/${project.id}`)}><Folder size={18} />{project.name}</button><Actions project={project} status={status} rename={() => edit(project)} archive={() => setImpactRequest({ entityType: 'project', id: project.id, action: 'archive' })} remove={() => setImpactRequest({ entityType: 'project', id: project.id, action: 'delete' })} restore={() => actions.restore.mutate(project.id)} /></div>)}
     </div>)}

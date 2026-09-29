@@ -18,12 +18,12 @@
   .dark {
     /* Exact Notion Palette - Dark Mode */
     --background: #191919;
-    --on-background: #FFFFFF;
+    --on-background: #EDEDED;
     --surface: #202020;
     --surface-variant: rgba(255, 255, 255, 0.055);
     --border: rgba(255, 255, 255, 0.13);
-    --outline: rgba(255, 255, 255, 0.44);
-    --primary: #2383E2;
+    --outline: #A5A5A5;
+    --primary: #3264C8;
     --on-primary: #FFFFFF;
   }
 }
