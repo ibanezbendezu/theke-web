@@ -2,6 +2,7 @@ import type {ReactNode} from 'react';
 import { ClerkProvider } from '@clerk/clerk-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from './../providers/ThemeProvider';
+import { ToastProvider } from '../components/ui/ToastProvider';
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 1, staleTime: 30_000 } } });
 
@@ -28,7 +29,7 @@ export function Providers({ children }: ProvidersProps) {
         >
           <QueryClientProvider client={queryClient}>
             <ThemeProvider defaultTheme="system" storageKey="theke-theme">
-                {children}
+                <ToastProvider>{children}</ToastProvider>
             </ThemeProvider>
           </QueryClientProvider>
         </ClerkProvider>

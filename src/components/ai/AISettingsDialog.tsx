@@ -4,6 +4,7 @@ import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { Sparkles, Shield, Trash2, CheckCircle2 } from 'lucide-react';
 import { AIConsentDialog } from './AIConsentDialog';
+import { useToast } from '../ui/useToast';
 
 export function AISettingsDialog({
   isOpen,
@@ -15,7 +16,7 @@ export function AISettingsDialog({
   const { data: status } = useAiStatus();
   const { settings, revoke } = useAiActions();
   const [consentModalOpen, setConsentModalOpen] = useState(false);
-  const [message, setMessage] = useState('');
+  const toast = useToast();
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
 
@@ -23,7 +24,6 @@ export function AISettingsDialog({
     if (isOpen) {
       previousFocus.current = document.activeElement as HTMLElement | null;
       const timer = setTimeout(() => {
-        setMessage('');
         dialogRef.current?.querySelector<HTMLElement>('button')?.focus();
       }, 50);
       return () => clearTimeout(timer);
@@ -48,22 +48,20 @@ export function AISettingsDialog({
   const policy = status?.consent?.policy;
 
   const handleToggle = async (enabled: boolean) => {
-    setMessage('');
     try {
       await settings.mutateAsync({ enabled });
-      setMessage(enabled ? 'Asistencia de IA activada.' : 'Asistencia de IA desactivada.');
+      toast.success(enabled ? 'Asistencia de IA activada.' : 'Asistencia de IA desactivada.');
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : 'Error al cambiar estado.');
+      toast.error(err instanceof Error ? err.message : 'Error al cambiar estado.');
     }
   };
 
   const handleRevoke = async () => {
-    setMessage('');
     try {
       await revoke.mutateAsync();
-      setMessage('Consentimiento revocado e IA desactivada.');
+      toast.success('Consentimiento revocado e IA desactivada.');
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : 'Error al revocar consentimiento.');
+      toast.error(err instanceof Error ? err.message : 'Error al revocar consentimiento.');
     }
   };
 
@@ -183,11 +181,6 @@ export function AISettingsDialog({
               )}
             </div>
 
-            {message && (
-              <p className="text-xs p-2 rounded-md bg-surface-variant text-on-background">
-                {message}
-              </p>
-            )}
           </div>
 
           <div className="p-3 border-t border-border flex justify-end bg-surface-variant/20">

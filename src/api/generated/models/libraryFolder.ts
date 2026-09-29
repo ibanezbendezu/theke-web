@@ -8,6 +8,8 @@
 export interface LibraryFolder {
   id: string;
   name: string;
+  /** @nullable */
+  parentFolderId: string | null;
   createdAt: string;
   updatedAt: string;
 }

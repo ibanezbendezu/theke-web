@@ -6,7 +6,7 @@ Estado: **en curso**. Trabajo transversal de implementación previo a la épica 
 
 - Barra lateral Notion estable en rutas privadas: 272 px en escritorio, navegación sin contornos, cuenta y búsqueda global al pie; el menú móvil se puede abrir y cerrar por teclado.
 - Topbar compacta en todas las páginas privadas salvo Canvas/Diagrama, que conserva su encabezado de trabajo. La ruta muestra nombres legibles, no identificadores internos.
-- Inicio, Proyectos y Biblioteca comparten 32 px de margen interior en escritorio y 16 px en móvil. Las colecciones empiezan con grupos, búsqueda cuando corresponde, Lista/Galería y «+» en la misma fila cuando cabe.
+- Inicio, Proyectos y Biblioteca comparten 32 px de margen interior en escritorio y 16 px en móvil. En Biblioteca la búsqueda ocupa el extremo izquierdo de la fila; Activos/Archivados aparece junto a Lista/Galería solo en la raíz de Biblioteca y Proyectos. «+» permanece junto al selector de vista cuando corresponde.
 - Grupos, selector y «+» no llevan borde permanente. Hover y selección usan fondos tonales translúcidos; foco visible para teclado. Las líneas se reservan para estructura de tabla o grafo.
 - Inicio muestra proyectos reales y mantiene acceso a crear; Proyectos conserva renombrar, archivar, restaurar y eliminar; Biblioteca conserva búsqueda, filtros avanzados, carga, creación y detalle de Recursos.
 - Las vistas de lista y galería conservan la colección y sus filtros. El contenido no repite el nombre de la pantalla como encabezado descriptivo.
@@ -48,3 +48,12 @@ El estado de las historias de las épicas 4 y 5 permanece como figura en `sprint
 - ESLint sobre los cuatro archivos modificados: correcto.
 - Lint global: correcto.
 - Navegador: pendiente, porque @Browser no expone una pestaña en esta sesión.
+
+## Ajustes de colecciones y avisos (2026-09-29)
+
+- Las carpetas de Proyectos y las de Biblioteca forman árboles independientes. Cada carpeta muestra solo sus hijos directos y comparte la misma lista o galería con mapas o archivos. Los elementos y las carpetas se pueden mover por menú o arrastre, incluso hacia carpetas del breadcrumb; la API rechaza ciclos y nombres duplicados entre hermanos.
+- El breadcrumb presenta la ruta de carpetas. Los archivos se consultan en un diálogo de vista previa, sin añadir el archivo al breadcrumb. Activos/Archivados solo se muestra en la raíz; la búsqueda de Biblioteca queda al extremo izquierdo de la barra. Se eliminó el botón de opciones junto a Archivados en Proyectos; Crear carpeta sigue en el menú contextual, accesible también con Shift+F10 o la tecla de menú contextual.
+- Los avisos de resultado de acciones usan alertas cerrables en la esquina inferior derecha. Los errores de validación y los estados que requieren una acción local permanecen junto al control afectado.
+- Las migraciones `0023_nested_collection_folders.sql` y `0024_nested_folder_names.sql`, el contrato OpenAPI y el cliente generado forman una sola entrega con estos cambios.
+- Revisión de código: se corrigieron descripciones obsoletas de eliminación de carpetas en OpenAPI y se actualizaron las pruebas de Biblioteca y Proyectos para los recorridos actuales. Lint, builds, contrato API/web, prueba de carpetas con PostgreSQL y pruebas focalizadas de colecciones pasaron. Las pruebas E2E se omitieron según la preferencia del usuario.
+- Esta entrega corrige la base visual y de navegación previa a la épica 6. No cambia el estado de las historias 4.2–4.4 ni 5.2–5.5; siguen pendientes sus criterios propios y la revisión visual en navegador.

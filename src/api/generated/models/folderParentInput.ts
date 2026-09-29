@@ -5,11 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface ProjectFolder {
-  id: string;
-  name: string;
+export interface FolderParentInput {
   /** @nullable */
   parentFolderId: string | null;
-  createdAt: string;
-  updatedAt: string;
 }

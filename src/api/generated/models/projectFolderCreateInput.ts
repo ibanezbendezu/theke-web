@@ -5,11 +5,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface ProjectFolder {
-  id: string;
+export interface ProjectFolderCreateInput {
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
   name: string;
   /** @nullable */
-  parentFolderId: string | null;
-  createdAt: string;
-  updatedAt: string;
+  parentFolderId?: string | null;
 }
