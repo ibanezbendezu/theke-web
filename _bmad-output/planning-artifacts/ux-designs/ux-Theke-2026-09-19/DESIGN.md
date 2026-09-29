@@ -57,10 +57,10 @@ colors:
   surface-contextual-dark: '#292929E8'
   surface-contextual-strong-dark: '#292929F5'
   resource-background-dark: '#191919'
-  resource-card-dark: '#202020'
-  resource-control-dark: '#292929'
+  resource-card-dark: '#FFFFFF0A'
+  resource-control-dark: '#FFFFFF0A'
   surface-hover-dark: '#FFFFFF0D'
-  surface-active-dark: '#3574F033'
+  surface-active-dark: '#FFFFFF17'
   border-dark: '#303030'
   border-strong-dark: '#777777'
   control-border-dark: '#777777'
@@ -109,7 +109,7 @@ spacing:
   '6': 24px
   '8': 32px
   '10': 40px
-  page-gutter: 24px
+  page-gutter: 32px
   panel-width: 304px
   sidebar-width: 272px
 components:
@@ -121,14 +121,14 @@ components:
   toast: { background: '{colors.foreground}', foreground: '{colors.background}', radius: '{rounded.md}' }
   skeleton: { background: '{colors.surface-active}', radius: '{rounded.md}' }
   media-controls: { background: '{colors.foreground}', foreground: '{colors.background}', focus: '{colors.focus-ring}', radius: '{rounded.md}' }
-  app-sidebar: { background: '{colors.surface}', foreground: '{colors.foreground}', border: '{colors.border}', width: '{spacing.sidebar-width}' }
-  top-bar: { background: '{colors.background}', foreground: '{colors.foreground}', border: '{colors.border}', height: 46px }
-  project-card: { background: '{colors.background}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}' }
+  app-sidebar: { background: '{colors.surface}', foreground: '{colors.foreground}', width: '{spacing.sidebar-width}' }
+  top-bar: { background: '{colors.background}', foreground: '{colors.foreground}', height: 46px }
+  project-card: { background: '{colors.surface-hover}', foreground: '{colors.foreground}', radius: '{rounded.md}' }
   resource-row: { background: '{colors.background}', hover: '{colors.surface-hover}', border: '{colors.border}', height: 40px }
   resource-card: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.lg}', selected: '{colors.selection}' }
-  resource-browser: { background: '{colors.background}', foreground: '{colors.foreground}', sidebar: '{colors.surface}', search: '{colors.surface-raised}' }
-  collection-view-switcher: { background: '{colors.surface}', foreground: '{colors.foreground}', border: '{colors.border}', selected: '{colors.surface-active}', radius: '{rounded.md}' }
-  resource-preview-card: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}', selected: '{colors.selection}' }
+  resource-browser: { background: '{colors.background}', foreground: '{colors.foreground}', sidebar: '{colors.surface}', search: '{colors.surface-hover}' }
+  collection-view-switcher: { background: '{colors.background}', foreground: '{colors.foreground}', selected: '{colors.surface-active}', radius: '{rounded.md}' }
+  resource-preview-card: { background: '{colors.surface-hover}', foreground: '{colors.foreground}', radius: '{rounded.md}', selected: '{colors.selection}' }
   folder-card: { background: '{colors.surface}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.lg}' }
   canvas-toolbar: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}' }
   add-menu: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.lg}' }
@@ -180,8 +180,8 @@ Evitar saturación, tono infantil, rigidez corporativa y “magia” visual. No 
 - `{colors.surface-raised}` / `{colors.surface-raised-dark}` sostiene tarjetas, menús, paneles flotantes y diálogos.
 - `{colors.surface-contextual}` y `{colors.surface-contextual-strong}` —con sus pares oscuros— sostienen controles temporales o capas flotantes. El shell y el contenido canónico permanecen opacos.
 - `{colors.foreground}` / `{colors.foreground-dark}` se usa para el texto principal. El texto secundario y los estados persistentes usan `{colors.foreground-secondary}` / `{colors.foreground-secondary-dark}`: valores opacos con contraste mínimo 4.5:1. Los tokens de borde nunca se usan como texto.
-- `{colors.border}` separa a baja jerarquía; `{colors.border-strong}` se reserva para foco estructural.
-- `{colors.control-border}` / `{colors.control-border-dark}` delimita inputs y controles interactivos con contraste mínimo 3:1.
+- `{colors.border}` separa solo estructuras que necesitan una línea, como filas de tabla o marcos espaciales. No dibuja contornos alrededor de grupos, búsqueda, selector de vista, «+» ni tarjetas de colección. `{colors.border-strong}` se reserva para foco estructural.
+- `{colors.control-border}` / `{colors.control-border-dark}` delimita formularios o controles cuando el fondo tonal no basta. La búsqueda de colección y los controles del marco usan fondo translúcido y foco visible en vez de borde permanente.
 - En el tema oscuro, `{colors.resource-background-dark}` conserva `#191919` en Biblioteca y exploración de Carpetas; `{colors.resource-card-dark}` y `{colors.resource-control-dark}` separan miniaturas y controles con tonos Notion. La barra lateral global sigue usando `{colors.surface-dark}`.
 
 ### Acción y semántica
@@ -204,10 +204,10 @@ Objetivos: 4.5:1 para texto normal y 3:1 para texto grande, iconos funcionales, 
 
 ### Transparencia semántica
 
-- **Opaco = estable o comprometido:** Recursos, contenido editable, Biblioteca, paneles acoplados, diálogos de confirmación y pasos de publicación usan superficies opacas.
-- **Contextual:** menús, `Canvas Toolbar`, `Relation Editor`, selección por lote y halos de comentario pueden usar superficies oscuras elevadas, pero permanecen legibles y opacas cuando contienen texto o controles.
-- **Transparente = agrupación o alcance:** `Group Frame`, selección rectangular y zonas de destino usan relleno muy ligero y borde explícito; no parecen un Recurso ni una Carpeta.
-- Ningún párrafo, input o acción crítica descansa directamente sobre contenido variable. El shell, paneles y formularios son opacos. La transparencia nunca comunica por sí sola estado, disponibilidad o procedencia.
+- **Opaco = lectura y compromiso:** contenido editable, vista previa de documentos, diálogos de confirmación y pasos de publicación usan fondos opacos para garantizar contraste.
+- **Translúcido = control y agrupación:** hover, selección de pestaña o vista, búsqueda, «+», tarjetas de galería y menús contextuales pueden usar blanco de baja opacidad sobre el fondo estable de Notion. No se añade blur decorativo.
+- **Transparente = alcance espacial:** `Group Frame`, selección rectangular y zonas de destino usan relleno muy ligero y borde funcional; no parecen un Recurso ni una Carpeta.
+- Ningún párrafo, input o acción crítica descansa directamente sobre contenido variable. La transparencia nunca comunica por sí sola estado, disponibilidad o procedencia; texto, icono y foco siguen legibles.
 
 ## Typography
 
@@ -221,15 +221,15 @@ La monoespaciada queda para datos que lo requieran. Evitar mayúsculas sostenida
 
 Escala base de 4 px. La densidad predeterminada se acerca al modo compacto de una herramienta de escritorio: controles frecuentes usan `{spacing.1}`–`{spacing.3}`, tarjetas y paneles `{spacing.3}`–`{spacing.5}`, y solo regiones de contenido usan `{spacing.6}`–`{spacing.10}`.
 
-En escritorio, la barra lateral global de 272 px permanece visible y admite colapso. Contiene marca, búsqueda, Inicio, Proyectos, Biblioteca, accesos recientes y cuenta. Una topbar compacta cruza el área principal en Inicio, Proyectos, Proyecto, Biblioteca, Carpetas y demás páginas fuera del Canvas/Diagrama; muestra ruta a la izquierda y metadatos o acciones generales a la derecha. Debajo, cada colección presenta sus filtros o pestañas y una pequeña barra de acciones con el selector Lista/Galería y un botón neutro «+» contiguo para crear el elemento pertinente. No se inserta un encabezado grande que repita el nombre de la sección ni una descripción introductoria. En Biblioteca se usa la composición de Drive para ordenar los Recursos, con controles de Notion. El Canvas conserva la mayor superficie, su encabezado de trabajo específico y un panel contextual derecho cuando se necesita.
+En escritorio, la barra lateral global de 272 px permanece visible y admite colapso. Contiene marca, Inicio, Proyectos, Biblioteca y accesos recientes; la búsqueda global se sitúa como último control al pie, debajo de la cuenta. Una topbar compacta cruza el área principal en Inicio, Proyectos, Proyecto, Biblioteca, Carpetas y demás páginas fuera del Canvas/Diagrama; muestra ruta a la izquierda y metadatos o acciones generales a la derecha. Debajo, cada colección presenta una sola fila de controles: grupos sin contorno a la izquierda; búsqueda en esa misma fila cuando corresponde; Lista/Galería y «+» sin contorno a la derecha. Inicio y Biblioteca usan exactamente el mismo padding de 32 px en escritorio y 16 px en pantalla estrecha. No se inserta un encabezado grande que repita el nombre de la sección ni una descripción introductoria. En Biblioteca se usa la composición de Drive para ordenar los Recursos, con controles de Notion. El Canvas conserva la mayor superficie, su encabezado de trabajo específico y un panel contextual derecho cuando se necesita.
 
-Inicio, Proyectos y Biblioteca usan `{spacing.page-gutter}` en escritorio y 16 px en viewport estrecho. Listas y grillas comparten bordes de alineación. La grilla de puntos del Canvas es una guía espacial de bajo contraste, no una restricción rígida.
+Inicio, Proyectos y Biblioteca usan `{spacing.page-gutter}` de 32 px en escritorio y 16 px en viewport estrecho. Listas y grillas comparten ejes de alineación. La grilla de puntos del Canvas es una guía espacial de bajo contraste, no una restricción rígida.
 
 ## Elevation & Depth
 
-La jerarquía nace de tono, borde y posición: barra lateral `#202020` y área principal `#191919` también en Biblioteca. Inicio y Proyectos usan filas planas y separadores; la Galería presenta bloques sobrios cuando se elige. En Biblioteca, las tarjetas de miniatura son una parte funcional del explorador. Menús y diálogos pueden usar sombra moderada; las superficies integradas permanecen planas.
+La jerarquía nace de tono, transparencia controlada y posición: barra lateral `#202020` y área principal `#191919` también en Biblioteca. Grupos, búsqueda, selector y «+» comparten altura, radio, fondo translúcido y estado activo; no tienen borde permanente. Inicio y Proyectos usan filas planas con separadores funcionales; la Galería presenta bloques sobrios cuando se elige. En Biblioteca, las tarjetas de miniatura son una parte funcional del explorador. Menús y diálogos pueden usar sombra moderada; las superficies integradas permanecen planas.
 
-Hover cambia tono o borde sin elevar ni mover geometría. No se aplica blur a nodos, paneles acoplados o contenido estable.
+Hover cambia el fondo translúcido sin elevar ni mover geometría. No se aplica blur a nodos, paneles acoplados o contenido estable.
 
 ## Shapes
 
@@ -249,14 +249,14 @@ Los controles base usan las entradas homónimas de `components`: `Button Primary
 | **Sheet / Dialog** | Superficie elevada sobre overlay; título y descripción visibles. La hoja móvil conserva esquinas superiores `{rounded.xl}`. |
 | **Toast / Skeleton** | Toast de alto contraste para confirmación breve; Skeleton reproduce la forma final sin animación obligatoria. |
 | **Media Controls** | Controles de alto contraste, foco visible, estados de reproducción y pausa, volumen, progreso y alternativas textuales. |
-| **App Sidebar** | Barra global persistente de 272 px, fondo `#202020`, borde fino a la derecha, búsqueda arriba, navegación y accesos recientes. Se colapsa desde un control visible; en pantalla estrecha se vuelve temporal. Permanece idéntica en Biblioteca. |
+| **App Sidebar** | Barra global persistente de 272 px, fondo `#202020`, navegación y accesos recientes. La búsqueda global va al final, debajo de la cuenta, con fondo translúcido y sin borde. Se colapsa desde un control visible; en pantalla estrecha se vuelve temporal. Permanece idéntica en Biblioteca. |
 | **Top Bar** | Franja plana y compacta en todas las páginas salvo Canvas/Diagrama. Ruta breve a la izquierda; metadatos y acciones generales a la derecha. No aloja el selector Lista/Galería ni un botón de creación. Canvas usa su propio encabezado de trabajo con `Save Status`. |
-| **Project Card** | Fila o bloque plano con borde fino, título fuerte y metadatos en caption. Hover tonal; foco visible. Evita una cuadrícula de tarjetas decorativas. |
+| **Project Card** | Fila plana con separador funcional o bloque de galería con fondo translúcido, título fuerte y metadatos en caption. Hover tonal; foco visible. Evita contornos decorativos. |
 | **Resource Row** | Alternativa de lista del explorador: mínimo 40 px, icono semántico, nombre, tipo y última edición. Acciones disponibles con foco y hover. |
 | **Resource Card** | En Canvas, compacta y reconocible por tipo, título y metadatos. Selección con `{colors.selection}` y anillo; no usa la miniatura grande de Biblioteca. |
-| **Resource Browser** | Organización de Recursos inspirada en Drive dentro del marco Notion: búsqueda ancha con radio `{rounded.md}`, ruta en topbar, filtros discretos y selector Lista/Galería compartido. Conserva el fondo oscuro `#191919` del resto de Theke. |
-| **Collection View Switcher** | Control segmentado compacto para Lista/Galería dentro de cada página de colección, junto a un botón «+» neutro para crear. Radio `{rounded.md}`, borde tenue y selección tonal neutra; sin cápsula ni relleno azul permanente. Mantiene alineación y comportamiento entre Inicio, Proyectos, Proyecto, Biblioteca y Carpetas. |
-| **Resource Preview Card** | Tarjeta de exploración con nombre y tipo arriba, miniatura grande debajo y acciones accesibles por foco, clic y teclado. Fondo `#202020` y radio `{rounded.md}` del mismo sistema Notion; la cuadrícula adapta columnas sin cortar contenido. |
+| **Resource Browser** | Organización de Recursos inspirada en Drive dentro del marco Notion: grupos sin borde, búsqueda de radio `{rounded.md}` en la misma fila que grupos y vistas, ruta en topbar y selector Lista/Galería compartido. Conserva el fondo oscuro `#191919` del resto de Theke. |
+| **Collection View Switcher** | Lista/Galería dentro de la fila de controles de cada colección, junto a un «+» neutro. Ambos usan botones independientes sin borde permanente, radio `{rounded.md}` y el mismo fondo translúcido de las pestañas al hover o activarse. Mantiene alineación y comportamiento entre Inicio, Proyectos, Proyecto, Biblioteca y Carpetas. |
+| **Resource Preview Card** | Tarjeta de exploración con nombre y tipo arriba, miniatura grande debajo y acciones accesibles por foco, clic y teclado. Fondo translúcido sin contorno, radio `{rounded.md}` del mismo sistema Notion; la cuadrícula adapta columnas sin cortar contenido. |
 | **Folder Card** | Colección compacta con icono, nombre y conteo. No comparte apariencia con `Group Frame`. |
 | **Canvas Toolbar** | Grupo opaco y compacto de acciones para zoom y encuadre, visualmente subordinado al grafo. |
 | **Add Menu** | Desde el botón visible Añadir; categorías Biblioteca, Subir, Nota, Carpeta, Grupo y Anotaciones. |
@@ -282,6 +282,8 @@ Los controles base usan las entradas homónimas de `components`: `Button Primary
 | Mantener la barra lateral oscura de Notion a través de todas las rutas. | Cambiar a la barra lateral de Drive al entrar en Biblioteca. |
 | Mantener la topbar de Notion fuera del Canvas y el mismo selector Lista/Galería en las colecciones. | Usar una búsqueda o selector en forma de píldora tomados de Drive. |
 | Colocar Lista/Galería y «+» en la página, junto a la colección. | Poner el selector en la topbar o una acción azul grande para crear. |
+| Usar una sola fila de grupos, búsqueda y vistas en Biblioteca, y el mismo padding en todas las colecciones. | Separar controles en varias bandas o cambiar el margen entre Inicio y Biblioteca. |
+| Agrupar controles por espacio y fondos translúcidos suaves. | Dibujar contornos alrededor de pestañas, búsqueda, vistas y «+». |
 | Comenzar cada colección con navegación y contenido útil. | Repetir el nombre de la pantalla y una frase explicativa como encabezado. |
 | Reservar la cuadrícula con miniaturas de Drive para explorar Recursos. | Convertir Inicio, Proyectos y Canvas en una cuadrícula uniforme de tarjetas. |
 | Dejar que Recursos y Relaciones dominen el Canvas. | Rodear todo de paneles, badges y colores de marca. |
