@@ -24,15 +24,15 @@ Texto principal blanco suave y texto secundario gris, con contrastes AA verifica
 
 ### Tipografía y densidad
 
-Tipografía sans del sistema, próxima a las capturas, con títulos de página grandes y claros; navegación y tablas de tamaño compacto. En el marco general no usar JetBrains Sans, franjas de herramientas de IDE, gradientes, cristal decorativo ni sombras elevadas. Títulos, nombres de Recursos y acciones mantienen el vocabulario de Theke en español. El contenido se alinea a la izquierda; la anchura de lectura se limita cuando hay texto largo, pero la cuadrícula de archivos aprovecha todo el área disponible.
+Tipografía sans del sistema, próxima a las capturas, con navegación y tablas de tamaño compacto. Las colecciones no repiten el nombre de la pantalla ni una frase introductoria en un encabezado grande. En el marco general no usar JetBrains Sans, franjas de herramientas de IDE, gradientes, cristal decorativo ni sombras elevadas. Nombres de Recursos y acciones mantienen el vocabulario de Theke en español. El contenido se alinea a la izquierda; la anchura de lectura se limita cuando hay texto largo, pero la cuadrícula de archivos aprovecha todo el área disponible.
 
 ### Composición del marco general
 
 ```text
 ┌────────────────────────┬────────────────────────────────────────────────────┐
-│ Theke / buscar         │ Ruta / página              Lista | Galería  Acción │
+│ Theke / buscar         │ Ruta / página                  Metadatos  Acción   │
 │ Inicio                 ├────────────────────────────────────────────────────┤
-│ Proyectos              │ Título y vistas de la colección                    │
+│ Proyectos              │ Pestañas/filtros       Lista | Galería  +          │
 │ Biblioteca             │                                                    │
 │ Recientes              │ Contenido principal: lista o galería               │
 │ Proyectos y páginas    │                                                    │
@@ -40,16 +40,16 @@ Tipografía sans del sistema, próxima a las capturas, con títulos de página g
 └────────────────────────┴────────────────────────────────────────────────────┘
 ```
 
-Barra lateral persistente, aproximadamente 260–280 CSS px en escritorio, fondo `app-sidebar` y borde fino. La topbar compacta de Notion cruza el área principal salvo en Canvas/Diagrama, que usa su encabezado de trabajo propio. La superficie principal usa `app-canvas`, respiración generosa alrededor del título y controles compactos. Inicio y Proyectos se presentan como filas o galerías sobrias; los Diagramas siguen mostrando el grafo de Theke como protagonista.
+Barra lateral persistente, aproximadamente 260–280 CSS px en escritorio, fondo `app-sidebar` y borde fino. La topbar compacta de Notion cruza el área principal salvo en Canvas/Diagrama, que usa su encabezado de trabajo propio. La superficie principal usa `app-canvas` y comienza con los controles de la colección y el contenido, sin título o descripción redundantes. El selector Lista/Galería está en la página, con un «+» neutro junto a él. Inicio y Proyectos se presentan como filas o galerías sobrias; los Diagramas siguen mostrando el grafo de Theke como protagonista.
 
 ### Composición para recorrer Recursos
 
 ```text
 ┌────────────────────────┬────────────────────────────────────────────────────┐
-│ Navegación             │ Ruta / carpeta                 Lista | Galería      │
+│ Navegación             │ Ruta / carpeta                    Metadatos          │
 │ Biblioteca             ├────────────────────────────────────────────────────┤
 │ Carpetas               │ Buscar Recursos · Tipo · Proyecto · Etiquetas      │
-│ Recientes              │                                                    │
+│ Recientes              │                          Lista | Galería  +         │
 │ Papelera, si aplica    │ [miniatura] [miniatura] [miniatura] [miniatura]    │
 │                        │ [miniatura] [miniatura] [miniatura] [miniatura]    │
 └────────────────────────┴────────────────────────────────────────────────────┘
@@ -72,8 +72,9 @@ La tentación genérica sería mezclar todo en tarjetas redondeadas oscuras. Se 
 
 ## Alcances confirmados de topbar y controles
 
-- `referencias/app.notion.topbar.png` fija una topbar horizontal baja y plana: ruta a la izquierda; metadatos y acciones a la derecha. Aparece en todas las páginas de Theke salvo la vista de Canvas/Diagrama, que conserva su encabezado de trabajo específico.
-- El selector Lista/Galería es un componente compartido para toda colección: Inicio, Proyectos, Proyecto, Biblioteca, Carpetas y selectores de Recursos. Cambia la presentación del conjunto actual sin alterar filtros ni selección. Los detalles individuales y formularios no muestran un selector sin función.
+- `referencias/app.notion.topbar.png` fija una topbar horizontal baja y plana: ruta a la izquierda; metadatos y acciones generales a la derecha. Aparece en todas las páginas de Theke salvo la vista de Canvas/Diagrama, que conserva su encabezado de trabajo específico.
+- El selector Lista/Galería es un componente compartido para toda colección: Inicio, Proyectos, Proyecto, Biblioteca, Carpetas y selectores de Recursos. Está dentro de la página, junto a un «+» neutro de creación, nunca en la topbar. Cambia la presentación del conjunto actual sin alterar filtros ni selección. Los detalles individuales y formularios no muestran un selector sin función.
+- Las colecciones empiezan con sus controles y datos; no presentan un gran título que repita la sección ni un subtítulo como «Todos tus Recursos canónicos». La ruta pequeña de la topbar aporta orientación cuando hace falta.
 - Búsqueda, filtros y selector conservan el lenguaje de Notion: radios pequeños o medianos, fondos tonales, bordes discretos y altura compacta. La búsqueda de Biblioteca puede ser ancha, pero no tiene radio de píldora. El selector no usa cápsula ni relleno azul permanente.
 - Drive inspira el orden y la densidad de la exploración de Recursos y sus miniaturas. La barra lateral, topbar, fondo, tipografía y controles pertenecen siempre al sistema visual de Notion.
 
