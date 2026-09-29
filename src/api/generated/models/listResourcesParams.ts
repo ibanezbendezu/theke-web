@@ -22,6 +22,10 @@ projectId?: string;
  */
 folderId?: string;
 /**
+ * UUID de carpeta o root para archivos sin carpeta
+ */
+libraryFolderId?: string;
+/**
  * @maxLength 80
  */
 tag?: string;

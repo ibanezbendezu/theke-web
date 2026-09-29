@@ -14,4 +14,8 @@ cursor?: string;
  * @maximum 50
  */
 limit?: number;
+/**
+ * UUID de carpeta o root para proyectos sin carpeta
+ */
+collectionFolderId?: string;
 };

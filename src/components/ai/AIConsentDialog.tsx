@@ -22,9 +22,9 @@ export function AIConsentDialog({
   useEffect(() => {
     if (isOpen) {
       previousFocus.current = document.activeElement as HTMLElement | null;
-      setAgreed(false);
-      setErrorMsg('');
       const focusTimer = setTimeout(() => {
+        setAgreed(false);
+        setErrorMsg('');
         dialogRef.current?.querySelector<HTMLElement>('button, input')?.focus();
       }, 50);
       return () => clearTimeout(focusTimer);
@@ -69,13 +69,13 @@ export function AIConsentDialog({
       role="dialog"
       aria-modal="true"
       aria-labelledby="ai-consent-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-sm p-4"
     >
       <div
         ref={dialogRef}
-        className="bg-surface text-on-background border border-border w-full max-w-lg rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-background text-on-background w-full max-w-lg rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
       >
-        <div className="p-5 border-b border-border flex items-center gap-3 bg-surface-variant/40">
+        <div className="p-5 flex items-center gap-3 bg-surface-variant/40">
           <div className="p-2 bg-primary/10 text-primary rounded-md">
             <ShieldCheck size={22} />
           </div>
@@ -94,7 +94,7 @@ export function AIConsentDialog({
             Theke integra asistencia de Inteligencia Artificial opcional para apoyar el razonamiento del autor sin delegar el control del conocimiento ni comprometer la privacidad.
           </p>
 
-          <div className="bg-surface-variant/30 border border-border/80 rounded-md p-3.5 space-y-2.5">
+          <div className="bg-surface-variant/50 rounded-md p-3.5 space-y-2.5">
             <div className="flex items-start gap-2.5">
               <Lock size={16} className="text-primary mt-0.5 shrink-0" />
               <div className="text-xs space-y-1">
@@ -123,7 +123,7 @@ export function AIConsentDialog({
             </div>
           </div>
 
-          <label className="flex items-start gap-3 p-3 bg-surface border border-border rounded-md cursor-pointer hover:bg-surface-variant/20 transition-colors">
+          <label className="flex items-start gap-3 p-3 bg-surface-variant/40 rounded-md cursor-pointer hover:bg-surface-variant/20 transition-colors">
             <input
               type="checkbox"
               checked={agreed}

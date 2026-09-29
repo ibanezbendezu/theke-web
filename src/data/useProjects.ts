@@ -2,18 +2,19 @@ import { useAuth } from '@clerk/clerk-react';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { thekeFetch } from '../api/httpClient';
 
-export interface Project { id: string; name: string; archivedAt: string | null; createdAt: string; updatedAt: string }
+export interface Project { id: string; name: string; collectionFolderId?: string | null; archivedAt: string | null; createdAt: string; updatedAt: string }
 interface ProjectPage { data: Project[]; meta: { nextCursor: string | null } }
 interface Envelope<T> { data: T }
 
-export function useProjects(status: 'active' | 'archived') {
+export function useProjects(status: 'active' | 'archived', collectionFolderId?: string) {
   const { getToken, userId } = useAuth();
   return useInfiniteQuery({
-    queryKey: ['private', 'projects', userId, status], enabled: Boolean(userId), initialPageParam: '',
+    queryKey: ['private', 'projects', userId, status, collectionFolderId], enabled: Boolean(userId), initialPageParam: '',
     queryFn: async ({ pageParam, signal }) => {
       const token = await getToken();
       const query = new URLSearchParams({ status, limit: '20' });
       if (pageParam) query.set('cursor', pageParam);
+      if (collectionFolderId) query.set('collectionFolderId', collectionFolderId);
       const response = await thekeFetch<{ data: ProjectPage }>(`/v1/projects?${query}`, { headers: { Authorization: `Bearer ${token}` }, signal });
       return response.data;
     },
@@ -46,7 +47,7 @@ export function useProjectActions() {
     void client.invalidateQueries({ queryKey: ['private', 'project'] });
   };
   return {
-    create: useMutation({ mutationFn: (name: string) => request('/v1/projects', 'POST', { name }), onSuccess: refresh }),
+    create: useMutation({ mutationFn: (value: string | { name: string; collectionFolderId?: string }) => request('/v1/projects', 'POST', typeof value === 'string' ? { name: value } : value), onSuccess: refresh }),
     rename: useMutation({ mutationFn: ({ id, name }: { id: string; name: string }) => request(`/v1/projects/${id}`, 'PATCH', { name }), onSuccess: refresh }),
     archive: useMutation({ mutationFn: (id: string) => request(`/v1/projects/${id}/archive`, 'POST'), onSuccess: refresh }),
     restore: useMutation({ mutationFn: (id: string) => request(`/v1/projects/${id}/restore`, 'POST'), onSuccess: refresh }),

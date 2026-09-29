@@ -27,6 +27,15 @@ Estado: **en curso**. Trabajo transversal de implementación previo a la épica 
 
 El estado de las historias de las épicas 4 y 5 permanece como figura en `sprint-status.yaml`; este trabajo visual no las marca como terminadas.
 
+## Correcciones previas a la épica 6
+
+- Inicio, Proyectos, Biblioteca y las colecciones dentro del Proyecto comparten filas y tarjetas casi cuadradas. Cada elemento ofrece «…» y menú por clic derecho.
+- Biblioteca muestra archivos y carpetas de la Cuenta, sin filtros de Proyecto. El «+» abre el diálogo de carga con zona de arrastre y botón central. La franja de carga permanente salió de la página.
+- Las carpetas de Biblioteca son independientes de las carpetas de la colección de Proyectos y de las carpetas internas de cada Proyecto. La migración `theke-api/drizzle/0020_collection_folders.sql` y los endpoints están implementados; **la migración no se ha aplicado** a la base remota configurada en este workspace.
+- En la lista de Proyectos, los proyectos se pueden mover a carpetas por arrastre o menú en lista y galería. Crear carpeta está en el menú contextual del área. Dentro de cada Proyecto, los Recursos conservan sus propias carpetas y también se pueden arrastrar. La pantalla de Proyectos no incorpora carga de archivos.
+- Diálogos privados y del Canvas usan fondo desenfocado y superficies sin contorno exterior.
+- Pendiente: comprobar flujos con datos reales y revisar la composición visual en navegador. @Browser no expone navegador en esta sesión.
+
 ## Verificación de la segunda etapa parcial
 
 - `npm run build`: correcto.

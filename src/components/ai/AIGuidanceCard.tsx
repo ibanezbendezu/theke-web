@@ -36,17 +36,20 @@ export function AIGuidanceCard({
   const { data: status } = useAiStatus();
   const { preflight, settings } = useAiActions();
   const [consentDialogOpen, setConsentDialogOpen] = useState(false);
-  const [assessment, setAssessment] = useState<AiPreflightResult | null>(null);
+  const [assessed, setAssessed] = useState<{ key: string; result: AiPreflightResult } | null>(null);
+  const resourceKey = selectedResourceIds.join(',');
+  const assessmentKey = `${resourceKey}:${status?.enabled}:${status?.consent?.isConsented}`;
+  const assessment = assessed?.key === assessmentKey ? assessed.result : null;
+  const runPreflight = preflight.mutate;
 
   useEffect(() => {
     let active = true;
-    setAssessment(null);
-    if (selectedResourceIds.length > 0 && status?.enabled && status?.consent?.isConsented) {
-      preflight.mutate(
-        { resourceIds: selectedResourceIds },
+    if (resourceKey && status?.enabled && status?.consent?.isConsented) {
+      runPreflight(
+        { resourceIds: resourceKey.split(',') },
         {
           onSuccess: (data) => {
-            if (active) setAssessment(data);
+            if (active) setAssessed({ key: assessmentKey, result: data });
           },
         },
       );
@@ -54,7 +57,7 @@ export function AIGuidanceCard({
     return () => {
       active = false;
     };
-  }, [selectedResourceIds.join(','), status?.enabled, status?.consent?.isConsented]);
+  }, [resourceKey, assessmentKey, status?.enabled, status?.consent?.isConsented, runPreflight]);
 
   const isConsented = status?.consent?.isConsented ?? false;
   const isEnabled = status?.enabled ?? false;
@@ -77,7 +80,7 @@ export function AIGuidanceCard({
 
   return (
     <>
-      <div className={`p-4 space-y-4 border border-border rounded-lg bg-surface ${className ?? ''}`}>
+      <div className={`space-y-4 rounded-lg bg-surface-variant/55 p-4 ${className ?? ''}`}>
         {/* Header con Estado */}
         <div className="flex items-center justify-between gap-2 border-b border-border pb-3">
           <div className="flex items-center gap-2">

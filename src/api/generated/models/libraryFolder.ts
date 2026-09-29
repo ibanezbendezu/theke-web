@@ -5,11 +5,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface ProjectInput {
-  /**
-     * @minLength 1
-     * @maxLength 120
-     */
+export interface LibraryFolder {
+  id: string;
   name: string;
-  collectionFolderId?: string;
+  createdAt: string;
+  updatedAt: string;
 }

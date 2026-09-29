@@ -20,6 +20,8 @@ import type {
   BadRequestResponse,
   CreateRelationInput,
   CreateRelationResponse,
+  DeleteLibraryFolder200,
+  DeleteProjectFolder200,
   DiagramInput,
   DiagramListResponse,
   DiagramResponse,
@@ -32,6 +34,10 @@ import type {
   GetResourceAccessParams,
   ImpactConfirmationInput,
   ImpactResponse,
+  LibraryFolderInput,
+  LibraryFolderListResponse,
+  LibraryFolderResponse,
+  LibraryResourceMoveInput,
   LinkInput,
   LinkUpdateInput,
   ListDiagramsParams,
@@ -40,11 +46,17 @@ import type {
   ListResourcePropertyDefinitions200,
   ListResourcesParams,
   MeResponse,
+  MoveLibraryResources200,
+  MoveProjectsToFolder200,
   NotFoundResponse,
   NoteInput,
   NoteListResponse,
   NoteResponse,
   OrganizationResponse,
+  ProjectFolderInput,
+  ProjectFolderListResponse,
+  ProjectFolderMoveInput,
+  ProjectFolderResponse,
   ProjectInput,
   ProjectListResponse,
   ProjectResourceListResponse,
@@ -114,6 +126,214 @@ export const getMe = async ( options?: Parameters<typeof thekeFetch>[1]): Promis
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export type listProjectFoldersResponse200 = {
+  data: ProjectFolderListResponse
+  status: 200
+}
+
+export type listProjectFoldersResponseSuccess = (listProjectFoldersResponse200) & {
+  headers: Headers;
+};
+;
+
+export type listProjectFoldersResponse = (listProjectFoldersResponseSuccess)
+
+export const getListProjectFoldersUrl = () => {
+
+
+
+
+  return `/v1/project-folders`
+}
+
+export const listProjectFolders = async ( options?: Parameters<typeof thekeFetch>[1]): Promise<listProjectFoldersResponse> => {
+
+  return thekeFetch<listProjectFoldersResponse>(getListProjectFoldersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type createProjectFolderResponse201 = {
+  data: ProjectFolderResponse
+  status: 201
+}
+
+export type createProjectFolderResponseSuccess = (createProjectFolderResponse201) & {
+  headers: Headers;
+};
+;
+
+export type createProjectFolderResponse = (createProjectFolderResponseSuccess)
+
+export const getCreateProjectFolderUrl = () => {
+
+
+
+
+  return `/v1/project-folders`
+}
+
+export const createProjectFolder = async (projectFolderInput: ProjectFolderInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createProjectFolderResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<createProjectFolderResponse>(getCreateProjectFolderUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(projectFolderInput)
+  }
+);}
+
+
+
+export type renameProjectFolderResponse200 = {
+  data: ProjectFolderResponse
+  status: 200
+}
+
+export type renameProjectFolderResponseSuccess = (renameProjectFolderResponse200) & {
+  headers: Headers;
+};
+;
+
+export type renameProjectFolderResponse = (renameProjectFolderResponseSuccess)
+
+export const getRenameProjectFolderUrl = (id: string,) => {
+
+
+
+
+  return `/v1/project-folders/${id}`
+}
+
+export const renameProjectFolder = async (id: string,
+    projectFolderInput: ProjectFolderInput, options?: Parameters<typeof thekeFetch>[1]): Promise<renameProjectFolderResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<renameProjectFolderResponse>(getRenameProjectFolderUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(projectFolderInput)
+  }
+);}
+
+
+
+export type deleteProjectFolderResponse200 = {
+  data: DeleteProjectFolder200
+  status: 200
+}
+
+export type deleteProjectFolderResponseSuccess = (deleteProjectFolderResponse200) & {
+  headers: Headers;
+};
+;
+
+export type deleteProjectFolderResponse = (deleteProjectFolderResponseSuccess)
+
+export const getDeleteProjectFolderUrl = (id: string,) => {
+
+
+
+
+  return `/v1/project-folders/${id}`
+}
+
+export const deleteProjectFolder = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<deleteProjectFolderResponse> => {
+
+  return thekeFetch<deleteProjectFolderResponse>(getDeleteProjectFolderUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export type moveProjectsToFolderResponse200 = {
+  data: MoveProjectsToFolder200
+  status: 200
+}
+
+export type moveProjectsToFolderResponseSuccess = (moveProjectsToFolderResponse200) & {
+  headers: Headers;
+};
+;
+
+export type moveProjectsToFolderResponse = (moveProjectsToFolderResponseSuccess)
+
+export const getMoveProjectsToFolderUrl = () => {
+
+
+
+
+  return `/v1/project-folders/projects`
+}
+
+export const moveProjectsToFolder = async (projectFolderMoveInput: ProjectFolderMoveInput, options?: Parameters<typeof thekeFetch>[1]): Promise<moveProjectsToFolderResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<moveProjectsToFolderResponse>(getMoveProjectsToFolderUrl(),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(projectFolderMoveInput)
   }
 );}
 
@@ -2620,6 +2840,228 @@ export const restoreResource = async (id: string, options?: Parameters<typeof th
     method: 'POST'
 
 
+  }
+);}
+
+
+
+export type listLibraryFoldersResponse200 = {
+  data: LibraryFolderListResponse
+  status: 200
+}
+
+export type listLibraryFoldersResponseSuccess = (listLibraryFoldersResponse200) & {
+  headers: Headers;
+};
+;
+
+export type listLibraryFoldersResponse = (listLibraryFoldersResponseSuccess)
+
+export const getListLibraryFoldersUrl = () => {
+
+
+
+
+  return `/v1/library-folders`
+}
+
+export const listLibraryFolders = async ( options?: Parameters<typeof thekeFetch>[1]): Promise<listLibraryFoldersResponse> => {
+
+  return thekeFetch<listLibraryFoldersResponse>(getListLibraryFoldersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type createLibraryFolderResponse201 = {
+  data: LibraryFolderResponse
+  status: 201
+}
+
+export type createLibraryFolderResponse409 = {
+  data: ApiErrorResponse
+  status: 409
+}
+
+export type createLibraryFolderResponseSuccess = (createLibraryFolderResponse201) & {
+  headers: Headers;
+};
+export type createLibraryFolderResponseError = (createLibraryFolderResponse409) & {
+  headers: Headers;
+};
+
+export type createLibraryFolderResponse = (createLibraryFolderResponseSuccess | createLibraryFolderResponseError)
+
+export const getCreateLibraryFolderUrl = () => {
+
+
+
+
+  return `/v1/library-folders`
+}
+
+export const createLibraryFolder = async (libraryFolderInput: LibraryFolderInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createLibraryFolderResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<createLibraryFolderResponse>(getCreateLibraryFolderUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(libraryFolderInput)
+  }
+);}
+
+
+
+export type renameLibraryFolderResponse200 = {
+  data: LibraryFolderResponse
+  status: 200
+}
+
+export type renameLibraryFolderResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type renameLibraryFolderResponseSuccess = (renameLibraryFolderResponse200) & {
+  headers: Headers;
+};
+export type renameLibraryFolderResponseError = (renameLibraryFolderResponse404) & {
+  headers: Headers;
+};
+
+export type renameLibraryFolderResponse = (renameLibraryFolderResponseSuccess | renameLibraryFolderResponseError)
+
+export const getRenameLibraryFolderUrl = (id: string,) => {
+
+
+
+
+  return `/v1/library-folders/${id}`
+}
+
+export const renameLibraryFolder = async (id: string,
+    libraryFolderInput: LibraryFolderInput, options?: Parameters<typeof thekeFetch>[1]): Promise<renameLibraryFolderResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<renameLibraryFolderResponse>(getRenameLibraryFolderUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(libraryFolderInput)
+  }
+);}
+
+
+
+export type deleteLibraryFolderResponse200 = {
+  data: DeleteLibraryFolder200
+  status: 200
+}
+
+export type deleteLibraryFolderResponseSuccess = (deleteLibraryFolderResponse200) & {
+  headers: Headers;
+};
+;
+
+export type deleteLibraryFolderResponse = (deleteLibraryFolderResponseSuccess)
+
+export const getDeleteLibraryFolderUrl = (id: string,) => {
+
+
+
+
+  return `/v1/library-folders/${id}`
+}
+
+export const deleteLibraryFolder = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<deleteLibraryFolderResponse> => {
+
+  return thekeFetch<deleteLibraryFolderResponse>(getDeleteLibraryFolderUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export type moveLibraryResourcesResponse200 = {
+  data: MoveLibraryResources200
+  status: 200
+}
+
+export type moveLibraryResourcesResponseSuccess = (moveLibraryResourcesResponse200) & {
+  headers: Headers;
+};
+;
+
+export type moveLibraryResourcesResponse = (moveLibraryResourcesResponseSuccess)
+
+export const getMoveLibraryResourcesUrl = () => {
+
+
+
+
+  return `/v1/library-folders/resources`
+}
+
+export const moveLibraryResources = async (libraryResourceMoveInput: LibraryResourceMoveInput, options?: Parameters<typeof thekeFetch>[1]): Promise<moveLibraryResourcesResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<moveLibraryResourcesResponse>(getMoveLibraryResourcesUrl(),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(libraryResourceMoveInput)
   }
 );}
 

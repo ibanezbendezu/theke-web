@@ -22,8 +22,8 @@ export function AISettingsDialog({
   useEffect(() => {
     if (isOpen) {
       previousFocus.current = document.activeElement as HTMLElement | null;
-      setMessage('');
       const timer = setTimeout(() => {
+        setMessage('');
         dialogRef.current?.querySelector<HTMLElement>('button')?.focus();
       }, 50);
       return () => clearTimeout(timer);
@@ -73,13 +73,13 @@ export function AISettingsDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="ai-settings-title"
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-sm p-4"
       >
         <div
           ref={dialogRef}
-          className="bg-surface text-on-background border border-border w-full max-w-md rounded-lg shadow-xl overflow-hidden flex flex-col"
+          className="bg-background text-on-background w-full max-w-md rounded-xl shadow-2xl overflow-hidden flex flex-col"
         >
-          <div className="p-4 border-b border-border flex items-center justify-between bg-surface-variant/40">
+          <div className="p-4 flex items-center justify-between bg-surface-variant/40">
             <div className="flex items-center gap-2">
               <Sparkles size={18} className="text-primary" />
               <h2 id="ai-settings-title" className="text-sm font-semibold">
@@ -93,7 +93,7 @@ export function AISettingsDialog({
 
           <div className="p-4 space-y-4 text-xs leading-relaxed">
             {/* Estado del consentimiento */}
-            <div className="p-3 rounded-md bg-surface-variant/30 border border-border space-y-2">
+            <div className="p-3 rounded-md bg-surface-variant/50 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-on-background flex items-center gap-1.5">
                   <Shield size={14} className="text-primary" />
@@ -120,7 +120,7 @@ export function AISettingsDialog({
             </div>
 
             {/* Cuotas y límites */}
-            <div className="p-3 rounded-md bg-surface-variant/30 border border-border space-y-1.5">
+            <div className="p-3 rounded-md bg-surface-variant/50 space-y-1.5">
               <span className="font-semibold text-on-background block">Límites y consumo actual</span>
               <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
                 <div>
@@ -184,7 +184,7 @@ export function AISettingsDialog({
             </div>
 
             {message && (
-              <p className="text-xs p-2 rounded-md bg-surface-variant text-on-background border border-border">
+              <p className="text-xs p-2 rounded-md bg-surface-variant text-on-background">
                 {message}
               </p>
             )}

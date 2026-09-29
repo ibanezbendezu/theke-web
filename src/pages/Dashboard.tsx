@@ -1,17 +1,22 @@
 import { useState } from 'react';
 import { Folder } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Card } from '../components/ui/Card';
+import { CollectionItem } from '../components/ui/CollectionItem';
+import { ImpactDialog, type ImpactRequest } from '../components/ui/ImpactDialog';
+import { NameDialog } from '../components/ui/NameDialog';
 import { Button } from '../components/ui/Button';
 import { CollectionGroup, ViewToolbar } from '../components/ui/ViewToolbar';
 import { useCollectionView } from '../components/ui/useCollectionView';
-import { useProjects } from '../data/useProjects';
+import { type Project, useProjectActions, useProjects } from '../data/useProjects';
 
 export function Dashboard() {
   const navigate = useNavigate();
   const projects = useProjects('active');
   const [viewMode, setViewMode] = useCollectionView('home', 'list');
   const [group, setGroup] = useState<'projects' | 'recent'>('projects');
+  const [impact, setImpact] = useState<ImpactRequest | null>(null);
+  const [renaming, setRenaming] = useState<Project | null>(null);
+  const actions = useProjectActions();
   const all = projects.data?.pages.flatMap(page => page.data) ?? [];
   const items = group === 'recent' ? [...all].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 5) : all;
 
@@ -26,10 +31,9 @@ export function Dashboard() {
     {projects.isPending && <p role="status" className="text-sm text-outline">Cargando proyectos…</p>}
     {projects.isError && <div role="alert" className="text-sm"><p>No se pudieron cargar los proyectos.</p><Button className="mt-2" onClick={() => projects.refetch()}>Reintentar</Button></div>}
     {!projects.isPending && !projects.isError && items.length === 0 && <div className="py-14 text-sm text-outline"><p>Aún no tienes proyectos.</p><Button className="mt-2" onClick={() => navigate('/projects?create=1')}>Crear proyecto</Button></div>}
-    {items.length > 0 && (viewMode === 'grid' ?
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">{items.map(project => <Card key={project.id} title={project.name} subtitle={`Editado ${new Date(project.updatedAt).toLocaleDateString()}`} icon={<Folder size={17} />} onClick={() => navigate(`/projects/${project.id}`)} />)}</div>
-      : <div className="w-full overflow-x-auto"><table className="w-full min-w-[520px] border-collapse text-left text-sm"><thead><tr className="border-b border-border text-xs font-normal text-outline"><th className="px-3 py-2 font-medium">Nombre</th><th className="px-3 py-2 font-medium">Última actividad</th></tr></thead><tbody>{items.map(project => <tr key={project.id} className="border-b border-border/50 hover:bg-surface-variant"><td className="p-0"><button className="flex w-full items-center gap-2 px-3 py-3 text-left focus-visible:outline-2 focus-visible:outline-primary" onClick={() => navigate(`/projects/${project.id}`)}><Folder size={17} className="text-outline" />{project.name}</button></td><td className="px-3 py-3 text-outline">{new Date(project.updatedAt).toLocaleDateString()}</td></tr>)}</tbody></table></div>
-    )}
+    {items.length > 0 && <div className={viewMode === 'grid' ? 'grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : ''}>{items.map(project => <CollectionItem key={project.id} view={viewMode} title={project.name} detail="Proyecto" date={new Date(project.updatedAt).toLocaleDateString()} icon={<Folder size={18} />} preview={<Folder size={42} />} onOpen={() => navigate(`/projects/${project.id}`)} actions={[{ label: 'Abrir', onSelect: () => navigate(`/projects/${project.id}`) }, { label: 'Renombrar', onSelect: () => setRenaming(project) }, { label: 'Archivar', onSelect: () => setImpact({ entityType: 'project', id: project.id, action: 'archive' }) }, { label: 'Eliminar', destructive: true, onSelect: () => setImpact({ entityType: 'project', id: project.id, action: 'delete' }) }]} />)}</div>}
     {group === 'projects' && projects.hasNextPage && <Button className="mt-5" disabled={projects.isFetchingNextPage} onClick={() => projects.fetchNextPage()}>{projects.isFetchingNextPage ? 'Cargando…' : 'Cargar más'}</Button>}
+    {impact && <ImpactDialog request={impact} onClose={() => setImpact(null)} onDone={() => setImpact(null)} />}
+    {renaming && <NameDialog title="Renombrar proyecto" initialValue={renaming.name} onClose={() => setRenaming(null)} onSave={name => actions.rename.mutateAsync({ id: renaming.id, name }).then(() => undefined)} />}
   </section>;
 }

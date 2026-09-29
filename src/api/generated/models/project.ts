@@ -13,6 +13,8 @@ export interface Project {
      */
   name: string;
   /** @nullable */
+  collectionFolderId: string | null;
+  /** @nullable */
   archivedAt: string | null;
   /** @nullable */
   deletedAt: string | null;

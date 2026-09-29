@@ -28,6 +28,8 @@ export interface Resource {
   status: ResourceStatus;
   updatedAt: string;
   /** @nullable */
+  libraryFolderId: string | null;
+  /** @nullable */
   archivedAt: string | null;
   content?: string;
   /** @nullable */
