@@ -13,7 +13,7 @@ vi.mock('../src/features/canvas/useCanvasUploadBatches', () => ({ useCanvasUploa
 vi.mock('../src/pages/DiagramWorkspace', () => ({ DiagramWorkspace: () => <div>Lienzo manual</div> }));
 vi.mock('../src/features/canvas/CanvasResources', () => ({ CanvasResourcePanel: () => <p>Panel de recursos</p>, CanvasResourcePicker: () => null }));
 vi.mock('../src/features/canvas/CanvasUploadTray', () => ({ CanvasUploadTray: () => null }));
-vi.mock('../src/components/ui/ThemeToggle', () => ({ ThemeToggle: () => null }));
+vi.mock('../src/components/ui/ThemeToggle', () => ({ ThemeToggle: () => <button type="button">Tema claro</button> }));
 vi.mock('../src/features/canvas/CanvasDialog', () => ({ CanvasDialog: ({ children }: { children: React.ReactNode }) => <div role="dialog">{children}</div> }));
 
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
@@ -50,4 +50,14 @@ it('muestra el lienzo sin barra superior ni panel izquierdo permanente', () => {
   expect(screen.getByLabelText('Panel de recursos')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Cerrar panel' }));
   expect(screen.queryByText('Panel de recursos')).not.toBeInTheDocument();
+});
+
+it('muestra el control de tema dentro de las opciones del mapa', () => {
+  render(<DiagramEditor />);
+  expect(screen.queryByRole('button', { name: 'Tema claro' })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Opciones del mapa' }));
+  expect(screen.getByRole('button', { name: 'Tema claro' })).toBeInTheDocument();
+  fireEvent.keyDown(document, { key: 'Escape' });
+  expect(screen.queryByRole('button', { name: 'Tema claro' })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Opciones del mapa' })).toHaveFocus();
 });

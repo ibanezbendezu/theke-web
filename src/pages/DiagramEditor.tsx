@@ -1,5 +1,5 @@
-import { ArrowLeft, FolderOpen, ListTree, PanelRightClose, PanelRightOpen, ScanSearch, Share2, Upload, X } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { ArrowLeft, FolderOpen, ListTree, MoreHorizontal, PanelRightClose, PanelRightOpen, ScanSearch, Share2, Upload, X } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { AIGuidanceCard } from '../components/ai/AIGuidanceCard';
@@ -35,6 +35,22 @@ function DiagramEditorCore() {
   const [readyDiagramId, setReadyDiagramId] = useState<string | null>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [sharePreviewOpen, setSharePreviewOpen] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const optionsButton = useRef<HTMLButtonElement>(null);
+  const optionsPanel = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!optionsOpen) return;
+    optionsPanel.current?.querySelector<HTMLButtonElement>('button')?.focus();
+    const onPointerDown = (event: PointerEvent) => {
+      if (!optionsPanel.current?.contains(event.target as Node) && !optionsButton.current?.contains(event.target as Node)) setOptionsOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { setOptionsOpen(false); optionsButton.current?.focus(); }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => { document.removeEventListener('pointerdown', onPointerDown); document.removeEventListener('keydown', onKeyDown); };
+  }, [optionsOpen]);
   const [canvasSaved, setCanvasSaved] = useState(false);
   const [previewEpoch, setPreviewEpoch] = useState(0);
   const savedRef = useRef(false);
@@ -71,16 +87,17 @@ function DiagramEditorCore() {
         <div className="pointer-events-auto flex min-w-0 max-w-[45%] items-center gap-1 rounded-lg bg-background/90 p-1 shadow-sm backdrop-blur-md">
           <Button size="icon" className="h-10 w-10 shrink-0" title="Volver a proyectos" aria-label="Volver a proyectos" icon={ArrowLeft} onClick={() => navigate('/projects')} />
           <h1 className="min-w-0 truncate px-2 text-sm font-semibold" title={diagram.data.name}>{diagram.data.name}</h1>
-          <ThemeToggle />
         </div>
-        <nav aria-label="Acciones del mapa" className="pointer-events-auto flex min-w-0 max-w-[55%] shrink-0 gap-0.5 overflow-x-auto rounded-lg bg-background/90 p-1 shadow-sm backdrop-blur-md">
+        <nav aria-label="Acciones del mapa" className="pointer-events-auto flex min-w-0 max-w-[55%] shrink-0 items-center gap-0.5 rounded-lg bg-background/90 p-1 shadow-sm backdrop-blur-md"><div className="flex min-w-0 gap-0.5 overflow-x-auto">
           <Button size="icon" className="h-10 w-10 shrink-0" title={leftPanel === 'resources' ? 'Ocultar recursos' : 'Mostrar recursos'} aria-label={leftPanel === 'resources' ? 'Ocultar recursos' : 'Mostrar recursos'} aria-expanded={leftPanel === 'resources'} icon={FolderOpen} onClick={() => setLeftPanel(value => value === 'resources' ? null : 'resources')} />
           <Button size="icon" className="h-10 w-10 shrink-0" title={leftPanel === 'semantic' ? 'Ocultar vista semántica' : 'Mostrar vista semántica'} aria-label={leftPanel === 'semantic' ? 'Ocultar vista semántica' : 'Mostrar vista semántica'} aria-pressed={leftPanel === 'semantic'} icon={ListTree} onClick={() => setLeftPanel(value => value === 'semantic' ? null : 'semantic')} />
           <Button size="icon" className="h-10 w-10 shrink-0" title="Revisar alcance de IA" aria-label="Revisar alcance de IA" icon={ScanSearch} onClick={() => { setReviewOpen(true); setReviewScope(null); setReviewError(''); }} />
           {!diagram.data.archivedAt && <Button size="icon" className="h-10 w-10 shrink-0" title="Previsualizar contenido compartible" aria-label="Previsualizar contenido compartible" icon={Share2} onClick={() => setSharePreviewOpen(true)} />}
           {!diagram.data.archivedAt && <Button size="icon" className="h-10 w-10 shrink-0" title="Cargar archivos en el canvas" aria-label="Cargar archivos en el canvas" icon={Upload} onClick={() => pickFiles()} />}
           {!rightOpen && <Button size="icon" className="h-10 w-10 shrink-0" title="Mostrar propiedades" aria-label="Mostrar propiedades" icon={PanelRightOpen} onClick={() => setRightOpen(true)} />}
+          </div><Button ref={optionsButton} size="icon" className="h-10 w-10 shrink-0" title="Opciones del mapa" aria-label="Opciones del mapa" aria-expanded={optionsOpen} aria-controls="map-options" icon={MoreHorizontal} onClick={() => setOptionsOpen(value => !value)} />
         </nav>
+        {optionsOpen && <div id="map-options" ref={optionsPanel} role="dialog" aria-label="Opciones del mapa" className="pointer-events-auto absolute right-0 top-14 w-48 rounded-lg bg-background p-3 shadow-xl" onClick={() => { setOptionsOpen(false); optionsButton.current?.focus(); }}><p className="mb-2 text-sm font-medium">Apariencia</p><ThemeToggle /></div>}
       </div>
       {resourceError && <p role="alert" className="absolute left-3 top-20 z-50 rounded-md bg-background/95 px-3 py-2 text-xs text-red-600 shadow-sm">{resourceError}</p>}
       {leftPanel && <div className="absolute bottom-3 left-3 top-20 z-50 w-[min(19rem,calc(100%-1.5rem))] overflow-hidden rounded-xl bg-background/95 shadow-xl backdrop-blur-md" aria-label={leftPanel === 'resources' ? 'Panel de recursos' : 'Panel de vista semántica'}>
