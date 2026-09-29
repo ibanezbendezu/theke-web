@@ -51,7 +51,7 @@ export function CanvasSemanticView({ projectId }: { projectId: string }) {
     if (!selected) return; const position = { ...selected.position, [axis]: selected.position[axis] + amount };
     useCanvasStore.getState().onNodesChange([{ id: selected.id, type: 'position', position }]);
   };
-  return <aside className="w-64 shrink-0 overflow-auto bg-surface-variant/35 p-3 text-sm" aria-label="Vista semántica">
+  return <aside className="h-full w-full overflow-auto p-4 text-sm" aria-label="Vista semántica">
     <h2 className="font-semibold">Vista semántica</h2><p className="mt-1 text-xs text-outline">Orden del documento; los elementos ocultos también aparecen aquí.</p>
     <ol className="mt-3 space-y-1">{ordered.map(({ node, depth }) => <li key={node.id} style={{ paddingLeft: depth * 12 }}><button ref={element => { if (element) buttons.current.set(node.id, element); else buttons.current.delete(node.id); }} type="button" aria-label={`${title(node)} — ${type(node)}${node.hidden ? ', oculto' : ''}`} aria-current={selected?.id === node.id ? 'true' : undefined} onClick={() => select(node.id)} className={`w-full rounded border p-2 text-left focus-visible:outline-2 focus-visible:outline-primary ${selected?.id === node.id ? 'border-primary bg-surface-variant' : 'border-border'}`}><span className="block truncate font-medium">{title(node)}</span><span className="text-xs text-outline">{type(node)}{node.hidden ? ' · Oculto' : ''}</span></button></li>)}</ol>
     {ordered.length === 0 && <p className="mt-3 text-xs text-outline">No hay elementos en el diagrama.</p>}

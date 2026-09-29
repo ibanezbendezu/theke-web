@@ -15,34 +15,40 @@ export function CanvasToolbar({ onAddResource, onCreateRelation }: { onAddResour
     const canUndo = useCanvasStore(state => state.past.length > 0); const canRedo = useCanvasStore(state => state.future.length > 0);
 
     return (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1.5 bg-surface-variant/80 backdrop-blur border border-border rounded-xl shadow-lg">
-            {onAddResource && <><Button variant="ghost" size="sm" icon={Plus} aria-label="Añadir recurso" title="Añadir recurso (A)" onClick={onAddResource} className="w-10 h-10 p-0"/><div className="w-px h-6 bg-border mx-1"/></>}
-            {onCreateRelation && <Button variant="ghost" size="sm" icon={Link2} aria-label="Crear Relación" title="Crear Relación entre Recursos" onClick={onCreateRelation} className="w-10 h-10 p-0"/>}
-            {selectedIds.length >= 2 && <Button variant="ghost" size="sm" icon={Group} aria-label="Crear grupo visual" title="Agrupar selección" onClick={() => groupNodes(selectedIds)} className="w-10 h-10 p-0"/>}
-            {onAddResource && <><Button variant="ghost" size="sm" icon={Type} aria-label="Añadir texto visual" title="Añadir anotación de texto" onClick={() => addAnnotation('text')} className="w-10 h-10 p-0"/><Button variant="ghost" size="sm" icon={Square} aria-label="Añadir forma visual" title="Añadir forma" onClick={() => addAnnotation('shape')} className="w-10 h-10 p-0"/><Button variant="ghost" size="sm" icon={Minus} aria-label="Añadir línea visual" title="Añadir línea decorativa" onClick={() => addAnnotation('line')} className="w-10 h-10 p-0"/></>}
-            <div className="w-px h-6 bg-border mx-1"/><Button variant="ghost" size="sm" icon={Undo2} aria-label="Deshacer" disabled={!canUndo} onClick={undo} className="w-10 h-10 p-0"/><Button variant="ghost" size="sm" icon={Redo2} aria-label="Rehacer" disabled={!canRedo} onClick={redo} className="w-10 h-10 p-0"/>
+        <>
+          {(onAddResource || onCreateRelation) && <nav aria-label="Herramientas del lienzo" className="absolute left-3 top-1/2 z-30 flex max-h-[calc(100dvh-11rem)] -translate-y-1/2 flex-col gap-0.5 overflow-y-auto rounded-lg bg-background/90 p-1 shadow-sm backdrop-blur-md">
+            {onAddResource && <Button variant="ghost" size="icon" icon={Plus} aria-label="Añadir recurso" title="Añadir recurso (A)" onClick={onAddResource} className="h-11 w-11 shrink-0"/>}
+            {onCreateRelation && <Button variant="ghost" size="icon" icon={Link2} aria-label="Crear Relación" title="Crear Relación entre Recursos" onClick={onCreateRelation} className="h-11 w-11 shrink-0"/>}
+            {selectedIds.length >= 2 && <Button variant="ghost" size="icon" icon={Group} aria-label="Crear grupo visual" title="Agrupar selección" onClick={() => groupNodes(selectedIds)} className="h-11 w-11 shrink-0"/>}
+            {onAddResource && <><Button variant="ghost" size="icon" icon={Type} aria-label="Añadir texto visual" title="Añadir anotación de texto" onClick={() => addAnnotation('text')} className="h-11 w-11 shrink-0"/><Button variant="ghost" size="icon" icon={Square} aria-label="Añadir forma visual" title="Añadir forma" onClick={() => addAnnotation('shape')} className="h-11 w-11 shrink-0"/><Button variant="ghost" size="icon" icon={Minus} aria-label="Añadir línea visual" title="Añadir línea decorativa" onClick={() => addAnnotation('line')} className="h-11 w-11 shrink-0"/></>}
+          </nav>}
+          <div className="absolute bottom-3 left-3 z-30 flex gap-0.5 rounded-lg bg-background/90 p-1 shadow-sm backdrop-blur-md"><Button variant="ghost" size="icon" icon={Undo2} aria-label="Deshacer" disabled={!canUndo} onClick={undo} className="h-11 w-11"/><Button variant="ghost" size="icon" icon={Redo2} aria-label="Rehacer" disabled={!canRedo} onClick={redo} className="h-11 w-11"/></div>
+          <div className="absolute bottom-3 right-3 z-30 flex gap-0.5 rounded-lg bg-background/90 p-1 shadow-sm backdrop-blur-md">
             <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 icon={ZoomOut}
+                aria-label="Alejar"
                 onClick={() => zoomOut({ duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 300 })}
-                className="w-10 h-10 p-0"
+                className="h-11 w-11"
             />
             <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 icon={ZoomIn}
+                aria-label="Acercar"
                 onClick={() => zoomIn({ duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 300 })}
-                className="w-10 h-10 p-0"
+                className="h-11 w-11"
             />
-            <div className="w-px h-6 bg-border mx-1" />
             <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 icon={Maximize}
+                aria-label="Ajustar vista"
                 onClick={() => fitView({ duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 500, padding: 0.2 })}
-                className="w-10 h-10 p-0 text-primary hover:text-primary"
+                className="h-11 w-11"
             />
-        </div>
+          </div>
+        </>
     );
 }
