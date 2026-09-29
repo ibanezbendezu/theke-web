@@ -14,7 +14,7 @@ Estado: **en curso**. Trabajo transversal de implementación previo a la épica 
 ## Entrega por etapas
 
 1. Base compartida y colecciones privadas: **implementada; pendiente revisión visual en navegador**.
-2. Proyecto detallado, otras pantallas privadas, Canvas y vista compartida: **en curso**. El detalle de Proyecto ya ofrece lista/galería de Diagramas con los controles compartidos; el detalle de Biblioteca, sus metadatos, los paneles de recursos del Canvas y la vista pública usan superficies tonales. Faltan el resto de inspectores y la revisión visual integral.
+2. Proyecto detallado, otras pantallas privadas, Canvas y vista compartida: **implementada; pendiente revisión visual en navegador**. El detalle de Proyecto ofrece lista/galería de Diagramas con los controles compartidos; el detalle de Biblioteca, sus metadatos, los inspectores del Canvas y la vista pública usan superficies tonales.
 3. Verificación de recorridos y tamaños de pantalla; cierre de los criterios abiertos de las historias 5.2–5.5.
 4. Inicio de la épica 6 de comentarios contextuales.
 

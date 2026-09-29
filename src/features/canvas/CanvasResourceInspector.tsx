@@ -28,7 +28,7 @@ export function CanvasResourceInspector({ nodeId, resourceId, caption = '' }: { 
     {resource.isPending && <p role="status">Cargando recurso…</p>}
     {resource.isError && <div role="alert"><p>Recurso no disponible. El resto del diagrama sigue accesible.</p><Button className="mt-2" onClick={() => void resource.refetch()}>Reintentar</Button></div>}
     {item && <>
-      <section aria-label="Datos del recurso" className="space-y-2 rounded border border-border p-3">
+      <section aria-label="Datos del recurso" className="space-y-2 rounded-md bg-surface-variant/60 p-3">
         <h3 className="font-medium">Recurso canónico</h3>
         <p className="break-words font-medium">{item.title}</p>
         <p className="text-xs text-outline">{item.type === 'note' ? 'Nota' : item.type === 'link' ? 'Enlace' : item.mediaType || 'Archivo'} · {item.status === 'archived' ? 'Archivado' : 'Activo'}</p>
@@ -45,9 +45,9 @@ export function CanvasResourceInspector({ nodeId, resourceId, caption = '' }: { 
         {error && <p role="alert" className="text-red-600">{error}</p>}
       </section>
     </>}
-    <section aria-label="Propiedades de la representación" className="rounded border border-border p-3">
+    <section aria-label="Propiedades de la representación" className="rounded-md bg-surface-variant/60 p-3">
       <h3 className="font-medium">Solo en este diagrama</h3>
-      <label className="mt-2 block">Etiqueta local<input className="mt-1 w-full rounded border border-border bg-background p-2" value={caption} maxLength={120} onChange={event => updateNodeData(nodeId, { caption: event.target.value })} /></label>
+      <label className="mt-2 block">Etiqueta local<input className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary" value={caption} maxLength={120} onChange={event => updateNodeData(nodeId, { caption: event.target.value })} /></label>
       <p className="mt-2 text-xs text-outline">Esta etiqueta no cambia el recurso de la Biblioteca.</p>
     </section>
     <CanvasPresentationInspector nodeId={nodeId} />
