@@ -1,5 +1,7 @@
 # Revisión UI/UX previa a la épica 6
 
+> Auditoría histórica de la dirección JetBrains anterior. El Design Spine cambió el 2026-09-28 por referencias Notion/Drive aportadas por el usuario; las prioridades de implementación deben leerse según el nuevo `DESIGN.md`.
+
 Fecha: 2026-09-28. Alcance: comparación estática entre los spines UX aprobados y la implementación actual de publicación y vista compartida. No sustituye una inspección visual en navegador.
 
 ## Decisión de secuencia

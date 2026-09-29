@@ -1,10 +1,10 @@
 ---
 name: Theke
 description: Sistema visual sereno y centrado en contenido para construir, explorar y compartir conocimiento conectado.
-status: final
+status: draft
 preview-theme: dark
 created: 2026-09-19
-updated: 2026-09-20
+updated: 2026-09-28
 sources:
   - ../../briefs/brief-Theke-2026-09-19/brief.md
   - ../../briefs/brief-Theke-2026-09-19/addendum.md
@@ -14,6 +14,7 @@ sources:
   - ../../../../src/index.css
   - ../../../../src/app/router.tsx
   - ../../../../src/features/canvas/CanvasEditor.tsx
+  - reference-led-direction-2026-09-28.md
 colors:
   background: '#FFFFFF'
   foreground: '#37352F'
@@ -48,26 +49,29 @@ colors:
   resource-audio: '#9065B0'
   resource-video: '#D9730D'
   resource-link: '#2383E2'
-  background-dark: '#1E1F22'
-  foreground-dark: '#DFE1E5'
-  foreground-secondary-dark: '#9DA0A8'
-  surface-dark: '#2B2D30'
-  surface-raised-dark: '#313338'
-  surface-contextual-dark: '#2B2D30C7'
-  surface-contextual-strong-dark: '#2B2D30E8'
+  background-dark: '#191919'
+  foreground-dark: '#EDEDED'
+  foreground-secondary-dark: '#A5A5A5'
+  surface-dark: '#202020'
+  surface-raised-dark: '#292929'
+  surface-contextual-dark: '#292929E8'
+  surface-contextual-strong-dark: '#292929F5'
+  resource-background-dark: '#131314'
+  resource-card-dark: '#202020'
+  resource-control-dark: '#37393B'
   surface-hover-dark: '#FFFFFF0D'
   surface-active-dark: '#3574F033'
-  border-dark: '#393B40'
-  border-strong-dark: '#6F737A'
-  control-border-dark: '#6F737A'
+  border-dark: '#303030'
+  border-strong-dark: '#777777'
+  control-border-dark: '#777777'
   overlay-dark: '#00000099'
-  primary-dark: '#3574F0'
+  primary-dark: '#2783DE'
   primary-strong-dark: '#3264C8'
   primary-text-dark: '#6EA6FF'
   on-primary-dark: '#FFFFFF'
-  focus-ring-dark: '#4E8FFF'
-  selection-dark: '#3574F03D'
-  relation-dark: '#6EA6FF'
+  focus-ring-dark: '#7AB4FF'
+  selection-dark: '#2783DE30'
+  relation-dark: '#7AB4FF'
   ai-dark: '#9A6DD7'
   comment-dark: '#FFA344'
   on-comment-dark: '#191919'
@@ -82,13 +86,13 @@ colors:
   resource-video-dark: '#FFA344'
   resource-link-dark: '#529CCA'
 typography:
-  display: { fontFamily: "'JetBrains Sans', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif", fontSize: 32px, fontWeight: '650', lineHeight: '1.2', letterSpacing: -0.02em }
-  heading-lg: { fontFamily: "'JetBrains Sans', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif", fontSize: 24px, fontWeight: '650', lineHeight: '1.25', letterSpacing: -0.015em }
-  heading-md: { fontFamily: "'JetBrains Sans', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif", fontSize: 18px, fontWeight: '600', lineHeight: '1.35' }
-  body: { fontFamily: "'JetBrains Sans', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif", fontSize: 14px, fontWeight: '400', lineHeight: '1.5' }
-  body-strong: { fontFamily: "'JetBrains Sans', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif", fontSize: 14px, fontWeight: '600', lineHeight: '1.45' }
-  label: { fontFamily: "'JetBrains Sans', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif", fontSize: 12px, fontWeight: '600', lineHeight: '1.35' }
-  caption: { fontFamily: "'JetBrains Sans', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif", fontSize: 12px, fontWeight: '400', lineHeight: '1.4' }
+  display: { fontFamily: "ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif", fontSize: 32px, fontWeight: '700', lineHeight: '1.2', letterSpacing: -0.02em }
+  heading-lg: { fontFamily: "ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif", fontSize: 28px, fontWeight: '650', lineHeight: '1.25', letterSpacing: -0.015em }
+  heading-md: { fontFamily: "ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif", fontSize: 18px, fontWeight: '600', lineHeight: '1.35' }
+  body: { fontFamily: "ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif", fontSize: 14px, fontWeight: '400', lineHeight: '1.5' }
+  body-strong: { fontFamily: "ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif", fontSize: 14px, fontWeight: '600', lineHeight: '1.45' }
+  label: { fontFamily: "ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif", fontSize: 12px, fontWeight: '600', lineHeight: '1.35' }
+  caption: { fontFamily: "ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif", fontSize: 12px, fontWeight: '400', lineHeight: '1.4' }
 rounded:
   sm: 4px
   md: 6px
@@ -107,8 +111,7 @@ spacing:
   '10': 40px
   page-gutter: 24px
   panel-width: 304px
-  sidebar-width: 224px
-  tool-stripe-width: 40px
+  sidebar-width: 272px
 components:
   button-primary: { background: '{colors.primary-strong}', foreground: '{colors.on-primary}', border: '{colors.primary-strong}', radius: '{rounded.md}', focus: '{colors.focus-ring}' }
   button-secondary: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.control-border}', radius: '{rounded.md}', focus: '{colors.focus-ring}' }
@@ -123,16 +126,18 @@ components:
   project-card: { background: '{colors.background}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}' }
   resource-row: { background: '{colors.background}', hover: '{colors.surface-hover}', border: '{colors.border}', height: 40px }
   resource-card: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.lg}', selected: '{colors.selection}' }
+  resource-browser: { background: '{colors.background}', foreground: '{colors.foreground}', sidebar: '{colors.surface}', search: '{colors.surface-raised}' }
+  resource-preview-card: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.lg}', selected: '{colors.selection}' }
   folder-card: { background: '{colors.surface}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.lg}' }
-  canvas-toolbar: { background: '{colors.surface-contextual}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}', backdrop-filter: 'blur(10px)' }
+  canvas-toolbar: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}' }
   add-menu: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.lg}' }
   group-frame: { background: '{colors.surface-active}', foreground: '{colors.foreground}', border: '{colors.border-strong}', radius: '{rounded.lg}' }
   semantic-relation: { stroke: '{colors.relation}', label-background: '{colors.surface-raised}', label-foreground: '{colors.foreground}' }
-  relation-editor: { background: '{colors.surface-contextual-strong}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}', backdrop-filter: 'blur(10px)' }
+  relation-editor: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}' }
   context-panel: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', width: '{spacing.panel-width}' }
-  ai-guidance-card: { background: '{colors.surface-contextual-strong}', foreground: '{colors.foreground}', accent: '{colors.ai}', radius: '{rounded.md}', backdrop-filter: 'blur(10px)' }
+  ai-guidance-card: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', accent: '{colors.ai}', radius: '{rounded.md}' }
   save-status: { foreground: '{colors.foreground-secondary}', error: '{colors.error}' }
-  upload-batch-tray: { background: '{colors.surface-contextual}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}', backdrop-filter: 'blur(10px)' }
+  upload-batch-tray: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}' }
   share-wizard: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.xl}' }
   comment-marker: { background: '{colors.comment}', foreground: '{colors.on-comment}', radius: '{rounded.full}' }
   comment-composer: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.lg}' }
@@ -140,31 +145,28 @@ components:
   confirm-dialog: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.xl}' }
   theme-control: { background: '{colors.surface}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}' }
   semantic-view: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.control-border}', selected: '{colors.selection}', radius: '{rounded.lg}' }
-  window-header: { background: '{colors.surface}', foreground: '{colors.foreground}', border: '{colors.border}', height: 40px }
-  tool-window-stripe: { background: '{colors.surface}', foreground: '{colors.foreground-secondary}', border: '{colors.border}', width: '{spacing.tool-stripe-width}' }
-  glass-shell: { background: '{colors.surface-contextual}', foreground: '{colors.foreground}', border: '{colors.border}', backdrop-filter: 'blur(20px) saturate(1.15)' }
 ---
 
 # Theke — Design Spine
 
 > Este archivo es el contrato visual para implementación y futuros mocks. Si un mock, la interfaz actual o un artefacto de exploración entra en conflicto, este spine gana. `.working/color-themes-1.html` fue descartado explícitamente y no es referencia final.
 
-Mockups de referencia aprobados: [Canvas de autoría](mockups/key-canvas-authoring.html), [publicación](mockups/key-share-wizard.html) y [comentario móvil](mockups/key-shared-mobile-comment.html). Ilustran el tema oscuro; los tokens y reglas de este documento siguen siendo normativos para ambos temas.
+La dirección actual se basa en las capturas aportadas por el usuario: `referencias/app.notion.png` para el marco general y `referencias/drive.google.png` para navegar Recursos. Permanecen en el workspace fuera del repositorio. Los mockups anteriores de Canvas, publicación y comentario móvil documentan flujos, pero su apariencia JetBrains queda reemplazada por este spine. La composición de referencia con contenido propio de Theke está en [mockup del marco y Biblioteca](mockups/theke-notion-drive-direction.html).
 
 ## Brand & Style
 
 Theke debe sentirse como una herramienta profesional de estudio: serena, enfocada, exploratoria y confiable. El conocimiento ocupa el primer plano; el cromado se retira. La interfaz no intenta impresionar ni simular inteligencia: presenta estructura, procedencia y acciones con claridad para que la persona siga pensando por sí misma.
 
-La postura visual debe ser reconociblemente cercana a IntelliJ IDEA 2026 en tema oscuro: header integrado, franjas estrechas de herramientas, paneles acoplados, área central dominante, jerarquía por bloques tonales, controles compactos y revelado progresivo. La similitud abarca composición, densidad y ritmo visual; Theke conserva logotipo, iconografía, contenido y vocabulario propios. La paleta Notion permanece como antecedente para colores semánticos de contenido, pero el shell oscuro adopta neutros fríos próximos a JetBrains Islands Dark.
+La postura visual sigue con máxima fidelidad el marco oscuro de la captura de Notion: barra lateral permanente de `#202020`, área principal plana de `#191919`, tipografía sans del sistema, títulos grandes, navegación discreta y filas separadas por líneas tenues. En Biblioteca y otras pantallas donde se recorren Recursos, la barra lateral permanece igual; el área principal adopta la composición de la captura de Drive: búsqueda prominente, ruta, filtros, alternancia lista/cuadrícula y tarjetas con miniatura grande sobre `#131314`. Theke conserva logotipo, iconografía, contenido y vocabulario propios.
 
-Evitar saturación, tono infantil, rigidez corporativa y “magia” visual. No hay gradientes de marca ni animaciones celebratorias. El material translúcido tipo macOS/ChatGPT se limita al shell, barras flotantes y capas superpuestas; nunca convierte Recursos o contenido en vidrio decorativo. Los controles avanzados aparecen en contexto y desaparecen cuando dejan de ser útiles.
+Evitar saturación, tono infantil, rigidez corporativa y “magia” visual. No hay gradientes de marca, cristal decorativo ni animaciones celebratorias. Los controles avanzados aparecen en contexto y desaparecen cuando dejan de ser útiles. Las tarjetas con miniaturas se reservan para navegar Recursos; Inicio y Proyectos conservan filas planas.
 
 ## Visual Provenance
 
-- **Referencia principal:** IntelliJ IDEA 2026 en tema oscuro para el header, editor central, tool window stripes, paneles acoplados, densidad y separación tonal. Referencias oficiales: `https://www.jetbrains.com/help/idea/new-ui.html`, `https://www.jetbrains.com/help/idea/guided-tour-around-the-user-interface.html` y `https://www.jetbrains.com/help/idea/user-interface-themes.html`.
-- **Material:** macOS y las aplicaciones de escritorio ChatGPT/Codex inspiran translucidez, blur y sensación de ventana nativa. Referencia de Codex: `https://openai.com/index/introducing-the-codex-app/`.
-- **Referencias secundarias:** Miro/Figma para el lienzo espacial, Notion para colores semánticos de contenido y Google Docs para comentarios.
-- **Límite de identidad:** Theke conserva marca, iconos, vocabulario y contenido propios; no copia recursos propietarios ni atajos de JetBrains u OpenAI.
+- **Marco global:** captura `referencias/app.notion.png`, aportada por el usuario, para barra lateral, fondo, jerarquía de página, tablas, densidad y estados.
+- **Navegación de Recursos:** captura `referencias/drive.google.png`, aportada por el usuario, para búsqueda, filtros, rutas, alternancia lista/cuadrícula y miniaturas. La barra lateral global permanece al estilo Notion, decisión confirmada el 2026-09-28.
+- **Referencia funcional:** Theke conserva el grafo espacial, las Relaciones, la Biblioteca canónica, la publicación y los comentarios definidos en `EXPERIENCE.md`.
+- **Límite de identidad:** Theke conserva marca, iconos, vocabulario y contenido propios; no copia logotipos, nombres, documentos ni fotografías de las capturas.
 - **Descartado:** `.working/color-themes-1.html` y sus cuatro paletas no son referencia final.
 
 ## Colors
@@ -174,14 +176,15 @@ Evitar saturación, tono infantil, rigidez corporativa y “magia” visual. No 
 - `{colors.background}` / `{colors.background-dark}` es el plano de páginas y Canvas.
 - `{colors.surface}` / `{colors.surface-dark}` separa navegación, paneles secundarios y estados suaves.
 - `{colors.surface-raised}` / `{colors.surface-raised-dark}` sostiene tarjetas, menús, paneles flotantes y diálogos.
-- `{colors.surface-contextual}` y `{colors.surface-contextual-strong}` —con sus pares oscuros— sostienen shell, controles temporales o capas flotantes. Son translúcidos, pero el contenido canónico bajo ellos no debe competir con su texto.
+- `{colors.surface-contextual}` y `{colors.surface-contextual-strong}` —con sus pares oscuros— sostienen controles temporales o capas flotantes. El shell y el contenido canónico permanecen opacos.
 - `{colors.foreground}` / `{colors.foreground-dark}` se usa para el texto principal. El texto secundario y los estados persistentes usan `{colors.foreground-secondary}` / `{colors.foreground-secondary-dark}`: valores opacos con contraste mínimo 4.5:1. Los tokens de borde nunca se usan como texto.
 - `{colors.border}` separa a baja jerarquía; `{colors.border-strong}` se reserva para foco estructural.
 - `{colors.control-border}` / `{colors.control-border-dark}` delimita inputs y controles interactivos con contraste mínimo 3:1.
+- En el tema oscuro, `{colors.resource-background-dark}` se usa solo en el área principal de Biblioteca y exploración de Carpetas; `{colors.resource-card-dark}` y `{colors.resource-control-dark}` separan miniaturas y controles. La barra lateral global sigue usando `{colors.surface-dark}`.
 
 ### Acción y semántica
 
-- `{colors.primary}` es el azul Notion para foco e indicadores gráficos. Enlaces de texto usan `{colors.primary-text}` y botones con texto blanco usan `{colors.primary-strong}` para contraste AA.
+- `{colors.primary}` es el azul de acción observado en la referencia para foco e indicadores gráficos. Enlaces de texto usan `{colors.primary-text}` y botones con texto blanco usan `{colors.primary-strong}` para contraste AA.
 - `{colors.relation}` identifica Relaciones semánticas; líneas decorativas permanecen neutrales.
 - `{colors.ai}` identifica procedencia o guía de IA. Nunca significa “correcto” ni domina una superficie.
 - `{colors.comment}` identifica marcadores y modo Comentar. Usa texto `{colors.on-comment}`; número o icono siempre acompaña el color. La combinación debe conservar contraste AA en ambos temas.
@@ -200,36 +203,35 @@ Objetivos: 4.5:1 para texto normal y 3:1 para texto grande, iconos funcionales, 
 ### Transparencia semántica
 
 - **Opaco = estable o comprometido:** Recursos, contenido editable, Biblioteca, paneles acoplados, diálogos de confirmación y pasos de publicación usan superficies opacas.
-- **Translúcido = shell o contextual:** header, franjas periféricas, `Canvas Toolbar`, `Relation Editor`, selección por lote, vista previa de sugerencias de IA y halos de comentario pueden usar material oscuro translúcido con blur.
+- **Contextual:** menús, `Canvas Toolbar`, `Relation Editor`, selección por lote y halos de comentario pueden usar superficies oscuras elevadas, pero permanecen legibles y opacas cuando contienen texto o controles.
 - **Transparente = agrupación o alcance:** `Group Frame`, selección rectangular y zonas de destino usan relleno muy ligero y borde explícito; no parecen un Recurso ni una Carpeta.
-- Ningún párrafo, input o acción crítica descansa directamente sobre contenido variable. El shell puede bajar hasta 78 % de opacidad con `backdrop-filter: blur(20px) saturate(1.15)`; popovers con texto largo usan al menos 91 %, y campos internos siempre son opacos.
-- Si `backdrop-filter` no está disponible, si la persona solicita mayor contraste o si el fondo compromete WCAG, la superficie pasa a `{colors.surface-raised}` sin cambiar tamaño ni jerarquía. La transparencia nunca comunica por sí sola estado, disponibilidad o procedencia.
+- Ningún párrafo, input o acción crítica descansa directamente sobre contenido variable. El shell, paneles y formularios son opacos. La transparencia nunca comunica por sí sola estado, disponibilidad o procedencia.
 
 ## Typography
 
-La fuente deseada es **JetBrains Sans**, distinta de JetBrains Mono. Antes de descargarla, empaquetarla o distribuirla, Producto y el equipo legal deben confirmar la licencia y la fuente oficial. Mientras ese gate permanezca abierto —o si la licencia no permite distribución— se usa **Inter** si ya está disponible y, en su defecto, `system-ui`. No descargar fuentes en tiempo de ejecución desde terceros.
+La tipografía usa la pila sans del sistema, próxima a las capturas de referencia, sin descargar fuentes en tiempo de ejecución. El contenido en español mantiene anchos de lectura cómodos; la navegación y las tablas son compactas, mientras la cuadrícula de Recursos aprovecha el ancho disponible.
 
 La jerarquía es estable con cualquier fallback: `{typography.display}` para bienvenida vacía o título excepcional; `{typography.heading-lg}` para página; `{typography.heading-md}` para sección, panel y diálogo; `{typography.body}` para contenido; `{typography.body-strong}` para títulos y acciones; `{typography.label}` para controles; `{typography.caption}` para metadatos, procedencia y estado.
 
-No usar JetBrains Mono como sustituto de marca. La monoespaciada queda para datos que lo requieran. Evitar mayúsculas sostenidas salvo rótulos muy cortos.
+La monoespaciada queda para datos que lo requieran. Evitar mayúsculas sostenidas salvo rótulos muy cortos.
 
 ## Layout & Spacing
 
 Escala base de 4 px. La densidad predeterminada se acerca al modo compacto de una herramienta de escritorio: controles frecuentes usan `{spacing.1}`–`{spacing.3}`, tarjetas y paneles `{spacing.3}`–`{spacing.5}`, y solo regiones de contenido usan `{spacing.6}`–`{spacing.10}`.
 
-En escritorio, la aplicación replica la anatomía general de una IDE moderna: `Window Header` de 40 px; `Tool Window Stripe` de 40 px en los bordes; panel de proyecto/Biblioteca acoplado; Canvas central; e Inspector acoplado a la derecha. Las franjas abren, cierran o enfocan paneles y siempre ofrecen tooltip. El centro conserva la mayor superficie.
+En escritorio, la barra lateral global de 272 px permanece visible y admite colapso. Contiene marca, búsqueda, Inicio, Proyectos, Biblioteca, accesos recientes y cuenta. El área principal deja un margen amplio alrededor del título y después muestra filas, tabla, Canvas o cuadrícula según la tarea. En Biblioteca se mantiene la misma barra lateral y se usa la composición visual de Drive solo en el contenido principal. El Canvas conserva la mayor superficie y puede abrir un panel contextual derecho sin desplazar las acciones esenciales.
 
 Inicio, Proyectos y Biblioteca usan `{spacing.page-gutter}` en escritorio y 16 px en viewport estrecho. Listas y grillas comparten bordes de alineación. La grilla de puntos del Canvas es una guía espacial de bajo contraste, no una restricción rígida.
 
 ## Elevation & Depth
 
-La jerarquía nace de tono, borde y posición, como en JetBrains Islands: paneles vecinos se distinguen por superficies frías y hairlines, no por tarjetas. Superficies integradas, Recursos y paneles acoplados no llevan sombra. Menús, `Relation Editor` y `Upload Batch Tray` usan como máximo `0 8px 24px #00000038`; `{colors.overlay}` queda solo para `Confirm Dialog` y `Share Wizard` modal.
+La jerarquía nace de tono, borde y posición: barra lateral `#202020`, área principal `#191919` y área de Recursos `#131314`. Inicio y Proyectos no se llenan de tarjetas; usan filas planas y separadores. En Biblioteca, las tarjetas de miniatura son una parte funcional del explorador. Menús y diálogos pueden usar sombra moderada; las superficies integradas permanecen planas.
 
-Hover cambia tono o borde sin elevar ni mover geometría. El blur solo sirve para separar una capa contextual translúcida del Canvas y nunca se aplica a nodos, paneles acoplados o contenido estable.
+Hover cambia tono o borde sin elevar ni mover geometría. No se aplica blur a nodos, paneles acoplados o contenido estable.
 
 ## Shapes
 
-`{rounded.sm}` para controles pequeños, `{rounded.md}` para botones e inputs, `{rounded.lg}` para tarjetas y paneles, `{rounded.xl}` para diálogos. `{rounded.full}` solo para marcadores numerados, avatares e indicadores compactos.
+`{rounded.sm}` para controles pequeños y filas, `{rounded.md}` para botones e inputs, `{rounded.lg}` para tarjetas de Recursos y paneles, `{rounded.xl}` para diálogos. La búsqueda puede tener radio completo, como en Drive. `{rounded.full}` también se usa en marcadores numerados, avatares e indicadores compactos.
 
 Recursos son tarjetas; Anotaciones no adoptan tarjeta. `Group Frame` es marco tonal con etiqueta exterior. Carpetas son colecciones compactas. Relaciones semánticas usan línea continua y etiqueta; trazos decorativos son neutrales o discontinuos.
 
@@ -245,23 +247,23 @@ Los controles base usan las entradas homónimas de `components`: `Button Primary
 | **Sheet / Dialog** | Superficie elevada sobre overlay; título y descripción visibles. La hoja móvil conserva esquinas superiores `{rounded.xl}`. |
 | **Toast / Skeleton** | Toast de alto contraste para confirmación breve; Skeleton reproduce la forma final sin animación obligatoria. |
 | **Media Controls** | Controles de alto contraste, foco visible, estados de reproducción y pausa, volumen, progreso y alternativas textuales. |
-| **Window Header** | 40 px y continuidad con el marco oscuro. Aloja marca/proyecto, breadcrumb breve y acciones globales; evita una barra web convencional. |
-| **Tool Window Stripe** | Franja vertical de 40 px con iconos propios de Theke, estado activo tonal, tooltip y nombre accesible. Abre Biblioteca, Vista semántica, IA o Comentarios como paneles acoplados. |
-| **App Sidebar** | Panel de proyecto/Biblioteca de 224 px junto a su `Tool Window Stripe`. Árbol compacto, encabezado de herramienta y borde divisorio; puede colapsar completamente. Explorar/Comunidad no aparece en MVP. |
-| **Top Bar** | 40 px integrada bajo el header cuando el Canvas requiere breadcrumb, `Save Status`, pestaña del Diagrama y acciones contextuales. Puede fusionarse con `Window Header` en ventanas bajas. |
+| **App Sidebar** | Barra global persistente de 272 px, fondo `#202020`, borde fino a la derecha, búsqueda arriba, navegación y accesos recientes. Se colapsa desde un control visible; en pantalla estrecha se vuelve temporal. Permanece idéntica en Biblioteca. |
+| **Top Bar** | Encabezado simple en el área principal con título, ruta o pestañas y acciones contextuales. En Canvas incluye `Save Status` y acciones de Diagrama sin crear una segunda barra de aplicación. |
 | **Project Card** | Fila o bloque plano con borde fino, título fuerte y metadatos en caption. Hover tonal; foco visible. Evita una cuadrícula de tarjetas decorativas. |
-| **Resource Row** | Mínimo 40 px, icono semántico, nombre, tipo y última edición. Acciones disponibles con foco y hover. |
-| **Resource Card** | Compacta, reconocible por tipo, título y hasta dos líneas de metadatos. Selección con `{colors.selection}` y anillo. |
+| **Resource Row** | Alternativa de lista del explorador: mínimo 40 px, icono semántico, nombre, tipo y última edición. Acciones disponibles con foco y hover. |
+| **Resource Card** | En Canvas, compacta y reconocible por tipo, título y metadatos. Selección con `{colors.selection}` y anillo; no usa la miniatura grande de Biblioteca. |
+| **Resource Browser** | Área principal estilo Drive junto a la barra global estilo Notion: búsqueda ancha, ruta, filtros visibles y alternancia lista/cuadrícula. Fondo oscuro `#131314` en el tema de referencia. |
+| **Resource Preview Card** | Tarjeta de exploración con nombre y tipo arriba, miniatura grande debajo y acciones accesibles por foco, clic y teclado. Fondo `#202020`, radio mayor que una fila de navegación; la cuadrícula adapta columnas sin cortar contenido. |
 | **Folder Card** | Colección compacta con icono, nombre y conteo. No comparte apariencia con `Group Frame`. |
-| **Canvas Toolbar** | Grupo de acciones compacto tipo toolbar de IDE para zoom, encuadre y Canvas. Material oscuro translúcido estilo macOS/Codex, borde fino y sombra mínima; fallback opaco. |
+| **Canvas Toolbar** | Grupo opaco y compacto de acciones para zoom y encuadre, visualmente subordinado al grafo. |
 | **Add Menu** | Desde el botón visible Añadir; categorías Biblioteca, Subir, Nota, Carpeta, Grupo y Anotaciones. |
 | **Group Frame** | Marco de alcance con relleno transparente muy ligero, borde redimensionable, etiqueta fuera del contenido y handles fuera de `overflow-hidden`. Sin `transition-all`. |
 | **Semantic Relation** | Línea continua; flecha solo si es dirigida; etiqueta sobre cápsula neutra. Color `{colors.relation}`. |
-| **Relation Editor** | Popover contextual translúcido cercano a la conexión con dirección, tipo, etiqueta, Guardar y Pedir sugerencia; campos internos opacos. |
+| **Relation Editor** | Popover contextual opaco cercano a la conexión con dirección, tipo, etiqueta, Guardar y Pedir sugerencia. |
 | **Context Panel** | Tool window derecho de 304 px con encabezado compacto, pestañas o selector de contexto y divisores horizontales. Para Recurso separa “Contenido canónico” de “En este Diagrama”. |
-| **AI Guidance Card** | Vista previa contextual translúcida con acento lateral `{colors.ai}` y secciones Fundamento, Alcance y Carencias. Al aceptar o editar contenido, la superficie pasa a opaca. Nunca modal automático. |
+| **AI Guidance Card** | Vista previa contextual opaca con acento lateral `{colors.ai}` y secciones Fundamento, Alcance y Carencias. Nunca modal automático. |
 | **Save Status** | Texto pequeño: Guardando…, Guardado o No se pudo guardar. Sin badge ni check dominante. |
-| **Upload Batch Tray** | Barra contextual translúcida: Distribuir, Crear grupo visual y Deshacer carga. Su transparencia refuerza que la selección es temporal; no parece Grupo permanente. |
+| **Upload Batch Tray** | Barra contextual opaca: Distribuir, Crear grupo visual y Deshacer carga. La etiqueta explica que la selección es temporal; no parece Grupo permanente. |
 | **Share Wizard** | Tres pasos textuales: Vista previa, Contenido expuesto y Acceso. |
 | **Comment Marker** | Círculo numerado `{colors.comment}`; seleccionado refuerza borde. Siempre con nombre accesible. |
 | **Comment Composer** | En escritorio dentro de `Context Panel`; en móvil, hoja inferior. Campo y acción Publicar. |
@@ -274,10 +276,11 @@ Los controles base usan las entradas homónimas de `components`: `Button Primary
 
 | Do | Don't |
 |---|---|
+| Mantener la barra lateral oscura de Notion a través de todas las rutas. | Cambiar a la barra lateral de Drive al entrar en Biblioteca. |
+| Reservar la cuadrícula con miniaturas de Drive para explorar Recursos. | Convertir Inicio, Proyectos y Canvas en una cuadrícula uniforme de tarjetas. |
 | Dejar que Recursos y Relaciones dominen el Canvas. | Rodear todo de paneles, badges y colores de marca. |
 | Usar color para semántica, estado y contenido. | Usar azul como cromado dominante. |
-| Usar transparencia para contexto temporal, selección y alcance. | Aplicarla a Recursos, texto largo, formularios o paneles estables. |
-| Hacer reconocible el patrón header + tool stripes + tool windows + área central. | Copiar logotipo, iconos, nombres, atajos o recursos propietarios de JetBrains/OpenAI. |
+| Usar superficies opacas y diferencias tonales para estructura. | Aplicar cristal o blur decorativo a Recursos, formularios o paneles. |
 | Mantener IA discreta, identificable y consultable. | Hacer brillar o pulsar sugerencias. |
 | Distinguir Recurso, Carpeta, Grupo, Anotación y comentario por forma y etiqueta. | Depender solo de color. |
 | Mostrar acciones avanzadas al seleccionar o pedirlas. | Ocultar la única vía en hover o clic derecho. |

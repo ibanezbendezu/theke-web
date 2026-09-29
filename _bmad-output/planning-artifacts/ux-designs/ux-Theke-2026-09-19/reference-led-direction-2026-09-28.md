@@ -1,6 +1,6 @@
 # Propuesta visual para el Design Spine de Theke
 
-Estado: propuesta para conversar; no reemplaza todavía `DESIGN.md`.
+Estado: dirección confirmada para el marco global y la Biblioteca; incorporada a `DESIGN.md` y `EXPERIENCE.md`.
 
 ## Encargo y referencias
 
@@ -17,7 +17,7 @@ Este rumbo reemplaza la anterior inspiración JetBrains del Design Spine. La dif
 | `app-canvas` | `#191919` | Área principal, páginas y fondo del Canvas de Theke; muestreado en la captura de Notion. |
 | `app-sidebar` | `#202020` | Barra lateral global; muestreado en la captura de Notion. |
 | `resource-canvas` | `#131314` | Área de navegación de Recursos; muestreado en la captura de Drive. |
-| `resource-sidebar` | `#1B1B1B` | Superficie de navegación de Recursos si se adopta la pantalla completa de Drive. |
+| `resource-sidebar` | `#1B1B1B` | Color observado en Drive que sirve como referencia tonal secundaria; la barra lateral de Theke mantiene `app-sidebar`. |
 | `resource-control` | `#37393B` | Controles y botón principal oscuro de la captura de Drive. |
 | `action-blue` | `#2783DE` | Acción primaria de Theke; muestra aproximada del botón de la captura de Notion. |
 
@@ -71,6 +71,6 @@ La Biblioteca, la selección de Recursos para un Diagrama y la exploración de C
 
 La tentación genérica sería mezclar todo en tarjetas redondeadas oscuras. Se evita: filas planas para estructura, tarjetas con miniatura solo al recorrer Recursos y Canvas espacial para Diagramas. El elemento distintivo de Theke sigue siendo su grafo de conocimiento; la interfaz de referencia lo enmarca sin sustituirlo.
 
-## Decisión abierta
+## Decisión confirmada
 
-En las pantallas de Recursos, confirmar si la barra lateral global de Notion permanece mientras el contenido adopta Drive, o si la pantalla completa, incluida su navegación lateral, adopta Drive. La primera opción mantiene continuidad entre rutas; la segunda maximiza fidelidad literal a la segunda captura.
+La barra lateral global permanece al estilo Notion en todas las pantallas. En Biblioteca, Carpetas y otras superficies para navegar Recursos, solo el área de contenido adopta la composición de Drive. Confirmado por el usuario el 2026-09-28.

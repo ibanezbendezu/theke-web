@@ -1,5 +1,7 @@
 # Spine Pair Review — Theke
 
+> Revisión histórica de la dirección visual anterior al 2026-09-28. Sus juicios de estilo y aprobación no validan la nueva dirección Notion/Drive. Los spines actuales están en borrador hasta revisar visualmente la nueva maqueta.
+
 ## Overall verdict
 
 El par es **fuerte y apto para finalización**: los tokens de control cumplen contraste, Semantic View tiene contrato visual y conductual, los estados cubren las superficies relevantes y Flow 1/7 ejercitan presentación, mantenimiento y reutilización. No quedan bloqueos downstream; solo persiste una referencia de trazabilidad menor en la matriz FR→flujo.

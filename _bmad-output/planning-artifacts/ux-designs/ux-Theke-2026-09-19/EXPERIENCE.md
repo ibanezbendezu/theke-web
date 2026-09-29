@@ -1,8 +1,8 @@
 ---
 name: Theke
-status: final
+status: draft
 created: 2026-09-19
-updated: 2026-09-20
+updated: 2026-09-28
 sources:
   - ../../briefs/brief-Theke-2026-09-19/brief.md
   - ../../briefs/brief-Theke-2026-09-19/addendum.md
@@ -11,6 +11,7 @@ sources:
   - ../../../../AGENTS.md
   - ../../../../src/app/router.tsx
   - ../../../../src/features/canvas/CanvasEditor.tsx
+  - reference-led-direction-2026-09-28.md
 ---
 
 # Theke — Experience Spine
@@ -21,7 +22,7 @@ sources:
 
 Theke es una aplicación web de autoría espacial, optimizada para escritorio, y una experiencia compartida adaptable a escritorio, tablet y móvil. La persona construye conocimiento manualmente mediante Recursos y Relaciones canónicas; la IA puede orientar bajo petición, pero nunca es requisito para crear, conectar, ordenar, compartir o comentar.
 
-La interfaz se comporta deliberadamente como una IDE de JetBrains adaptada al conocimiento visual: el Canvas equivale al editor central; Biblioteca, Vista semántica, IA y Comentarios son tool windows acoplables; franjas laterales permiten mostrarlos u ocultarlos; y la complejidad se revela al seleccionar o invocar una acción. La densidad es compacta sin que esto reduzca los objetivos accesibles ni convierta los iconos sin etiqueta en la única vía para completar una tarea.
+La interfaz utiliza una barra lateral global estable al estilo de la captura de Notion aportada por el usuario. Inicio y Proyectos muestran estructura mediante filas; el Canvas ocupa el área principal y conserva paneles contextuales cuando se necesitan. Biblioteca y las superficies para recorrer Recursos mantienen la misma barra lateral, mientras el contenido principal sigue el patrón de la captura de Drive: búsqueda, ruta, filtros, lista/cuadrícula y miniaturas. La complejidad se revela al seleccionar o invocar una acción, sin esconder la única vía detrás del hover.
 
 Principios de experiencia:
 
@@ -52,13 +53,20 @@ Explorar/Comunidad queda fuera del MVP y no aparece como destino inactivo.
 
 ### Arquitectura del Canvas
 
-- `Window Header`: proyecto activo, navegación breve, controles globales y marco visual de la aplicación.
-- `Tool Window Stripe` izquierda: abre Biblioteca y Vista semántica; la derecha abre Inspector, IA y Comentarios. La herramienta activa se distingue por tono, icono y nombre accesible.
-- `Top Bar`/pestaña de editor: volver al Proyecto, nombre del Diagrama, `Save Status`, previsualizar/publicar y acciones propias del Diagrama.
-- Panel izquierdo: Biblioteca contextual como tool window acoplable. Al abrir una Carpeta muestra ruta, búsqueda, conteo, filtros de tipo, lista compacta e incorporación individual o múltiple; puede colapsar sin perder contexto.
+- `App Sidebar`: navegación global persistente estilo Notion, con Inicio, Proyectos, Biblioteca, búsqueda, accesos recientes y cuenta. No cambia al entrar en Biblioteca ni en un Proyecto; puede colapsarse para ampliar el Canvas.
+- `Top Bar` del Diagrama: volver al Proyecto, nombre del Diagrama, `Save Status`, previsualizar/publicar y acciones propias del Diagrama, integrado en el área principal.
+- Panel contextual de Biblioteca: al abrir una Carpeta desde el Canvas muestra ruta, búsqueda, conteo, filtros de tipo, lista compacta e incorporación individual o múltiple; puede colapsar sin perder contexto y no sustituye la barra global.
 - Centro: Canvas de grafo, `Canvas Toolbar`, botón visible Añadir, Recursos, Carpetas, Grupos, Relaciones y Anotaciones.
-- Panel derecho: `Context Panel` como tool window acoplable. Cambia entre detalle de Recurso, edición local, guía de IA y comentarios; solo muestra un contexto principal a la vez y puede colapsar para maximizar el Canvas.
+- Panel derecho: `Context Panel` acoplable. Cambia entre detalle de Recurso, edición local, guía de IA y comentarios; solo muestra un contexto principal a la vez y puede colapsar para maximizar el Canvas.
 - Canvas vacío: bienvenida discreta con Subir recursos, Añadir desde la Biblioteca y Crear una nota, además de indicar arrastre. Desaparece tras la primera acción, puede recuperarse y no crea ejemplos.
+
+### Exploración de Recursos
+
+- Biblioteca, Carpetas y el selector de Recursos comparten búsqueda ancha y visible, ruta o contexto actual, filtros que expresan el criterio aplicado y controles Lista/Cuadrícula.
+- La cuadrícula muestra una miniatura grande para archivos compatibles; notas y enlaces usan vista textual o icono propio de Theke. El nombre y el tipo permanecen visibles aunque no haya miniatura.
+- La lista conserva columnas útiles y lectura rápida para colecciones grandes. La vista elegida no cambia la selección ni el resultado de los filtros.
+- Un clic selecciona y abre detalles cuando corresponde; doble clic o menú pueden ofrecer la apertura rápida, pero nunca son la única vía. Selección múltiple y acciones de añadir al Canvas siguen disponibles por teclado.
+- En búsquedas vacías o filtros sin coincidencias, la ruta, búsqueda, filtros y cambio de vista permanecen visibles para poder corregir la consulta.
 
 ### Profundidad del Recurso
 
@@ -99,11 +107,12 @@ Las especificaciones visuales viven en `DESIGN.md.Components`; los nombres sigui
 | **Sheet / Dialog** | Panel temporal móvil y confirmación | Foco inicial en título o control seguro, foco contenido mientras está abierto, `Esc` cancela cuando es seguro y el cierre devuelve foco al invocador. |
 | **Toast / Skeleton** | Confirmación breve y carga | Toast no toma foco y deduplica mensajes repetidos; Skeleton no se anuncia como contenido ni reemplaza controles ya disponibles. |
 | **Media Controls** | Audio y video | Operables por teclado, exponen nombre/valor/estado y ofrecen subtítulos, transcripción o alternativa equivalente según el medio. |
-| **App Sidebar** | Global | Inicio, Proyectos y Biblioteca. Se colapsa sin perder el destino activo; en viewport estrecho se abre como panel temporal. |
-| **Window Header / Tool Window Stripe** | Escritorio | Reproducen la anatomía de la herramienta elegida: proyecto en header, editor al centro y herramientas periféricas colapsables. Cada icono tiene tooltip, nombre accesible y alternativa en menús/atajos. |
+| **App Sidebar** | Global | Inicio, Proyectos y Biblioteca con la misma barra estilo Notion en todas las rutas. Se colapsa sin perder el destino activo; en viewport estrecho se abre como panel temporal. |
 | **Top Bar** | Global y Canvas | Mantiene orientación, nombre, `Save Status` y acciones contextuales. Breadcrumb no sustituye el botón de retorno. |
 | **Project Card** | Inicio y Proyectos | Activar abre Proyecto. Menú secundario permite renombrar, archivar o eliminar mostrando impacto. |
 | **Resource Row** | Biblioteca y panel izquierdo | Activar abre detalle; selección múltiple habilita añadir al Diagrama. Acciones no dependen solo de hover. |
+| **Resource Browser** | Biblioteca, Carpetas y selección de Recursos | Buscar, filtrar, recorrer ruta y alternar Lista/Cuadrícula sin perder contexto ni selección; mantiene la barra global estilo Notion. |
+| **Resource Preview Card** | Cuadrícula de Recursos | Muestra nombre, tipo y miniatura o alternativa textual. Selección, apertura, detalle y acciones tienen control accesible sin hover. |
 | **Resource Card** | Canvas y compartido | Un clic selecciona; abrir expande localmente o lleva detalle al panel. Arrastrar cambia Representación, no Recurso. Controles internos usan `nodrag`/`nopan`. |
 | **Folder Card** | Canvas | Abre la Carpeta en panel izquierdo; nunca materializa todos sus Recursos ni actúa como extremo semántico. |
 | **Canvas Toolbar** | Canvas | Zoom, alejar y encuadrar. No contiene creación: Añadir sigue visible por separado. |
@@ -111,7 +120,7 @@ Las especificaciones visuales viven en `DESIGN.md.Components`; los nombres sigui
 | **Group Frame** | Canvas | Agrupa Representaciones visualmente; al moverlo, arrastra a sus hijos. No crea Carpeta ni Relación. Reparentado respeta invariantes de `AGENTS.md`. |
 | **Semantic Relation** | Canvas y compartido | Conecta solo Recursos. Selección abre detalle; dirección, etiqueta y tipo se exponen también sin depender del color. |
 | **Relation Editor** | Canvas | Al conectar dos Recursos, aparece cerca de la conexión. Permite guardar manualmente; Pedir sugerencia abre `AI Guidance Card` sin bloquear. |
-| **Context Panel** | Canvas y compartido | Un contexto principal; cerrar devuelve ancho al Canvas. Al editar Recurso separa global/local y muestra usos afectados. |
+| **Context Panel** | Canvas y compartido | Un contexto principal; cerrar devuelve ancho al Canvas. Al editar Recurso separa global/local y muestra usos afectados. Su apariencia usa las superficies opacas del marco Notion. |
 | **AI Guidance Card** | `Context Panel` | Muestra acción, Fundamento, Alcance, Recursos usados, Carencias y procedencia. Permite editar, aceptar, descartar o reportar. |
 | **Save Status** | `Top Bar` | Persistente; estados Guardando…, Guardado y error. Error conserva cambios y ofrece reintento. |
 | **Upload Batch Tray** | Canvas | Tras carga múltiple mantiene selección temporal con Distribuir, Crear grupo visual y Deshacer carga. Clic fuera termina la selección. |
@@ -203,9 +212,9 @@ Daniel puede editar, aceptar, descartar o reportar. Aceptar nunca ejecuta más d
 - **Creación:** botón visible Añadir es primario. Clic derecho, doble clic o atajos nunca son la única vía.
 - **Teclado:** `Tab` recorre controles visibles, `Enter` activa, `Space` activa controles estándar, `Esc` cierra el nivel superior o limpia selección contextual. El mapa exacto de atajos de creación debe ser visible dentro del producto antes de habilitarse.
 - **Selección múltiple:** carga por lote o selección explícita; una barra contextual declara el alcance. Clic fuera limpia la selección temporal.
-- **Paneles:** las tool windows pueden estar acopladas o colapsadas; el panel izquierdo explora y el derecho inspecciona/guía/comenta. Una franja nunca sustituye el acceso por teclado o menú. No apilar dos paneles derechos ni más de un diálogo modal.
+- **Paneles:** la barra lateral global permanece estable; el panel contextual izquierdo explora y el derecho inspecciona/guía/comenta. Pueden estar acoplados o colapsados. No apilar dos paneles derechos ni más de un diálogo modal.
 - **Densidad:** barras y paneles usan espaciado compacto y separación tonal. En acciones solo con icono, el nombre aparece mediante tooltip y nombre accesible; la acción primaria de cada tarea conserva texto visible.
-- **Transparencia:** el shell oscuro puede usar material translúcido estable, inspirado en macOS y las aplicaciones de escritorio de ChatGPT/Codex, para que el marco se sienta nativo. En el contenido, una capa translúcida sigue indicando interacción contextual, provisional o superpuesta. Al convertirse en contenido editable, decisión confirmada o conocimiento persistente, pasa a una superficie opaca. Quitar transparencia no cambia significado ni oculta información.
+- **Superficies:** el shell oscuro y el contenido usan superficies opacas tomadas de las referencias. Menús y capas temporales se separan por tono, borde y sombra moderada. El estado provisional se anuncia con texto e icono, no con transparencia.
 - **Foco en capas:** panel temporal, popover o diálogo recibe foco inicial significativo, evita que `Tab` alcance contenido oculto, cierra con `Esc` cuando es seguro y devuelve foco al invocador. Un panel persistente participa en el orden normal sin atrapar foco.
 - **Operaciones espaciales sin arrastre:** al seleccionar una Representación, acciones visibles permiten Mover, Redimensionar, Agrupar o Sacar del grupo mediante campos, incrementos y comandos. Seleccionar dos Recursos habilita Conectar; una selección múltiple habilita Distribuir. Cada operación anuncia el resultado y puede deshacerse.
 - **Movimiento:** transiciones de 120–180 ms para opacidad/color. Nunca interpolar posiciones de nodos durante drag, resize o reparentado. `prefers-reduced-motion` elimina desplazamientos, animación de cámara/centrado, hojas deslizantes, fades no esenciales y pulso de Skeleton; el estado final aparece inmediatamente.
@@ -244,7 +253,7 @@ Fuera del Canvas bidimensional, todas las superficies y paneles deben refluir si
 
 - **Conservado del frontend actual:** navegación Inicio/Proyectos/Biblioteca, tema claro/oscuro, React Flow, tarjetas por tipo, Grupos, Relaciones editables y herramientas de zoom.
 - **Rechazado:** IA que genera un diagrama final, chat obligatorio, relaciones automáticas, carga múltiple que agrupa semánticamente, tutorial bloqueante, contenido de ejemplo, Comunidad en MVP, acciones esenciales solo en hover/clic derecho y cromado saturado.
-- Los tres mockups aprobados ilustran los flujos críticos. `DESIGN.md` conserva la procedencia visual y sigue siendo normativo cuando un mock entra en conflicto.
+- Los tres mockups anteriores ilustran flujos, pero su apariencia visual ha sido reemplazada por la dirección Notion/Drive. La [nueva maqueta del marco y Biblioteca](mockups/theke-notion-drive-direction.html) muestra la composición propuesta; `DESIGN.md` conserva la procedencia visual normativa.
 
 ## Key Flows
 
@@ -261,7 +270,7 @@ Fallo: si fallan la autenticación o la recuperación, `State Message` conserva 
 
 ### Flow 1 — UJ-1: Daniel construye un mapa de estudio
 
-Referencia visual: [Canvas de autoría oscuro](mockups/key-canvas-authoring.html).
+Referencia de flujo: [Canvas de autoría anterior](mockups/key-canvas-authoring.html). Su apariencia está pendiente de adaptación al nuevo Design Spine.
 
 1. Daniel abre Proyectos y crea “Estudio de Juan 1”.
 2. Crea un Diagrama de grafo; el Canvas vacío ofrece Subir recursos, Añadir desde Biblioteca y Crear una nota.
@@ -303,7 +312,7 @@ Fallo: IA no disponible o límite alcanzado → mensaje contextual; `Relation Ed
 
 ### Flow 4 — Daniel publica una vista viva con alcance explícito
 
-Referencia visual: [asistente de publicación oscuro](mockups/key-share-wizard.html).
+Referencia de flujo: [asistente de publicación anterior](mockups/key-share-wizard.html). Su apariencia está pendiente de adaptación al nuevo Design Spine.
 
 1. Daniel selecciona Compartir desde `Top Bar`.
 2. `Share Wizard` se abre en el paso Vista previa; Daniel recorre el Diagrama como visitante.
@@ -316,7 +325,7 @@ Fallo: un Recurso privado no puede publicarse → `Share Wizard` identifica el e
 
 ### Flow 5 — UJ-2: María explora y comenta un diagrama
 
-Referencia visual: [comentario móvil oscuro](mockups/key-shared-mobile-comment.html).
+Referencia de flujo: [comentario móvil anterior](mockups/key-shared-mobile-comment.html). Su apariencia está pendiente de adaptación al nuevo Design Spine.
 
 1. María abre el enlace sin cuenta desde su teléfono.
 2. El Compartido encuadra el grafo; usa zoom y paneo y abre una `Resource Card`.

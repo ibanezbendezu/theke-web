@@ -1,5 +1,7 @@
 # Validation Report — Theke
 
+> Revisión histórica del 2026-09-20. Sus resultados cromáticos y de mockups corresponden a la dirección JetBrains anterior. El usuario eligió referencias Notion/Drive el 2026-09-28; `DESIGN.md` y `EXPERIENCE.md` están en `draft` hasta una nueva revisión visual y de contraste.
+
 - **DESIGN.md:** `_bmad-output/planning-artifacts/ux-designs/ux-Theke-2026-09-19/DESIGN.md`
 - **EXPERIENCE.md:** `_bmad-output/planning-artifacts/ux-designs/ux-Theke-2026-09-19/EXPERIENCE.md`
 - **Run at:** 2026-09-20, actualizado tras aprobar la dirección JetBrains oscura
