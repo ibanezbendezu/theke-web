@@ -6,12 +6,12 @@ export interface LibraryFolder { id: string; name: string; createdAt: string; up
 export function useLibraryFolders() {
   const { getToken, userId } = useAuth();
   return useQuery({ queryKey: ['private', 'library-folders', userId], enabled: Boolean(userId), queryFn: async () => {
-    const token = await getToken(); const result = await thekeFetch<{ data: LibraryFolder[] }>('/v1/library-folders', { headers: { Authorization: `Bearer ${token}` } }); return result.data;
+    const token = await getToken(); const result = await thekeFetch<{ data: { data: LibraryFolder[] } }>('/v1/library-folders', { headers: { Authorization: `Bearer ${token}` } }); return result.data.data;
   } });
 }
 export function useLibraryFolderActions() {
   const { getToken } = useAuth(); const client = useQueryClient();
-  const request = async (path: string, method: string, body?: object) => { const token = await getToken(); const result = await thekeFetch<{ data: unknown }>(`/v1/library-folders${path}`, { method, headers: { Authorization: `Bearer ${token}`, ...(body ? { 'Content-Type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined }); return result.data; };
+  const request = async (path: string, method: string, body?: object) => { const token = await getToken(); const result = await thekeFetch<{ data: { data: unknown } }>(`/v1/library-folders${path}`, { method, headers: { Authorization: `Bearer ${token}`, ...(body ? { 'Content-Type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined }); return result.data.data; };
   const refresh = () => { void client.invalidateQueries({ queryKey: ['private', 'library-folders'] }); void client.invalidateQueries({ queryKey: ['private', 'resources'] }); };
   return {
     create: useMutation({ mutationFn: (name: string) => request('', 'POST', { name }), onSuccess: refresh }),
