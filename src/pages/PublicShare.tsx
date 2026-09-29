@@ -26,28 +26,28 @@ export function PublicShare() {
   const selectedRelation = selection?.kind === 'relation' ? data?.relations.find(item => item.id === selection.id) : null;
   const titles = new Map(data?.resources.map(item => [item.id, item.title]));
   return <main className="public-share h-screen overflow-y-auto bg-background text-on-background">
-    <div className="mx-auto max-w-6xl space-y-5 p-4 sm:p-6">
+    <div className="mx-auto max-w-6xl space-y-5 px-4 py-7 md:px-8">
       {unavailable ? <section role="alert"><h1 className="text-xl font-semibold">Enlace no disponible</h1><p>Este enlace no está disponible. Solicita un enlace vigente a quien lo compartió.</p></section>
         : !data ? <p role="status">Cargando compartido…</p> : <>
           <header className="min-w-0 space-y-1 [overflow-wrap:anywhere]"><h1 className="text-2xl font-semibold">{data.diagramName}</h1>
             <p className="text-sm text-outline">Vista compartida de solo lectura · revisión {data.revision}</p>
             <p className="text-sm text-outline">{data.commentsEnabled ? 'El autor permite nuevos comentarios en este compartido.' : 'El autor desactivó nuevos comentarios en este compartido.'}</p>
           </header>
-          <button className="rounded border border-border bg-surface px-3 py-2 focus-visible:outline-2 focus-visible:outline-primary" aria-expanded={semanticOpen} onClick={() => setSemanticOpen(value => !value)}>{semanticOpen ? 'Ocultar vista semántica' : 'Mostrar vista semántica'}</button>
+          <button className="rounded-md bg-surface-variant px-3 py-2 text-sm hover:bg-border/50 focus-visible:outline-2 focus-visible:outline-primary" aria-expanded={semanticOpen} onClick={() => setSemanticOpen(value => !value)}>{semanticOpen ? 'Ocultar vista semántica' : 'Mostrar vista semántica'}</button>
           <PublicDiagramCanvas data={data} selection={selection} onSelect={setSelection} />
           {semanticOpen && <PublicSemanticList resources={data.resources} relations={data.relations} selection={selection} onSelect={setSelection} />}
-          <section ref={inspector} tabIndex={-1} aria-label="Elemento seleccionado" className="min-h-32 min-w-0 space-y-3 rounded border border-border bg-surface p-4 outline-offset-2 focus-visible:outline-2 focus-visible:outline-primary [overflow-wrap:anywhere]">
+          <section ref={inspector} tabIndex={-1} aria-label="Elemento seleccionado" className="min-h-32 min-w-0 space-y-3 rounded-lg bg-surface-variant/55 p-4 outline-offset-2 focus-visible:outline-2 focus-visible:outline-primary [overflow-wrap:anywhere]">
             {!selectedResource && !selectedRelation && <p>Selecciona un Recurso o una Relación en el Diagrama o en la vista semántica para leer sus detalles.</p>}
             {selectedResource && token && <PublicResourceDetail key={`${token}:${selectedResource.id}`} resource={selectedResource} token={token} />}
             {selectedRelation && <>
               <h2 className="text-lg font-semibold">{selectedRelation.label || selectedRelation.typeKey}</h2>
               <p>Tipo: {selectedRelation.typeKey} · dirección: {selectedRelation.direction === 'directed' ? 'dirigida' : 'no dirigida'}</p>
               {selectedRelation.explanation && <p className="whitespace-pre-wrap">{selectedRelation.explanation}</p>}
-              <div className="flex flex-wrap gap-2"><button className="rounded border border-border bg-background px-3 py-2 focus-visible:outline-2 focus-visible:outline-primary" onClick={() => setSelection({ kind: 'resource', id: selectedRelation.sourceResourceId })}>Ir a {titles.get(selectedRelation.sourceResourceId)}</button>
-                <button className="rounded border border-border bg-background px-3 py-2 focus-visible:outline-2 focus-visible:outline-primary" onClick={() => setSelection({ kind: 'resource', id: selectedRelation.targetResourceId })}>Ir a {titles.get(selectedRelation.targetResourceId)}</button></div>
+              <div className="flex flex-wrap gap-2"><button className="rounded-md bg-surface-variant px-3 py-2 hover:bg-border/50 focus-visible:outline-2 focus-visible:outline-primary" onClick={() => setSelection({ kind: 'resource', id: selectedRelation.sourceResourceId })}>Ir a {titles.get(selectedRelation.sourceResourceId)}</button>
+                <button className="rounded-md bg-surface-variant px-3 py-2 hover:bg-border/50 focus-visible:outline-2 focus-visible:outline-primary" onClick={() => setSelection({ kind: 'resource', id: selectedRelation.targetResourceId })}>Ir a {titles.get(selectedRelation.targetResourceId)}</button></div>
               <h3 className="font-semibold">Evidencia publicada</h3>
               {!selectedRelation.evidence?.length && <p>No se publicó evidencia para esta Relación.</p>}
-              <ul className="space-y-2">{selectedRelation.evidence?.map((item, index) => <li key={`${item.resourceId}-${index}`} className="rounded border border-border bg-background p-2"><p>{titles.get(item.resourceId) ?? 'Recurso publicado'}{item.pageNumber ? ` · página ${item.pageNumber}` : ''}</p>{item.excerpt && <blockquote className="border-l-2 border-outline pl-2">{item.excerpt}</blockquote>}{item.note && <p>{item.note}</p>}</li>)}</ul>
+              <ul className="space-y-2">{selectedRelation.evidence?.map((item, index) => <li key={`${item.resourceId}-${index}`} className="rounded-md bg-background/65 p-2"><p>{titles.get(item.resourceId) ?? 'Recurso publicado'}{item.pageNumber ? ` · página ${item.pageNumber}` : ''}</p>{item.excerpt && <blockquote className="border-l-2 border-outline pl-2">{item.excerpt}</blockquote>}{item.note && <p>{item.note}</p>}</li>)}</ul>
             </>}
           </section>
         </>}

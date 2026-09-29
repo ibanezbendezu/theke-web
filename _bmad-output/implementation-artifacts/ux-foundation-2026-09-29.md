@@ -14,7 +14,7 @@ Estado: **en curso**. Trabajo transversal de implementación previo a la épica 
 ## Entrega por etapas
 
 1. Base compartida y colecciones privadas: **implementada; pendiente revisión visual en navegador**.
-2. Proyecto detallado, otras pantallas privadas, Canvas y vista compartida: pendiente adaptación al mismo sistema, preservando las reglas propias del grafo.
+2. Proyecto detallado, otras pantallas privadas, Canvas y vista compartida: **en curso**. El detalle de Proyecto ya ofrece lista/galería de Diagramas con los controles compartidos; los paneles de recursos del Canvas y la vista pública usan superficies tonales. Faltan el detalle de Recurso, el resto de inspectores y la revisión visual integral.
 3. Verificación de recorridos y tamaños de pantalla; cierre de los criterios abiertos de las historias 5.2–5.5.
 4. Inicio de la épica 6 de comentarios contextuales.
 
@@ -26,3 +26,10 @@ Estado: **en curso**. Trabajo transversal de implementación previo a la épica 
 - Revisión visual: pendiente porque @Browser no expone navegador en esta sesión.
 
 El estado de las historias de las épicas 4 y 5 permanece como figura en `sprint-status.yaml`; este trabajo visual no las marca como terminadas.
+
+## Verificación de la segunda etapa parcial
+
+- `npm run build`: correcto.
+- ESLint sobre los cuatro archivos modificados: correcto.
+- Lint global: conserva los mismos 3 errores y 2 advertencias previos en componentes de IA.
+- Navegador: pendiente, porque @Browser no expone una pestaña en esta sesión.
