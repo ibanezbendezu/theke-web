@@ -4,7 +4,7 @@ import type { CanvasUploadBatch } from './useCanvasUploadBatches';
 const labels: Record<string, string> = { waiting: 'Preparando', initiated: 'Pendiente', uploading: 'Transfiriendo', finalizing: 'Confirmando', uploaded: 'En cola', scanning: 'Analizando', ready: 'Listo', rejected: 'Rechazado', failed: 'Falló', cancelled: 'Cancelado' };
 export function CanvasUploadTray({ batches, retry, undo, createGroup }: { batches: CanvasUploadBatch[]; retry: (batchId: string, entryId: string) => void; undo: (batchId: string) => void; createGroup: (batchId: string) => void }) {
   if (!batches.length) return null;
-  return <aside aria-label="Cargas del canvas" className="fixed bottom-4 right-4 z-50 max-h-[45vh] w-80 overflow-auto rounded-lg border border-border bg-background p-3 shadow-xl">
+  return <aside aria-label="Cargas del canvas" className="fixed bottom-4 right-4 z-50 max-h-[45vh] w-80 overflow-auto rounded-lg bg-surface/95 p-3 backdrop-blur-md">
     <h2 className="text-sm font-semibold">Archivos del canvas</h2>
     {batches.map(batch => <section key={batch.id} className="mt-3 border-t border-border pt-2">
       <div className="flex items-center justify-between gap-2"><span className="text-xs text-outline">Lote de {batch.entries.length} archivo(s)</span>{!batch.undone && batch.nodeIds.length > 0 && <Button size="sm" onClick={() => undo(batch.id)}>Deshacer incorporación</Button>}</div>

@@ -190,7 +190,7 @@ function CanvasCore({ viewport, onAddResource, onDropResource, onDropFiles, onPi
             </ReactFlow>
 
             {menu.isOpen && (
-                <div className="fixed z-50 w-48 bg-background border border-border rounded-lg shadow-lg overflow-hidden flex flex-col p-1" style={{ top: menu.y, left: menu.x }}>
+                <div className="fixed z-50 w-48 overflow-hidden rounded-lg bg-surface p-1" style={{ top: menu.y, left: menu.x }}>
                     <span className="text-[10px] font-bold text-outline px-2 py-2 uppercase tracking-wider">Conectar a...</span>
                     <button onClick={() => handleCreateNode('text')} className="flex items-center gap-2 px-2 py-2 text-sm text-on-background hover:bg-surface-variant rounded-md transition-colors"><Type size={16} className="text-primary" /> Texto</button>
                     <button onClick={() => handleCreateNode('media')} className="flex items-center gap-2 px-2 py-2 text-sm text-on-background hover:bg-surface-variant rounded-md transition-colors"><ImageIcon size={16} className="text-note-green" /> Media</button>
@@ -198,7 +198,7 @@ function CanvasCore({ viewport, onAddResource, onDropResource, onDropFiles, onPi
             )}
 
             {contextMenu && (
-                <div className="fixed z-[100] w-46 bg-background border border-border rounded-lg shadow-xl overflow-hidden flex flex-col" style={{ top: contextMenu.y, left: contextMenu.x }}>
+                <div className="fixed z-[100] flex w-46 flex-col overflow-hidden rounded-lg bg-surface" style={{ top: contextMenu.y, left: contextMenu.x }}>
                     {onPickFiles && <button onClick={() => { onPickFiles(contextMenu.flowPosition); setContextMenu(null); }} className="flex items-center gap-3 px-3 py-2.5 text-sm text-on-background font-medium hover:bg-surface-variant rounded-md transition-colors">
                         <div className="p-1.5 bg-primary/10 rounded-md text-primary"><UploadCloud size={16} /></div> Subir archivo...
                     </button>}

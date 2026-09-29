@@ -31,12 +31,12 @@ export function GroupNode({ id, data, selected, width = 350, height = 250 }: Nod
 
             <div
                 className={cn(
-                    "w-full h-full flex flex-col bg-background border rounded-xl overflow-hidden shadow-sm transition-colors",
-                    selected ? "border-primary ring-1 ring-primary" : "border-border hover:border-outline/50 hover:shadow-md"
+                    "w-full h-full flex flex-col bg-background border rounded-xl overflow-hidden transition-colors",
+                    selected ? "border-primary ring-1 ring-primary" : "border-border hover:border-outline/50"
                 )}
             >
                 <div className="absolute top-2 right-2 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button type="button" aria-label="Opciones del grupo" onClick={() => openCanvasNode(id)} className="p-1.5 bg-background/90 backdrop-blur border border-border rounded-md text-on-surface-variant hover:text-on-background shadow-sm nodrag nopan">
+                    <button type="button" aria-label="Opciones del grupo" onClick={() => openCanvasNode(id)} className="p-1.5 bg-background/90 backdrop-blur border border-border rounded-md text-on-surface-variant hover:text-on-background nodrag nopan">
                         <MoreHorizontal size={14} />
                     </button>
                 </div>
@@ -47,7 +47,7 @@ export function GroupNode({ id, data, selected, width = 350, height = 250 }: Nod
                 />
             </div>
 
-            <div className="absolute top-full left-0 w-full mt-2 px-3 py-2 flex items-center gap-2 border border-border bg-surface/90 backdrop-blur-md rounded-lg shadow-sm z-50">
+            <div className="absolute top-full left-0 w-full mt-2 px-3 py-2 flex items-center gap-2 border border-border bg-surface/90 backdrop-blur-md rounded-lg z-50">
                 <Layers size={14} className="text-primary flex-shrink-0" />
                 <input
                     value={label}

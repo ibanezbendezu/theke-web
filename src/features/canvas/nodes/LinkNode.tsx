@@ -14,8 +14,8 @@ export type LinkNodeType = Node<LinkNodeData, 'link'>;
 export function LinkNode({ data, selected }: NodeProps<LinkNodeType>) {
     return (
         <div className={cn(
-            "relative group flex w-[360px] h-[100px] bg-background border rounded-xl shadow-sm transition-all overflow-hidden",
-            selected ? "border-primary ring-1 ring-primary" : "border-border hover:border-outline/50 hover:shadow-md"
+            "relative group flex w-[360px] h-[100px] bg-background border rounded-xl transition-all overflow-hidden",
+            selected ? "border-primary ring-1 ring-primary" : "border-border hover:border-outline/50"
         )}>
             {/* Controles flotantes */}
             <div className="absolute top-2 right-2 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -23,12 +23,12 @@ export function LinkNode({ data, selected }: NodeProps<LinkNodeType>) {
                     href={data.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-1.5 bg-background/90 backdrop-blur border border-border rounded-md text-primary hover:bg-surface-variant shadow-sm nodrag nopan"
+                    className="p-1.5 bg-background/90 backdrop-blur border border-border rounded-md text-primary hover:bg-surface-variant nodrag nopan"
                     title="Visitar enlace"
                 >
                     <ExternalLink size={14} />
                 </a>
-                <button className="p-1.5 bg-background/90 backdrop-blur border border-border rounded-md text-on-surface-variant hover:text-on-background shadow-sm nodrag nopan">
+                <button className="p-1.5 bg-background/90 backdrop-blur border border-border rounded-md text-on-surface-variant hover:text-on-background nodrag nopan">
                     <MoreHorizontal size={14} />
                 </button>
             </div>

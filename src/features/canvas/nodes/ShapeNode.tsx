@@ -1,6 +1,5 @@
 import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
 import { NodeResizer } from '@xyflow/react';
-import { cn } from '../../../lib/utils';
 import { useCanvasStore } from '../../../store/useCanvasStore';
 
 export type ShapeNodeData = {
@@ -47,10 +46,7 @@ export function ShapeNode({ data, selected, width = 100, height = 100 }: NodePro
             />
 
             <div
-                className={cn(
-                    "relative w-full h-full transition-shadow",
-                    selected ? "drop-shadow-md" : ""
-                )}
+                className="relative h-full w-full"
                 style={{ width, height }}
             >
                 {/* RENDERIZADO CONDICIONAL DE LA FIGURA */}

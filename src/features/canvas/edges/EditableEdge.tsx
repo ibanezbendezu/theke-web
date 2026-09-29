@@ -85,13 +85,13 @@ export function EditableEdge({
                     className="nodrag nopan relative flex items-center justify-center"
                 >
                     {/* Caja de Texto (El centro de este input cruzará la línea milimétricamente) */}
-                    {relationId ? <button type="button" className={`flex max-w-48 items-center gap-1 rounded border bg-background px-2 py-1 text-xs font-medium text-on-background shadow-sm focus-visible:outline-2 focus-visible:outline-primary ${selected || hovered ? 'border-primary ring-1 ring-primary' : 'border-border'}`} aria-label={`Editar Relación ${sourceTitle} ${relationDirection === 'directed' ? 'hacia' : 'con'} ${targetTitle}, ${relationLabel}, ${relationDirection === 'directed' ? 'dirigida' : 'no dirigida'}, ${relationEvidence}`} title={relationLabel} onFocus={() => setHovered(true)} onBlur={() => setHovered(false)} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onClick={() => requestEditRelation(relationId)}>
+                    {relationId ? <button type="button" className={`flex max-w-48 items-center gap-1 rounded border bg-background px-2 py-1 text-xs font-medium text-on-background focus-visible:outline-2 focus-visible:outline-primary ${selected || hovered ? 'border-primary ring-1 ring-primary' : 'border-border'}`} aria-label={`Editar Relación ${sourceTitle} ${relationDirection === 'directed' ? 'hacia' : 'con'} ${targetTitle}, ${relationLabel}, ${relationDirection === 'directed' ? 'dirigida' : 'no dirigida'}, ${relationEvidence}`} title={relationLabel} onFocus={() => setHovered(true)} onBlur={() => setHovered(false)} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onClick={() => requestEditRelation(relationId)}>
                         <span className="min-w-0 truncate">{relationLabel}</span><span aria-hidden="true" className="shrink-0">{relationDirection === 'directed' ? '→' : '↔'}</span>
                     </button> : <input
                         value={(data?.label as string) || ''}
                         onChange={(e) => updateEdgeData(id, { label: e.target.value })}
                         placeholder="Añadir texto..."
-                        className={`bg-background text-on-background font-medium text-xs px-2 py-1 outline-none text-center transition-all rounded-md border shadow-sm z-20
+                        className={`bg-background text-on-background font-medium text-xs px-2 py-1 outline-none text-center transition-all rounded-md border z-20
                             ${selected ? 'border-primary ring-1 ring-primary' : 'border-transparent hover:border-border'}
                         `}
                         style={{ width: Math.max(100, ((data?.label as string)?.length || 0) * 8 + 30) }}
@@ -100,7 +100,7 @@ export function EditableEdge({
                     {/* Tirador para deformar (Flota absolutamente por debajo del input para no afectar el centro) */}
                     <div
                         onPointerDown={handlePointerDown}
-                        className={`absolute top-full mt-1 cursor-grab active:cursor-grabbing p-1 bg-surface border border-border rounded shadow-sm text-outline hover:text-primary transition-opacity z-10 ${selected ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}
+                        className={`absolute top-full mt-1 cursor-grab active:cursor-grabbing p-1 bg-surface border border-border rounded text-outline hover:text-primary transition-opacity z-10 ${selected ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}
                     >
                         <GripHorizontal size={14} />
                     </div>

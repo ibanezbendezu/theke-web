@@ -16,14 +16,14 @@ export function CanvasToolbar({ onAddResource, onCreateRelation }: { onAddResour
 
     return (
         <>
-          {(onAddResource || onCreateRelation) && <nav aria-label="Herramientas del lienzo" className="absolute left-3 top-1/2 z-30 flex max-h-[calc(100dvh-11rem)] -translate-y-1/2 flex-col gap-0.5 overflow-y-auto rounded-lg bg-background/90 p-1 shadow-sm backdrop-blur-md">
+          {(onAddResource || onCreateRelation) && <nav aria-label="Herramientas del lienzo" className="absolute left-3 top-1/2 z-30 flex max-h-[calc(100dvh-11rem)] -translate-y-1/2 flex-col gap-0.5 overflow-y-auto rounded-lg bg-surface/90 p-1 backdrop-blur-md">
             {onAddResource && <Button variant="ghost" size="icon" icon={Plus} aria-label="Añadir recurso" title="Añadir recurso (A)" onClick={onAddResource} className="h-11 w-11 shrink-0"/>}
             {onCreateRelation && <Button variant="ghost" size="icon" icon={Link2} aria-label="Crear Relación" title="Crear Relación entre Recursos" onClick={onCreateRelation} className="h-11 w-11 shrink-0"/>}
             {selectedIds.length >= 2 && <Button variant="ghost" size="icon" icon={Group} aria-label="Crear grupo visual" title="Agrupar selección" onClick={() => groupNodes(selectedIds)} className="h-11 w-11 shrink-0"/>}
             {onAddResource && <><Button variant="ghost" size="icon" icon={Type} aria-label="Añadir texto visual" title="Añadir anotación de texto" onClick={() => addAnnotation('text')} className="h-11 w-11 shrink-0"/><Button variant="ghost" size="icon" icon={Square} aria-label="Añadir forma visual" title="Añadir forma" onClick={() => addAnnotation('shape')} className="h-11 w-11 shrink-0"/><Button variant="ghost" size="icon" icon={Minus} aria-label="Añadir línea visual" title="Añadir línea decorativa" onClick={() => addAnnotation('line')} className="h-11 w-11 shrink-0"/></>}
           </nav>}
-          <div className="absolute bottom-3 left-3 z-30 flex gap-0.5 rounded-lg bg-background/90 p-1 shadow-sm backdrop-blur-md"><Button variant="ghost" size="icon" icon={Undo2} aria-label="Deshacer" disabled={!canUndo} onClick={undo} className="h-11 w-11"/><Button variant="ghost" size="icon" icon={Redo2} aria-label="Rehacer" disabled={!canRedo} onClick={redo} className="h-11 w-11"/></div>
-          <div className="absolute bottom-3 right-3 z-30 flex gap-0.5 rounded-lg bg-background/90 p-1 shadow-sm backdrop-blur-md">
+          <div className="absolute bottom-3 left-3 z-30 flex gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md"><Button variant="ghost" size="icon" icon={Undo2} aria-label="Deshacer" disabled={!canUndo} onClick={undo} className="h-11 w-11"/><Button variant="ghost" size="icon" icon={Redo2} aria-label="Rehacer" disabled={!canRedo} onClick={redo} className="h-11 w-11"/></div>
+          <div className="absolute bottom-3 right-3 z-30 flex gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md">
             <Button
                 variant="ghost"
                 size="icon"

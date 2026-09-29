@@ -16,11 +16,11 @@ export type MediaNodeType = Node<MediaNodeData, 'media'>;
 export function MediaNode({ data, selected }: NodeProps<MediaNodeType>) {
     return (
         <div className={cn(
-            "relative group bg-background border rounded-xl overflow-hidden shadow-sm transition-all min-w-[280px]",
-            selected ? "border-primary ring-1 ring-primary" : "border-border hover:border-outline/50 hover:shadow-md"
+            "relative group bg-background border rounded-xl overflow-hidden transition-all min-w-[280px]",
+            selected ? "border-primary ring-1 ring-primary" : "border-border hover:border-outline/50"
         )}>
             <div className="absolute top-2 right-2 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button className="p-1.5 bg-background/90 backdrop-blur border border-border rounded-md text-on-surface-variant hover:text-on-background shadow-sm">
+                <button className="p-1.5 bg-background/90 backdrop-blur border border-border rounded-md text-on-surface-variant hover:text-on-background">
                     <MoreHorizontal size={14} />
                 </button>
             </div>
@@ -35,7 +35,7 @@ export function MediaNode({ data, selected }: NodeProps<MediaNodeType>) {
                         />
                         {!selected && (
                             <div className="absolute inset-0 flex items-center justify-center bg-background/10">
-                                <PlaySquare size={32} className="text-on-background/70 drop-shadow-md" />
+                                <PlaySquare size={32} className="text-on-background/70" />
                             </div>
                         )}
                     </>

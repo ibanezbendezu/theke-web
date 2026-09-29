@@ -78,8 +78,8 @@ export function AudioNode({ data, selected }: NodeProps<AudioNodeType>) {
 
     return (
         <div className={cn(
-            "relative group flex flex-col gap-3 p-3 min-w-[320px] bg-background border rounded-xl shadow-sm transition-all",
-            selected ? "border-primary ring-1 ring-primary" : "border-border hover:border-outline/50 hover:shadow-md"
+            "relative group flex flex-col gap-3 p-3 min-w-[320px] bg-background border rounded-xl transition-all",
+            selected ? "border-primary ring-1 ring-primary" : "border-border hover:border-outline/50"
         )}>
             {/* El audio real trabajando tras bambalinas */}
             <audio
@@ -99,7 +99,7 @@ export function AudioNode({ data, selected }: NodeProps<AudioNodeType>) {
             </div>
 
             <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button className="p-1 bg-background/90 backdrop-blur border border-border rounded-md text-on-surface-variant hover:text-on-background shadow-sm nodrag nopan">
+                <button className="p-1 bg-background/90 backdrop-blur border border-border rounded-md text-on-surface-variant hover:text-on-background nodrag nopan">
                     <MoreHorizontal size={14} />
                 </button>
             </div>
@@ -110,7 +110,7 @@ export function AudioNode({ data, selected }: NodeProps<AudioNodeType>) {
                     {/* Botón Play/Pause */}
                     <button
                         onClick={togglePlay}
-                        className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-primary text-on-primary rounded-full hover:bg-primary/90 transition-colors shadow-sm nodrag nopan"
+                        className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-primary text-on-primary rounded-full hover:bg-primary/90 transition-colors nodrag nopan"
                     >
                         {isPlaying ? <Pause size={14} className="fill-current" /> : <Play size={14} className="fill-current ml-0.5" />}
                     </button>
