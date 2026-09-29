@@ -16,6 +16,7 @@ Permitir que un visitante consulte cada Recurso de la proyección pública desde
 - Un fallo de imagen, audio o video muestra una explicación y permite reintentar mediante una solicitud nueva, sin bloquear el resto del Diagrama.
 - La API entrega `no-store` y revalida token activo y pertenencia del Recurso en **cada** apertura, descarga o reintento. No emite URLs temporales de almacenamiento; una URL antigua de la API tampoco elude la revocación.
 - Títulos, detalles, listas y controles pueden envolver contenido largo. El Canvas conserva zoom, ajuste y navegación semántica.
+- Las acciones de abrir, descargar y reintentar usan controles tonales sin contorno permanente y objetivos de al menos 44 px; el detalle se presenta junto al Canvas en escritorio, superpuesto en tablet y como hoja inferior en móvil.
 
 ## Verificación y estado
 

@@ -23,7 +23,9 @@ En desarrollo. La API genera una allowlist de posiciones absolutas de Recursos v
 
 La web presenta React Flow sin mutaciones, controles de zoom y ajuste, selección e inspector; la vista semántica permite recorrer el mismo contenido con controles nativos de teclado. El inspector carga archivos solo al seleccionarlos. Se añadieron estilos para foco, movimiento reducido y alto contraste.
 
-Pendiente para pasar a `review`: smoke visual en navegador con una publicación real y una comprobación de tiempo de contenido útil en banda ancha. El navegador de automatización no estuvo disponible en este entorno; las pruebas de API y componentes no sustituyen esa verificación.
+Revisión de composición: el Canvas y el inspector ahora coexisten en escritorio amplio. En tablet el detalle aparece como panel superpuesto cerrable y en móvil como hoja inferior; `Escape` y el botón de cierre devuelven el foco al elemento invocador. Cuando una publicación carece de posiciones visuales, la vista semántica aparece directamente. Los controles y filas públicas usan superficies tonales del Design Spine y objetivos táctiles de al menos 44 px.
+
+Pendiente para pasar a `review`: smoke visual en navegador con una publicación real y una comprobación de tiempo de contenido útil en banda ancha. `@Browser` no estuvo disponible y la revisión automática rechazó el control de Edge en esta sesión; las pruebas de componentes no sustituyen esa verificación.
 
 ## Referencias
 

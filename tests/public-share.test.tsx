@@ -11,12 +11,22 @@ const page = () => render(<MemoryRouter initialEntries={['/share/example-token']
 it('consulta sin credenciales y muestra solo la proyección pública', async () => {
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa visible', revision: 1, commentsEnabled: true, layout: { nodes: [], edges: [] }, resources: [{ id: 'one', title: 'Nota', type: 'note', content: 'Texto público', description: null, url: null, mediaType: null, accessibilityText: null }], relations: [] } }) });
   page();
-  fireEvent.click(await screen.findByRole('button', { name: 'Mostrar vista semántica' }));
-  fireEvent.click(screen.getByRole('button', { name: 'Nota · note' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Nota · note' }));
   expect(await screen.findByText('Texto público')).toBeInTheDocument();
   expect(screen.getByText(/permite nuevos comentarios/)).toBeInTheDocument();
   expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/\/v1\/public\/shares\/example-token$/), expect.objectContaining({ cache: 'no-store' }));
   expect(fetchMock.mock.calls[0]?.[1]?.headers).toBeUndefined();
+});
+
+it('cierra el detalle superpuesto y devuelve el foco al recurso', async () => {
+  fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: 'one', title: 'Nota', type: 'note', content: 'Texto público', description: null, url: null, mediaType: null, accessibilityText: null }], relations: [] } }) });
+  page();
+  const resource = await screen.findByRole('button', { name: 'Nota · note' });
+  resource.focus();
+  fireEvent.click(resource);
+  expect(screen.getByRole('button', { name: 'Cerrar detalle' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Cerrar detalle' }));
+  await waitFor(() => expect(resource).toHaveFocus());
 });
 
 it('da el mismo mensaje neutro para cualquier fallo público', async () => {
@@ -29,8 +39,7 @@ it('da el mismo mensaje neutro para cualquier fallo público', async () => {
 it('no permite abrir esquemas peligrosos aunque aparezcan en una proyección', async () => {
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: 'link', type: 'link', title: 'Enlace', url: 'javascript:alert(1)', content: null, description: null, mediaType: null, accessibilityText: null }], relations: [] } }) });
   page();
-  fireEvent.click(await screen.findByRole('button', { name: 'Mostrar vista semántica' }));
-  fireEvent.click(screen.getByRole('button', { name: 'Enlace · link' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Enlace · link' }));
   expect(await screen.findByRole('heading', { name: 'Enlace' })).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: 'Abrir enlace' })).not.toBeInTheDocument();
 });
@@ -39,7 +48,7 @@ it('muestra archivos mediante la API pública sin recibir claves de almacenamien
   vi.stubEnv('VITE_API_URL', 'http://localhost:3000');
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: '11111111-1111-4111-8111-111111111111', type: 'file', title: 'Imagen', url: null, content: null, description: null, mediaType: 'image/png', accessibilityText: 'Descripción de la imagen' }], relations: [] } }) });
   page();
-  fireEvent.click(await screen.findByRole('button', { name: 'Mostrar vista semántica' }));
+  await screen.findByRole('button', { name: 'Imagen · file' });
   expect(screen.queryByRole('img', { name: 'Descripción de la imagen' })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Imagen · file' }));
   const image = await screen.findByRole('img', { name: 'Descripción de la imagen' });
@@ -56,8 +65,7 @@ it('muestra archivos mediante la API pública sin recibir claves de almacenamien
 it('ofrece abrir y descargar cuando el formato no admite vista previa', async () => {
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: 'two', type: 'file', title: 'Archivo', url: null, content: null, description: null, mediaType: 'application/zip', accessibilityText: 'Archivo comprimido' }], relations: [] } }) });
   page();
-  fireEvent.click(await screen.findByRole('button', { name: 'Mostrar vista semántica' }));
-  fireEvent.click(screen.getByRole('button', { name: 'Archivo · file' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Archivo · file' }));
   expect(screen.getByText('Este formato no tiene vista previa en el navegador.')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Abrir archivo' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Descargar archivo' })).toBeInTheDocument();
@@ -71,8 +79,7 @@ it('permite inspeccionar relaciones y navegar a sus extremos desde la vista sem�
       { id: 'two', type: 'note', title: 'Destino', content: 'Texto de destino', description: null, url: null, mediaType: null, accessibilityText: null },
     ], relations: [{ id: 'relation', sourceResourceId: 'one', targetResourceId: 'two', direction: 'directed', typeKey: 'supports', label: 'Sustenta', explanation: 'Explicación pública', evidence: [{ resourceId: 'one', excerpt: 'Cita visible', note: null, pageNumber: 2 }] }] } }) });
   page();
-  fireEvent.click(await screen.findByRole('button', { name: 'Mostrar vista semántica' }));
-  fireEvent.click(screen.getByRole('button', { name: /Origen → Destino · Sustenta/ }));
+  fireEvent.click(await screen.findByRole('button', { name: /Origen → Destino · Sustenta/ }));
   expect(screen.getByText('Cita visible')).toBeInTheDocument();
   expect(screen.getByText('Explicación pública')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Ir a Destino' }));

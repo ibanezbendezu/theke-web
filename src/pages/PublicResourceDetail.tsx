@@ -37,9 +37,9 @@ export function PublicResourceDetail({ resource, token }: { resource: SharePrevi
       {!previewFailed && video && <video aria-label={`Reproducir ${resource.title}`} className="max-h-96 max-w-full" controls preload="none" src={previewUrl} onError={() => setPreviewFailed(true)}>El navegador no puede reproducir este video.</video>}
       {!previewable && !document && <p>Este formato no tiene vista previa en el navegador.</p>}
       <div className="flex flex-wrap gap-3">
-        {previewFailed && <button className="rounded border border-border bg-background px-3 py-2 focus-visible:outline-2 focus-visible:outline-primary" onClick={() => { setRequestNumber(value => value + 1); setPreviewFailed(false); }}>Reintentar vista previa</button>}
-        <a className="rounded border border-border bg-background px-3 py-2 underline focus-visible:outline-2 focus-visible:outline-primary" href={baseUrl} target="_blank" rel="noopener noreferrer">Abrir archivo</a>
-        <a className="rounded border border-border bg-background px-3 py-2 underline focus-visible:outline-2 focus-visible:outline-primary" href={`${baseUrl}?download=1`} rel="noreferrer">Descargar archivo</a>
+        {previewFailed && <button className="min-h-11 rounded-md bg-surface-variant px-3 py-2 focus-visible:outline-2 focus-visible:outline-primary" onClick={() => { setRequestNumber(value => value + 1); setPreviewFailed(false); }}>Reintentar vista previa</button>}
+        <a className="inline-flex min-h-11 items-center rounded-md bg-surface-variant px-3 py-2 underline focus-visible:outline-2 focus-visible:outline-primary" href={baseUrl} target="_blank" rel="noopener noreferrer">Abrir archivo</a>
+        <a className="inline-flex min-h-11 items-center rounded-md bg-surface-variant px-3 py-2 underline focus-visible:outline-2 focus-visible:outline-primary" href={`${baseUrl}?download=1`} rel="noreferrer">Descargar archivo</a>
       </div>
     </>}
   </div>;
