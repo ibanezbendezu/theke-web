@@ -56,7 +56,6 @@ export function Projects() {
   };
 
   if (projectId) return <section className="w-full px-4 py-7 md:px-8">
-    <Button onClick={() => navigate('/projects')}>← Proyectos</Button>
     {detail.isPending && <p role="status" className="mt-5 text-outline">Cargando proyecto…</p>}
     {detail.isError && <div role="alert" className="mt-5"><p className="text-red-600">No se pudo abrir el proyecto.</p><Button variant="outline" onClick={() => detail.refetch()}>Reintentar</Button></div>}
     {detail.data && <><h1 className="mt-5 text-2xl font-semibold">{detail.data.name}</h1><div className="mt-3 flex gap-2"><Button variant="outline" onClick={() => edit(detail.data)}>Renombrar</Button><Button variant="outline" onClick={() => setImpactRequest({ entityType: 'project', id: detail.data.id, action: 'archive' })}>Archivar</Button><Button variant="outline" onClick={() => setImpactRequest({ entityType: 'project', id: detail.data.id, action: 'delete' })}>Eliminar</Button></div><ProjectWorkspace projectId={detail.data.id} openImpact={setImpactRequest} /></>}
