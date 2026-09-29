@@ -56,9 +56,9 @@ colors:
   surface-raised-dark: '#292929'
   surface-contextual-dark: '#292929E8'
   surface-contextual-strong-dark: '#292929F5'
-  resource-background-dark: '#131314'
+  resource-background-dark: '#191919'
   resource-card-dark: '#202020'
-  resource-control-dark: '#37393B'
+  resource-control-dark: '#292929'
   surface-hover-dark: '#FFFFFF0D'
   surface-active-dark: '#3574F033'
   border-dark: '#303030'
@@ -122,12 +122,13 @@ components:
   skeleton: { background: '{colors.surface-active}', radius: '{rounded.md}' }
   media-controls: { background: '{colors.foreground}', foreground: '{colors.background}', focus: '{colors.focus-ring}', radius: '{rounded.md}' }
   app-sidebar: { background: '{colors.surface}', foreground: '{colors.foreground}', border: '{colors.border}', width: '{spacing.sidebar-width}' }
-  top-bar: { background: '{colors.background}', foreground: '{colors.foreground}', border: '{colors.border}', height: 40px }
+  top-bar: { background: '{colors.background}', foreground: '{colors.foreground}', border: '{colors.border}', height: 46px }
   project-card: { background: '{colors.background}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}' }
   resource-row: { background: '{colors.background}', hover: '{colors.surface-hover}', border: '{colors.border}', height: 40px }
   resource-card: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.lg}', selected: '{colors.selection}' }
   resource-browser: { background: '{colors.background}', foreground: '{colors.foreground}', sidebar: '{colors.surface}', search: '{colors.surface-raised}' }
-  resource-preview-card: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.lg}', selected: '{colors.selection}' }
+  collection-view-switcher: { background: '{colors.surface}', foreground: '{colors.foreground}', border: '{colors.border}', selected: '{colors.surface-active}', radius: '{rounded.md}' }
+  resource-preview-card: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}', selected: '{colors.selection}' }
   folder-card: { background: '{colors.surface}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.lg}' }
   canvas-toolbar: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.md}' }
   add-menu: { background: '{colors.surface-raised}', foreground: '{colors.foreground}', border: '{colors.border}', radius: '{rounded.lg}' }
@@ -151,20 +152,21 @@ components:
 
 > Este archivo es el contrato visual para implementación y futuros mocks. Si un mock, la interfaz actual o un artefacto de exploración entra en conflicto, este spine gana. `.working/color-themes-1.html` fue descartado explícitamente y no es referencia final.
 
-La dirección actual se basa en las capturas aportadas por el usuario: `referencias/app.notion.png` para el marco general y `referencias/drive.google.png` para navegar Recursos. Permanecen en el workspace fuera del repositorio. Los mockups anteriores de Canvas, publicación y comentario móvil documentan flujos, pero su apariencia JetBrains queda reemplazada por este spine. La composición de referencia con contenido propio de Theke está en [mockup del marco y Biblioteca](mockups/theke-notion-drive-direction.html).
+La dirección actual se basa en las capturas aportadas por el usuario: `referencias/app.notion.png` para el marco general, `referencias/app.notion.topbar.png` para la topbar y `referencias/drive.google.png` para organizar la exploración de Recursos. Permanecen en el workspace fuera del repositorio. Los mockups anteriores de Canvas, publicación y comentario móvil documentan flujos, pero su apariencia JetBrains queda reemplazada por este spine. La composición de referencia con contenido propio de Theke está en [mockup del marco y Biblioteca](mockups/theke-notion-drive-direction.html).
 
 ## Brand & Style
 
 Theke debe sentirse como una herramienta profesional de estudio: serena, enfocada, exploratoria y confiable. El conocimiento ocupa el primer plano; el cromado se retira. La interfaz no intenta impresionar ni simular inteligencia: presenta estructura, procedencia y acciones con claridad para que la persona siga pensando por sí misma.
 
-La postura visual sigue con máxima fidelidad el marco oscuro de la captura de Notion: barra lateral permanente de `#202020`, área principal plana de `#191919`, tipografía sans del sistema, títulos grandes, navegación discreta y filas separadas por líneas tenues. En Biblioteca y otras pantallas donde se recorren Recursos, la barra lateral permanece igual; el área principal adopta la composición de la captura de Drive: búsqueda prominente, ruta, filtros, alternancia lista/cuadrícula y tarjetas con miniatura grande sobre `#131314`. Theke conserva logotipo, iconografía, contenido y vocabulario propios.
+La postura visual sigue con máxima fidelidad el marco oscuro de la captura de Notion: barra lateral permanente de `#202020`, topbar compacta y plana, área principal de `#191919`, tipografía sans del sistema, títulos grandes, navegación discreta y filas separadas por líneas tenues. En Biblioteca y otras pantallas donde se recorren Recursos, la barra lateral, topbar, fondo y controles permanecen iguales; el área principal adopta la organización de la captura de Drive: búsqueda visible, ruta, filtros y tarjetas con miniatura grande. El selector Lista/Galería es común a las colecciones de todo Theke. Theke conserva logotipo, iconografía, contenido y vocabulario propios.
 
 Evitar saturación, tono infantil, rigidez corporativa y “magia” visual. No hay gradientes de marca, cristal decorativo ni animaciones celebratorias. Los controles avanzados aparecen en contexto y desaparecen cuando dejan de ser útiles. Las tarjetas con miniaturas se reservan para navegar Recursos; Inicio y Proyectos conservan filas planas.
 
 ## Visual Provenance
 
 - **Marco global:** captura `referencias/app.notion.png`, aportada por el usuario, para barra lateral, fondo, jerarquía de página, tablas, densidad y estados.
-- **Navegación de Recursos:** captura `referencias/drive.google.png`, aportada por el usuario, para búsqueda, filtros, rutas, alternancia lista/cuadrícula y miniaturas. La barra lateral global permanece al estilo Notion, decisión confirmada el 2026-09-28.
+- **Topbar:** captura `referencias/app.notion.topbar.png`, aportada por el usuario, para franja superior, ruta y acciones contextuales. Se usa en toda página excepto Canvas/Diagrama.
+- **Navegación de Recursos:** captura `referencias/drive.google.png`, aportada por el usuario, para organización de búsqueda, filtros, rutas y miniaturas. La barra lateral, topbar y geometría de controles permanecen al estilo Notion, decisión confirmada el 2026-09-28.
 - **Referencia funcional:** Theke conserva el grafo espacial, las Relaciones, la Biblioteca canónica, la publicación y los comentarios definidos en `EXPERIENCE.md`.
 - **Límite de identidad:** Theke conserva marca, iconos, vocabulario y contenido propios; no copia logotipos, nombres, documentos ni fotografías de las capturas.
 - **Descartado:** `.working/color-themes-1.html` y sus cuatro paletas no son referencia final.
@@ -180,7 +182,7 @@ Evitar saturación, tono infantil, rigidez corporativa y “magia” visual. No 
 - `{colors.foreground}` / `{colors.foreground-dark}` se usa para el texto principal. El texto secundario y los estados persistentes usan `{colors.foreground-secondary}` / `{colors.foreground-secondary-dark}`: valores opacos con contraste mínimo 4.5:1. Los tokens de borde nunca se usan como texto.
 - `{colors.border}` separa a baja jerarquía; `{colors.border-strong}` se reserva para foco estructural.
 - `{colors.control-border}` / `{colors.control-border-dark}` delimita inputs y controles interactivos con contraste mínimo 3:1.
-- En el tema oscuro, `{colors.resource-background-dark}` se usa solo en el área principal de Biblioteca y exploración de Carpetas; `{colors.resource-card-dark}` y `{colors.resource-control-dark}` separan miniaturas y controles. La barra lateral global sigue usando `{colors.surface-dark}`.
+- En el tema oscuro, `{colors.resource-background-dark}` conserva `#191919` en Biblioteca y exploración de Carpetas; `{colors.resource-card-dark}` y `{colors.resource-control-dark}` separan miniaturas y controles con tonos Notion. La barra lateral global sigue usando `{colors.surface-dark}`.
 
 ### Acción y semántica
 
@@ -219,19 +221,19 @@ La monoespaciada queda para datos que lo requieran. Evitar mayúsculas sostenida
 
 Escala base de 4 px. La densidad predeterminada se acerca al modo compacto de una herramienta de escritorio: controles frecuentes usan `{spacing.1}`–`{spacing.3}`, tarjetas y paneles `{spacing.3}`–`{spacing.5}`, y solo regiones de contenido usan `{spacing.6}`–`{spacing.10}`.
 
-En escritorio, la barra lateral global de 272 px permanece visible y admite colapso. Contiene marca, búsqueda, Inicio, Proyectos, Biblioteca, accesos recientes y cuenta. El área principal deja un margen amplio alrededor del título y después muestra filas, tabla, Canvas o cuadrícula según la tarea. En Biblioteca se mantiene la misma barra lateral y se usa la composición visual de Drive solo en el contenido principal. El Canvas conserva la mayor superficie y puede abrir un panel contextual derecho sin desplazar las acciones esenciales.
+En escritorio, la barra lateral global de 272 px permanece visible y admite colapso. Contiene marca, búsqueda, Inicio, Proyectos, Biblioteca, accesos recientes y cuenta. Una topbar compacta cruza el área principal en Inicio, Proyectos, Proyecto, Biblioteca, Carpetas y demás páginas fuera del Canvas/Diagrama; muestra ruta a la izquierda y metadatos, acciones y selector Lista/Galería a la derecha cuando hay una colección. Debajo, el contenido deja un margen amplio alrededor del título y muestra filas, galería o detalle según la tarea. En Biblioteca se usa la composición de Drive para ordenar los Recursos, con controles de Notion. El Canvas conserva la mayor superficie, su encabezado de trabajo específico y un panel contextual derecho cuando se necesita.
 
 Inicio, Proyectos y Biblioteca usan `{spacing.page-gutter}` en escritorio y 16 px en viewport estrecho. Listas y grillas comparten bordes de alineación. La grilla de puntos del Canvas es una guía espacial de bajo contraste, no una restricción rígida.
 
 ## Elevation & Depth
 
-La jerarquía nace de tono, borde y posición: barra lateral `#202020`, área principal `#191919` y área de Recursos `#131314`. Inicio y Proyectos no se llenan de tarjetas; usan filas planas y separadores. En Biblioteca, las tarjetas de miniatura son una parte funcional del explorador. Menús y diálogos pueden usar sombra moderada; las superficies integradas permanecen planas.
+La jerarquía nace de tono, borde y posición: barra lateral `#202020` y área principal `#191919` también en Biblioteca. Inicio y Proyectos usan filas planas y separadores; la Galería presenta bloques sobrios cuando se elige. En Biblioteca, las tarjetas de miniatura son una parte funcional del explorador. Menús y diálogos pueden usar sombra moderada; las superficies integradas permanecen planas.
 
 Hover cambia tono o borde sin elevar ni mover geometría. No se aplica blur a nodos, paneles acoplados o contenido estable.
 
 ## Shapes
 
-`{rounded.sm}` para controles pequeños y filas, `{rounded.md}` para botones e inputs, `{rounded.lg}` para tarjetas de Recursos y paneles, `{rounded.xl}` para diálogos. La búsqueda puede tener radio completo, como en Drive. `{rounded.full}` también se usa en marcadores numerados, avatares e indicadores compactos.
+`{rounded.sm}` para controles pequeños y filas, `{rounded.md}` para botones, campos de búsqueda, filtros y selector Lista/Galería, `{rounded.lg}` para tarjetas de Recursos y paneles, `{rounded.xl}` para diálogos. La búsqueda puede ser ancha, pero nunca adopta forma de píldora. `{rounded.full}` se reserva para marcadores numerados, avatares e indicadores compactos.
 
 Recursos son tarjetas; Anotaciones no adoptan tarjeta. `Group Frame` es marco tonal con etiqueta exterior. Carpetas son colecciones compactas. Relaciones semánticas usan línea continua y etiqueta; trazos decorativos son neutrales o discontinuos.
 
@@ -248,12 +250,13 @@ Los controles base usan las entradas homónimas de `components`: `Button Primary
 | **Toast / Skeleton** | Toast de alto contraste para confirmación breve; Skeleton reproduce la forma final sin animación obligatoria. |
 | **Media Controls** | Controles de alto contraste, foco visible, estados de reproducción y pausa, volumen, progreso y alternativas textuales. |
 | **App Sidebar** | Barra global persistente de 272 px, fondo `#202020`, borde fino a la derecha, búsqueda arriba, navegación y accesos recientes. Se colapsa desde un control visible; en pantalla estrecha se vuelve temporal. Permanece idéntica en Biblioteca. |
-| **Top Bar** | Encabezado simple en el área principal con título, ruta o pestañas y acciones contextuales. En Canvas incluye `Save Status` y acciones de Diagrama sin crear una segunda barra de aplicación. |
+| **Top Bar** | Franja plana y compacta en todas las páginas salvo Canvas/Diagrama. Ruta y título breve a la izquierda; metadatos, acciones y selector Lista/Galería a la derecha cuando hay una colección. Canvas usa su propio encabezado de trabajo con `Save Status`. |
 | **Project Card** | Fila o bloque plano con borde fino, título fuerte y metadatos en caption. Hover tonal; foco visible. Evita una cuadrícula de tarjetas decorativas. |
 | **Resource Row** | Alternativa de lista del explorador: mínimo 40 px, icono semántico, nombre, tipo y última edición. Acciones disponibles con foco y hover. |
 | **Resource Card** | En Canvas, compacta y reconocible por tipo, título y metadatos. Selección con `{colors.selection}` y anillo; no usa la miniatura grande de Biblioteca. |
-| **Resource Browser** | Área principal estilo Drive junto a la barra global estilo Notion: búsqueda ancha, ruta, filtros visibles y alternancia lista/cuadrícula. Fondo oscuro `#131314` en el tema de referencia. |
-| **Resource Preview Card** | Tarjeta de exploración con nombre y tipo arriba, miniatura grande debajo y acciones accesibles por foco, clic y teclado. Fondo `#202020`, radio mayor que una fila de navegación; la cuadrícula adapta columnas sin cortar contenido. |
+| **Resource Browser** | Organización de Recursos inspirada en Drive dentro del marco Notion: búsqueda ancha con radio `{rounded.md}`, ruta en topbar, filtros discretos y selector Lista/Galería compartido. Conserva el fondo oscuro `#191919` del resto de Theke. |
+| **Collection View Switcher** | Control segmentado compacto para Lista/Galería en toda colección de Theke. Radio `{rounded.md}`, borde tenue y selección tonal neutra; sin cápsula ni relleno azul permanente. Mantiene alineación y comportamiento entre Inicio, Proyectos, Proyecto, Biblioteca y Carpetas. |
+| **Resource Preview Card** | Tarjeta de exploración con nombre y tipo arriba, miniatura grande debajo y acciones accesibles por foco, clic y teclado. Fondo `#202020` y radio `{rounded.md}` del mismo sistema Notion; la cuadrícula adapta columnas sin cortar contenido. |
 | **Folder Card** | Colección compacta con icono, nombre y conteo. No comparte apariencia con `Group Frame`. |
 | **Canvas Toolbar** | Grupo opaco y compacto de acciones para zoom y encuadre, visualmente subordinado al grafo. |
 | **Add Menu** | Desde el botón visible Añadir; categorías Biblioteca, Subir, Nota, Carpeta, Grupo y Anotaciones. |
@@ -277,6 +280,7 @@ Los controles base usan las entradas homónimas de `components`: `Button Primary
 | Do | Don't |
 |---|---|
 | Mantener la barra lateral oscura de Notion a través de todas las rutas. | Cambiar a la barra lateral de Drive al entrar en Biblioteca. |
+| Mantener la topbar de Notion fuera del Canvas y el mismo selector Lista/Galería en las colecciones. | Usar una búsqueda o selector en forma de píldora tomados de Drive. |
 | Reservar la cuadrícula con miniaturas de Drive para explorar Recursos. | Convertir Inicio, Proyectos y Canvas en una cuadrícula uniforme de tarjetas. |
 | Dejar que Recursos y Relaciones dominen el Canvas. | Rodear todo de paneles, badges y colores de marca. |
 | Usar color para semántica, estado y contenido. | Usar azul como cromado dominante. |

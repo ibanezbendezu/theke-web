@@ -22,7 +22,7 @@ sources:
 
 Theke es una aplicación web de autoría espacial, optimizada para escritorio, y una experiencia compartida adaptable a escritorio, tablet y móvil. La persona construye conocimiento manualmente mediante Recursos y Relaciones canónicas; la IA puede orientar bajo petición, pero nunca es requisito para crear, conectar, ordenar, compartir o comentar.
 
-La interfaz utiliza una barra lateral global estable al estilo de la captura de Notion aportada por el usuario. Inicio y Proyectos muestran estructura mediante filas; el Canvas ocupa el área principal y conserva paneles contextuales cuando se necesitan. Biblioteca y las superficies para recorrer Recursos mantienen la misma barra lateral, mientras el contenido principal sigue el patrón de la captura de Drive: búsqueda, ruta, filtros, lista/cuadrícula y miniaturas. La complejidad se revela al seleccionar o invocar una acción, sin esconder la única vía detrás del hover.
+La interfaz utiliza una barra lateral global estable y una topbar compacta al estilo de las capturas de Notion aportadas por el usuario. La topbar aparece en todas las páginas salvo Canvas/Diagrama, que tiene su propio encabezado de trabajo. Inicio, Proyectos, Proyecto, Biblioteca y Carpetas ofrecen el mismo selector Lista/Galería cuando muestran colecciones. El Canvas ocupa el área principal y conserva paneles contextuales cuando se necesitan. Biblioteca y las superficies para recorrer Recursos mantienen el marco y los controles de Notion; el contenido principal organiza búsqueda, filtros, lista/galería y miniaturas a partir de la captura de Drive. La complejidad se revela al seleccionar o invocar una acción, sin esconder la única vía detrás del hover.
 
 Principios de experiencia:
 
@@ -54,7 +54,7 @@ Explorar/Comunidad queda fuera del MVP y no aparece como destino inactivo.
 ### Arquitectura del Canvas
 
 - `App Sidebar`: navegación global persistente estilo Notion, con Inicio, Proyectos, Biblioteca, búsqueda, accesos recientes y cuenta. No cambia al entrar en Biblioteca ni en un Proyecto; puede colapsarse para ampliar el Canvas.
-- `Top Bar` del Diagrama: volver al Proyecto, nombre del Diagrama, `Save Status`, previsualizar/publicar y acciones propias del Diagrama, integrado en el área principal.
+- Encabezado propio del Diagrama: volver al Proyecto, nombre del Diagrama, `Save Status`, previsualizar/publicar y acciones propias del Diagrama, integrado en el área principal. La topbar global no aparece en esta vista.
 - Panel contextual de Biblioteca: al abrir una Carpeta desde el Canvas muestra ruta, búsqueda, conteo, filtros de tipo, lista compacta e incorporación individual o múltiple; puede colapsar sin perder contexto y no sustituye la barra global.
 - Centro: Canvas de grafo, `Canvas Toolbar`, botón visible Añadir, Recursos, Carpetas, Grupos, Relaciones y Anotaciones.
 - Panel derecho: `Context Panel` acoplable. Cambia entre detalle de Recurso, edición local, guía de IA y comentarios; solo muestra un contexto principal a la vez y puede colapsar para maximizar el Canvas.
@@ -62,7 +62,7 @@ Explorar/Comunidad queda fuera del MVP y no aparece como destino inactivo.
 
 ### Exploración de Recursos
 
-- Biblioteca, Carpetas y el selector de Recursos comparten búsqueda ancha y visible, ruta o contexto actual, filtros que expresan el criterio aplicado y controles Lista/Cuadrícula.
+- Biblioteca, Carpetas y el selector de Recursos comparten búsqueda ancha y visible, ruta o contexto actual, filtros que expresan el criterio aplicado y el mismo control Lista/Galería usado en las demás colecciones de Theke. Búsqueda y selector conservan el radio discreto de Notion.
 - La cuadrícula muestra una miniatura grande para archivos compatibles; notas y enlaces usan vista textual o icono propio de Theke. El nombre y el tipo permanecen visibles aunque no haya miniatura.
 - La lista conserva columnas útiles y lectura rápida para colecciones grandes. La vista elegida no cambia la selección ni el resultado de los filtros.
 - Un clic selecciona y abre detalles cuando corresponde; doble clic o menú pueden ofrecer la apertura rápida, pero nunca son la única vía. Selección múltiple y acciones de añadir al Canvas siguen disponibles por teclado.
@@ -108,10 +108,11 @@ Las especificaciones visuales viven en `DESIGN.md.Components`; los nombres sigui
 | **Toast / Skeleton** | Confirmación breve y carga | Toast no toma foco y deduplica mensajes repetidos; Skeleton no se anuncia como contenido ni reemplaza controles ya disponibles. |
 | **Media Controls** | Audio y video | Operables por teclado, exponen nombre/valor/estado y ofrecen subtítulos, transcripción o alternativa equivalente según el medio. |
 | **App Sidebar** | Global | Inicio, Proyectos y Biblioteca con la misma barra estilo Notion en todas las rutas. Se colapsa sin perder el destino activo; en viewport estrecho se abre como panel temporal. |
-| **Top Bar** | Global y Canvas | Mantiene orientación, nombre, `Save Status` y acciones contextuales. Breadcrumb no sustituye el botón de retorno. |
+| **Top Bar** | Todas las páginas salvo Canvas/Diagrama | Franja compacta y plana con ruta a la izquierda; metadatos, acciones y selector Lista/Galería a la derecha cuando corresponde. El Diagrama conserva su encabezado propio con `Save Status`. Breadcrumb no sustituye el botón de retorno. |
 | **Project Card** | Inicio y Proyectos | Activar abre Proyecto. Menú secundario permite renombrar, archivar o eliminar mostrando impacto. |
 | **Resource Row** | Biblioteca y panel izquierdo | Activar abre detalle; selección múltiple habilita añadir al Diagrama. Acciones no dependen solo de hover. |
-| **Resource Browser** | Biblioteca, Carpetas y selección de Recursos | Buscar, filtrar, recorrer ruta y alternar Lista/Cuadrícula sin perder contexto ni selección; mantiene la barra global estilo Notion. |
+| **Resource Browser** | Biblioteca, Carpetas y selección de Recursos | Buscar, filtrar, recorrer ruta y alternar Lista/Galería sin perder contexto ni selección; mantiene barra, topbar y controles estilo Notion. |
+| **Collection View Switcher** | Inicio, Proyectos, Proyecto, Biblioteca, Carpetas y selectores de Recursos | Alterna Lista/Galería para la colección actual, conserva búsqueda, filtros y selección, y recuerda la preferencia por superficie. No aparece en detalles o formularios sin colección. Es el mismo componente visual en todo Theke. |
 | **Resource Preview Card** | Cuadrícula de Recursos | Muestra nombre, tipo y miniatura o alternativa textual. Selección, apertura, detalle y acciones tienen control accesible sin hover. |
 | **Resource Card** | Canvas y compartido | Un clic selecciona; abrir expande localmente o lleva detalle al panel. Arrastrar cambia Representación, no Recurso. Controles internos usan `nodrag`/`nopan`. |
 | **Folder Card** | Canvas | Abre la Carpeta en panel izquierdo; nunca materializa todos sus Recursos ni actúa como extremo semántico. |
@@ -122,7 +123,7 @@ Las especificaciones visuales viven en `DESIGN.md.Components`; los nombres sigui
 | **Relation Editor** | Canvas | Al conectar dos Recursos, aparece cerca de la conexión. Permite guardar manualmente; Pedir sugerencia abre `AI Guidance Card` sin bloquear. |
 | **Context Panel** | Canvas y compartido | Un contexto principal; cerrar devuelve ancho al Canvas. Al editar Recurso separa global/local y muestra usos afectados. Su apariencia usa las superficies opacas del marco Notion. |
 | **AI Guidance Card** | `Context Panel` | Muestra acción, Fundamento, Alcance, Recursos usados, Carencias y procedencia. Permite editar, aceptar, descartar o reportar. |
-| **Save Status** | `Top Bar` | Persistente; estados Guardando…, Guardado y error. Error conserva cambios y ofrece reintento. |
+| **Save Status** | Encabezado propio del Diagrama | Persistente; estados Guardando…, Guardado y error. Error conserva cambios y ofrece reintento. |
 | **Upload Batch Tray** | Canvas | Tras carga múltiple mantiene selección temporal con Distribuir, Crear grupo visual y Deshacer carga. Clic fuera termina la selección. |
 | **Share Wizard** | Canvas | Tres pasos: Vista previa → Contenido expuesto → Acceso. Permite retroceder sin perder opciones. |
 | **Comment Marker** | Compartido y vista del autor | Numerado; activar centra el anclaje y abre hilo. Si pierde anclaje sigue accesible desde la lista. |
@@ -314,7 +315,7 @@ Fallo: IA no disponible o límite alcanzado → mensaje contextual; `Relation Ed
 
 Referencia de flujo: [asistente de publicación anterior](mockups/key-share-wizard.html). Su apariencia está pendiente de adaptación al nuevo Design Spine.
 
-1. Daniel selecciona Compartir desde `Top Bar`.
+1. Daniel selecciona Compartir desde el encabezado propio del Diagrama.
 2. `Share Wizard` se abre en el paso Vista previa; Daniel recorre el Diagrama como visitante.
 3. En Contenido expuesto revisa Recursos, URLs y archivos accesibles.
 4. En Acceso habilita comentarios y confirma el enlace no listado.
