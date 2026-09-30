@@ -24,7 +24,7 @@ export function Providers({ children }: ProvidersProps) {
               colorInputBackground: 'var(--surface)', colorInputText: 'var(--on-background)',
               borderRadius: '0.5rem', fontFamily: 'var(--font-sans)',
             },
-            elements: { card: 'border border-border shadow-sm', formButtonPrimary: 'focus-visible:outline-2 focus-visible:outline-primary', footerActionLink: 'text-primary' },
+            elements: { card: 'border-0 shadow-none', formButtonPrimary: 'focus-visible:outline-2 focus-visible:outline-primary', footerActionLink: 'text-primary' },
           }}
         >
           <QueryClientProvider client={queryClient}>

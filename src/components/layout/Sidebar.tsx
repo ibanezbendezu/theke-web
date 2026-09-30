@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Folder, LayoutGrid, LibraryBig, PanelLeftClose, Search } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useCurrentAccount } from '../../data/useCurrentAccount';
 import { useProjects } from '../../data/useProjects';
 import { cn } from '../../lib/utils';
-import { ThemeToggle } from '../ui/ThemeToggle';
+import { AccountMenu } from './AccountMenu';
 
 const destinations = [
   { to: '/', label: 'Inicio', icon: LayoutGrid, end: true },
@@ -13,7 +12,6 @@ const destinations = [
 ];
 
 export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (value: boolean) => void }) {
-  const account = useCurrentAccount();
   const projects = useProjects('active');
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
@@ -27,11 +25,8 @@ export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (va
         'fixed inset-y-0 left-0 w-[272px] md:translate-x-0',
         isOpen ? 'translate-x-0 md:w-[272px]' : '-translate-x-full md:w-0',
       )} aria-label="Navegación principal">
-        <div className="flex min-w-[272px] items-center justify-between px-5 pb-5 pt-4">
-          <div className="flex items-center gap-2.5 text-sm font-semibold">
-            <span className="grid h-6 w-6 place-items-center rounded-md bg-surface-variant text-xs" aria-hidden="true">T</span>
-            <span>Theke</span>
-          </div>
+        <div className="flex min-w-[272px] items-center gap-1 px-3 pb-4 pt-3">
+          <AccountMenu />
           <button type="button" onClick={() => setIsOpen(false)} className="grid h-9 w-9 place-items-center rounded-md text-outline hover:bg-surface-variant hover:text-on-background focus-visible:outline-2 focus-visible:outline-primary" aria-label="Cerrar barra lateral"><PanelLeftClose size={17} /></button>
         </div>
 
@@ -50,13 +45,6 @@ export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (va
           </div></>}
 
         <div className="min-h-6 flex-1" />
-        <div className="min-w-[272px] px-3 pb-2">
-          <div className="flex min-h-11 items-center gap-2 rounded-md px-3 text-sm text-on-background">
-            <span className="grid h-7 w-7 place-items-center rounded-md bg-surface-variant text-xs font-semibold" aria-hidden="true">{(account.data?.account.name ?? 'T').charAt(0).toUpperCase()}</span>
-            <span className="min-w-0 flex-1 truncate">{account.data?.account.name ?? 'Mi espacio de Theke'}</span>
-            <ThemeToggle />
-          </div>
-        </div>
         <form className="min-w-[272px] px-3 pb-3" role="search" onSubmit={event => { event.preventDefault(); navigate(`/library${search.trim() ? `?q=${encodeURIComponent(search.trim())}` : ''}`); if (window.innerWidth < 768) setIsOpen(false); }}>
           <label className="flex h-9 items-center gap-2 rounded-md bg-surface-variant px-3 text-outline focus-within:outline-2 focus-within:outline-primary">
             <Search size={16} aria-hidden="true" />

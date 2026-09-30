@@ -1,11 +1,7 @@
-import { Menu, Home, Folder, FileText, LogOut, Sparkles } from 'lucide-react';
+import { Menu, Home, Folder, FileText } from 'lucide-react';
 import { useLocation, Link } from 'react-router-dom';
 import React, { useState } from 'react';
-import { useClerk } from '@clerk/clerk-react';
 import { useCurrentAccount } from '../../data/useCurrentAccount';
-import { clearPrivateCache } from '../../data/queryClient';
-import { AISettingsDialog } from '../ai/AISettingsDialog';
-import { useAiStatus } from '../../data/useAi';
 import { useProject } from '../../data/useProjects';
 import { useResource } from '../../data/useResources';
 import { useProjectFolders } from '../../data/useProjectFolders';
@@ -28,10 +24,7 @@ const routeDictionary: Record<string, { name: string, icon: React.ElementType }>
 
 export function Topbar({ isSidebarOpen, setIsOpen }: TopbarProps) {
     const location = useLocation();
-    const { signOut } = useClerk();
     const account = useCurrentAccount();
-    const { data: aiStatus } = useAiStatus();
-    const [aiDialogOpen, setAiDialogOpen] = useState(false);
     const [dropTarget, setDropTarget] = useState<string | null>(null);
     const toast = useToast();
 
@@ -134,27 +127,6 @@ export function Topbar({ isSidebarOpen, setIsOpen }: TopbarProps) {
                 </div>
             </div>
 
-            <div className="flex items-center gap-1.5 flex-shrink-0 text-outline">
-                <button
-                    onClick={() => setAiDialogOpen(true)}
-                    className={`p-1.5 rounded-[4px] hover:bg-surface-variant transition-colors flex items-center gap-1 text-xs font-medium ${
-                        aiStatus?.enabled ? 'text-on-background' : 'text-outline hover:text-on-background'
-                    }`}
-                    title="Configuración y privacidad de IA"
-                    aria-label="Configuración de IA"
-                >
-                    <Sparkles size={16} />
-                    <span className="hidden md:inline">IA</span>
-                </button>
-                <span className="hidden sm:block max-w-48 truncate text-sm text-on-background">
-                    {account.data?.user.displayName ?? account.data?.user.email ?? 'Cuenta'}
-                </span>
-                <button className="p-2 rounded-[4px] hover:bg-surface-variant transition-colors focus-visible:outline-2 focus-visible:outline-primary" aria-label="Cerrar sesión" title="Cerrar sesión" onClick={async () => { clearPrivateCache(); await signOut({ redirectUrl: '/access' }); }}>
-                    <LogOut size={18} />
-                </button>
-            </div>
-
-            <AISettingsDialog isOpen={aiDialogOpen} onClose={() => setAiDialogOpen(false)} />
         </header>
     );
 }

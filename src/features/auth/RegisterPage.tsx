@@ -1,5 +1,7 @@
 import { SignUp, useAuth } from '@clerk/clerk-react';
 import { Navigate, useSearchParams } from 'react-router-dom';
+import { AuthShell } from './AuthShell';
+import { authAppearance } from './authAppearance';
 import { safeDestination } from './safeDestination';
 
 export function RegisterPage() {
@@ -7,5 +9,5 @@ export function RegisterPage() {
   const [params] = useSearchParams();
   const destination = safeDestination(params.get('returnTo'));
   if (isLoaded && isSignedIn) return <Navigate replace to={destination} />;
-  return <main className="grid min-h-screen place-items-center bg-surface p-4"><section aria-labelledby="register-title" className="w-full max-w-md"><h1 id="register-title" className="mb-2 text-center text-2xl font-semibold">Crea tu espacio Theke</h1><p className="mb-6 text-center text-outline">Regístrate con Google o verifica tu correo con un código de un solo uso.</p><SignUp routing="hash" signInUrl={`/access?returnTo=${encodeURIComponent(destination)}`} forceRedirectUrl={destination} appearance={{ elements: { rootBox: 'mx-auto', cardBox: 'shadow-none' } }} /></section></main>;
+  return <AuthShell titleId="register-title" title="Crea tu espacio" description="Regístrate con Google o verifica tu correo con un código de un solo uso."><SignUp routing="hash" signInUrl={`/access?returnTo=${encodeURIComponent(destination)}`} forceRedirectUrl={destination} appearance={authAppearance}/></AuthShell>;
 }

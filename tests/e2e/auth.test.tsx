@@ -5,13 +5,13 @@ import { describe, expect, it, vi } from 'vitest';
 import { PrivateRoute } from '../../src/features/auth/PrivateRoute';
 import { AccessPage } from '../../src/features/auth/AccessPage';
 import { RegisterPage } from '../../src/features/auth/RegisterPage';
-import { Topbar } from '../../src/components/layout/Topbar';
+import { AccountMenu } from '../../src/components/layout/AccountMenu';
 import { registerPrivateQueryClient } from '../../src/data/queryClient';
 
 const state = vi.hoisted(() => ({ auth: { isLoaded: true, isSignedIn: false }, signOut: vi.fn(), account: { isPending: false, isError: false, data: { account: { name: 'Espacio de Daniel' }, user: { displayName: 'Daniel', email: null } }, refetch: vi.fn() } }));
 vi.mock('@clerk/clerk-react', () => ({
-  useAuth: () => state.auth, useClerk: () => ({ signOut: state.signOut }),
-  SignIn: (props: { signUpUrl: string }) => <a href={props.signUpUrl}>Crear cuenta</a>,
+  useAuth: () => state.auth, useClerk: () => ({ signOut: state.signOut, openUserProfile: vi.fn() }), useUser: () => ({ user: null }),
+  useSignIn: () => ({ isLoaded: true, signIn: {}, setActive: vi.fn() }),
   SignUp: (props: { signInUrl: string }) => <a href={props.signInUrl}>Ya tengo cuenta</a>,
 }));
 vi.mock('../../src/data/useCurrentAccount', () => ({ useCurrentAccount: () => state.account }));
@@ -30,7 +30,8 @@ describe('recorrido de autenticación sin credenciales externas', () => {
   });
   it('el click de salida limpia caché antes de delegar el redirect a Clerk', async () => {
     const client = new QueryClient(); client.setQueryData(['private', 'me'], { secret: true }); registerPrivateQueryClient(client);
-    render(<MemoryRouter><Topbar isSidebarOpen setIsOpen={vi.fn()} /></MemoryRouter>);
+    render(<MemoryRouter><AccountMenu /></MemoryRouter>);
+    fireEvent.click(screen.getByRole('button', { name: 'Opciones de Espacio de Daniel' }));
     fireEvent.click(screen.getByRole('button', { name: 'Cerrar sesión' }));
     await waitFor(() => expect(state.signOut).toHaveBeenCalledWith({ redirectUrl: '/access' }));
     expect(client.getQueryCache().getAll()).toHaveLength(0);

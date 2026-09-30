@@ -8,6 +8,7 @@ import { Library } from '../pages/Library';
 import { Projects } from '../pages/Projects';
 import { ProjectEntry } from '../pages/ProjectEntry';
 import { AccessPage } from '../features/auth/AccessPage';
+import { SsoCallback } from '../features/auth/SsoCallback';
 import { PrivateRoute } from '../features/auth/PrivateRoute';
 import { RegisterPage } from '../features/auth/RegisterPage';
 import { DiagramEditor } from '../pages/DiagramEditor';
@@ -16,6 +17,7 @@ import { PublicShare } from '../pages/PublicShare';
 export const router = createBrowserRouter([
     { path: '/share/:token', element: <PublicShare /> },
     { path: '/access', element: <AccessPage /> },
+    { path: '/sso-callback', element: <SsoCallback /> },
     { path: '/register', element: <RegisterPage /> },
     {
         path: '/',

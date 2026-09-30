@@ -59,3 +59,9 @@ La vista pública del mapa se ajustó al editor: lienzo a pantalla completa, fon
 - Las migraciones `0023_nested_collection_folders.sql` y `0024_nested_folder_names.sql`, el contrato OpenAPI y el cliente generado forman una sola entrega con estos cambios.
 - Revisión de código: se corrigieron descripciones obsoletas de eliminación de carpetas en OpenAPI y se actualizaron las pruebas de Biblioteca y Proyectos para los recorridos actuales. Lint, builds, contrato API/web, prueba de carpetas con PostgreSQL y pruebas focalizadas de colecciones pasaron. Las pruebas E2E se omitieron según la preferencia del usuario.
 - Esta entrega corrige la base visual y de navegación previa a la épica 6. No cambia el estado de las historias 4.2–4.4 ni 5.2–5.5; siguen pendientes sus criterios propios y la revisión visual en navegador.
+
+## Cuenta y acceso previos a la épica 6
+
+- El nombre del espacio ocupa la cabecera de la barra lateral y abre el menú de cuenta. La identidad usa nombre, correo y avatar de Clerk, con datos locales de respaldo; el nombre del espacio sigue siendo el de Theke. El menú reúne perfil administrado por Clerk, apariencia, configuración de IA, información sobre Theke y cierre de sesión.
+- Acceso y registro comparten una composición compacta con las superficies y la tipografía del Design Spine. La pantalla de acceso usa un formulario propio para correo con código y Google; Clerk envía y verifica el código, gestiona OAuth y activa la sesión. El registro permanece en el componente de Clerk. Los destinos `returnTo` conservan su validación.
+- Queda pendiente una revisión visual en navegador porque `@Browser` no está disponible en esta sesión. Este ajuste no modifica el estado de las épicas.
