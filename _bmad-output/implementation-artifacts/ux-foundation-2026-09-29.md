@@ -49,6 +49,8 @@ El estado de las historias de las épicas 4 y 5 permanece como figura en `sprint
 - Lint global: correcto.
 - Navegador: pendiente, porque @Browser no expone una pestaña en esta sesión.
 
+La vista pública del mapa se ajustó al editor: lienzo a pantalla completa, fondo y componentes del diagrama, panel de detalles y controles de navegación. La proyección ahora incluye grupos, anotaciones y conexiones además de recursos; la previsualización anterior a publicar presenta la misma composición. La comparación con una publicación real en @Browser sigue pendiente porque el navegador integrado no está disponible.
+
 ## Ajustes de colecciones y avisos (2026-09-29)
 
 - Las carpetas de Proyectos y las de Biblioteca forman árboles independientes. Cada carpeta muestra solo sus hijos directos y comparte la misma lista o galería con mapas o archivos. Los elementos y las carpetas se pueden mover por menú o arrastre, incluso hacia carpetas del breadcrumb; la API rechaza ciclos y nombres duplicados entre hermanos.

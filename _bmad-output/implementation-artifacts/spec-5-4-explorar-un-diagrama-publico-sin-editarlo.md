@@ -19,13 +19,13 @@ Permitir al visitante recorrer una proyección pública del Diagrama mediante un
 
 ## Estado
 
-En desarrollo. La API genera una allowlist de posiciones absolutas de Recursos visibles y conexiones de Relaciones representadas, sin copiar datos internos de nodos, grupos o viewport. La evidencia de Relación se limita a Recursos incluidos en la publicación y aparece en la previsualización antes de confirmar. La proyección y su huella incluyen composición y evidencia. Los Compartidos anteriores sin composición reciben un Canvas vacío y conservan su vista semántica.
+En desarrollo. La API genera una proyección pública explícita de los elementos visibles del mapa: recursos, carpetas representadas, grupos, anotaciones, elementos visuales heredados, conexiones y fondo. Convierte las posiciones de los hijos de grupos a coordenadas absolutas y no publica el documento privado ni las claves de almacenamiento. La evidencia de Relación se limita a Recursos incluidos en la publicación. La huella incluye toda esta composición y la evidencia. Los Compartidos anteriores conservan su revisión publicada hasta que el autor recalcule y confirme «Actualizar revisión pública».
 
-La web presenta React Flow sin mutaciones, controles de zoom y ajuste, selección e inspector; la vista semántica permite recorrer el mismo contenido con controles nativos de teclado. El inspector carga archivos solo al seleccionarlos. Se añadieron estilos para foco, movimiento reducido y alto contraste.
+La web presenta el mapa público en un lienzo a pantalla completa con el fondo, tarjetas, grupos, anotaciones, conexiones y panel de detalles del editor, sin herramientas de edición ni mutaciones. La previsualización privada muestra también el mapa antes de publicar. La vista semántica permite recorrer el contenido con controles nativos de teclado. El inspector carga archivos solo al seleccionarlos. Se añadieron estilos para foco, movimiento reducido y alto contraste.
 
 Revisión de composición: el Canvas y el inspector ahora coexisten en escritorio amplio. En tablet el detalle aparece como panel superpuesto cerrable y en móvil como hoja inferior; `Escape` y el botón de cierre devuelven el foco al elemento invocador. Cuando una publicación carece de posiciones visuales, la vista semántica aparece directamente. Los controles y filas públicas usan superficies tonales del Design Spine y objetivos táctiles de al menos 44 px.
 
-Pendiente para pasar a `review`: smoke visual en navegador con una publicación real y una comprobación de tiempo de contenido útil en banda ancha. `@Browser` no estuvo disponible y la revisión automática rechazó el control de Edge en esta sesión; las pruebas de componentes no sustituyen esa verificación.
+Las pruebas focalizadas de proyección pública y vista compartida, lint y build de API y web pasan. Pendiente para pasar a `review`: smoke visual en navegador con una publicación real y una comprobación de tiempo de contenido útil en banda ancha. `@Browser` no estuvo disponible en esta sesión; las pruebas de componentes no sustituyen esa verificación.
 
 ## Referencias
 

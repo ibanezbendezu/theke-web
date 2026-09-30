@@ -13,7 +13,7 @@ it('consulta sin credenciales y muestra solo la proyección pública', async () 
   page();
   fireEvent.click(await screen.findByRole('button', { name: 'Nota · note' }));
   expect(await screen.findByText('Texto público')).toBeInTheDocument();
-  expect(screen.getByText(/permite nuevos comentarios/)).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Añadir recurso' })).not.toBeInTheDocument();
   expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/\/v1\/public\/shares\/example-token$/), expect.objectContaining({ cache: 'no-store' }));
   expect(fetchMock.mock.calls[0]?.[1]?.headers).toBeUndefined();
 });
@@ -89,11 +89,15 @@ it('permite inspeccionar relaciones y navegar a sus extremos desde la vista sem�
 it('monta el Canvas público con controles de zoom cuando hay posiciones publicadas', async () => {
   vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa visual', revision: 1, commentsEnabled: false,
-    layout: { nodes: [{ id: 'r0', resourceId: 'one', x: 40, y: 80 }], edges: [] },
+    layout: { background: { variant: 'grid', tone: 'surface' }, nodes: [{ id: 'r0', type: 'resource', resourceId: 'one', x: 40, y: 80, width: 320, height: 140, caption: 'Lectura' }, { id: 'g0', type: 'container', x: 20, y: 30, width: 400, height: 260, label: 'Grupo visible' }, { id: 'a0', type: 'annotation', x: 100, y: 240, width: 220, height: 80, annotationKind: 'text', text: 'Texto visual' }], edges: [] },
     resources: [{ id: 'one', type: 'note', title: 'Tarjeta visible', content: 'Detalle', description: null, url: null, mediaType: null, accessibilityText: null }], relations: [] } }) });
   page();
   expect(await screen.findByRole('heading', { name: 'Mapa visual' })).toBeInTheDocument();
   expect(screen.getByLabelText('Diagrama público')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Acercar' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Ajustar vista' })).toBeInTheDocument();
+  expect(screen.getByText('Grupo visible')).toBeInTheDocument();
+  expect(screen.getByText('Texto visual')).toBeInTheDocument();
+  expect(screen.getByText(/Nota · Lectura/)).toBeInTheDocument();
+  expect(screen.queryByRole('textbox', { name: 'Texto de anotación' })).not.toBeInTheDocument();
 });
