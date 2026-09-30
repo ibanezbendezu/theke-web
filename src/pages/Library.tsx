@@ -66,9 +66,9 @@ export function Library() {
     {resources.isPending && <p role="status">Cargando archivos…</p>}
     {resources.isError && <div role="alert"><p>No se pudieron cargar los archivos.</p><Button onClick={() => resources.refetch()}>Reintentar</Button></div>}
     {!resources.isPending && !resources.isError && items.length === 0 && !hasVisibleFolders && <div className="py-12 text-center text-sm text-outline"><FileIcon className="mx-auto mb-3" size={36}/><p>{query ? 'No hay resultados.' : status === 'archived' ? 'No hay archivos archivados.' : folderId ? 'Esta carpeta está vacía.' : 'Aún no hay archivos.'}</p>{status === 'active' && <Button className="mt-3" onClick={() => setUploadOpen(true)}>Subir archivos</Button>}</div>}
-    {(hasVisibleFolders || items.length > 0) && <div className={viewMode === 'grid' ? 'grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : ''}>
+    {(hasVisibleFolders || items.length > 0) && <div className={viewMode === 'grid' ? 'grid grid-cols-[repeat(auto-fill,minmax(min(100%,205px),1fr))] gap-3' : ''}>
       {visibleFolders.map(folder => <CollectionItem key={folder.id} view={viewMode} title={folder.name} detail="Carpeta de archivos" icon={<Folder size={18}/>} preview={<Folder size={44}/>} onOpen={() => setFolder(folder.id)} onDragStart={event => { event.dataTransfer.setData('application/x-theke-library-folder', folder.id); event.dataTransfer.effectAllowed = 'move'; }} onDragOver={event => event.preventDefault()} onDrop={event => { void dropIntoFolder(event, folder.id); }} actions={[{ label: 'Abrir', onSelect: () => setFolder(folder.id) }, { label: 'Mover a…', onSelect: () => setMoving({ kind: 'folder', id: folder.id, name: folder.name, parentFolderId: folder.parentFolderId }) }, { label: 'Renombrar', onSelect: () => setFolderDialog({ id: folder.id, name: folder.name }) }, { label: 'Eliminar carpeta', destructive: true, onSelect: () => setDeletingFolder(folder) }]} />)}
-      {items.map(resource => <CollectionItem key={resource.id} view={viewMode} title={resource.title} detail={resource.mediaType ?? 'Archivo'} date={new Date(resource.updatedAt).toLocaleDateString()} icon={<ResourceIcon resource={resource} size={18}/>} preview={resource.previewImageUrl ? <img src={resource.previewImageUrl} alt="" className="h-full w-full object-cover" loading="lazy"/> : <ResourceIcon resource={resource} size={44}/>} onOpen={() => navigate(resourceUrl(resource.id))} onDragStart={status === 'active' ? event => { event.dataTransfer.setData('application/x-theke-resource', resource.id); event.dataTransfer.effectAllowed = 'move'; } : undefined} actions={[{ label: 'Abrir', onSelect: () => navigate(resourceUrl(resource.id)) }, ...(status === 'active' ? [{ label: 'Mover a…', onSelect: () => setMoving({ kind: 'resource', id: resource.id, name: resource.title, parentFolderId: resource.libraryFolderId ?? null }) }, { label: 'Archivar', onSelect: () => setImpact({ entityType: 'resource', id: resource.id, action: 'archive' }) }] : []), { label: 'Eliminar', destructive: true, onSelect: () => setImpact({ entityType: 'resource', id: resource.id, action: 'delete' }) }]} />)}
+      {items.map(resource => <CollectionItem key={resource.id} view={viewMode} title={resource.title} detail={resource.mediaType ?? 'Archivo'} date={new Date(resource.updatedAt).toLocaleDateString()} icon={<ResourceIcon resource={resource} size={18}/>} preview={viewMode === 'grid' ? <LibraryFilePreview resource={resource}/> : undefined} onOpen={() => navigate(resourceUrl(resource.id))} onDragStart={status === 'active' ? event => { event.dataTransfer.setData('application/x-theke-resource', resource.id); event.dataTransfer.effectAllowed = 'move'; } : undefined} actions={[{ label: 'Abrir', onSelect: () => navigate(resourceUrl(resource.id)) }, ...(status === 'active' ? [{ label: 'Mover a…', onSelect: () => setMoving({ kind: 'resource', id: resource.id, name: resource.title, parentFolderId: resource.libraryFolderId ?? null }) }, { label: 'Archivar', onSelect: () => setImpact({ entityType: 'resource', id: resource.id, action: 'archive' }) }] : []), { label: 'Eliminar', destructive: true, onSelect: () => setImpact({ entityType: 'resource', id: resource.id, action: 'delete' }) }]} />)}
     </div>}
     {resources.hasNextPage && <Button className="mt-5" onClick={() => resources.fetchNextPage()}>Cargar más</Button>}
     {resourceId && <Dialog titleId="library-resource-title" onClose={closeResource} scrollable={detail.data?.type !== 'file'} shadow={detail.data?.type !== 'file'} className={detail.data?.type === 'file' ? 'flex h-[min(94dvh,900px)] max-w-[min(96vw,1600px)] flex-col' : 'max-w-5xl'}>
@@ -91,6 +91,30 @@ export function Library() {
 
 function ResourceIcon({ resource, size }: { resource: ResourceSummary; size: number }) { if (resource.type === 'note') return <FileText size={size}/>; if (resource.type === 'link') return <LinkIcon size={size}/>; if (resource.mediaType?.startsWith('image/')) return <ImageIcon size={size}/>; if (resource.mediaType?.startsWith('audio/')) return <Music size={size}/>; if (resource.mediaType?.startsWith('video/')) return <Video size={size}/>; return <FileIcon size={size}/>; }
 
+function LibraryFilePreview({ resource }: { resource: ResourceSummary }) {
+  const image = resource.mediaType?.startsWith('image/');
+  const video = resource.mediaType?.startsWith('video/');
+  const pdf = resource.mediaType === 'application/pdf';
+  const previewable = resource.type === 'file' && Boolean(image || video || pdf);
+  const [visible, setVisible] = useState(() => !('IntersectionObserver' in window));
+  const [failed, setFailed] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!previewable) return;
+    if (!('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) { setVisible(true); observer.disconnect(); }
+    }, { rootMargin: '120px' });
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [previewable]);
+  const access = useResourceAccess(resource.id, visible && previewable);
+  const url = !failed && access.data?.url;
+  return <div ref={ref} className="flex h-full w-full items-center justify-center overflow-hidden">
+    {resource.previewImageUrl && !failed ? <img src={resource.previewImageUrl} alt="" className="h-full w-full object-cover" loading="lazy" onError={() => setFailed(true)}/> : url && image ? <img src={url} alt="" className="h-full w-full object-cover" loading="lazy" onError={() => setFailed(true)}/> : url && video ? <video src={url} className="h-full w-full object-cover" preload="metadata" muted playsInline tabIndex={-1} aria-hidden="true" onLoadedMetadata={event => { event.currentTarget.currentTime = Math.min(0.1, event.currentTarget.duration / 2); }} onError={() => setFailed(true)}/> : url && pdf ? <iframe src={`${url}#toolbar=0&navpanes=0&scrollbar=0`} title={`Vista previa de ${resource.title}`} tabIndex={-1} className="pointer-events-none h-full w-full" onError={() => setFailed(true)}/> : <ResourceIcon resource={resource} size={40}/>}
+  </div>;
+}
+
 function ResourceLifecycle({ resource, onArchived }: { resource: ResourceDetail; onArchived: () => void }) {
   const [request, setRequest] = useState<ImpactRequest | null>(null); const actions = useImpactActions();
   return <section className="mt-5 flex items-center gap-2 rounded-lg bg-surface-variant/55 p-3" aria-label="Ciclo de vida del recurso">{resource.status === 'archived' ? <><p className="flex-1 text-sm">Este Recurso está archivado. Sus usos existentes conservan la misma identidad.</p><Button variant="primary" disabled={actions.restoreResource.isPending} onClick={() => actions.restoreResource.mutate(resource.id)}>Restaurar</Button></> : <><p className="flex-1 text-sm">Estas acciones afectan al Recurso canónico en toda tu Cuenta.</p><Button variant="outline" onClick={() => setRequest({ entityType: 'resource', id: resource.id, action: 'archive' })}>Archivar</Button><Button variant="outline" onClick={() => setRequest({ entityType: 'resource', id: resource.id, action: 'delete' })}>Eliminar</Button></>}{request && <ImpactDialog request={request} onClose={() => setRequest(null)} onDone={() => { setRequest(null); onArchived(); }}/>}</section>;
@@ -101,7 +125,6 @@ function FileResource({ resource, folderName, onClose }: { resource: ResourceDet
   const media = resource.mediaType?.startsWith('audio/') || resource.mediaType?.startsWith('video/');
   const preview = useResourceAccess(resource.id, Boolean(previewable)); const actions = useResourceActions(); const impactActions = useImpactActions(); const toast = useToast();
   const [mediaUrl, setMediaUrl] = useState(''); const [previewError, setPreviewError] = useState('');
-  const [accessibility, setAccessibility] = useState(resource.accessibilityText ?? '');
   const [renaming, setRenaming] = useState(false); const [title, setTitle] = useState(resource.title); const [nameError, setNameError] = useState('');
   const [infoOpen, setInfoOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false); const [impactRequest, setImpactRequest] = useState<ImpactRequest | null>(null);
@@ -142,7 +165,6 @@ function FileResource({ resource, folderName, onClose }: { resource: ResourceDet
         <div className="mb-5 flex items-center justify-between"><h3 className="font-semibold">Propiedades</h3><Button size="icon" className="h-9 w-9 lg:hidden" icon={X} aria-label="Cerrar propiedades" onClick={() => setInfoOpen(false)}/></div>
         <dl className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-3 gap-y-3 text-sm"><dt className="text-outline">Tipo</dt><dd className="break-words">{resource.mediaType ?? 'Archivo'}</dd><dt className="text-outline">Tamaño</dt><dd>{size}</dd><dt className="text-outline">Ubicación</dt><dd className="break-words">{folderName ?? 'Biblioteca'}</dd><dt className="text-outline">Origen</dt><dd className="break-words">{resource.origin}</dd><dt className="text-outline">Modificado</dt><dd>{new Date(resource.updatedAt).toLocaleString()}</dd><dt className="text-outline">Estado</dt><dd>{resource.status === 'archived' ? 'Archivado' : 'Activo'}</dd></dl>
         {resource.description && <section className="mt-6"><h4 className="text-sm font-medium">Descripción</h4><p className="mt-1 whitespace-pre-wrap break-words text-sm">{resource.description}</p></section>}
-        {resource.accessibilityRequired && <section className="mt-6"><label className="block text-sm font-medium">Texto alternativo o descripción accesible{resource.accessibilityMissing && <span className="ml-2 text-red-600">Requerido</span>}<textarea className="mt-2 min-h-28 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary" maxLength={2000} value={accessibility} onChange={event => setAccessibility(event.target.value)}/></label><Button className="mt-2" disabled={actions.accessibility.isPending} onClick={async () => { try { await actions.accessibility.mutateAsync({ id: resource.id, text: accessibility }); toast.success('Información de accesibilidad guardada.'); } catch { toast.error('No se pudo guardar.'); } }}>Guardar accesibilidad</Button></section>}
         <ResourceKnowledgePanel key={resource.id} resource={resource} compact/>
       </aside>
     </div>

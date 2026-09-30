@@ -6,6 +6,7 @@ import { ToastProvider } from '../src/components/ui/ToastProvider';
 
 const state = vi.hoisted(() => ({
   detail: undefined as Record<string, unknown> | undefined,
+  items: [] as Record<string, unknown>[],
   folders: [] as { id: string; name: string; parentFolderId: string | null }[],
   renameFile: vi.fn(),
 }));
@@ -15,7 +16,7 @@ vi.mock('../src/data/useLibraryFolders', () => ({
   useLibraryFolderActions: () => ({ create: { mutateAsync: vi.fn() }, rename: { mutateAsync: vi.fn() }, remove: { mutateAsync: vi.fn() }, move: { mutateAsync: vi.fn() }, moveFolder: { mutateAsync: vi.fn() } }),
 }));
 vi.mock('../src/data/useResources', () => ({
-  useResources: () => ({ data: { pages: [{ data: [] }] }, isPending: false, isError: false, hasNextPage: false }),
+  useResources: () => ({ data: { pages: [{ data: state.items }] }, isPending: false, isError: false, hasNextPage: false }),
   useResource: () => ({ data: state.detail, isPending: false, isError: false }),
   useResourceKnowledge: () => ({ references: { data: { outgoing: [], incoming: [] }, isPending: false }, definitions: { data: [], isPending: false }, save: { mutateAsync: vi.fn(), isPending: false } }),
   useResourceAccess: () => ({ data: { url: 'https://example.test/preview' }, isPending: false, isError: false }),
@@ -25,7 +26,7 @@ vi.mock('../src/data/useResources', () => ({
 vi.mock('../src/data/useImpacts', () => ({ useImpact: () => ({ isPending: false }), useImpactActions: () => ({ execute: { mutateAsync: vi.fn(), isPending: false }, restoreResource: { mutate: vi.fn(), isPending: false } }) }));
 
 const mount = (path: string) => render(<ToastProvider><MemoryRouter initialEntries={[path]}><Library /></MemoryRouter></ToastProvider>);
-afterEach(() => { cleanup(); state.detail = undefined; state.folders = []; state.renameFile.mockReset(); });
+afterEach(() => { cleanup(); state.detail = undefined; state.items = []; state.folders = []; state.renameFile.mockReset(); });
 
 describe('Biblioteca', () => {
   it('sitúa la búsqueda antes de Activos y Archivados y distingue la búsqueda vacía', () => {
@@ -54,7 +55,9 @@ describe('Biblioteca', () => {
     mount('/library/file-1');
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'imagen.png' })).toBeInTheDocument();
-    expect(screen.getByText('Requerido')).toBeInTheDocument();
+    expect(screen.queryByText('Texto alternativo o descripción accesible')).not.toBeInTheDocument();
+    expect(screen.queryByText('Requerido')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Guardar accesibilidad' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Descargar' })).toBeInTheDocument();
     expect(screen.getByRole('dialog')).toHaveClass('overflow-hidden');
     expect(screen.getByRole('region', { name: 'Vista previa' })).toHaveClass('overflow-auto');
@@ -66,6 +69,14 @@ describe('Biblioteca', () => {
     fireEvent.click(screen.getByRole('menuitem', { name: 'Archivar' }));
     expect(screen.queryByRole('menu', { name: 'Opciones del archivo' })).not.toBeInTheDocument();
     expect(screen.getByRole('dialog', { name: 'Archivar elemento' })).toBeInTheDocument();
+  });
+
+  it('muestra vistas previas de imagen, PDF y video en la galería', () => {
+    state.items = ['image/png', 'application/pdf', 'video/mp4'].map((mediaType, index) => ({ id: `file-${index}`, title: `archivo-${index}`, type: 'file', mediaType, status: 'ready', updatedAt: '2026-09-29T12:00:00.000Z' }));
+    const { container } = mount('/library');
+    expect(container.querySelector('img[src="https://example.test/preview"]')).toBeInTheDocument();
+    expect(container.querySelector('iframe[title="Vista previa de archivo-1"]')).toBeInTheDocument();
+    expect(container.querySelector('video[src="https://example.test/preview"]')).toBeInTheDocument();
   });
 
   it('permite renombrar el archivo desde el visor', async () => {
