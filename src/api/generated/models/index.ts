@@ -152,6 +152,7 @@ export * from './relationSuggestionInput';
 export * from './relationSuggestionResponse';
 export * from './relationTypeListResponse';
 export * from './relationTypeOption';
+export * from './renameFileResourceInput';
 export * from './resource';
 export * from './resourceAccess';
 export * from './resourceAccessMode';

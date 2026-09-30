@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { Library } from '../src/pages/Library';
@@ -7,6 +7,7 @@ import { ToastProvider } from '../src/components/ui/ToastProvider';
 const state = vi.hoisted(() => ({
   detail: undefined as Record<string, unknown> | undefined,
   folders: [] as { id: string; name: string; parentFolderId: string | null }[],
+  renameFile: vi.fn(),
 }));
 vi.mock('../src/data/useNotes', () => ({ useNoteActions: () => ({ update: { mutateAsync: vi.fn(), isPending: false } }) }));
 vi.mock('../src/data/useLibraryFolders', () => ({
@@ -18,13 +19,13 @@ vi.mock('../src/data/useResources', () => ({
   useResource: () => ({ data: state.detail, isPending: false, isError: false }),
   useResourceKnowledge: () => ({ references: { data: { outgoing: [], incoming: [] }, isPending: false }, definitions: { data: [], isPending: false }, save: { mutateAsync: vi.fn(), isPending: false } }),
   useResourceAccess: () => ({ data: { url: 'https://example.test/preview' }, isPending: false, isError: false }),
-  useResourceActions: () => ({ access: vi.fn().mockResolvedValue({ url: 'https://example.test/file' }), accessibility: { mutateAsync: vi.fn(), isPending: false } }),
+  useResourceActions: () => ({ access: vi.fn().mockResolvedValue({ url: 'https://example.test/file' }), accessibility: { mutateAsync: vi.fn(), isPending: false }, renameFile: { mutateAsync: state.renameFile, isPending: false } }),
   useLinkActions: () => ({ update: { mutateAsync: vi.fn(), isPending: false }, retry: { mutateAsync: vi.fn(), isPending: false } }),
 }));
 vi.mock('../src/data/useImpacts', () => ({ useImpact: () => ({ isPending: false }), useImpactActions: () => ({ execute: { mutateAsync: vi.fn(), isPending: false }, restoreResource: { mutate: vi.fn(), isPending: false } }) }));
 
 const mount = (path: string) => render(<ToastProvider><MemoryRouter initialEntries={[path]}><Library /></MemoryRouter></ToastProvider>);
-afterEach(() => { cleanup(); state.detail = undefined; state.folders = []; });
+afterEach(() => { cleanup(); state.detail = undefined; state.folders = []; state.renameFile.mockReset(); });
 
 describe('Biblioteca', () => {
   it('sitúa la búsqueda antes de Activos y Archivados y distingue la búsqueda vacía', () => {
@@ -54,6 +55,19 @@ describe('Biblioteca', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'imagen.png' })).toBeInTheDocument();
     expect(screen.getByText('Requerido')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Descargar original' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Descargar' })).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toHaveClass('overflow-hidden');
+    expect(screen.getByRole('region', { name: 'Vista previa' })).toHaveClass('overflow-auto');
+    expect(screen.getByRole('complementary', { name: 'Propiedades del archivo' })).toBeInTheDocument();
+  });
+
+  it('permite renombrar el archivo desde el visor', async () => {
+    state.detail = { id: 'file-1', title: 'imagen.png', description: null, type: 'file', mediaType: 'image/png', byteSize: 1024, origin: 'Carga desde dispositivo', status: 'ready', updatedAt: '2026-09-29T12:00:00.000Z', accessibilityText: null, accessibilityRequired: true, accessibilityMissing: true };
+    state.renameFile.mockResolvedValue({ ...state.detail, title: 'nuevo.png' });
+    mount('/library/file-1');
+    fireEvent.click(screen.getByRole('button', { name: 'Renombrar archivo' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'Nombre del archivo' }), { target: { value: 'nuevo.png' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(state.renameFile).toHaveBeenCalledWith({ id: 'file-1', title: 'nuevo.png', expectedUpdatedAt: '2026-09-29T12:00:00.000Z' }));
   });
 });

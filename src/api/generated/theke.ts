@@ -73,6 +73,7 @@ import type {
   RelationSuggestionInput,
   RelationSuggestionResponse,
   RelationTypeListResponse,
+  RenameFileResourceInput,
   ResourceAccessResponse,
   ResourceListResponse,
   ResourceMetadataResponse,
@@ -3420,6 +3421,76 @@ export const getResource = async (id: string, options?: Parameters<typeof thekeF
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export type renameFileResourceResponse200 = {
+  data: ResourceResponse
+  status: 200
+}
+
+export type renameFileResourceResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
+export type renameFileResourceResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type renameFileResourceResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type renameFileResourceResponse409 = {
+  data: ApiErrorResponse
+  status: 409
+}
+
+export type renameFileResourceResponseSuccess = (renameFileResourceResponse200) & {
+  headers: Headers;
+};
+export type renameFileResourceResponseError = (renameFileResourceResponse400 | renameFileResourceResponse401 | renameFileResourceResponse404 | renameFileResourceResponse409) & {
+  headers: Headers;
+};
+
+export type renameFileResourceResponse = (renameFileResourceResponseSuccess | renameFileResourceResponseError)
+
+export const getRenameFileResourceUrl = (id: string,) => {
+
+
+
+
+  return `/v1/resources/${id}`
+}
+
+export const renameFileResource = async (id: string,
+    renameFileResourceInput: RenameFileResourceInput, options?: Parameters<typeof thekeFetch>[1]): Promise<renameFileResourceResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<renameFileResourceResponse>(getRenameFileResourceUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(renameFileResourceInput)
   }
 );}
 
