@@ -24,9 +24,16 @@ vi.mock('../src/data/useResources', () => ({
   useLinkActions: () => ({ update: { mutateAsync: vi.fn(), isPending: false }, retry: { mutateAsync: vi.fn(), isPending: false } }),
 }));
 vi.mock('../src/data/useImpacts', () => ({ useImpact: () => ({ isPending: false }), useImpactActions: () => ({ execute: { mutateAsync: vi.fn(), isPending: false }, restoreResource: { mutate: vi.fn(), isPending: false } }) }));
+vi.mock('pdfjs-dist', () => ({
+  GlobalWorkerOptions: { workerSrc: '' },
+  getDocument: () => ({
+    promise: Promise.resolve({ getPage: async () => ({ getViewport: ({ scale }: { scale: number }) => ({ width: 600 * scale, height: 800 * scale }), render: () => ({ promise: Promise.resolve() }) }) }),
+    destroy: async () => {},
+  }),
+}));
 
 const mount = (path: string) => render(<ToastProvider><MemoryRouter initialEntries={[path]}><Library /></MemoryRouter></ToastProvider>);
-afterEach(() => { cleanup(); state.detail = undefined; state.items = []; state.folders = []; state.renameFile.mockReset(); });
+afterEach(() => { cleanup(); vi.restoreAllMocks(); state.detail = undefined; state.items = []; state.folders = []; state.renameFile.mockReset(); });
 
 describe('Biblioteca', () => {
   it('sitúa la búsqueda antes de Activos y Archivados y distingue la búsqueda vacía', () => {
@@ -71,12 +78,19 @@ describe('Biblioteca', () => {
     expect(screen.getByRole('dialog', { name: 'Archivar elemento' })).toBeInTheDocument();
   });
 
-  it('muestra vistas previas de imagen, PDF y video en la galería', () => {
+  it('muestra la primera página y un fotograma como miniaturas estáticas', async () => {
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ drawImage: vi.fn() } as unknown as CanvasRenderingContext2D);
+    vi.spyOn(HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue('data:image/webp;base64,thumbnail');
     state.items = ['image/png', 'application/pdf', 'video/mp4'].map((mediaType, index) => ({ id: `file-${index}`, title: `archivo-${index}`, type: 'file', mediaType, status: 'ready', updatedAt: '2026-09-29T12:00:00.000Z' }));
     const { container } = mount('/library');
     expect(container.querySelector('img[src="https://example.test/preview"]')).toBeInTheDocument();
-    expect(container.querySelector('iframe[title="Vista previa de archivo-1"]')).toBeInTheDocument();
-    expect(container.querySelector('video[src="https://example.test/preview"]')).toBeInTheDocument();
+    expect(container.querySelector('iframe')).not.toBeInTheDocument();
+    const video = container.querySelector('video')!;
+    Object.defineProperties(video, { videoWidth: { value: 640 }, videoHeight: { value: 360 }, duration: { value: 10 }, currentTime: { value: 0, writable: true } });
+    fireEvent.loadedMetadata(video);
+    fireEvent.seeked(video);
+    await waitFor(() => expect(container.querySelectorAll('img[src^="data:image/webp"]')).toHaveLength(2));
+    expect(container.querySelector('video')).not.toBeInTheDocument();
   });
 
   it('permite renombrar el archivo desde el visor', async () => {

@@ -5,6 +5,7 @@ import { Download, File as FileIcon, FileText, Folder, Image as ImageIcon, Info,
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { UploadTray } from '../components/uploads/UploadTray';
 import { ResourceKnowledgePanel } from '../components/resources/ResourceKnowledgePanel';
+import { FileThumbnail } from '../components/resources/FileThumbnail';
 import { Button } from '../components/ui/Button';
 import { CollectionItem } from '../components/ui/CollectionItem';
 import { Dialog } from '../components/ui/Dialog';
@@ -68,7 +69,7 @@ export function Library() {
     {!resources.isPending && !resources.isError && items.length === 0 && !hasVisibleFolders && <div className="py-12 text-center text-sm text-outline"><FileIcon className="mx-auto mb-3" size={36}/><p>{query ? 'No hay resultados.' : status === 'archived' ? 'No hay archivos archivados.' : folderId ? 'Esta carpeta está vacía.' : 'Aún no hay archivos.'}</p>{status === 'active' && <Button className="mt-3" onClick={() => setUploadOpen(true)}>Subir archivos</Button>}</div>}
     {(hasVisibleFolders || items.length > 0) && <div className={viewMode === 'grid' ? 'grid grid-cols-[repeat(auto-fill,minmax(min(100%,205px),1fr))] gap-3' : ''}>
       {visibleFolders.map(folder => <CollectionItem key={folder.id} view={viewMode} title={folder.name} detail="Carpeta de archivos" icon={<Folder size={18}/>} preview={<Folder size={44}/>} onOpen={() => setFolder(folder.id)} onDragStart={event => { event.dataTransfer.setData('application/x-theke-library-folder', folder.id); event.dataTransfer.effectAllowed = 'move'; }} onDragOver={event => event.preventDefault()} onDrop={event => { void dropIntoFolder(event, folder.id); }} actions={[{ label: 'Abrir', onSelect: () => setFolder(folder.id) }, { label: 'Mover a…', onSelect: () => setMoving({ kind: 'folder', id: folder.id, name: folder.name, parentFolderId: folder.parentFolderId }) }, { label: 'Renombrar', onSelect: () => setFolderDialog({ id: folder.id, name: folder.name }) }, { label: 'Eliminar carpeta', destructive: true, onSelect: () => setDeletingFolder(folder) }]} />)}
-      {items.map(resource => <CollectionItem key={resource.id} view={viewMode} title={resource.title} detail={resource.mediaType ?? 'Archivo'} date={new Date(resource.updatedAt).toLocaleDateString()} icon={<ResourceIcon resource={resource} size={18}/>} preview={viewMode === 'grid' ? <LibraryFilePreview resource={resource}/> : undefined} onOpen={() => navigate(resourceUrl(resource.id))} onDragStart={status === 'active' ? event => { event.dataTransfer.setData('application/x-theke-resource', resource.id); event.dataTransfer.effectAllowed = 'move'; } : undefined} actions={[{ label: 'Abrir', onSelect: () => navigate(resourceUrl(resource.id)) }, ...(status === 'active' ? [{ label: 'Mover a…', onSelect: () => setMoving({ kind: 'resource', id: resource.id, name: resource.title, parentFolderId: resource.libraryFolderId ?? null }) }, { label: 'Archivar', onSelect: () => setImpact({ entityType: 'resource', id: resource.id, action: 'archive' }) }] : []), { label: 'Eliminar', destructive: true, onSelect: () => setImpact({ entityType: 'resource', id: resource.id, action: 'delete' }) }]} />)}
+      {items.map(resource => <CollectionItem key={`${resource.id}:${resource.updatedAt}`} view={viewMode} title={resource.title} detail={resource.mediaType ?? 'Archivo'} date={new Date(resource.updatedAt).toLocaleDateString()} icon={<ResourceIcon resource={resource} size={18}/>} preview={viewMode === 'grid' ? <FileThumbnail resource={resource} fallback={<ResourceIcon resource={resource} size={40}/>}/> : undefined} onOpen={() => navigate(resourceUrl(resource.id))} onDragStart={status === 'active' ? event => { event.dataTransfer.setData('application/x-theke-resource', resource.id); event.dataTransfer.effectAllowed = 'move'; } : undefined} actions={[{ label: 'Abrir', onSelect: () => navigate(resourceUrl(resource.id)) }, ...(status === 'active' ? [{ label: 'Mover a…', onSelect: () => setMoving({ kind: 'resource', id: resource.id, name: resource.title, parentFolderId: resource.libraryFolderId ?? null }) }, { label: 'Archivar', onSelect: () => setImpact({ entityType: 'resource', id: resource.id, action: 'archive' }) }] : []), { label: 'Eliminar', destructive: true, onSelect: () => setImpact({ entityType: 'resource', id: resource.id, action: 'delete' }) }]} />)}
     </div>}
     {resources.hasNextPage && <Button className="mt-5" onClick={() => resources.fetchNextPage()}>Cargar más</Button>}
     {resourceId && <Dialog titleId="library-resource-title" onClose={closeResource} scrollable={detail.data?.type !== 'file'} shadow={detail.data?.type !== 'file'} className={detail.data?.type === 'file' ? 'flex h-[min(94dvh,900px)] max-w-[min(96vw,1600px)] flex-col' : 'max-w-5xl'}>
@@ -90,30 +91,6 @@ export function Library() {
 }
 
 function ResourceIcon({ resource, size }: { resource: ResourceSummary; size: number }) { if (resource.type === 'note') return <FileText size={size}/>; if (resource.type === 'link') return <LinkIcon size={size}/>; if (resource.mediaType?.startsWith('image/')) return <ImageIcon size={size}/>; if (resource.mediaType?.startsWith('audio/')) return <Music size={size}/>; if (resource.mediaType?.startsWith('video/')) return <Video size={size}/>; return <FileIcon size={size}/>; }
-
-function LibraryFilePreview({ resource }: { resource: ResourceSummary }) {
-  const image = resource.mediaType?.startsWith('image/');
-  const video = resource.mediaType?.startsWith('video/');
-  const pdf = resource.mediaType === 'application/pdf';
-  const previewable = resource.type === 'file' && Boolean(image || video || pdf);
-  const [visible, setVisible] = useState(() => !('IntersectionObserver' in window));
-  const [failed, setFailed] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!previewable) return;
-    if (!('IntersectionObserver' in window)) return;
-    const observer = new IntersectionObserver(entries => {
-      if (entries.some(entry => entry.isIntersecting)) { setVisible(true); observer.disconnect(); }
-    }, { rootMargin: '120px' });
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [previewable]);
-  const access = useResourceAccess(resource.id, visible && previewable);
-  const url = !failed && access.data?.url;
-  return <div ref={ref} className="flex h-full w-full items-center justify-center overflow-hidden">
-    {resource.previewImageUrl && !failed ? <img src={resource.previewImageUrl} alt="" className="h-full w-full object-cover" loading="lazy" onError={() => setFailed(true)}/> : url && image ? <img src={url} alt="" className="h-full w-full object-cover" loading="lazy" onError={() => setFailed(true)}/> : url && video ? <video src={url} className="h-full w-full object-cover" preload="metadata" muted playsInline tabIndex={-1} aria-hidden="true" onLoadedMetadata={event => { event.currentTarget.currentTime = Math.min(0.1, event.currentTarget.duration / 2); }} onError={() => setFailed(true)}/> : url && pdf ? <iframe src={`${url}#toolbar=0&navpanes=0&scrollbar=0`} title={`Vista previa de ${resource.title}`} tabIndex={-1} className="pointer-events-none h-full w-full" onError={() => setFailed(true)}/> : <ResourceIcon resource={resource} size={40}/>}
-  </div>;
-}
 
 function ResourceLifecycle({ resource, onArchived }: { resource: ResourceDetail; onArchived: () => void }) {
   const [request, setRequest] = useState<ImpactRequest | null>(null); const actions = useImpactActions();
