@@ -19,7 +19,7 @@ async function firstPdfPage(url: string) {
     const page = await document.getPage(1);
     const original = page.getViewport({ scale: 1 });
     const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-    const scale = Math.min(320 / original.width, 300 / original.height) * pixelRatio;
+    const scale = (320 / original.width) * pixelRatio;
     const viewport = page.getViewport({ scale });
     const canvas = window.document.createElement('canvas');
     canvas.width = Math.ceil(viewport.width);
@@ -82,7 +82,7 @@ export function FileThumbnail({ resource, fallback }: { resource: ResourceSummar
   };
 
   return <div ref={ref} className="relative flex h-full w-full items-center justify-center overflow-hidden">
-    {thumbnail ? <img src={thumbnail} alt="" className={`h-full w-full ${pdf ? 'object-contain' : 'object-cover'}`}/> : resource.previewImageUrl && !failed ? <img src={resource.previewImageUrl} alt="" className="h-full w-full object-cover" loading="lazy" onError={() => setFailed(true)}/> : image && url && !failed ? <img src={url} alt="" className="h-full w-full object-cover" loading="lazy" onError={() => setFailed(true)}/> : fallback}
+    {thumbnail ? <img src={thumbnail} alt="" className={pdf ? 'absolute left-0 top-0 h-auto w-full' : 'h-full w-full object-cover'}/> : resource.previewImageUrl && !failed ? <img src={resource.previewImageUrl} alt="" className="h-full w-full object-cover" loading="lazy" onError={() => setFailed(true)}/> : image && url && !failed ? <img src={url} alt="" className="h-full w-full object-cover" loading="lazy" onError={() => setFailed(true)}/> : fallback}
     {video && url && !thumbnail && !failed && <video crossOrigin="anonymous" src={url} preload="auto" muted playsInline aria-hidden="true" tabIndex={-1} className="pointer-events-none absolute h-px w-px opacity-0" onLoadedMetadata={event => { const duration = event.currentTarget.duration; event.currentTarget.currentTime = Number.isFinite(duration) ? Math.min(0.5, duration / 2) : 0; }} onSeeked={event => captureVideo(event.currentTarget)} onLoadedData={event => { if (event.currentTarget.currentTime === 0) captureVideo(event.currentTarget); }} onError={() => setFailed(true)}/>}
   </div>;
 }

@@ -90,6 +90,7 @@ describe('Biblioteca', () => {
     fireEvent.loadedMetadata(video);
     fireEvent.seeked(video);
     await waitFor(() => expect(container.querySelectorAll('img[src^="data:image/webp"]')).toHaveLength(2));
+    expect(container.querySelectorAll('img[src^="data:image/webp"]')[0]).toHaveClass('top-0', 'h-auto', 'w-full');
     expect(container.querySelector('video')).not.toBeInTheDocument();
   });
 
