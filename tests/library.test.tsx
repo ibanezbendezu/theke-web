@@ -59,6 +59,13 @@ describe('Biblioteca', () => {
     expect(screen.getByRole('dialog')).toHaveClass('overflow-hidden');
     expect(screen.getByRole('region', { name: 'Vista previa' })).toHaveClass('overflow-auto');
     expect(screen.getByRole('complementary', { name: 'Propiedades del archivo' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Archivar' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Opciones del archivo' }));
+    expect(screen.getByRole('menuitem', { name: 'Archivar' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Eliminar' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Archivar' }));
+    expect(screen.queryByRole('menu', { name: 'Opciones del archivo' })).not.toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Archivar elemento' })).toBeInTheDocument();
   });
 
   it('permite renombrar el archivo desde el visor', async () => {
