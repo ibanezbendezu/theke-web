@@ -18,6 +18,7 @@ import type {
   ApiErrorResponse,
   AvailableRelationListResponse,
   BadRequestResponse,
+  CreatePublicCommentInput,
   CreateRelationInput,
   CreateRelationResponse,
   DeleteLibraryFolder200,
@@ -64,6 +65,8 @@ import type {
   ProjectListResponse,
   ProjectResourceListResponse,
   ProjectResponse,
+  PublicCommentResponse,
+  PublicCommentsResponse,
   PublicShareResponse,
   PublishShareInput,
   PublishShareResponse,
@@ -2205,6 +2208,132 @@ export const getPublicShare = async (token: string, options?: Parameters<typeof 
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export type listPublicShareCommentsResponse200 = {
+  data: PublicCommentsResponse
+  status: 200
+}
+
+export type listPublicShareCommentsResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type listPublicShareCommentsResponseSuccess = (listPublicShareCommentsResponse200) & {
+  headers: Headers;
+};
+export type listPublicShareCommentsResponseError = (listPublicShareCommentsResponse404) & {
+  headers: Headers;
+};
+
+export type listPublicShareCommentsResponse = (listPublicShareCommentsResponseSuccess | listPublicShareCommentsResponseError)
+
+export const getListPublicShareCommentsUrl = (token: string,) => {
+
+
+
+
+  return `/v1/public/shares/${token}/comments`
+}
+
+/**
+ * Lista comentarios públicos y reconoce la identidad vigente mediante cookie HttpOnly sin renovar su vigencia.
+ */
+export const listPublicShareComments = async (token: string, options?: Parameters<typeof thekeFetch>[1]): Promise<listPublicShareCommentsResponse> => {
+
+  return thekeFetch<listPublicShareCommentsResponse>(getListPublicShareCommentsUrl(token),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type createPublicShareCommentResponse201 = {
+  data: PublicCommentResponse
+  status: 201
+}
+
+export type createPublicShareCommentResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
+export type createPublicShareCommentResponse403 = {
+  data: ApiErrorResponse
+  status: 403
+}
+
+export type createPublicShareCommentResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type createPublicShareCommentResponse409 = {
+  data: ApiErrorResponse
+  status: 409
+}
+
+export type createPublicShareCommentResponse415 = {
+  data: ApiErrorResponse
+  status: 415
+}
+
+export type createPublicShareCommentResponse429 = {
+  data: ApiErrorResponse
+  status: 429
+}
+
+export type createPublicShareCommentResponseSuccess = (createPublicShareCommentResponse201) & {
+  headers: Headers;
+};
+export type createPublicShareCommentResponseError = (createPublicShareCommentResponse400 | createPublicShareCommentResponse403 | createPublicShareCommentResponse404 | createPublicShareCommentResponse409 | createPublicShareCommentResponse415 | createPublicShareCommentResponse429) & {
+  headers: Headers;
+};
+
+export type createPublicShareCommentResponse = (createPublicShareCommentResponseSuccess | createPublicShareCommentResponseError)
+
+export const getCreatePublicShareCommentUrl = (token: string,) => {
+
+
+
+
+  return `/v1/public/shares/${token}/comments`
+}
+
+/**
+ * Publica un comentario general y crea la identidad anónima al confirmar el primero. Requiere Origin permitido, JSON y token CSRF si ya existe cookie.
+ */
+export const createPublicShareComment = async (token: string,
+    createPublicCommentInput: CreatePublicCommentInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createPublicShareCommentResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<createPublicShareCommentResponse>(getCreatePublicShareCommentUrl(token),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createPublicCommentInput)
   }
 );}
 

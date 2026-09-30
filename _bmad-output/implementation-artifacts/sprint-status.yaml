@@ -18,7 +18,7 @@
 # - Code Review valida la implementación antes de marcarla done.
 
 generated: 09-21-2026 09:45
-last_updated: 09-29-2026
+last_updated: 09-30-2026
 project: Theke
 project_key: NOKEY
 tracking_system: file-system
@@ -73,8 +73,8 @@ development_status:
   5-5-abrir-recursos-públicos-en-cualquier-dispositivo: in-progress
   epic-5-retrospective: optional
 
-  epic-6: backlog
-  6-1-adoptar-una-identidad-anónima-para-comentar: backlog
+  epic-6: in-progress
+  6-1-adoptar-una-identidad-anónima-para-comentar: review
   6-2-añadir-un-comentario-contextual: backlog
   6-3-editar-comentarios-propios: backlog
   6-4-recibir-y-localizar-comentarios-como-autor: backlog
