@@ -18,6 +18,8 @@ import type {
   ApiErrorResponse,
   AvailableRelationListResponse,
   BadRequestResponse,
+  ClaimPublicCommentsResponse,
+  ClaimPublicShareCommentsBody,
   CreatePublicCommentInput,
   CreateRelationInput,
   CreateRelationResponse,
@@ -89,6 +91,7 @@ import type {
   ShareCommentsResponse,
   SharePreviewResponse,
   UnauthorizedResponse,
+  UpdatePublicCommentInput,
   UpdateRelationInput,
   UpdateResourceMetadataInput,
   UploadIntent,
@@ -2241,7 +2244,7 @@ export const getListPublicShareCommentsUrl = (token: string,) => {
 }
 
 /**
- * Lista comentarios públicos y reconoce la identidad vigente mediante cookie HttpOnly sin renovar su vigencia.
+ * Lista comentarios públicos y reconoce la identidad vigente mediante cookie HttpOnly o sesión Clerk verificada, sin renovar la cookie.
  */
 export const listPublicShareComments = async (token: string, options?: Parameters<typeof thekeFetch>[1]): Promise<listPublicShareCommentsResponse> => {
 
@@ -2309,7 +2312,7 @@ export const getCreatePublicShareCommentUrl = (token: string,) => {
 }
 
 /**
- * Publica un comentario general y crea la identidad anónima al confirmar el primero. Requiere Origin permitido, JSON y token CSRF si ya existe cookie.
+ * Publica con alias científico anónimo o nombre de perfil Clerk verificado sobre un punto, Recurso o Relación. Requiere Origin permitido, JSON y CSRF si ya existe cookie.
  */
 export const createPublicShareComment = async (token: string,
     createPublicCommentInput: CreatePublicCommentInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createPublicShareCommentResponse> => {
@@ -2334,6 +2337,159 @@ return thekeFetch<createPublicShareCommentResponse>(getCreatePublicShareCommentU
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(createPublicCommentInput)
+  }
+);}
+
+
+
+export type editPublicShareCommentResponse200 = {
+  data: PublicCommentResponse
+  status: 200
+}
+
+export type editPublicShareCommentResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
+export type editPublicShareCommentResponse403 = {
+  data: ApiErrorResponse
+  status: 403
+}
+
+export type editPublicShareCommentResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type editPublicShareCommentResponse409 = {
+  data: ApiErrorResponse
+  status: 409
+}
+
+export type editPublicShareCommentResponse415 = {
+  data: ApiErrorResponse
+  status: 415
+}
+
+export type editPublicShareCommentResponse429 = {
+  data: ApiErrorResponse
+  status: 429
+}
+
+export type editPublicShareCommentResponseSuccess = (editPublicShareCommentResponse200) & {
+  headers: Headers;
+};
+export type editPublicShareCommentResponseError = (editPublicShareCommentResponse400 | editPublicShareCommentResponse403 | editPublicShareCommentResponse404 | editPublicShareCommentResponse409 | editPublicShareCommentResponse415 | editPublicShareCommentResponse429) & {
+  headers: Headers;
+};
+
+export type editPublicShareCommentResponse = (editPublicShareCommentResponseSuccess | editPublicShareCommentResponseError)
+
+export const getEditPublicShareCommentUrl = (token: string,
+    commentId: string,) => {
+
+
+
+
+  return `/v1/public/shares/${token}/comments/${commentId}`
+}
+
+/**
+ * Edita un comentario propio mediante la identidad anónima vigente o una sesión Clerk. Preserva el anclaje y aplica revisión esperada. Un 409 de revisión incluye details.current solo para el propietario.
+ */
+export const editPublicShareComment = async (token: string,
+    commentId: string,
+    updatePublicCommentInput: UpdatePublicCommentInput, options?: Parameters<typeof thekeFetch>[1]): Promise<editPublicShareCommentResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<editPublicShareCommentResponse>(getEditPublicShareCommentUrl(token,commentId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(updatePublicCommentInput)
+  }
+);}
+
+
+
+export type claimPublicShareCommentsResponse200 = {
+  data: ClaimPublicCommentsResponse
+  status: 200
+}
+
+export type claimPublicShareCommentsResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type claimPublicShareCommentsResponse403 = {
+  data: ApiErrorResponse
+  status: 403
+}
+
+export type claimPublicShareCommentsResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type claimPublicShareCommentsResponseSuccess = (claimPublicShareCommentsResponse200) & {
+  headers: Headers;
+};
+export type claimPublicShareCommentsResponseError = (claimPublicShareCommentsResponse401 | claimPublicShareCommentsResponse403 | claimPublicShareCommentsResponse404) & {
+  headers: Headers;
+};
+
+export type claimPublicShareCommentsResponse = (claimPublicShareCommentsResponseSuccess | claimPublicShareCommentsResponseError)
+
+export const getClaimPublicShareCommentsUrl = (token: string,) => {
+
+
+
+
+  return `/v1/public/shares/${token}/comments/claim`
+}
+
+/**
+ * Vincula a la cuenta Clerk autenticada los comentarios de la cookie anónima vigente de este Compartido. Requiere Origin, JSON y CSRF si existe la cookie.
+ */
+export const claimPublicShareComments = async (token: string,
+    claimPublicShareCommentsBody: ClaimPublicShareCommentsBody, options?: Parameters<typeof thekeFetch>[1]): Promise<claimPublicShareCommentsResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return thekeFetch<claimPublicShareCommentsResponse>(getClaimPublicShareCommentsUrl(token),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(claimPublicShareCommentsBody)
   }
 );}
 

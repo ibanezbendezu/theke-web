@@ -1,20 +1,30 @@
 import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { ListTree, MessageCircle, PanelRightClose, PanelRightOpen, X } from 'lucide-react';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { ListTree, MessageCircle, MessageSquarePlus, PanelRightClose, PanelRightOpen, X } from 'lucide-react';
 import type { PublicShare as PublicProjection, PublicShareResponse } from '../api/generated/models';
 import { thekeFetch } from '../api/httpClient';
 import { Button } from '../components/ui/Button';
 import { PublicDiagramCanvas, PublicSemanticList, type PublicSelection } from './PublicDiagramCanvas';
 import { PublicResourceDetail } from './PublicResourceDetail';
 import { PublicCommentsPanel } from './PublicCommentsPanel';
+import type { CommentTarget, PublicComment } from './publicCommentTypes';
 
 export function PublicShare() {
   const { token } = useParams();
+  return <PublicShareView key={token ?? 'missing'} token={token}/>;
+}
+
+function PublicShareView({ token }: { token: string | undefined }) {
+  const [searchParams] = useSearchParams();
   const [view, setView] = useState<{ token: string; data: PublicProjection | null; unavailable: boolean } | null>(null);
   const [selection, setSelection] = useState<PublicSelection>(null);
   const [semanticOpen, setSemanticOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(true);
-  const [commentsOpen, setCommentsOpen] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(() => searchParams.get('comments') === '1');
+  const [commentMode, setCommentMode] = useState(false);
+  const [commentTarget, setCommentTarget] = useState<CommentTarget | null>(null);
+  const [comments, setComments] = useState<PublicComment[]>([]);
+  const [selectedCommentId, setSelectedCommentId] = useState<string | null>(null);
   const inspector = useRef<HTMLElement>(null);
   const semanticButton = useRef<HTMLButtonElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
@@ -49,6 +59,7 @@ export function PublicShare() {
     if (value) setDetailsOpen(true);
     setSelection(value);
   };
+  const chooseCommentTarget = (target: CommentTarget) => { setCommentTarget(target); setSelectedCommentId(null); setCommentsOpen(true); setCommentMode(false); setSemanticOpen(false); setSelection(null); setDetailsOpen(false); };
   const closeInspector = () => { setSelection(null); setDetailsOpen(false); restoreFocus(); };
   const data = view && view.token === token ? view.data : null;
   const unavailable = !token || (view?.token === token && view?.unavailable === true);
@@ -62,17 +73,20 @@ export function PublicShare() {
   if (!data) return <main className="flex min-h-dvh items-center justify-center bg-background text-on-background"><p role="status">Cargando compartido…</p></main>;
   return <main className="public-share relative flex h-dvh min-h-0 bg-background text-on-background">
     <section className="relative min-w-0 flex-1" aria-label="Lienzo compartido">
-      <PublicDiagramCanvas data={data} selection={selection} onSelect={select}/>
+      <PublicDiagramCanvas data={data} selection={selection} onSelect={select} commentMode={commentMode} commentsEnabled={data.commentsEnabled} comments={comments} onCommentTarget={chooseCommentTarget} onCommentOpen={id => { setSelectedCommentId(id); setCommentsOpen(true); setCommentMode(false); setSelection(null); setDetailsOpen(false); }}/>
       <div className="pointer-events-none absolute inset-x-3 top-3 z-40 flex items-start justify-between gap-3">
         <div className="pointer-events-auto flex min-w-0 max-w-[55%] items-center rounded-lg bg-surface/90 px-4 py-3 backdrop-blur-md"><h1 className="truncate text-sm font-semibold" title={data.diagramName}>{data.diagramName}</h1></div>
         <nav aria-label="Opciones del mapa compartido" className="pointer-events-auto flex shrink-0 gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md">
-          <Button size="icon" className="h-10 w-10" icon={MessageCircle} aria-label="Comentarios" aria-expanded={commentsOpen} onClick={() => { if (!commentsOpen) { setSelection(null); setDetailsOpen(false); } setCommentsOpen(value => !value); setSemanticOpen(false); }}/>
+          {data.commentsEnabled && <Button size="icon" className="h-10 w-10" icon={MessageSquarePlus} aria-label="Añadir comentario" aria-pressed={commentMode} onClick={() => { setCommentMode(value => !value); setCommentsOpen(false); }}/>}
+          <Button size="icon" className="h-10 w-10" icon={MessageCircle} aria-label="Comentarios" aria-expanded={commentsOpen} onClick={() => { if (!commentsOpen) { setSelection(null); setDetailsOpen(false); } setCommentsOpen(value => !value); setCommentMode(false); setSemanticOpen(false); }}/>
           <Button ref={semanticButton} size="icon" className="h-10 w-10" icon={ListTree} aria-label={showSemantic ? 'Ocultar vista semántica' : 'Mostrar vista semántica'} aria-expanded={showSemantic} onClick={() => setSemanticOpen(value => !value)}/>
           <Button size="icon" className="h-10 w-10" icon={detailsOpen ? PanelRightClose : PanelRightOpen} aria-label={detailsOpen ? 'Ocultar detalles' : 'Mostrar detalles'} aria-expanded={detailsOpen} onClick={() => setDetailsOpen(value => !value)}/>
         </nav>
       </div>
-      {showSemantic && <aside className="absolute bottom-3 left-3 top-20 z-40 w-[min(22rem,calc(100%-1.5rem))] overflow-auto rounded-xl bg-surface/95 p-3 backdrop-blur-md" aria-label="Panel de vista semántica"><div className="mb-2 flex justify-end">{data.layout.nodes.length > 0 && <Button size="icon" className="h-9 w-9" icon={X} aria-label="Cerrar vista semántica" onClick={() => setSemanticOpen(false)}/>}</div><PublicSemanticList resources={data.resources} relations={data.relations} visualNodes={data.layout.nodes} selection={selection} onSelect={select}/></aside>}
-      {token && <PublicCommentsPanel key={token} token={token} enabled={data.commentsEnabled} open={commentsOpen} onClose={() => setCommentsOpen(false)}/>}
+      {commentMode && <p role="status" className="absolute left-3 top-20 z-40 rounded-lg bg-surface px-3 py-2 text-xs">Elige un punto, recurso o relación para comentar.</p>}
+      {showSemantic && <aside className="absolute bottom-3 left-3 top-20 z-40 w-[min(22rem,calc(100%-1.5rem))] overflow-auto rounded-xl bg-surface/95 p-3 backdrop-blur-md" aria-label="Panel de vista semántica"><div className="mb-2 flex justify-end">{data.layout.nodes.length > 0 && <Button size="icon" className="h-9 w-9" icon={X} aria-label="Cerrar vista semántica" onClick={() => setSemanticOpen(false)}/>}</div><PublicSemanticList resources={data.resources} relations={data.relations} visualNodes={data.layout.nodes} selection={selection} onSelect={select} commentsEnabled={data.commentsEnabled} onCommentTarget={chooseCommentTarget}/></aside>}
+      {commentsOpen && <button type="button" tabIndex={-1} aria-hidden="true" className="absolute inset-0 z-[45] cursor-default bg-black/15 sm:bg-transparent" onClick={() => setCommentsOpen(false)}/>}
+      {token && <PublicCommentsPanel key={token} token={token} enabled={data.commentsEnabled} open={commentsOpen} onClose={() => setCommentsOpen(false)} target={commentTarget} onTargetChange={setCommentTarget} targetLabel={commentTarget?.type === 'resource' ? data.resources.find(item => item.id === commentTarget.resourceId)?.title ?? 'Recurso' : commentTarget?.type === 'relation' ? data.relations.find(item => item.id === commentTarget.relationId)?.label || data.relations.find(item => item.id === commentTarget.relationId)?.typeKey || 'Relación' : commentTarget ? 'Punto del mapa' : 'Mapa completo'} onCommentsChange={setComments} selectedCommentId={selectedCommentId}/>}
     </section>
     {selection && detailsOpen && <button type="button" className="fixed inset-0 z-[79] bg-black/40 backdrop-blur-sm lg:hidden" aria-label="Cerrar detalles" onClick={closeInspector}/>}
     {detailsOpen && <aside ref={inspector} tabIndex={-1} role={selection ? 'dialog' : undefined} aria-modal={selection ? window.matchMedia?.('(max-width: 1023px)').matches : undefined} aria-label="Detalles del mapa" className={`${selection ? 'fixed inset-x-0 bottom-0 z-[80] max-h-[82dvh] overflow-y-auto rounded-t-xl bg-background p-4 md:inset-y-0 md:left-auto md:w-[min(24rem,100vw)] md:max-h-none md:rounded-none' : 'hidden'} min-w-0 space-y-3 outline-offset-2 focus-visible:outline-2 focus-visible:outline-primary lg:relative lg:inset-auto lg:z-0 lg:block lg:h-full lg:w-[304px] lg:shrink-0 lg:overflow-y-auto lg:rounded-none lg:bg-surface-variant/35 lg:p-4 [overflow-wrap:anywhere]`}>

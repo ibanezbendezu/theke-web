@@ -56,7 +56,7 @@ Este documento descompone los requisitos de Theke en epics e historias implement
 - **FR-33 — Enlace compartido:** el autor puede generar un enlace no listado, vivo y revocable para un Diagrama. En el MVP existe un Compartido activo por Diagrama; republicar después de revocarlo crea un enlace y un hilo de comentarios nuevos, conservando el historial anterior solo para el autor.
 - **FR-34 — Controles de publicación:** el autor puede permitir o impedir nuevos comentarios sin cambiar el enlace y puede revocar el acceso sin eliminar contenido interno.
 - **FR-35 — Exploración pública:** el visitante puede usar zoom y paneo, abrir el detalle de cada Recurso y, cuando su tipo lo admite, previsualizarlo o reproducirlo; también puede explorar Relaciones sin editar composición ni contenido. Los controles no disponibles se deshabilitan o sustituyen por abrir o descargar sin bloquear el resto del Compartido.
-- **FR-36 — Identidad de comentario:** el visitante puede ver el Compartido sin identificarse. Para comentar proporciona un nombre visible y recibe una identidad anónima de sesión que limita la edición a sus propios comentarios.
+- **FR-36 — Identidad de comentario:** el visitante puede ver y comentar un Compartido sin registrarse, con un alias científico anónimo asignado por Theke. Puede iniciar sesión con Clerk y vincular los comentarios de su cookie anónima vigente a su cuenta; el identificador de cuenta verificado, nunca el correo escrito, determina la autoría.
 - **FR-37 — Comentario contextual:** el visitante puede anclar un comentario a una coordenada, Recurso o Relación mediante una herramienta visible y mediante el menú contextual.
 - **FR-38 — Gestión del visitante:** el visitante puede editar sus propios comentarios durante la vigencia de su identidad de sesión.
 - **FR-39 — Moderación del autor:** el autor recibe una notificación interna por comentario nuevo, consulta los comentarios mediante marcadores y una lista, y navega a su contexto. Al resolver un comentario, este se conserva y se retira de pendientes; al eliminarlo, se quita del Compartido y del listado activo sin permitir editar texto ajeno.
@@ -1608,7 +1608,7 @@ El visitante puede comentar puntos, Recursos y Relaciones; el autor puede recibi
 ### Story 6.1: Adoptar una identidad anónima para comentar
 
 Como visitante,
-quiero proporcionar un nombre visible sin crear una cuenta,
+quiero comentar sin completar un nombre ni crear una cuenta,
 para participar en un Compartido manteniendo control sobre mis propios comentarios.
 
 **Requirements:** FR-36; NFR-9, NFR-13, NFR-19.
@@ -1618,16 +1618,16 @@ para participar en un Compartido manteniendo control sobre mis propios comentari
 **Given** un visitante sin identidad de comentario
 **When** abre un Compartido activo
 **Then** puede explorarlo sin identificarse
-**And** solo se le solicita un nombre visible cuando intenta comentar.
+**And** se le explica que al publicar recibirá un alias científico anónimo.
 
-**Given** un nombre válido
+**Given** un comentario válido
 **When** el visitante confirma su primer comentario
-**Then** Theke crea una identidad anónima limitada al Compartido y la vincula al comentario
+**Then** Theke asigna un alias científico estable a su cookie anónima y vincula la identidad al comentario
 **And** entrega una cookie Secure, HttpOnly y SameSite no renovable con vigencia de 30 días.
 
-**Given** un nombre vacío, excesivo o inválido
-**When** el visitante intenta continuar
-**Then** Theke muestra el error asociado al campo y conserva el borrador
+**Given** texto vacío, excesivo o inválido
+**When** el visitante intenta publicar
+**Then** Theke muestra el error asociado al comentario y conserva el borrador
 **And** no crea identidad ni comentario parcial.
 
 **Given** que la cookie anónima continúa vigente
@@ -1639,6 +1639,16 @@ para participar en un Compartido manteniendo control sobre mis propios comentari
 **When** el visitante abre nuevamente el enlace
 **Then** puede seguir viendo el Compartido y sus comentarios públicos
 **And** no puede editar comentarios anteriores solo por repetir el mismo nombre visible.
+
+**Given** una cookie anónima vigente y una cuenta autenticada mediante Clerk
+**When** el visitante inicia sesión desde ese navegador en el Compartido
+**Then** Theke vincula a la cuenta únicamente los comentarios que esa cookie creó en ese Compartido y muestra el nombre de perfil de la cuenta
+**And** permite editar esos comentarios con la sesión verificada, incluso después de cerrar la sesión anónima.
+
+**Given** un marcador de comentario visible en el Canvas
+**When** recibe foco o el puntero se posa sobre él
+**Then** muestra el nombre público del autor, sea alias anónimo o perfil autenticado
+**And** su nombre accesible anuncia el mismo autor.
 
 ### Story 6.2: Añadir un comentario contextual
 

@@ -12,5 +12,9 @@ export interface PublicComment {
   content: string;
   anchor: PublicCommentAnchor;
   createdAt: string;
+  /** @nullable */
+  editedAt: string | null;
+  /** @minimum 1 */
+  revision: number;
   editable: boolean;
 }

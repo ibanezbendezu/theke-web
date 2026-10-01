@@ -4,10 +4,17 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
+import type { CreatePublicCommentInputAnchor } from './createPublicCommentInputAnchor';
 
 export interface CreatePublicCommentInput {
-  /** @maxLength 60 */
+  /**
+     * Campo heredado ignorado; Theke asigna el nombre según la identidad verificada.
+     * @deprecated
+     * @maxLength 60
+     */
   displayName?: string;
   /** @maxLength 5000 */
   content: string;
+  /** Requerido por el compositor contextual; omitido solo por clientes anteriores. */
+  anchor?: CreatePublicCommentInputAnchor;
 }

@@ -100,7 +100,7 @@ Theke puede orientarlo con sugerencias explicadas y acotadas a los Recursos impl
 
 ### UJ-2 — María explora y comenta un diagrama
 
-Daniel previsualiza y publica el Diagrama mediante un enlace no listado y revocable. María lo abre sin cuenta, explora Recursos y conexiones sin alterar la composición y, al proporcionar un nombre visible, deja comentarios contextualizados que puede volver a editar.
+Daniel previsualiza y publica el Diagrama mediante un enlace no listado y revocable. María lo abre sin cuenta, explora Recursos y conexiones sin alterar la composición y deja comentarios contextualizados con un alias científico anónimo que puede volver a editar mientras conserva la cookie. Si inicia sesión con Clerk, puede vincular los comentarios de esa cookie vigente a su cuenta.
 
 Daniel recibe la retroalimentación en contexto y en una lista, la resuelve o elimina sin reescribir texto ajeno y conserva el control de comentarios y acceso público. FR-32 a FR-40 especifican permisos, interacción y ciclo de vida.
 
@@ -164,7 +164,7 @@ Daniel recibe la retroalimentación en contexto y en una lista, la resuelve o el
 - **FR-33 — Enlace compartido:** el autor puede generar un enlace no listado, vivo y revocable para un Diagrama. `[ASSUMPTION: el MVP admite un Compartido activo por Diagrama; volver a publicar después de revocarlo crea un enlace y un hilo de comentarios nuevos, conservando el historial anterior solo para el autor.]` Realiza UJ-2.
 - **FR-34 — Controles de publicación:** el autor puede permitir o impedir nuevos comentarios sin cambiar el enlace y puede revocar el acceso sin eliminar contenido interno.
 - **FR-35 — Exploración pública:** el visitante puede usar zoom y paneo, abrir el detalle de cada Recurso y, cuando su tipo lo admite, previsualizarlo o reproducirlo; también puede explorar Relaciones sin editar composición ni contenido. Los controles no disponibles por formato o dispositivo se muestran deshabilitados o se sustituyen por abrir o descargar, sin bloquear el resto del Compartido.
-- **FR-36 — Identidad de comentario:** el visitante puede ver el Compartido sin identificarse. Para comentar proporciona un nombre visible y recibe una identidad anónima de sesión que limita la edición a sus propios comentarios.
+- **FR-36 — Identidad de comentario:** el visitante puede ver y comentar un Compartido sin registrarse; Theke le asigna un alias científico anónimo y una cookie de identidad. Puede iniciar sesión con Clerk y vincular los comentarios de esa cookie vigente a su cuenta verificada. El correo ingresado no basta para atribuir autoría.
 - **FR-37 — Comentario contextual:** el visitante puede anclar un comentario a una coordenada, Recurso o Relación mediante una herramienta visible y mediante el menú contextual.
 - **FR-38 — Gestión del visitante:** el visitante puede editar sus propios comentarios durante la vigencia de su identidad de sesión.
 - **FR-39 — Moderación del autor:** el autor recibe una notificación interna por comentario nuevo, consulta los comentarios mediante marcadores y una lista, y navega a su contexto. Al resolver un comentario, este se conserva y se retira de pendientes; al eliminarlo, se quita del Compartido y del listado activo sin permitir editar texto ajeno.

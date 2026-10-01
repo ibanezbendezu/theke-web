@@ -1,16 +1,23 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Background, BackgroundVariant, BaseEdge, EdgeLabelRenderer, Handle, MarkerType, Position, ReactFlow, ReactFlowProvider, useReactFlow, type Edge, type EdgeProps, type Node, type NodeProps, type NodeTypes } from '@xyflow/react';
-import { File as FileIcon, FileText, Folder, Image, Layers, Link as LinkIcon, Maximize, Music, PlaySquare, Video, ZoomIn, ZoomOut } from 'lucide-react';
+import { File as FileIcon, FileText, Folder, Image, Layers, Link as LinkIcon, Maximize, MessageCircle, MessageSquarePlus, Music, PlaySquare, Video, ZoomIn, ZoomOut } from 'lucide-react';
 import type { PublicLayoutNode, PublicShare, SharePreviewRelation, SharePreviewResource } from '../api/generated/models';
 import { Button } from '../components/ui/Button';
+import type { CommentTarget, PublicComment } from './publicCommentTypes';
 
 export type PublicSelection = { kind: 'resource' | 'relation' | 'folder'; id: string } | null;
 type PublicNodeData = { item: PublicLayoutNode; resource?: SharePreviewResource; onSelect: (value: PublicSelection) => void };
 type PublicEdgeData = { label: string; direction?: string; offsetX?: number; offsetY?: number; relationId?: string; onSelect: (value: PublicSelection) => void };
+type PublicMarkerData = { number: number; commentId: string; author: string; onOpen: (id: string) => void };
 
-function CanvasButtons() {
-  const { zoomIn, zoomOut, fitView } = useReactFlow();
+function PublicCommentMarker({ data }: NodeProps<Node<PublicMarkerData, 'comment'>>) {
+  return <button type="button" className="nodrag nopan group relative flex h-8 min-w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-semibold text-on-primary ring-2 ring-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label={`Abrir comentario ${data.number} de ${data.author}`} onClick={() => data.onOpen(data.commentId)}><MessageCircle size={13} aria-hidden="true"/><span className="ml-0.5">{data.number}</span><span aria-hidden="true" className="pointer-events-none absolute bottom-full left-1/2 mb-2 hidden max-w-48 -translate-x-1/2 whitespace-nowrap rounded-md bg-on-background px-2.5 py-1.5 text-xs font-medium text-background group-hover:block group-focus-visible:block">{data.author}</span></button>;
+}
+
+function CanvasButtons({ commentsEnabled, onCommentTarget }: { commentsEnabled: boolean; onCommentTarget: (target: CommentTarget) => void }) {
+  const { zoomIn, zoomOut, fitView, screenToFlowPosition } = useReactFlow();
   return <nav className="absolute bottom-3 right-3 z-30 flex gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md" aria-label="Controles del diagrama">
+    {commentsEnabled && <Button size="icon" className="h-11 w-11" icon={MessageSquarePlus} aria-label="Comentar centro visible" onClick={event => { const rect = event.currentTarget.closest('[aria-label="Diagrama público"]')?.getBoundingClientRect(); if (rect) onCommentTarget({ type: 'diagram', ...screenToFlowPosition({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }) }); }}/>}
     <Button size="icon" className="h-11 w-11" icon={ZoomOut} aria-label="Alejar" onClick={() => void zoomOut({ duration: 0 })}/>
     <Button size="icon" className="h-11 w-11" icon={ZoomIn} aria-label="Acercar" onClick={() => void zoomIn({ duration: 0 })}/>
     <Button size="icon" className="h-11 w-11" icon={Maximize} aria-label="Ajustar vista" onClick={() => void fitView({ duration: 0, padding: 0.2 })}/>
@@ -73,13 +80,18 @@ function PublicCanvasEdge({ sourceX, sourceY, targetX, targetY, markerEnd, data,
   </>;
 }
 
-const nodeTypes: NodeTypes = { public: PublicCanvasNode };
+const nodeTypes: NodeTypes = { public: PublicCanvasNode, comment: PublicCommentMarker };
 const edgeTypes = { public: PublicCanvasEdge };
 
-function PublicCanvas({ data, selection, onSelect }: { data: PublicShare; selection: PublicSelection; onSelect: (value: PublicSelection) => void }) {
+function PublicCanvas({ data, selection, onSelect, commentMode, commentsEnabled, comments, onCommentTarget, onCommentOpen }: { data: PublicShare; selection: PublicSelection; onSelect: (value: PublicSelection) => void; commentMode: boolean; commentsEnabled: boolean; comments: PublicComment[]; onCommentTarget: (target: CommentTarget) => void; onCommentOpen: (id: string) => void }) {
+  const { screenToFlowPosition } = useReactFlow();
+  const [menu, setMenu] = useState<{ x: number; y: number; target: CommentTarget } | null>(null);
   const resources = useMemo(() => new Map(data.resources.map(resource => [resource.id, resource])), [data.resources]);
   const relations = useMemo(() => new Map(data.relations.map(relation => [relation.id, relation])), [data.relations]);
-  const nodes = useMemo<Node<PublicNodeData, 'public'>[]>(() => data.layout.nodes.map(item => ({ id: item.id, type: 'public', position: { x: item.x, y: item.y }, data: { item, resource: item.resourceId ? resources.get(item.resourceId) : undefined, onSelect }, selected: selection?.kind === 'folder' ? item.type === 'folder' && selection.id === item.id : selection?.kind === 'resource' && selection.id === item.resourceId, zIndex: item.type === 'container' ? 0 : 1, draggable: false, connectable: false })), [data.layout.nodes, onSelect, resources, selection]);
+  const nodes = useMemo<(Node<PublicNodeData, 'public'> | Node<PublicMarkerData, 'comment'>)[]>(() => [
+    ...data.layout.nodes.map(item => ({ id: item.id, type: 'public' as const, position: { x: item.x, y: item.y }, data: { item, resource: item.resourceId ? resources.get(item.resourceId) : undefined, onSelect }, selected: selection?.kind === 'folder' ? item.type === 'folder' && selection.id === item.id : selection?.kind === 'resource' && selection.id === item.resourceId, zIndex: item.type === 'container' ? 0 : 1, draggable: false, connectable: false })),
+    ...comments.flatMap((comment, index) => typeof comment.anchor.x === 'number' && typeof comment.anchor.y === 'number' ? [{ id: `comment:${comment.id}`, type: 'comment' as const, position: { x: comment.anchor.x, y: comment.anchor.y }, data: { number: index + 1, commentId: comment.id, author: comment.displayName, onOpen: onCommentOpen }, zIndex: 10, draggable: false, connectable: false, selectable: false }] : []),
+  ], [comments, data.layout.nodes, onCommentOpen, onSelect, resources, selection]);
   const edges = useMemo<Edge<PublicEdgeData, 'public'>[]>(() => data.layout.edges.map(item => {
     const relation = item.relationId ? relations.get(item.relationId) : undefined;
     return { id: item.id, type: 'public', source: item.source, target: item.target, sourceHandle: item.sourceHandle, targetHandle: item.targetHandle,
@@ -88,28 +100,34 @@ function PublicCanvas({ data, selection, onSelect }: { data: PublicShare; select
       markerEnd: relation?.direction === 'directed' ? { type: MarkerType.ArrowClosed, color: 'var(--color-outline)' } : undefined };
   }), [data.layout.edges, onSelect, relations, selection]);
   const background = data.layout.background ?? { variant: 'dots', tone: 'default' };
-  if (nodes.length === 0) return <div className="flex h-full items-center justify-center text-sm text-outline">Esta publicación no incluye elementos visuales. Usa la vista semántica para recorrer el contenido.</div>;
+  if (data.layout.nodes.length === 0) return <div className="flex h-full items-center justify-center text-sm text-outline">Esta publicación no incluye elementos visuales. Usa la vista semántica para recorrer el contenido.</div>;
+  const pointAt = (clientX: number, clientY: number): CommentTarget => ({ type: 'diagram', ...screenToFlowPosition({ x: clientX, y: clientY }) });
+  const showMenu = (event: { preventDefault(): void; clientX: number; clientY: number }, target: CommentTarget) => { event.preventDefault(); if (commentsEnabled) setMenu({ x: Math.max(8, Math.min(event.clientX, window.innerWidth - 180)), y: Math.max(8, Math.min(event.clientY, window.innerHeight - 56)), target }); };
   return <><ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes} fitView fitViewOptions={{ padding: 0.2 }} minZoom={0.1} maxZoom={2} proOptions={{ hideAttribution: true }}
     nodesDraggable={false} nodesConnectable={false} selectionOnDrag={false} deleteKeyCode={null} onlyRenderVisibleElements className="bg-background" style={{ backgroundColor: background.tone === 'surface' ? 'var(--color-surface)' : 'var(--color-background)' }}
-    onNodeClick={(_, node) => { const item = node.data.item; if (item.resourceId) onSelect({ kind: 'resource', id: item.resourceId }); else if (item.type === 'folder') onSelect({ kind: 'folder', id: item.id }); }}
-    onEdgeClick={(_, edge) => { if (edge.data?.relationId) onSelect({ kind: 'relation', id: edge.data.relationId }); }}>
+    onPaneClick={event => { setMenu(null); if (commentMode && commentsEnabled) onCommentTarget(pointAt(event.clientX, event.clientY)); }}
+    onPaneContextMenu={event => showMenu(event, pointAt(event.clientX, event.clientY))}
+    onNodeContextMenu={(event, node) => { if (node.type === 'comment') return; const item = node.data.item; showMenu(event, item.resourceId ? { type: 'resource', resourceId: item.resourceId } : pointAt(event.clientX, event.clientY)); }}
+    onEdgeContextMenu={(event, edge) => showMenu(event, edge.data?.relationId ? { type: 'relation', relationId: edge.data.relationId } : pointAt(event.clientX, event.clientY))}
+    onNodeClick={(_, node) => { if (node.type === 'comment') return; const item = node.data.item; if (commentMode && commentsEnabled) { onCommentTarget(item.resourceId ? { type: 'resource', resourceId: item.resourceId } : { type: 'diagram', x: item.x, y: item.y }); return; } if (item.resourceId) onSelect({ kind: 'resource', id: item.resourceId }); else if (item.type === 'folder') onSelect({ kind: 'folder', id: item.id }); }}
+    onEdgeClick={(_, edge) => { if (edge.data?.relationId) { if (commentMode && commentsEnabled) onCommentTarget({ type: 'relation', relationId: edge.data.relationId }); else onSelect({ kind: 'relation', id: edge.data.relationId }); } }}>
     {background.variant !== 'plain' && <Background variant={background.variant === 'grid' ? BackgroundVariant.Lines : BackgroundVariant.Dots} color="var(--color-outline)" gap={24} size={background.variant === 'dots' ? 2 : undefined}/>}
-  </ReactFlow><CanvasButtons/></>;
+  </ReactFlow><CanvasButtons commentsEnabled={commentsEnabled} onCommentTarget={onCommentTarget}/>{menu && <div className="fixed z-[60] rounded-lg bg-surface p-1 text-sm text-on-background ring-1 ring-outline/25" style={{ left: menu.x, top: menu.y }} role="menu"><button type="button" role="menuitem" className="min-h-11 rounded-md px-3 text-left hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary" onClick={() => { onCommentTarget(menu.target); setMenu(null); }}>Comentar aquí</button></div>}</>;
 }
 
-export function PublicDiagramCanvas({ data, selection, onSelect }: { data: PublicShare; selection: PublicSelection; onSelect: (value: PublicSelection) => void }) {
-  return <div className="h-full w-full" aria-label="Diagrama público"><ReactFlowProvider><PublicCanvas data={data} selection={selection} onSelect={onSelect}/></ReactFlowProvider></div>;
+export function PublicDiagramCanvas({ data, selection, onSelect, commentMode = false, commentsEnabled = false, comments = [], onCommentTarget = () => {}, onCommentOpen = () => {} }: { data: PublicShare; selection: PublicSelection; onSelect: (value: PublicSelection) => void; commentMode?: boolean; commentsEnabled?: boolean; comments?: PublicComment[]; onCommentTarget?: (target: CommentTarget) => void; onCommentOpen?: (id: string) => void }) {
+  return <div className="h-full w-full" aria-label="Diagrama público"><ReactFlowProvider><PublicCanvas data={data} selection={selection} onSelect={onSelect} commentMode={commentMode} commentsEnabled={commentsEnabled} comments={comments} onCommentTarget={onCommentTarget} onCommentOpen={onCommentOpen}/></ReactFlowProvider></div>;
 }
 
-export function PublicSemanticList({ resources, relations, visualNodes = [], selection, onSelect }: { resources: SharePreviewResource[]; relations: SharePreviewRelation[]; visualNodes?: PublicLayoutNode[]; selection: PublicSelection; onSelect: (value: PublicSelection) => void }) {
+export function PublicSemanticList({ resources, relations, visualNodes = [], selection, onSelect, commentsEnabled = false, onCommentTarget = () => {} }: { resources: SharePreviewResource[]; relations: SharePreviewRelation[]; visualNodes?: PublicLayoutNode[]; selection: PublicSelection; onSelect: (value: PublicSelection) => void; commentsEnabled?: boolean; onCommentTarget?: (target: CommentTarget) => void }) {
   const titles = new Map(resources.map(item => [item.id, item.title]));
   const readableVisuals = visualNodes.filter(item => item.type === 'folder' || item.type === 'container' || item.type === 'annotation' || item.type === 'text');
   return <section aria-label="Vista semántica" className="min-w-0 space-y-3 rounded-lg bg-surface-variant/55 p-4 [overflow-wrap:anywhere]">
     <h2 className="font-semibold">Vista semántica</h2><h3 className="text-sm font-semibold">Recursos</h3>
     {resources.length === 0 && <p>Sin recursos publicados.</p>}
-    <ul className="space-y-1">{resources.map(item => <li key={item.id}><button className="min-h-11 w-full break-words rounded-md bg-background/60 px-3 py-2 text-left hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary" aria-pressed={selection?.kind === 'resource' && selection.id === item.id} onClick={() => onSelect({ kind: 'resource', id: item.id })}>{item.title} · {item.type}</button></li>)}</ul>
+    <ul className="space-y-1">{resources.map(item => <li key={item.id} className="flex gap-1"><button className="min-h-11 min-w-0 flex-1 break-words rounded-md bg-background/60 px-3 py-2 text-left hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary" aria-pressed={selection?.kind === 'resource' && selection.id === item.id} onClick={() => onSelect({ kind: 'resource', id: item.id })}>{item.title} · {item.type}</button>{commentsEnabled && <button type="button" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary" aria-label={`Comentar ${item.title}`} onClick={() => onCommentTarget({ type: 'resource', resourceId: item.id })}><MessageCircle size={17}/></button>}</li>)}</ul>
     <h3 className="text-sm font-semibold">Relaciones</h3>{relations.length === 0 && <p>Sin relaciones publicadas.</p>}
-    <ul className="space-y-1">{relations.map(item => <li key={item.id}><button className="min-h-11 w-full break-words rounded-md bg-background/60 px-3 py-2 text-left hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary" aria-pressed={selection?.kind === 'relation' && selection.id === item.id} onClick={() => onSelect({ kind: 'relation', id: item.id })}>{titles.get(item.sourceResourceId)} {item.direction === 'directed' ? '→' : '↔'} {titles.get(item.targetResourceId)} · {item.label || item.typeKey}</button></li>)}</ul>
+    <ul className="space-y-1">{relations.map(item => <li key={item.id} className="flex gap-1"><button className="min-h-11 min-w-0 flex-1 break-words rounded-md bg-background/60 px-3 py-2 text-left hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary" aria-pressed={selection?.kind === 'relation' && selection.id === item.id} onClick={() => onSelect({ kind: 'relation', id: item.id })}>{titles.get(item.sourceResourceId)} {item.direction === 'directed' ? '→' : '↔'} {titles.get(item.targetResourceId)} · {item.label || item.typeKey}</button>{commentsEnabled && <button type="button" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary" aria-label={`Comentar relación ${item.label || item.typeKey}`} onClick={() => onCommentTarget({ type: 'relation', relationId: item.id })}><MessageCircle size={17}/></button>}</li>)}</ul>
     {readableVisuals.length > 0 && <><h3 className="text-sm font-semibold">Elementos visuales</h3><ul className="space-y-1">{readableVisuals.map(item => <li key={item.id} className="rounded-md bg-background/60 px-3 py-2 text-sm">{item.type === 'folder' ? <button className="w-full text-left focus-visible:outline-2 focus-visible:outline-primary" onClick={() => onSelect({ kind: 'folder', id: item.id })}>{item.folderName ?? 'Carpeta'} · Carpeta</button> : item.label ?? item.text ?? (item.annotationKind === 'shape' ? 'Forma visual' : item.annotationKind === 'line' ? 'Línea visual' : 'Anotación visual')}</li>)}</ul></>}
   </section>;
 }

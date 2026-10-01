@@ -5,20 +5,17 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type PublicCommentAnchor = {
+/**
+ * Requerido por el compositor contextual; omitido solo por clientes anteriores.
+ */
+export type CreatePublicCommentInputAnchor = {
   type: 'diagram';
-  x?: number;
-  y?: number;
+  x: number;
+  y: number;
 } | {
   type: 'resource';
   resourceId: string;
-  label: string;
-  x?: number;
-  y?: number;
 } | {
   type: 'relation';
   relationId: string;
-  label: string;
-  x?: number;
-  y?: number;
 };
