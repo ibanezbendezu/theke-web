@@ -9,10 +9,10 @@ export type ResourcePropertyDefinitionType = typeof ResourcePropertyDefinitionTy
 
 
 export const ResourcePropertyDefinitionType = {
-  text: 'text',
-  list: 'list',
-  number: 'number',
-  checkbox: 'checkbox',
-  date: 'date',
-  datetime: 'datetime',
+    text: 'text',
+    list: 'list',
+    number: 'number',
+    checkbox: 'checkbox',
+    date: 'date',
+    datetime: 'datetime',
 } as const;

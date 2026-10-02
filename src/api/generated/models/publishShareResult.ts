@@ -6,7 +6,7 @@
  */
 
 export interface PublishShareResult {
-  /** @pattern ^/share/ */
-  url: string;
-  token: string;
+    /** @pattern ^/share/ */
+    url: string;
+    token: string;
 }

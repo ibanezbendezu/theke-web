@@ -4,11 +4,11 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { GetPublicShareResourceContentDownload } from './getPublicShareResourceContentDownload';
+import type {GetPublicShareResourceContentDownload} from './getPublicShareResourceContentDownload';
 
 export type GetPublicShareResourceContentParams = {
-/**
- * Si vale 1, la API entrega Content-Disposition: attachment. Cada solicitud vuelve a validar el Compartido y el Recurso.
- */
-download?: GetPublicShareResourceContentDownload;
+    /**
+     * Si vale 1, la API entrega Content-Disposition: attachment. Cada solicitud vuelve a validar el Compartido y el Recurso.
+     */
+    download?: GetPublicShareResourceContentDownload;
 };

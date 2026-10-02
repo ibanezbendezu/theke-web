@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ActiveShare } from './activeShare';
+import type {ActiveShare} from './activeShare';
 
 export interface ActiveShareResponse {
-  data: ActiveShare;
+    data: ActiveShare;
 }

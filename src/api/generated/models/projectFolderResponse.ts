@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ProjectFolder } from './projectFolder';
+import type {ProjectFolder} from './projectFolder';
 
 export interface ProjectFolderResponse {
-  data: ProjectFolder;
+    data: ProjectFolder;
 }

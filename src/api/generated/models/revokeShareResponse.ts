@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { RevokeShareResponseData } from './revokeShareResponseData';
+import type {RevokeShareResponseData} from './revokeShareResponseData';
 
 export interface RevokeShareResponse {
-  data: RevokeShareResponseData;
+    data: RevokeShareResponseData;
 }

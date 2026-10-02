@@ -4,19 +4,19 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { RelationEvidenceInput } from './relationEvidenceInput';
-import type { UpdateRelationInputEvidenceStatus } from './updateRelationInputEvidenceStatus';
+import type {RelationEvidenceInput} from './relationEvidenceInput';
+import type {UpdateRelationInputEvidenceStatus} from './updateRelationInputEvidenceStatus';
 
 export interface UpdateRelationInput {
-  /** @maxLength 160 */
-  label: string;
-  /** @maxLength 10000 */
-  explanation: string;
-  /** @maxLength 2000 */
-  provenance: string;
-  evidenceStatus: UpdateRelationInputEvidenceStatus;
-  /** @maxItems 10 */
-  evidence: RelationEvidenceInput[];
-  /** @minimum 0 */
-  expectedRevision: number;
+    /** @maxLength 160 */
+    label: string;
+    /** @maxLength 10000 */
+    explanation: string;
+    /** @maxLength 2000 */
+    provenance: string;
+    evidenceStatus: UpdateRelationInputEvidenceStatus;
+    /** @maxItems 10 */
+    evidence: RelationEvidenceInput[];
+    /** @minimum 0 */
+    expectedRevision: number;
 }

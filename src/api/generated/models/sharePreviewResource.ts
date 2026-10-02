@@ -4,20 +4,20 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { SharePreviewResourceType } from './sharePreviewResourceType';
+import type {SharePreviewResourceType} from './sharePreviewResourceType';
 
 export interface SharePreviewResource {
-  id: string;
-  title: string;
-  type: SharePreviewResourceType;
-  /** @nullable */
-  description: string | null;
-  /** @nullable */
-  content: string | null;
-  /** @nullable */
-  url: string | null;
-  /** @nullable */
-  accessibilityText: string | null;
-  /** @nullable */
-  mediaType: string | null;
+    id: string;
+    title: string;
+    type: SharePreviewResourceType;
+    /** @nullable */
+    description: string | null;
+    /** @nullable */
+    content: string | null;
+    /** @nullable */
+    url: string | null;
+    /** @nullable */
+    accessibilityText: string | null;
+    /** @nullable */
+    mediaType: string | null;
 }

@@ -9,5 +9,5 @@
  * @nullable
  */
 export type PublicCommentsResponseDataIdentity = {
-  displayName: string;
+    displayName: string;
 } | null;

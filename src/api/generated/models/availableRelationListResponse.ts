@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { AvailableRelation } from './availableRelation';
+import type {AvailableRelation} from './availableRelation';
 
 export interface AvailableRelationListResponse {
-  data: AvailableRelation[];
+    data: AvailableRelation[];
 }

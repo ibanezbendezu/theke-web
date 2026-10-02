@@ -1,5 +1,5 @@
-import { Outlet, Link } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
+import {Outlet, Link} from 'react-router-dom';
+import {ChevronLeft} from 'lucide-react';
 
 export function CanvasLayout() {
     return (
@@ -11,13 +11,13 @@ export function CanvasLayout() {
                     to="/library"
                     className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-background border border-border shadow-sm text-sm font-medium text-on-background hover:bg-surface transition-colors"
                 >
-                    <ChevronLeft size={16} />
+                    <ChevronLeft size={16}/>
                     Volver
                 </Link>
             </div>
 
             {/* Aquí inyectaremos el motor de React Flow */}
-            <Outlet />
+            <Outlet/>
 
         </div>
     );

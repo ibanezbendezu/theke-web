@@ -6,5 +6,5 @@
  */
 
 export type ShareCommentsResponseData = {
-  commentsEnabled: boolean;
+    commentsEnabled: boolean;
 };

@@ -6,8 +6,8 @@
  */
 
 export type ImpactAffected = {
-  projects: number;
-  folders: number;
-  resources: number;
-  placements: number;
+    projects: number;
+    folders: number;
+    resources: number;
+    placements: number;
 };

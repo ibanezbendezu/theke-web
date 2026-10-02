@@ -6,16 +6,16 @@
  */
 
 export interface RelationEvidenceInput {
-  resourceId: string;
-  resourceVersionId?: string;
-  /** @minimum 0 */
-  startOffset?: number;
-  /** @minimum 1 */
-  endOffset?: number;
-  /** @minimum 1 */
-  pageNumber?: number;
-  /** @maxLength 2000 */
-  excerpt?: string;
-  /** @maxLength 2000 */
-  note?: string;
+    resourceId: string;
+    resourceVersionId?: string;
+    /** @minimum 0 */
+    startOffset?: number;
+    /** @minimum 1 */
+    endOffset?: number;
+    /** @minimum 1 */
+    pageNumber?: number;
+    /** @maxLength 2000 */
+    excerpt?: string;
+    /** @maxLength 2000 */
+    note?: string;
 }

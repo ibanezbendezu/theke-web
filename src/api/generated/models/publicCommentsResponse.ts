@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { PublicCommentsResponseData } from './publicCommentsResponseData';
+import type {PublicCommentsResponseData} from './publicCommentsResponseData';
 
 export interface PublicCommentsResponse {
-  data: PublicCommentsResponseData;
+    data: PublicCommentsResponseData;
 }

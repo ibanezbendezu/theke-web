@@ -4,7 +4,7 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ApiErrorResponse } from './apiErrorResponse';
+import type {ApiErrorResponse} from './apiErrorResponse';
 
 /**
  * Sesión inválida

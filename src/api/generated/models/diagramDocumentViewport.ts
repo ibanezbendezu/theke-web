@@ -6,7 +6,7 @@
  */
 
 export type DiagramDocumentViewport = {
-  x: number;
-  y: number;
-  zoom: number;
+    x: number;
+    y: number;
+    zoom: number;
 };

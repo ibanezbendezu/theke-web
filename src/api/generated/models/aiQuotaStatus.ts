@@ -4,12 +4,12 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { AiQuotaStatusDailyRuns } from './aiQuotaStatusDailyRuns';
-import type { AiQuotaStatusMonthlyBudget } from './aiQuotaStatusMonthlyBudget';
+import type {AiQuotaStatusDailyRuns} from './aiQuotaStatusDailyRuns';
+import type {AiQuotaStatusMonthlyBudget} from './aiQuotaStatusMonthlyBudget';
 
 export interface AiQuotaStatus {
-  dailyRuns: AiQuotaStatusDailyRuns;
-  monthlyBudget: AiQuotaStatusMonthlyBudget;
-  maxInputTokens: number;
-  maxOutputTokens: number;
+    dailyRuns: AiQuotaStatusDailyRuns;
+    monthlyBudget: AiQuotaStatusMonthlyBudget;
+    maxInputTokens: number;
+    maxOutputTokens: number;
 }

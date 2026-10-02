@@ -5,117 +5,118 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
-  AccessibilityInput,
-  ActiveShareResponse,
-  AiConsentInput,
-  AiDiagramScopeInput,
-  AiGroupScopeInput,
-  AiPreflightInput,
-  AiPreflightResponse,
-  AiScopeResponse,
-  AiSettingsInput,
-  AiStatusResponse,
-  ApiErrorResponse,
-  AvailableRelationListResponse,
-  BadRequestResponse,
-  ClaimPublicCommentsResponse,
-  ClaimPublicShareCommentsBody,
-  CreatePublicCommentInput,
-  CreateRelationInput,
-  CreateRelationResponse,
-  DeleteLibraryFolder200,
-  DeleteProjectFolder200,
-  DiagramInput,
-  DiagramListResponse,
-  DiagramResponse,
-  DiagramSaveInput,
-  DiagramSaveResponse,
-  FolderInput,
-  FolderParentInput,
-  FolderResponse,
-  GetImpactParams,
-  GetPublicShareResourceContentParams,
-  GetResourceAccessParams,
-  ImpactConfirmationInput,
-  ImpactResponse,
-  LibraryFolderCreateInput,
-  LibraryFolderInput,
-  LibraryFolderListResponse,
-  LibraryFolderResponse,
-  LibraryResourceMoveInput,
-  LinkInput,
-  LinkUpdateInput,
-  ListDiagramsParams,
-  ListNotesParams,
-  ListProjectsParams,
-  ListResourcePropertyDefinitions200,
-  ListResourcesParams,
-  MeResponse,
-  MoveLibraryResources200,
-  MoveProjectsToFolder200,
-  NotFoundResponse,
-  NoteInput,
-  NoteListResponse,
-  NoteResponse,
-  OrganizationResponse,
-  ProjectFolderCreateInput,
-  ProjectFolderInput,
-  ProjectFolderListResponse,
-  ProjectFolderMoveInput,
-  ProjectFolderResponse,
-  ProjectInput,
-  ProjectListResponse,
-  ProjectResourceListResponse,
-  ProjectResponse,
-  PublicCommentResponse,
-  PublicCommentsResponse,
-  PublicShareResponse,
-  PublishShareInput,
-  PublishShareResponse,
-  RefreshShareInput,
-  RefreshShareResponse,
-  RelationDetailResponse,
-  RelationSuggestionInput,
-  RelationSuggestionResponse,
-  RelationTypeListResponse,
-  RenameFileResourceInput,
-  ResourceAccessResponse,
-  ResourceListResponse,
-  ResourceMetadataResponse,
-  ResourcePlacementInput,
-  ResourceReferencesResponse,
-  ResourceResponse,
-  RevokeShareInput,
-  RevokeShareResponse,
-  ShareCommentsInput,
-  ShareCommentsResponse,
-  SharePreviewResponse,
-  UnauthorizedResponse,
-  UpdatePublicCommentInput,
-  UpdateRelationInput,
-  UpdateResourceMetadataInput,
-  UploadIntent,
-  UploadListResponse,
-  UploadPolicyResponse,
-  UploadResponse
+    AccessibilityInput,
+    ActiveShareResponse,
+    AiConsentInput,
+    AiDiagramScopeInput,
+    AiGroupScopeInput,
+    AiPreflightInput,
+    AiPreflightResponse,
+    AiScopeResponse,
+    AiSettingsInput,
+    AiStatusResponse,
+    ApiErrorResponse,
+    AvailableRelationListResponse,
+    BadRequestResponse,
+    ClaimPublicCommentsResponse,
+    ClaimPublicShareCommentsBody,
+    CreatePublicCommentInput,
+    CreateRelationInput,
+    CreateRelationResponse,
+    DeleteLibraryFolder200,
+    DeleteProjectFolder200,
+    DiagramInput,
+    DiagramListResponse,
+    DiagramResponse,
+    DiagramSaveInput,
+    DiagramSaveResponse,
+    FolderInput,
+    FolderParentInput,
+    FolderResponse,
+    GetImpactParams,
+    GetPublicShareResourceContentParams,
+    GetResourceAccessParams,
+    ImpactConfirmationInput,
+    ImpactResponse,
+    LibraryFolderCreateInput,
+    LibraryFolderInput,
+    LibraryFolderListResponse,
+    LibraryFolderResponse,
+    LibraryResourceMoveInput,
+    LinkInput,
+    LinkUpdateInput,
+    ListDiagramsParams,
+    ListNotesParams,
+    ListProjectsParams,
+    ListResourcePropertyDefinitions200,
+    ListResourcesParams,
+    MeResponse,
+    MoveLibraryResources200,
+    MoveProjectsToFolder200,
+    NotFoundResponse,
+    NoteInput,
+    NoteListResponse,
+    NoteResponse,
+    OrganizationResponse,
+    ProjectFolderCreateInput,
+    ProjectFolderInput,
+    ProjectFolderListResponse,
+    ProjectFolderMoveInput,
+    ProjectFolderResponse,
+    ProjectInput,
+    ProjectListResponse,
+    ProjectResourceListResponse,
+    ProjectResponse,
+    PublicCommentResponse,
+    PublicCommentsResponse,
+    PublicShareResponse,
+    PublishShareInput,
+    PublishShareResponse,
+    RefreshShareInput,
+    RefreshShareResponse,
+    RelationDetailResponse,
+    RelationSuggestionInput,
+    RelationSuggestionResponse,
+    RelationTypeListResponse,
+    RenameFileResourceInput,
+    ResourceAccessResponse,
+    ResourceListResponse,
+    ResourceMetadataResponse,
+    ResourcePlacementInput,
+    ResourceReferencesResponse,
+    ResourceResponse,
+    RevokeShareInput,
+    RevokeShareResponse,
+    ShareCommentsInput,
+    ShareCommentsResponse,
+    SharePreviewResponse,
+    UnauthorizedResponse,
+    UpdatePublicCommentInput,
+    UpdateRelationInput,
+    UpdateResourceMetadataInput,
+    UploadIntent,
+    UploadListResponse,
+    UploadPolicyResponse,
+    UploadResponse
 } from './models';
 
-import { thekeFetch } from '../httpClient';
+import {thekeFetch} from '../httpClient';
+
 export type getMeResponse200 = {
-  data: MeResponse
-  status: 200
+    data: MeResponse
+    status: 200
 }
 
 export type getMeResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type getMeResponseSuccess = (getMeResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getMeResponseError = (getMeResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getMeResponse = (getMeResponseSuccess | getMeResponseError)
@@ -123,31 +124,29 @@ export type getMeResponse = (getMeResponseSuccess | getMeResponseError)
 export const getGetMeUrl = () => {
 
 
-
-
-  return `/v1/me`
+    return `/v1/me`
 }
 
-export const getMe = async ( options?: Parameters<typeof thekeFetch>[1]): Promise<getMeResponse> => {
+export const getMe = async (options?: Parameters<typeof thekeFetch>[1]): Promise<getMeResponse> => {
 
-  return thekeFetch<getMeResponse>(getGetMeUrl(),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getMeResponse>(getGetMeUrl(),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type listProjectFoldersResponse200 = {
-  data: ProjectFolderListResponse
-  status: 200
+    data: ProjectFolderListResponse
+    status: 200
 }
 
 export type listProjectFoldersResponseSuccess = (listProjectFoldersResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -156,31 +155,29 @@ export type listProjectFoldersResponse = (listProjectFoldersResponseSuccess)
 export const getListProjectFoldersUrl = () => {
 
 
-
-
-  return `/v1/project-folders`
+    return `/v1/project-folders`
 }
 
-export const listProjectFolders = async ( options?: Parameters<typeof thekeFetch>[1]): Promise<listProjectFoldersResponse> => {
+export const listProjectFolders = async (options?: Parameters<typeof thekeFetch>[1]): Promise<listProjectFoldersResponse> => {
 
-  return thekeFetch<listProjectFoldersResponse>(getListProjectFoldersUrl(),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<listProjectFoldersResponse>(getListProjectFoldersUrl(),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type createProjectFolderResponse201 = {
-  data: ProjectFolderResponse
-  status: 201
+    data: ProjectFolderResponse
+    status: 201
 }
 
 export type createProjectFolderResponseSuccess = (createProjectFolderResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -189,45 +186,43 @@ export type createProjectFolderResponse = (createProjectFolderResponseSuccess)
 export const getCreateProjectFolderUrl = () => {
 
 
-
-
-  return `/v1/project-folders`
+    return `/v1/project-folders`
 }
 
 export const createProjectFolder = async (projectFolderCreateInput: ProjectFolderCreateInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createProjectFolderResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<createProjectFolderResponse>(getCreateProjectFolderUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(projectFolderCreateInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<createProjectFolderResponse>(getCreateProjectFolderUrl(),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(projectFolderCreateInput)
+        }
+    );
+}
 
 
 export type renameProjectFolderResponse200 = {
-  data: ProjectFolderResponse
-  status: 200
+    data: ProjectFolderResponse
+    status: 200
 }
 
 export type renameProjectFolderResponseSuccess = (renameProjectFolderResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -236,46 +231,44 @@ export type renameProjectFolderResponse = (renameProjectFolderResponseSuccess)
 export const getRenameProjectFolderUrl = (id: string,) => {
 
 
-
-
-  return `/v1/project-folders/${id}`
+    return `/v1/project-folders/${id}`
 }
 
 export const renameProjectFolder = async (id: string,
-    projectFolderInput: ProjectFolderInput, options?: Parameters<typeof thekeFetch>[1]): Promise<renameProjectFolderResponse> => {
+                                          projectFolderInput: ProjectFolderInput, options?: Parameters<typeof thekeFetch>[1]): Promise<renameProjectFolderResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<renameProjectFolderResponse>(getRenameProjectFolderUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(projectFolderInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<renameProjectFolderResponse>(getRenameProjectFolderUrl(id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(projectFolderInput)
+        }
+    );
+}
 
 
 export type deleteProjectFolderResponse200 = {
-  data: DeleteProjectFolder200
-  status: 200
+    data: DeleteProjectFolder200
+    status: 200
 }
 
 export type deleteProjectFolderResponseSuccess = (deleteProjectFolderResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -284,44 +277,42 @@ export type deleteProjectFolderResponse = (deleteProjectFolderResponseSuccess)
 export const getDeleteProjectFolderUrl = (id: string,) => {
 
 
-
-
-  return `/v1/project-folders/${id}`
+    return `/v1/project-folders/${id}`
 }
 
 export const deleteProjectFolder = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<deleteProjectFolderResponse> => {
 
-  return thekeFetch<deleteProjectFolderResponse>(getDeleteProjectFolderUrl(id),
-  {
-    ...options,
-    method: 'DELETE'
+    return thekeFetch<deleteProjectFolderResponse>(getDeleteProjectFolderUrl(id),
+        {
+            ...options,
+            method: 'DELETE'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type moveProjectFolderResponse200 = {
-  data: ProjectFolderResponse
-  status: 200
+    data: ProjectFolderResponse
+    status: 200
 }
 
 export type moveProjectFolderResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type moveProjectFolderResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type moveProjectFolderResponseSuccess = (moveProjectFolderResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type moveProjectFolderResponseError = (moveProjectFolderResponse400 | moveProjectFolderResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type moveProjectFolderResponse = (moveProjectFolderResponseSuccess | moveProjectFolderResponseError)
@@ -329,46 +320,44 @@ export type moveProjectFolderResponse = (moveProjectFolderResponseSuccess | move
 export const getMoveProjectFolderUrl = (id: string,) => {
 
 
-
-
-  return `/v1/project-folders/${id}/parent`
+    return `/v1/project-folders/${id}/parent`
 }
 
 export const moveProjectFolder = async (id: string,
-    folderParentInput: FolderParentInput, options?: Parameters<typeof thekeFetch>[1]): Promise<moveProjectFolderResponse> => {
+                                        folderParentInput: FolderParentInput, options?: Parameters<typeof thekeFetch>[1]): Promise<moveProjectFolderResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<moveProjectFolderResponse>(getMoveProjectFolderUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(folderParentInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<moveProjectFolderResponse>(getMoveProjectFolderUrl(id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(folderParentInput)
+        }
+    );
+}
 
 
 export type moveProjectsToFolderResponse200 = {
-  data: MoveProjectsToFolder200
-  status: 200
+    data: MoveProjectsToFolder200
+    status: 200
 }
 
 export type moveProjectsToFolderResponseSuccess = (moveProjectsToFolderResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -377,105 +366,103 @@ export type moveProjectsToFolderResponse = (moveProjectsToFolderResponseSuccess)
 export const getMoveProjectsToFolderUrl = () => {
 
 
-
-
-  return `/v1/project-folders/projects`
+    return `/v1/project-folders/projects`
 }
 
 export const moveProjectsToFolder = async (projectFolderMoveInput: ProjectFolderMoveInput, options?: Parameters<typeof thekeFetch>[1]): Promise<moveProjectsToFolderResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<moveProjectsToFolderResponse>(getMoveProjectsToFolderUrl(),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(projectFolderMoveInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<moveProjectsToFolderResponse>(getMoveProjectsToFolderUrl(),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(projectFolderMoveInput)
+        }
+    );
+}
 
 
 export type listProjectsResponse200 = {
-  data: ProjectListResponse
-  status: 200
+    data: ProjectListResponse
+    status: 200
 }
 
 export type listProjectsResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type listProjectsResponseSuccess = (listProjectsResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type listProjectsResponseError = (listProjectsResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type listProjectsResponse = (listProjectsResponseSuccess | listProjectsResponseError)
 
 export const getListProjectsUrl = (params?: ListProjectsParams,) => {
-  const normalizedParams = new URLSearchParams();
+    const normalizedParams = new URLSearchParams();
 
-  Object.entries(params || {}).forEach(([key, value]) => {
+    Object.entries(params || {}).forEach(([key, value]) => {
 
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
+        if (value !== undefined) {
+            normalizedParams.append(key, value === null ? 'null' : String(value))
+        }
+    });
 
-  const stringifiedParams = normalizedParams.toString();
+    const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/v1/projects?${stringifiedParams}` : `/v1/projects`
+    return stringifiedParams.length > 0 ? `/v1/projects?${stringifiedParams}` : `/v1/projects`
 }
 
 export const listProjects = async (params?: ListProjectsParams, options?: Parameters<typeof thekeFetch>[1]): Promise<listProjectsResponse> => {
 
-  return thekeFetch<listProjectsResponse>(getListProjectsUrl(params),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<listProjectsResponse>(getListProjectsUrl(params),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type createProjectResponse201 = {
-  data: ProjectResponse
-  status: 201
+    data: ProjectResponse
+    status: 201
 }
 
 export type createProjectResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type createProjectResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type createProjectResponseSuccess = (createProjectResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type createProjectResponseError = (createProjectResponse400 | createProjectResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type createProjectResponse = (createProjectResponseSuccess | createProjectResponseError)
@@ -483,53 +470,51 @@ export type createProjectResponse = (createProjectResponseSuccess | createProjec
 export const getCreateProjectUrl = () => {
 
 
-
-
-  return `/v1/projects`
+    return `/v1/projects`
 }
 
 export const createProject = async (projectInput: ProjectInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createProjectResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<createProjectResponse>(getCreateProjectUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(projectInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<createProjectResponse>(getCreateProjectUrl(),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(projectInput)
+        }
+    );
+}
 
 
 export type getProjectResponse200 = {
-  data: ProjectResponse
-  status: 200
+    data: ProjectResponse
+    status: 200
 }
 
 export type getProjectResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type getProjectResponseSuccess = (getProjectResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getProjectResponseError = (getProjectResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getProjectResponse = (getProjectResponseSuccess | getProjectResponseError)
@@ -537,44 +522,42 @@ export type getProjectResponse = (getProjectResponseSuccess | getProjectResponse
 export const getGetProjectUrl = (id: string,) => {
 
 
-
-
-  return `/v1/projects/${id}`
+    return `/v1/projects/${id}`
 }
 
 export const getProject = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getProjectResponse> => {
 
-  return thekeFetch<getProjectResponse>(getGetProjectUrl(id),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getProjectResponse>(getGetProjectUrl(id),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type renameProjectResponse200 = {
-  data: ProjectResponse
-  status: 200
+    data: ProjectResponse
+    status: 200
 }
 
 export type renameProjectResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type renameProjectResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type renameProjectResponseSuccess = (renameProjectResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type renameProjectResponseError = (renameProjectResponse400 | renameProjectResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type renameProjectResponse = (renameProjectResponseSuccess | renameProjectResponseError)
@@ -582,54 +565,52 @@ export type renameProjectResponse = (renameProjectResponseSuccess | renameProjec
 export const getRenameProjectUrl = (id: string,) => {
 
 
-
-
-  return `/v1/projects/${id}`
+    return `/v1/projects/${id}`
 }
 
 export const renameProject = async (id: string,
-    projectInput: ProjectInput, options?: Parameters<typeof thekeFetch>[1]): Promise<renameProjectResponse> => {
+                                    projectInput: ProjectInput, options?: Parameters<typeof thekeFetch>[1]): Promise<renameProjectResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<renameProjectResponse>(getRenameProjectUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(projectInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<renameProjectResponse>(getRenameProjectUrl(id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(projectInput)
+        }
+    );
+}
 
 
 export type archiveProjectResponse201 = {
-  data: ProjectResponse
-  status: 201
+    data: ProjectResponse
+    status: 201
 }
 
 export type archiveProjectResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type archiveProjectResponseSuccess = (archiveProjectResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type archiveProjectResponseError = (archiveProjectResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type archiveProjectResponse = (archiveProjectResponseSuccess | archiveProjectResponseError)
@@ -637,39 +618,37 @@ export type archiveProjectResponse = (archiveProjectResponseSuccess | archivePro
 export const getArchiveProjectUrl = (id: string,) => {
 
 
-
-
-  return `/v1/projects/${id}/archive`
+    return `/v1/projects/${id}/archive`
 }
 
 export const archiveProject = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<archiveProjectResponse> => {
 
-  return thekeFetch<archiveProjectResponse>(getArchiveProjectUrl(id),
-  {
-    ...options,
-    method: 'POST'
+    return thekeFetch<archiveProjectResponse>(getArchiveProjectUrl(id),
+        {
+            ...options,
+            method: 'POST'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type restoreProjectResponse201 = {
-  data: ProjectResponse
-  status: 201
+    data: ProjectResponse
+    status: 201
 }
 
 export type restoreProjectResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type restoreProjectResponseSuccess = (restoreProjectResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type restoreProjectResponseError = (restoreProjectResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type restoreProjectResponse = (restoreProjectResponseSuccess | restoreProjectResponseError)
@@ -677,71 +656,69 @@ export type restoreProjectResponse = (restoreProjectResponseSuccess | restorePro
 export const getRestoreProjectUrl = (id: string,) => {
 
 
-
-
-  return `/v1/projects/${id}/restore`
+    return `/v1/projects/${id}/restore`
 }
 
 export const restoreProject = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<restoreProjectResponse> => {
 
-  return thekeFetch<restoreProjectResponse>(getRestoreProjectUrl(id),
-  {
-    ...options,
-    method: 'POST'
+    return thekeFetch<restoreProjectResponse>(getRestoreProjectUrl(id),
+        {
+            ...options,
+            method: 'POST'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type listNotesResponse200 = {
-  data: NoteListResponse
-  status: 200
+    data: NoteListResponse
+    status: 200
 }
 
 export type listNotesResponseSuccess = (listNotesResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
 export type listNotesResponse = (listNotesResponseSuccess)
 
 export const getListNotesUrl = (params?: ListNotesParams,) => {
-  const normalizedParams = new URLSearchParams();
+    const normalizedParams = new URLSearchParams();
 
-  Object.entries(params || {}).forEach(([key, value]) => {
+    Object.entries(params || {}).forEach(([key, value]) => {
 
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
+        if (value !== undefined) {
+            normalizedParams.append(key, value === null ? 'null' : String(value))
+        }
+    });
 
-  const stringifiedParams = normalizedParams.toString();
+    const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/v1/notes?${stringifiedParams}` : `/v1/notes`
+    return stringifiedParams.length > 0 ? `/v1/notes?${stringifiedParams}` : `/v1/notes`
 }
 
 export const listNotes = async (params?: ListNotesParams, options?: Parameters<typeof thekeFetch>[1]): Promise<listNotesResponse> => {
 
-  return thekeFetch<listNotesResponse>(getListNotesUrl(params),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<listNotesResponse>(getListNotesUrl(params),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type createNoteResponse201 = {
-  data: NoteResponse
-  status: 201
+    data: NoteResponse
+    status: 201
 }
 
 export type createNoteResponseSuccess = (createNoteResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -750,53 +727,51 @@ export type createNoteResponse = (createNoteResponseSuccess)
 export const getCreateNoteUrl = () => {
 
 
-
-
-  return `/v1/notes`
+    return `/v1/notes`
 }
 
 export const createNote = async (noteInput: NoteInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createNoteResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<createNoteResponse>(getCreateNoteUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(noteInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<createNoteResponse>(getCreateNoteUrl(),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(noteInput)
+        }
+    );
+}
 
 
 export type getNoteResponse200 = {
-  data: NoteResponse
-  status: 200
+    data: NoteResponse
+    status: 200
 }
 
 export type getNoteResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type getNoteResponseSuccess = (getNoteResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getNoteResponseError = (getNoteResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getNoteResponse = (getNoteResponseSuccess | getNoteResponseError)
@@ -804,44 +779,42 @@ export type getNoteResponse = (getNoteResponseSuccess | getNoteResponseError)
 export const getGetNoteUrl = (id: string,) => {
 
 
-
-
-  return `/v1/notes/${id}`
+    return `/v1/notes/${id}`
 }
 
 export const getNote = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getNoteResponse> => {
 
-  return thekeFetch<getNoteResponse>(getGetNoteUrl(id),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getNoteResponse>(getGetNoteUrl(id),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type updateNoteResponse200 = {
-  data: NoteResponse
-  status: 200
+    data: NoteResponse
+    status: 200
 }
 
 export type updateNoteResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type updateNoteResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type updateNoteResponseSuccess = (updateNoteResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type updateNoteResponseError = (updateNoteResponse400 | updateNoteResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type updateNoteResponse = (updateNoteResponseSuccess | updateNoteResponseError)
@@ -849,46 +822,44 @@ export type updateNoteResponse = (updateNoteResponseSuccess | updateNoteResponse
 export const getUpdateNoteUrl = (id: string,) => {
 
 
-
-
-  return `/v1/notes/${id}`
+    return `/v1/notes/${id}`
 }
 
 export const updateNote = async (id: string,
-    noteInput: NoteInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateNoteResponse> => {
+                                 noteInput: NoteInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateNoteResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<updateNoteResponse>(getUpdateNoteUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(noteInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<updateNoteResponse>(getUpdateNoteUrl(id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(noteInput)
+        }
+    );
+}
 
 
 export type getProjectOrganizationResponse200 = {
-  data: OrganizationResponse
-  status: 200
+    data: OrganizationResponse
+    status: 200
 }
 
 export type getProjectOrganizationResponseSuccess = (getProjectOrganizationResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -897,31 +868,29 @@ export type getProjectOrganizationResponse = (getProjectOrganizationResponseSucc
 export const getGetProjectOrganizationUrl = (projectId: string,) => {
 
 
-
-
-  return `/v1/projects/${projectId}/organization`
+    return `/v1/projects/${projectId}/organization`
 }
 
 export const getProjectOrganization = async (projectId: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getProjectOrganizationResponse> => {
 
-  return thekeFetch<getProjectOrganizationResponse>(getGetProjectOrganizationUrl(projectId),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getProjectOrganizationResponse>(getGetProjectOrganizationUrl(projectId),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type createFolderResponse201 = {
-  data: FolderResponse
-  status: 201
+    data: FolderResponse
+    status: 201
 }
 
 export type createFolderResponseSuccess = (createFolderResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -930,166 +899,158 @@ export type createFolderResponse = (createFolderResponseSuccess)
 export const getCreateFolderUrl = (projectId: string,) => {
 
 
-
-
-  return `/v1/projects/${projectId}/folders`
+    return `/v1/projects/${projectId}/folders`
 }
 
 export const createFolder = async (projectId: string,
-    folderInput: FolderInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createFolderResponse> => {
+                                   folderInput: FolderInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createFolderResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<createFolderResponse>(getCreateFolderUrl(projectId),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(folderInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<createFolderResponse>(getCreateFolderUrl(projectId),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(folderInput)
+        }
+    );
+}
 
 
 export type updateFolderResponse200 = {
-  data: FolderResponse
-  status: 200
+    data: FolderResponse
+    status: 200
 }
 
 export type updateFolderResponseSuccess = (updateFolderResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
 export type updateFolderResponse = (updateFolderResponseSuccess)
 
 export const getUpdateFolderUrl = (projectId: string,
-    id: string,) => {
+                                   id: string,) => {
 
 
-
-
-  return `/v1/projects/${projectId}/folders/${id}`
+    return `/v1/projects/${projectId}/folders/${id}`
 }
 
 export const updateFolder = async (projectId: string,
-    id: string,
-    folderInput: FolderInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateFolderResponse> => {
+                                   id: string,
+                                   folderInput: FolderInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateFolderResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<updateFolderResponse>(getUpdateFolderUrl(projectId,id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(folderInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<updateFolderResponse>(getUpdateFolderUrl(projectId, id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(folderInput)
+        }
+    );
+}
 
 
 export type archiveFolderResponse201 = {
-  data: FolderResponse
-  status: 201
+    data: FolderResponse
+    status: 201
 }
 
 export type archiveFolderResponseSuccess = (archiveFolderResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
 export type archiveFolderResponse = (archiveFolderResponseSuccess)
 
 export const getArchiveFolderUrl = (projectId: string,
-    id: string,) => {
+                                    id: string,) => {
 
 
-
-
-  return `/v1/projects/${projectId}/folders/${id}/archive`
+    return `/v1/projects/${projectId}/folders/${id}/archive`
 }
 
 export const archiveFolder = async (projectId: string,
-    id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<archiveFolderResponse> => {
+                                    id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<archiveFolderResponse> => {
 
-  return thekeFetch<archiveFolderResponse>(getArchiveFolderUrl(projectId,id),
-  {
-    ...options,
-    method: 'POST'
+    return thekeFetch<archiveFolderResponse>(getArchiveFolderUrl(projectId, id),
+        {
+            ...options,
+            method: 'POST'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type restoreFolderResponse201 = {
-  data: FolderResponse
-  status: 201
+    data: FolderResponse
+    status: 201
 }
 
 export type restoreFolderResponseSuccess = (restoreFolderResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
 export type restoreFolderResponse = (restoreFolderResponseSuccess)
 
 export const getRestoreFolderUrl = (projectId: string,
-    id: string,) => {
+                                    id: string,) => {
 
 
-
-
-  return `/v1/projects/${projectId}/folders/${id}/restore`
+    return `/v1/projects/${projectId}/folders/${id}/restore`
 }
 
 export const restoreFolder = async (projectId: string,
-    id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<restoreFolderResponse> => {
+                                    id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<restoreFolderResponse> => {
 
-  return thekeFetch<restoreFolderResponse>(getRestoreFolderUrl(projectId,id),
-  {
-    ...options,
-    method: 'POST'
+    return thekeFetch<restoreFolderResponse>(getRestoreFolderUrl(projectId, id),
+        {
+            ...options,
+            method: 'POST'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type addProjectResourcesResponse201 = {
-  data: ProjectResourceListResponse
-  status: 201
+    data: ProjectResourceListResponse
+    status: 201
 }
 
 export type addProjectResourcesResponseSuccess = (addProjectResourcesResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -1098,46 +1059,44 @@ export type addProjectResourcesResponse = (addProjectResourcesResponseSuccess)
 export const getAddProjectResourcesUrl = (projectId: string,) => {
 
 
-
-
-  return `/v1/projects/${projectId}/resources`
+    return `/v1/projects/${projectId}/resources`
 }
 
 export const addProjectResources = async (projectId: string,
-    resourcePlacementInput: ResourcePlacementInput, options?: Parameters<typeof thekeFetch>[1]): Promise<addProjectResourcesResponse> => {
+                                          resourcePlacementInput: ResourcePlacementInput, options?: Parameters<typeof thekeFetch>[1]): Promise<addProjectResourcesResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<addProjectResourcesResponse>(getAddProjectResourcesUrl(projectId),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(resourcePlacementInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<addProjectResourcesResponse>(getAddProjectResourcesUrl(projectId),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(resourcePlacementInput)
+        }
+    );
+}
 
 
 export type moveProjectResourcesResponse200 = {
-  data: ProjectResourceListResponse
-  status: 200
+    data: ProjectResourceListResponse
+    status: 200
 }
 
 export type moveProjectResourcesResponseSuccess = (moveProjectResourcesResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -1146,54 +1105,52 @@ export type moveProjectResourcesResponse = (moveProjectResourcesResponseSuccess)
 export const getMoveProjectResourcesUrl = (projectId: string,) => {
 
 
-
-
-  return `/v1/projects/${projectId}/resources`
+    return `/v1/projects/${projectId}/resources`
 }
 
 export const moveProjectResources = async (projectId: string,
-    resourcePlacementInput: ResourcePlacementInput, options?: Parameters<typeof thekeFetch>[1]): Promise<moveProjectResourcesResponse> => {
+                                           resourcePlacementInput: ResourcePlacementInput, options?: Parameters<typeof thekeFetch>[1]): Promise<moveProjectResourcesResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<moveProjectResourcesResponse>(getMoveProjectResourcesUrl(projectId),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(resourcePlacementInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<moveProjectResourcesResponse>(getMoveProjectResourcesUrl(projectId),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(resourcePlacementInput)
+        }
+    );
+}
 
 
 export type getUploadPolicyResponse200 = {
-  data: UploadPolicyResponse
-  status: 200
+    data: UploadPolicyResponse
+    status: 200
 }
 
 export type getUploadPolicyResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type getUploadPolicyResponseSuccess = (getUploadPolicyResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getUploadPolicyResponseError = (getUploadPolicyResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getUploadPolicyResponse = (getUploadPolicyResponseSuccess | getUploadPolicyResponseError)
@@ -1201,39 +1158,37 @@ export type getUploadPolicyResponse = (getUploadPolicyResponseSuccess | getUploa
 export const getGetUploadPolicyUrl = () => {
 
 
-
-
-  return `/v1/uploads/policy`
+    return `/v1/uploads/policy`
 }
 
-export const getUploadPolicy = async ( options?: Parameters<typeof thekeFetch>[1]): Promise<getUploadPolicyResponse> => {
+export const getUploadPolicy = async (options?: Parameters<typeof thekeFetch>[1]): Promise<getUploadPolicyResponse> => {
 
-  return thekeFetch<getUploadPolicyResponse>(getGetUploadPolicyUrl(),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getUploadPolicyResponse>(getGetUploadPolicyUrl(),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type listUploadsResponse200 = {
-  data: UploadListResponse
-  status: 200
+    data: UploadListResponse
+    status: 200
 }
 
 export type listUploadsResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type listUploadsResponseSuccess = (listUploadsResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type listUploadsResponseError = (listUploadsResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type listUploadsResponse = (listUploadsResponseSuccess | listUploadsResponseError)
@@ -1241,44 +1196,42 @@ export type listUploadsResponse = (listUploadsResponseSuccess | listUploadsRespo
 export const getListUploadsUrl = () => {
 
 
-
-
-  return `/v1/uploads`
+    return `/v1/uploads`
 }
 
-export const listUploads = async ( options?: Parameters<typeof thekeFetch>[1]): Promise<listUploadsResponse> => {
+export const listUploads = async (options?: Parameters<typeof thekeFetch>[1]): Promise<listUploadsResponse> => {
 
-  return thekeFetch<listUploadsResponse>(getListUploadsUrl(),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<listUploadsResponse>(getListUploadsUrl(),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type createUploadResponse201 = {
-  data: UploadResponse
-  status: 201
+    data: UploadResponse
+    status: 201
 }
 
 export type createUploadResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type createUploadResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type createUploadResponseSuccess = (createUploadResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type createUploadResponseError = (createUploadResponse400 | createUploadResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type createUploadResponse = (createUploadResponseSuccess | createUploadResponseError)
@@ -1286,58 +1239,56 @@ export type createUploadResponse = (createUploadResponseSuccess | createUploadRe
 export const getCreateUploadUrl = () => {
 
 
-
-
-  return `/v1/uploads`
+    return `/v1/uploads`
 }
 
 export const createUpload = async (uploadIntent: UploadIntent, options?: Parameters<typeof thekeFetch>[1]): Promise<createUploadResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<createUploadResponse>(getCreateUploadUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(uploadIntent)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<createUploadResponse>(getCreateUploadUrl(),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(uploadIntent)
+        }
+    );
+}
 
 
 export type getUploadResponse200 = {
-  data: UploadResponse
-  status: 200
+    data: UploadResponse
+    status: 200
 }
 
 export type getUploadResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type getUploadResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type getUploadResponseSuccess = (getUploadResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getUploadResponseError = (getUploadResponse401 | getUploadResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getUploadResponse = (getUploadResponseSuccess | getUploadResponseError)
@@ -1345,49 +1296,49 @@ export type getUploadResponse = (getUploadResponseSuccess | getUploadResponseErr
 export const getGetUploadUrl = (id: string,) => {
 
 
-
-
-  return `/v1/uploads/${id}`
+    return `/v1/uploads/${id}`
 }
 
 export const getUpload = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getUploadResponse> => {
 
-  return thekeFetch<getUploadResponse>(getGetUploadUrl(id),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getUploadResponse>(getGetUploadUrl(id),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type finalizeUploadResponse201 = {
-  data: UploadResponse
-  status: 201
+    data: UploadResponse
+    status: 201
 }
 
 export type finalizeUploadResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type finalizeUploadResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type finalizeUploadResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type finalizeUploadResponseSuccess = (finalizeUploadResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type finalizeUploadResponseError = (finalizeUploadResponse400 | finalizeUploadResponse401 | finalizeUploadResponse404) & {
-  headers: Headers;
+export type finalizeUploadResponseError =
+    (finalizeUploadResponse400 | finalizeUploadResponse401 | finalizeUploadResponse404)
+    & {
+    headers: Headers;
 };
 
 export type finalizeUploadResponse = (finalizeUploadResponseSuccess | finalizeUploadResponseError)
@@ -1395,49 +1346,49 @@ export type finalizeUploadResponse = (finalizeUploadResponseSuccess | finalizeUp
 export const getFinalizeUploadUrl = (id: string,) => {
 
 
-
-
-  return `/v1/uploads/${id}/finalize`
+    return `/v1/uploads/${id}/finalize`
 }
 
 export const finalizeUpload = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<finalizeUploadResponse> => {
 
-  return thekeFetch<finalizeUploadResponse>(getFinalizeUploadUrl(id),
-  {
-    ...options,
-    method: 'POST'
+    return thekeFetch<finalizeUploadResponse>(getFinalizeUploadUrl(id),
+        {
+            ...options,
+            method: 'POST'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type cancelUploadResponse201 = {
-  data: UploadResponse
-  status: 201
+    data: UploadResponse
+    status: 201
 }
 
 export type cancelUploadResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type cancelUploadResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type cancelUploadResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type cancelUploadResponseSuccess = (cancelUploadResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type cancelUploadResponseError = (cancelUploadResponse401 | cancelUploadResponse404 | cancelUploadResponse409) & {
-  headers: Headers;
+export type cancelUploadResponseError =
+    (cancelUploadResponse401 | cancelUploadResponse404 | cancelUploadResponse409)
+    & {
+    headers: Headers;
 };
 
 export type cancelUploadResponse = (cancelUploadResponseSuccess | cancelUploadResponseError)
@@ -1445,44 +1396,42 @@ export type cancelUploadResponse = (cancelUploadResponseSuccess | cancelUploadRe
 export const getCancelUploadUrl = (id: string,) => {
 
 
-
-
-  return `/v1/uploads/${id}/cancel`
+    return `/v1/uploads/${id}/cancel`
 }
 
 export const cancelUpload = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<cancelUploadResponse> => {
 
-  return thekeFetch<cancelUploadResponse>(getCancelUploadUrl(id),
-  {
-    ...options,
-    method: 'POST'
+    return thekeFetch<cancelUploadResponse>(getCancelUploadUrl(id),
+        {
+            ...options,
+            method: 'POST'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type createLinkResponse201 = {
-  data: ResourceResponse
-  status: 201
+    data: ResourceResponse
+    status: 201
 }
 
 export type createLinkResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type createLinkResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type createLinkResponseSuccess = (createLinkResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type createLinkResponseError = (createLinkResponse400 | createLinkResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type createLinkResponse = (createLinkResponseSuccess | createLinkResponseError)
@@ -1490,63 +1439,61 @@ export type createLinkResponse = (createLinkResponseSuccess | createLinkResponse
 export const getCreateLinkUrl = () => {
 
 
-
-
-  return `/v1/links`
+    return `/v1/links`
 }
 
 export const createLink = async (linkInput: LinkInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createLinkResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<createLinkResponse>(getCreateLinkUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(linkInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<createLinkResponse>(getCreateLinkUrl(),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(linkInput)
+        }
+    );
+}
 
 
 export type updateLinkResponse200 = {
-  data: ResourceResponse
-  status: 200
+    data: ResourceResponse
+    status: 200
 }
 
 export type updateLinkResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type updateLinkResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type updateLinkResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type updateLinkResponseSuccess = (updateLinkResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type updateLinkResponseError = (updateLinkResponse400 | updateLinkResponse401 | updateLinkResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type updateLinkResponse = (updateLinkResponseSuccess | updateLinkResponseError)
@@ -1554,59 +1501,57 @@ export type updateLinkResponse = (updateLinkResponseSuccess | updateLinkResponse
 export const getUpdateLinkUrl = (id: string,) => {
 
 
-
-
-  return `/v1/links/${id}`
+    return `/v1/links/${id}`
 }
 
 export const updateLink = async (id: string,
-    linkUpdateInput: LinkUpdateInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateLinkResponse> => {
+                                 linkUpdateInput: LinkUpdateInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateLinkResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<updateLinkResponse>(getUpdateLinkUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(linkUpdateInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<updateLinkResponse>(getUpdateLinkUrl(id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(linkUpdateInput)
+        }
+    );
+}
 
 
 export type retryLinkMetadataResponse201 = {
-  data: ResourceResponse
-  status: 201
+    data: ResourceResponse
+    status: 201
 }
 
 export type retryLinkMetadataResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type retryLinkMetadataResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type retryLinkMetadataResponseSuccess = (retryLinkMetadataResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type retryLinkMetadataResponseError = (retryLinkMetadataResponse401 | retryLinkMetadataResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type retryLinkMetadataResponse = (retryLinkMetadataResponseSuccess | retryLinkMetadataResponseError)
@@ -1614,93 +1559,91 @@ export type retryLinkMetadataResponse = (retryLinkMetadataResponseSuccess | retr
 export const getRetryLinkMetadataUrl = (id: string,) => {
 
 
-
-
-  return `/v1/links/${id}/metadata-retries`
+    return `/v1/links/${id}/metadata-retries`
 }
 
 export const retryLinkMetadata = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<retryLinkMetadataResponse> => {
 
-  return thekeFetch<retryLinkMetadataResponse>(getRetryLinkMetadataUrl(id),
-  {
-    ...options,
-    method: 'POST'
+    return thekeFetch<retryLinkMetadataResponse>(getRetryLinkMetadataUrl(id),
+        {
+            ...options,
+            method: 'POST'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type listDiagramsResponse200 = {
-  data: DiagramListResponse
-  status: 200
+    data: DiagramListResponse
+    status: 200
 }
 
 export type listDiagramsResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type listDiagramsResponseSuccess = (listDiagramsResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type listDiagramsResponseError = (listDiagramsResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type listDiagramsResponse = (listDiagramsResponseSuccess | listDiagramsResponseError)
 
 export const getListDiagramsUrl = (projectId: string,
-    params?: ListDiagramsParams,) => {
-  const normalizedParams = new URLSearchParams();
+                                   params?: ListDiagramsParams,) => {
+    const normalizedParams = new URLSearchParams();
 
-  Object.entries(params || {}).forEach(([key, value]) => {
+    Object.entries(params || {}).forEach(([key, value]) => {
 
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
+        if (value !== undefined) {
+            normalizedParams.append(key, value === null ? 'null' : String(value))
+        }
+    });
 
-  const stringifiedParams = normalizedParams.toString();
+    const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/v1/projects/${projectId}/diagrams?${stringifiedParams}` : `/v1/projects/${projectId}/diagrams`
+    return stringifiedParams.length > 0 ? `/v1/projects/${projectId}/diagrams?${stringifiedParams}` : `/v1/projects/${projectId}/diagrams`
 }
 
 export const listDiagrams = async (projectId: string,
-    params?: ListDiagramsParams, options?: Parameters<typeof thekeFetch>[1]): Promise<listDiagramsResponse> => {
+                                   params?: ListDiagramsParams, options?: Parameters<typeof thekeFetch>[1]): Promise<listDiagramsResponse> => {
 
-  return thekeFetch<listDiagramsResponse>(getListDiagramsUrl(projectId,params),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<listDiagramsResponse>(getListDiagramsUrl(projectId, params),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type createDiagramResponse201 = {
-  data: DiagramResponse
-  status: 201
+    data: DiagramResponse
+    status: 201
 }
 
 export type createDiagramResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type createDiagramResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type createDiagramResponseSuccess = (createDiagramResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type createDiagramResponseError = (createDiagramResponse400 | createDiagramResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type createDiagramResponse = (createDiagramResponseSuccess | createDiagramResponseError)
@@ -1708,64 +1651,64 @@ export type createDiagramResponse = (createDiagramResponseSuccess | createDiagra
 export const getCreateDiagramUrl = (projectId: string,) => {
 
 
-
-
-  return `/v1/projects/${projectId}/diagrams`
+    return `/v1/projects/${projectId}/diagrams`
 }
 
 export const createDiagram = async (projectId: string,
-    diagramInput: DiagramInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createDiagramResponse> => {
+                                    diagramInput: DiagramInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createDiagramResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<createDiagramResponse>(getCreateDiagramUrl(projectId),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(diagramInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<createDiagramResponse>(getCreateDiagramUrl(projectId),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(diagramInput)
+        }
+    );
+}
 
 
 export type saveDiagramDocumentResponse200 = {
-  data: DiagramSaveResponse
-  status: 200
+    data: DiagramSaveResponse
+    status: 200
 }
 
 export type saveDiagramDocumentResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type saveDiagramDocumentResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type saveDiagramDocumentResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type saveDiagramDocumentResponseSuccess = (saveDiagramDocumentResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type saveDiagramDocumentResponseError = (saveDiagramDocumentResponse400 | saveDiagramDocumentResponse404 | saveDiagramDocumentResponse409) & {
-  headers: Headers;
+export type saveDiagramDocumentResponseError =
+    (saveDiagramDocumentResponse400 | saveDiagramDocumentResponse404 | saveDiagramDocumentResponse409)
+    & {
+    headers: Headers;
 };
 
 export type saveDiagramDocumentResponse = (saveDiagramDocumentResponseSuccess | saveDiagramDocumentResponseError)
@@ -1773,64 +1716,64 @@ export type saveDiagramDocumentResponse = (saveDiagramDocumentResponseSuccess | 
 export const getSaveDiagramDocumentUrl = (id: string,) => {
 
 
-
-
-  return `/v1/diagrams/${id}/document`
+    return `/v1/diagrams/${id}/document`
 }
 
 export const saveDiagramDocument = async (id: string,
-    diagramSaveInput: DiagramSaveInput, options?: Parameters<typeof thekeFetch>[1]): Promise<saveDiagramDocumentResponse> => {
+                                          diagramSaveInput: DiagramSaveInput, options?: Parameters<typeof thekeFetch>[1]): Promise<saveDiagramDocumentResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<saveDiagramDocumentResponse>(getSaveDiagramDocumentUrl(id),
-  {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(diagramSaveInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<saveDiagramDocumentResponse>(getSaveDiagramDocumentUrl(id),
+        {
+            ...options,
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(diagramSaveInput)
+        }
+    );
+}
 
 
 export type getDiagramSharePreviewResponse200 = {
-  data: SharePreviewResponse
-  status: 200
+    data: SharePreviewResponse
+    status: 200
 }
 
 export type getDiagramSharePreviewResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type getDiagramSharePreviewResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type getDiagramSharePreviewResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type getDiagramSharePreviewResponseSuccess = (getDiagramSharePreviewResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type getDiagramSharePreviewResponseError = (getDiagramSharePreviewResponse401 | getDiagramSharePreviewResponse404 | getDiagramSharePreviewResponse409) & {
-  headers: Headers;
+export type getDiagramSharePreviewResponseError =
+    (getDiagramSharePreviewResponse401 | getDiagramSharePreviewResponse404 | getDiagramSharePreviewResponse409)
+    & {
+    headers: Headers;
 };
 
 export type getDiagramSharePreviewResponse = (getDiagramSharePreviewResponseSuccess | getDiagramSharePreviewResponseError)
@@ -1838,54 +1781,54 @@ export type getDiagramSharePreviewResponse = (getDiagramSharePreviewResponseSucc
 export const getGetDiagramSharePreviewUrl = (id: string,) => {
 
 
-
-
-  return `/v1/diagrams/${id}/share-preview`
+    return `/v1/diagrams/${id}/share-preview`
 }
 
 export const getDiagramSharePreview = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getDiagramSharePreviewResponse> => {
 
-  return thekeFetch<getDiagramSharePreviewResponse>(getGetDiagramSharePreviewUrl(id),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getDiagramSharePreviewResponse>(getGetDiagramSharePreviewUrl(id),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type publishDiagramShareResponse201 = {
-  data: PublishShareResponse
-  status: 201
+    data: PublishShareResponse
+    status: 201
 }
 
 export type publishDiagramShareResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type publishDiagramShareResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type publishDiagramShareResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type publishDiagramShareResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type publishDiagramShareResponseSuccess = (publishDiagramShareResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type publishDiagramShareResponseError = (publishDiagramShareResponse400 | publishDiagramShareResponse401 | publishDiagramShareResponse404 | publishDiagramShareResponse409) & {
-  headers: Headers;
+export type publishDiagramShareResponseError =
+    (publishDiagramShareResponse400 | publishDiagramShareResponse401 | publishDiagramShareResponse404 | publishDiagramShareResponse409)
+    & {
+    headers: Headers;
 };
 
 export type publishDiagramShareResponse = (publishDiagramShareResponseSuccess | publishDiagramShareResponseError)
@@ -1893,59 +1836,59 @@ export type publishDiagramShareResponse = (publishDiagramShareResponseSuccess | 
 export const getPublishDiagramShareUrl = (id: string,) => {
 
 
-
-
-  return `/v1/diagrams/${id}/shares`
+    return `/v1/diagrams/${id}/shares`
 }
 
 export const publishDiagramShare = async (id: string,
-    publishShareInput: PublishShareInput, options?: Parameters<typeof thekeFetch>[1]): Promise<publishDiagramShareResponse> => {
+                                          publishShareInput: PublishShareInput, options?: Parameters<typeof thekeFetch>[1]): Promise<publishDiagramShareResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<publishDiagramShareResponse>(getPublishDiagramShareUrl(id),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(publishShareInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<publishDiagramShareResponse>(getPublishDiagramShareUrl(id),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(publishShareInput)
+        }
+    );
+}
 
 
 export type getActiveDiagramShareResponse200 = {
-  data: ActiveShareResponse
-  status: 200
+    data: ActiveShareResponse
+    status: 200
 }
 
 export type getActiveDiagramShareResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type getActiveDiagramShareResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type getActiveDiagramShareResponseSuccess = (getActiveDiagramShareResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type getActiveDiagramShareResponseError = (getActiveDiagramShareResponse401 | getActiveDiagramShareResponse404) & {
-  headers: Headers;
+export type getActiveDiagramShareResponseError =
+    (getActiveDiagramShareResponse401 | getActiveDiagramShareResponse404)
+    & {
+    headers: Headers;
 };
 
 export type getActiveDiagramShareResponse = (getActiveDiagramShareResponseSuccess | getActiveDiagramShareResponseError)
@@ -1953,49 +1896,49 @@ export type getActiveDiagramShareResponse = (getActiveDiagramShareResponseSucces
 export const getGetActiveDiagramShareUrl = (id: string,) => {
 
 
-
-
-  return `/v1/diagrams/${id}/shares/active`
+    return `/v1/diagrams/${id}/shares/active`
 }
 
 export const getActiveDiagramShare = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getActiveDiagramShareResponse> => {
 
-  return thekeFetch<getActiveDiagramShareResponse>(getGetActiveDiagramShareUrl(id),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getActiveDiagramShareResponse>(getGetActiveDiagramShareUrl(id),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type setDiagramShareCommentsResponse200 = {
-  data: ShareCommentsResponse
-  status: 200
+    data: ShareCommentsResponse
+    status: 200
 }
 
 export type setDiagramShareCommentsResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type setDiagramShareCommentsResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type setDiagramShareCommentsResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type setDiagramShareCommentsResponseSuccess = (setDiagramShareCommentsResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type setDiagramShareCommentsResponseError = (setDiagramShareCommentsResponse400 | setDiagramShareCommentsResponse401 | setDiagramShareCommentsResponse404) & {
-  headers: Headers;
+export type setDiagramShareCommentsResponseError =
+    (setDiagramShareCommentsResponse400 | setDiagramShareCommentsResponse401 | setDiagramShareCommentsResponse404)
+    & {
+    headers: Headers;
 };
 
 export type setDiagramShareCommentsResponse = (setDiagramShareCommentsResponseSuccess | setDiagramShareCommentsResponseError)
@@ -2003,69 +1946,69 @@ export type setDiagramShareCommentsResponse = (setDiagramShareCommentsResponseSu
 export const getSetDiagramShareCommentsUrl = (id: string,) => {
 
 
-
-
-  return `/v1/diagrams/${id}/shares/active/comments`
+    return `/v1/diagrams/${id}/shares/active/comments`
 }
 
 export const setDiagramShareComments = async (id: string,
-    shareCommentsInput: ShareCommentsInput, options?: Parameters<typeof thekeFetch>[1]): Promise<setDiagramShareCommentsResponse> => {
+                                              shareCommentsInput: ShareCommentsInput, options?: Parameters<typeof thekeFetch>[1]): Promise<setDiagramShareCommentsResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<setDiagramShareCommentsResponse>(getSetDiagramShareCommentsUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(shareCommentsInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<setDiagramShareCommentsResponse>(getSetDiagramShareCommentsUrl(id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(shareCommentsInput)
+        }
+    );
+}
 
 
 export type refreshDiagramShareResponse200 = {
-  data: RefreshShareResponse
-  status: 200
+    data: RefreshShareResponse
+    status: 200
 }
 
 export type refreshDiagramShareResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type refreshDiagramShareResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type refreshDiagramShareResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type refreshDiagramShareResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type refreshDiagramShareResponseSuccess = (refreshDiagramShareResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type refreshDiagramShareResponseError = (refreshDiagramShareResponse400 | refreshDiagramShareResponse401 | refreshDiagramShareResponse404 | refreshDiagramShareResponse409) & {
-  headers: Headers;
+export type refreshDiagramShareResponseError =
+    (refreshDiagramShareResponse400 | refreshDiagramShareResponse401 | refreshDiagramShareResponse404 | refreshDiagramShareResponse409)
+    & {
+    headers: Headers;
 };
 
 export type refreshDiagramShareResponse = (refreshDiagramShareResponseSuccess | refreshDiagramShareResponseError)
@@ -2073,69 +2016,69 @@ export type refreshDiagramShareResponse = (refreshDiagramShareResponseSuccess | 
 export const getRefreshDiagramShareUrl = (id: string,) => {
 
 
-
-
-  return `/v1/diagrams/${id}/shares/active/projection`
+    return `/v1/diagrams/${id}/shares/active/projection`
 }
 
 export const refreshDiagramShare = async (id: string,
-    refreshShareInput: RefreshShareInput, options?: Parameters<typeof thekeFetch>[1]): Promise<refreshDiagramShareResponse> => {
+                                          refreshShareInput: RefreshShareInput, options?: Parameters<typeof thekeFetch>[1]): Promise<refreshDiagramShareResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<refreshDiagramShareResponse>(getRefreshDiagramShareUrl(id),
-  {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(refreshShareInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<refreshDiagramShareResponse>(getRefreshDiagramShareUrl(id),
+        {
+            ...options,
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(refreshShareInput)
+        }
+    );
+}
 
 
 export type revokeDiagramShareResponse201 = {
-  data: RevokeShareResponse
-  status: 201
+    data: RevokeShareResponse
+    status: 201
 }
 
 export type revokeDiagramShareResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type revokeDiagramShareResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type revokeDiagramShareResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type revokeDiagramShareResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type revokeDiagramShareResponseSuccess = (revokeDiagramShareResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type revokeDiagramShareResponseError = (revokeDiagramShareResponse400 | revokeDiagramShareResponse401 | revokeDiagramShareResponse404 | revokeDiagramShareResponse409) & {
-  headers: Headers;
+export type revokeDiagramShareResponseError =
+    (revokeDiagramShareResponse400 | revokeDiagramShareResponse401 | revokeDiagramShareResponse404 | revokeDiagramShareResponse409)
+    & {
+    headers: Headers;
 };
 
 export type revokeDiagramShareResponse = (revokeDiagramShareResponseSuccess | revokeDiagramShareResponseError)
@@ -2143,54 +2086,52 @@ export type revokeDiagramShareResponse = (revokeDiagramShareResponseSuccess | re
 export const getRevokeDiagramShareUrl = (id: string,) => {
 
 
-
-
-  return `/v1/diagrams/${id}/shares/active/revoke`
+    return `/v1/diagrams/${id}/shares/active/revoke`
 }
 
 export const revokeDiagramShare = async (id: string,
-    revokeShareInput: RevokeShareInput, options?: Parameters<typeof thekeFetch>[1]): Promise<revokeDiagramShareResponse> => {
+                                         revokeShareInput: RevokeShareInput, options?: Parameters<typeof thekeFetch>[1]): Promise<revokeDiagramShareResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<revokeDiagramShareResponse>(getRevokeDiagramShareUrl(id),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(revokeShareInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<revokeDiagramShareResponse>(getRevokeDiagramShareUrl(id),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(revokeShareInput)
+        }
+    );
+}
 
 
 export type getPublicShareResponse200 = {
-  data: PublicShareResponse
-  status: 200
+    data: PublicShareResponse
+    status: 200
 }
 
 export type getPublicShareResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type getPublicShareResponseSuccess = (getPublicShareResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getPublicShareResponseError = (getPublicShareResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getPublicShareResponse = (getPublicShareResponseSuccess | getPublicShareResponseError)
@@ -2198,39 +2139,37 @@ export type getPublicShareResponse = (getPublicShareResponseSuccess | getPublicS
 export const getGetPublicShareUrl = (token: string,) => {
 
 
-
-
-  return `/v1/public/shares/${token}`
+    return `/v1/public/shares/${token}`
 }
 
 export const getPublicShare = async (token: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getPublicShareResponse> => {
 
-  return thekeFetch<getPublicShareResponse>(getGetPublicShareUrl(token),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getPublicShareResponse>(getGetPublicShareUrl(token),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type listPublicShareCommentsResponse200 = {
-  data: PublicCommentsResponse
-  status: 200
+    data: PublicCommentsResponse
+    status: 200
 }
 
 export type listPublicShareCommentsResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type listPublicShareCommentsResponseSuccess = (listPublicShareCommentsResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type listPublicShareCommentsResponseError = (listPublicShareCommentsResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type listPublicShareCommentsResponse = (listPublicShareCommentsResponseSuccess | listPublicShareCommentsResponseError)
@@ -2238,9 +2177,7 @@ export type listPublicShareCommentsResponse = (listPublicShareCommentsResponseSu
 export const getListPublicShareCommentsUrl = (token: string,) => {
 
 
-
-
-  return `/v1/public/shares/${token}/comments`
+    return `/v1/public/shares/${token}/comments`
 }
 
 /**
@@ -2248,57 +2185,59 @@ export const getListPublicShareCommentsUrl = (token: string,) => {
  */
 export const listPublicShareComments = async (token: string, options?: Parameters<typeof thekeFetch>[1]): Promise<listPublicShareCommentsResponse> => {
 
-  return thekeFetch<listPublicShareCommentsResponse>(getListPublicShareCommentsUrl(token),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<listPublicShareCommentsResponse>(getListPublicShareCommentsUrl(token),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type createPublicShareCommentResponse201 = {
-  data: PublicCommentResponse
-  status: 201
+    data: PublicCommentResponse
+    status: 201
 }
 
 export type createPublicShareCommentResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type createPublicShareCommentResponse403 = {
-  data: ApiErrorResponse
-  status: 403
+    data: ApiErrorResponse
+    status: 403
 }
 
 export type createPublicShareCommentResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type createPublicShareCommentResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type createPublicShareCommentResponse415 = {
-  data: ApiErrorResponse
-  status: 415
+    data: ApiErrorResponse
+    status: 415
 }
 
 export type createPublicShareCommentResponse429 = {
-  data: ApiErrorResponse
-  status: 429
+    data: ApiErrorResponse
+    status: 429
 }
 
 export type createPublicShareCommentResponseSuccess = (createPublicShareCommentResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type createPublicShareCommentResponseError = (createPublicShareCommentResponse400 | createPublicShareCommentResponse403 | createPublicShareCommentResponse404 | createPublicShareCommentResponse409 | createPublicShareCommentResponse415 | createPublicShareCommentResponse429) & {
-  headers: Headers;
+export type createPublicShareCommentResponseError =
+    (createPublicShareCommentResponse400 | createPublicShareCommentResponse403 | createPublicShareCommentResponse404 | createPublicShareCommentResponse409 | createPublicShareCommentResponse415 | createPublicShareCommentResponse429)
+    & {
+    headers: Headers;
 };
 
 export type createPublicShareCommentResponse = (createPublicShareCommentResponseSuccess | createPublicShareCommentResponseError)
@@ -2306,152 +2245,152 @@ export type createPublicShareCommentResponse = (createPublicShareCommentResponse
 export const getCreatePublicShareCommentUrl = (token: string,) => {
 
 
-
-
-  return `/v1/public/shares/${token}/comments`
+    return `/v1/public/shares/${token}/comments`
 }
 
 /**
  * Publica con alias científico anónimo o nombre de perfil Clerk verificado sobre un punto, Recurso o Relación. Requiere Origin permitido, JSON y CSRF si ya existe cookie.
  */
 export const createPublicShareComment = async (token: string,
-    createPublicCommentInput: CreatePublicCommentInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createPublicShareCommentResponse> => {
+                                               createPublicCommentInput: CreatePublicCommentInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createPublicShareCommentResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<createPublicShareCommentResponse>(getCreatePublicShareCommentUrl(token),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(createPublicCommentInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<createPublicShareCommentResponse>(getCreatePublicShareCommentUrl(token),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(createPublicCommentInput)
+        }
+    );
+}
 
 
 export type editPublicShareCommentResponse200 = {
-  data: PublicCommentResponse
-  status: 200
+    data: PublicCommentResponse
+    status: 200
 }
 
 export type editPublicShareCommentResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type editPublicShareCommentResponse403 = {
-  data: ApiErrorResponse
-  status: 403
+    data: ApiErrorResponse
+    status: 403
 }
 
 export type editPublicShareCommentResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type editPublicShareCommentResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type editPublicShareCommentResponse415 = {
-  data: ApiErrorResponse
-  status: 415
+    data: ApiErrorResponse
+    status: 415
 }
 
 export type editPublicShareCommentResponse429 = {
-  data: ApiErrorResponse
-  status: 429
+    data: ApiErrorResponse
+    status: 429
 }
 
 export type editPublicShareCommentResponseSuccess = (editPublicShareCommentResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type editPublicShareCommentResponseError = (editPublicShareCommentResponse400 | editPublicShareCommentResponse403 | editPublicShareCommentResponse404 | editPublicShareCommentResponse409 | editPublicShareCommentResponse415 | editPublicShareCommentResponse429) & {
-  headers: Headers;
+export type editPublicShareCommentResponseError =
+    (editPublicShareCommentResponse400 | editPublicShareCommentResponse403 | editPublicShareCommentResponse404 | editPublicShareCommentResponse409 | editPublicShareCommentResponse415 | editPublicShareCommentResponse429)
+    & {
+    headers: Headers;
 };
 
 export type editPublicShareCommentResponse = (editPublicShareCommentResponseSuccess | editPublicShareCommentResponseError)
 
 export const getEditPublicShareCommentUrl = (token: string,
-    commentId: string,) => {
+                                             commentId: string,) => {
 
 
-
-
-  return `/v1/public/shares/${token}/comments/${commentId}`
+    return `/v1/public/shares/${token}/comments/${commentId}`
 }
 
 /**
  * Edita un comentario propio mediante la identidad anónima vigente o una sesión Clerk. Preserva el anclaje y aplica revisión esperada. Un 409 de revisión incluye details.current solo para el propietario.
  */
 export const editPublicShareComment = async (token: string,
-    commentId: string,
-    updatePublicCommentInput: UpdatePublicCommentInput, options?: Parameters<typeof thekeFetch>[1]): Promise<editPublicShareCommentResponse> => {
+                                             commentId: string,
+                                             updatePublicCommentInput: UpdatePublicCommentInput, options?: Parameters<typeof thekeFetch>[1]): Promise<editPublicShareCommentResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<editPublicShareCommentResponse>(getEditPublicShareCommentUrl(token,commentId),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(updatePublicCommentInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<editPublicShareCommentResponse>(getEditPublicShareCommentUrl(token, commentId),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(updatePublicCommentInput)
+        }
+    );
+}
 
 
 export type claimPublicShareCommentsResponse200 = {
-  data: ClaimPublicCommentsResponse
-  status: 200
+    data: ClaimPublicCommentsResponse
+    status: 200
 }
 
 export type claimPublicShareCommentsResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type claimPublicShareCommentsResponse403 = {
-  data: ApiErrorResponse
-  status: 403
+    data: ApiErrorResponse
+    status: 403
 }
 
 export type claimPublicShareCommentsResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type claimPublicShareCommentsResponseSuccess = (claimPublicShareCommentsResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type claimPublicShareCommentsResponseError = (claimPublicShareCommentsResponse401 | claimPublicShareCommentsResponse403 | claimPublicShareCommentsResponse404) & {
-  headers: Headers;
+export type claimPublicShareCommentsResponseError =
+    (claimPublicShareCommentsResponse401 | claimPublicShareCommentsResponse403 | claimPublicShareCommentsResponse404)
+    & {
+    headers: Headers;
 };
 
 export type claimPublicShareCommentsResponse = (claimPublicShareCommentsResponseSuccess | claimPublicShareCommentsResponseError)
@@ -2459,108 +2398,106 @@ export type claimPublicShareCommentsResponse = (claimPublicShareCommentsResponse
 export const getClaimPublicShareCommentsUrl = (token: string,) => {
 
 
-
-
-  return `/v1/public/shares/${token}/comments/claim`
+    return `/v1/public/shares/${token}/comments/claim`
 }
 
 /**
  * Vincula a la cuenta Clerk autenticada los comentarios de la cookie anónima vigente de este Compartido. Requiere Origin, JSON y CSRF si existe la cookie.
  */
 export const claimPublicShareComments = async (token: string,
-    claimPublicShareCommentsBody: ClaimPublicShareCommentsBody, options?: Parameters<typeof thekeFetch>[1]): Promise<claimPublicShareCommentsResponse> => {
+                                               claimPublicShareCommentsBody: ClaimPublicShareCommentsBody, options?: Parameters<typeof thekeFetch>[1]): Promise<claimPublicShareCommentsResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<claimPublicShareCommentsResponse>(getClaimPublicShareCommentsUrl(token),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(claimPublicShareCommentsBody)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<claimPublicShareCommentsResponse>(getClaimPublicShareCommentsUrl(token),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(claimPublicShareCommentsBody)
+        }
+    );
+}
 
 
 export type getPublicShareResourceContentResponse200 = {
-  data: Blob
-  status: 200
+    data: Blob
+    status: 200
 }
 
 export type getPublicShareResourceContentResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type getPublicShareResourceContentResponseSuccess = (getPublicShareResourceContentResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getPublicShareResourceContentResponseError = (getPublicShareResourceContentResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getPublicShareResourceContentResponse = (getPublicShareResourceContentResponseSuccess | getPublicShareResourceContentResponseError)
 
 export const getGetPublicShareResourceContentUrl = (token: string,
-    resourceId: string,
-    params?: GetPublicShareResourceContentParams,) => {
-  const normalizedParams = new URLSearchParams();
+                                                    resourceId: string,
+                                                    params?: GetPublicShareResourceContentParams,) => {
+    const normalizedParams = new URLSearchParams();
 
-  Object.entries(params || {}).forEach(([key, value]) => {
+    Object.entries(params || {}).forEach(([key, value]) => {
 
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
+        if (value !== undefined) {
+            normalizedParams.append(key, value === null ? 'null' : String(value))
+        }
+    });
 
-  const stringifiedParams = normalizedParams.toString();
+    const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/v1/public/shares/${token}/resources/${resourceId}/content?${stringifiedParams}` : `/v1/public/shares/${token}/resources/${resourceId}/content`
+    return stringifiedParams.length > 0 ? `/v1/public/shares/${token}/resources/${resourceId}/content?${stringifiedParams}` : `/v1/public/shares/${token}/resources/${resourceId}/content`
 }
 
 export const getPublicShareResourceContent = async (token: string,
-    resourceId: string,
-    params?: GetPublicShareResourceContentParams, options?: Parameters<typeof thekeFetch>[1]): Promise<getPublicShareResourceContentResponse> => {
+                                                    resourceId: string,
+                                                    params?: GetPublicShareResourceContentParams, options?: Parameters<typeof thekeFetch>[1]): Promise<getPublicShareResourceContentResponse> => {
 
-  return thekeFetch<getPublicShareResourceContentResponse>(getGetPublicShareResourceContentUrl(token,resourceId,params),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getPublicShareResourceContentResponse>(getGetPublicShareResourceContentUrl(token, resourceId, params),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type getDiagramResponse200 = {
-  data: DiagramResponse
-  status: 200
+    data: DiagramResponse
+    status: 200
 }
 
 export type getDiagramResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type getDiagramResponseSuccess = (getDiagramResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getDiagramResponseError = (getDiagramResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getDiagramResponse = (getDiagramResponseSuccess | getDiagramResponseError)
@@ -2568,44 +2505,42 @@ export type getDiagramResponse = (getDiagramResponseSuccess | getDiagramResponse
 export const getGetDiagramUrl = (id: string,) => {
 
 
-
-
-  return `/v1/diagrams/${id}`
+    return `/v1/diagrams/${id}`
 }
 
 export const getDiagram = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getDiagramResponse> => {
 
-  return thekeFetch<getDiagramResponse>(getGetDiagramUrl(id),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getDiagramResponse>(getGetDiagramUrl(id),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type renameDiagramResponse200 = {
-  data: DiagramResponse
-  status: 200
+    data: DiagramResponse
+    status: 200
 }
 
 export type renameDiagramResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type renameDiagramResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type renameDiagramResponseSuccess = (renameDiagramResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type renameDiagramResponseError = (renameDiagramResponse400 | renameDiagramResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type renameDiagramResponse = (renameDiagramResponseSuccess | renameDiagramResponseError)
@@ -2613,54 +2548,52 @@ export type renameDiagramResponse = (renameDiagramResponseSuccess | renameDiagra
 export const getRenameDiagramUrl = (id: string,) => {
 
 
-
-
-  return `/v1/diagrams/${id}`
+    return `/v1/diagrams/${id}`
 }
 
 export const renameDiagram = async (id: string,
-    diagramInput: DiagramInput, options?: Parameters<typeof thekeFetch>[1]): Promise<renameDiagramResponse> => {
+                                    diagramInput: DiagramInput, options?: Parameters<typeof thekeFetch>[1]): Promise<renameDiagramResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<renameDiagramResponse>(getRenameDiagramUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(diagramInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<renameDiagramResponse>(getRenameDiagramUrl(id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(diagramInput)
+        }
+    );
+}
 
 
 export type duplicateDiagramResponse201 = {
-  data: DiagramResponse
-  status: 201
+    data: DiagramResponse
+    status: 201
 }
 
 export type duplicateDiagramResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type duplicateDiagramResponseSuccess = (duplicateDiagramResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type duplicateDiagramResponseError = (duplicateDiagramResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type duplicateDiagramResponse = (duplicateDiagramResponseSuccess | duplicateDiagramResponseError)
@@ -2668,54 +2601,52 @@ export type duplicateDiagramResponse = (duplicateDiagramResponseSuccess | duplic
 export const getDuplicateDiagramUrl = (id: string,) => {
 
 
-
-
-  return `/v1/diagrams/${id}/duplicates`
+    return `/v1/diagrams/${id}/duplicates`
 }
 
 export const duplicateDiagram = async (id: string,
-    diagramInput?: DiagramInput, options?: Parameters<typeof thekeFetch>[1]): Promise<duplicateDiagramResponse> => {
+                                       diagramInput?: DiagramInput, options?: Parameters<typeof thekeFetch>[1]): Promise<duplicateDiagramResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<duplicateDiagramResponse>(getDuplicateDiagramUrl(id),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(diagramInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<duplicateDiagramResponse>(getDuplicateDiagramUrl(id),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(diagramInput)
+        }
+    );
+}
 
 
 export type restoreDiagramResponse201 = {
-  data: DiagramResponse
-  status: 201
+    data: DiagramResponse
+    status: 201
 }
 
 export type restoreDiagramResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type restoreDiagramResponseSuccess = (restoreDiagramResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type restoreDiagramResponseError = (restoreDiagramResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type restoreDiagramResponse = (restoreDiagramResponseSuccess | restoreDiagramResponseError)
@@ -2723,39 +2654,37 @@ export type restoreDiagramResponse = (restoreDiagramResponseSuccess | restoreDia
 export const getRestoreDiagramUrl = (id: string,) => {
 
 
-
-
-  return `/v1/diagrams/${id}/restore`
+    return `/v1/diagrams/${id}/restore`
 }
 
 export const restoreDiagram = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<restoreDiagramResponse> => {
 
-  return thekeFetch<restoreDiagramResponse>(getRestoreDiagramUrl(id),
-  {
-    ...options,
-    method: 'POST'
+    return thekeFetch<restoreDiagramResponse>(getRestoreDiagramUrl(id),
+        {
+            ...options,
+            method: 'POST'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type listRelationTypesResponse200 = {
-  data: RelationTypeListResponse
-  status: 200
+    data: RelationTypeListResponse
+    status: 200
 }
 
 export type listRelationTypesResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type listRelationTypesResponseSuccess = (listRelationTypesResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type listRelationTypesResponseError = (listRelationTypesResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type listRelationTypesResponse = (listRelationTypesResponseSuccess | listRelationTypesResponseError)
@@ -2763,49 +2692,49 @@ export type listRelationTypesResponse = (listRelationTypesResponseSuccess | list
 export const getListRelationTypesUrl = (projectId: string,) => {
 
 
-
-
-  return `/v1/projects/${projectId}/relation-types`
+    return `/v1/projects/${projectId}/relation-types`
 }
 
 export const listRelationTypes = async (projectId: string, options?: Parameters<typeof thekeFetch>[1]): Promise<listRelationTypesResponse> => {
 
-  return thekeFetch<listRelationTypesResponse>(getListRelationTypesUrl(projectId),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<listRelationTypesResponse>(getListRelationTypesUrl(projectId),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type createDiagramRelationResponse201 = {
-  data: CreateRelationResponse
-  status: 201
+    data: CreateRelationResponse
+    status: 201
 }
 
 export type createDiagramRelationResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type createDiagramRelationResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type createDiagramRelationResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type createDiagramRelationResponseSuccess = (createDiagramRelationResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type createDiagramRelationResponseError = (createDiagramRelationResponse400 | createDiagramRelationResponse404 | createDiagramRelationResponse409) & {
-  headers: Headers;
+export type createDiagramRelationResponseError =
+    (createDiagramRelationResponse400 | createDiagramRelationResponse404 | createDiagramRelationResponse409)
+    & {
+    headers: Headers;
 };
 
 export type createDiagramRelationResponse = (createDiagramRelationResponseSuccess | createDiagramRelationResponseError)
@@ -2813,54 +2742,52 @@ export type createDiagramRelationResponse = (createDiagramRelationResponseSucces
 export const getCreateDiagramRelationUrl = (id: string,) => {
 
 
-
-
-  return `/v1/diagrams/${id}/relations`
+    return `/v1/diagrams/${id}/relations`
 }
 
 export const createDiagramRelation = async (id: string,
-    createRelationInput: CreateRelationInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createDiagramRelationResponse> => {
+                                            createRelationInput: CreateRelationInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createDiagramRelationResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<createDiagramRelationResponse>(getCreateDiagramRelationUrl(id),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(createRelationInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<createDiagramRelationResponse>(getCreateDiagramRelationUrl(id),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(createRelationInput)
+        }
+    );
+}
 
 
 export type listAvailableDiagramRelationsResponse200 = {
-  data: AvailableRelationListResponse
-  status: 200
+    data: AvailableRelationListResponse
+    status: 200
 }
 
 export type listAvailableDiagramRelationsResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type listAvailableDiagramRelationsResponseSuccess = (listAvailableDiagramRelationsResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type listAvailableDiagramRelationsResponseError = (listAvailableDiagramRelationsResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type listAvailableDiagramRelationsResponse = (listAvailableDiagramRelationsResponseSuccess | listAvailableDiagramRelationsResponseError)
@@ -2868,39 +2795,37 @@ export type listAvailableDiagramRelationsResponse = (listAvailableDiagramRelatio
 export const getListAvailableDiagramRelationsUrl = (id: string,) => {
 
 
-
-
-  return `/v1/diagrams/${id}/available-relations`
+    return `/v1/diagrams/${id}/available-relations`
 }
 
 export const listAvailableDiagramRelations = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<listAvailableDiagramRelationsResponse> => {
 
-  return thekeFetch<listAvailableDiagramRelationsResponse>(getListAvailableDiagramRelationsUrl(id),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<listAvailableDiagramRelationsResponse>(getListAvailableDiagramRelationsUrl(id),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type restoreRelationResponse201 = {
-  data: RelationDetailResponse
-  status: 201
+    data: RelationDetailResponse
+    status: 201
 }
 
 export type restoreRelationResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type restoreRelationResponseSuccess = (restoreRelationResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type restoreRelationResponseError = (restoreRelationResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type restoreRelationResponse = (restoreRelationResponseSuccess | restoreRelationResponseError)
@@ -2908,39 +2833,37 @@ export type restoreRelationResponse = (restoreRelationResponseSuccess | restoreR
 export const getRestoreRelationUrl = (id: string,) => {
 
 
-
-
-  return `/v1/relations/${id}/restore`
+    return `/v1/relations/${id}/restore`
 }
 
 export const restoreRelation = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<restoreRelationResponse> => {
 
-  return thekeFetch<restoreRelationResponse>(getRestoreRelationUrl(id),
-  {
-    ...options,
-    method: 'POST'
+    return thekeFetch<restoreRelationResponse>(getRestoreRelationUrl(id),
+        {
+            ...options,
+            method: 'POST'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type getRelationResponse200 = {
-  data: RelationDetailResponse
-  status: 200
+    data: RelationDetailResponse
+    status: 200
 }
 
 export type getRelationResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type getRelationResponseSuccess = (getRelationResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getRelationResponseError = (getRelationResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getRelationResponse = (getRelationResponseSuccess | getRelationResponseError)
@@ -2948,49 +2871,49 @@ export type getRelationResponse = (getRelationResponseSuccess | getRelationRespo
 export const getGetRelationUrl = (id: string,) => {
 
 
-
-
-  return `/v1/relations/${id}`
+    return `/v1/relations/${id}`
 }
 
 export const getRelation = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getRelationResponse> => {
 
-  return thekeFetch<getRelationResponse>(getGetRelationUrl(id),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getRelationResponse>(getGetRelationUrl(id),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type updateRelationResponse200 = {
-  data: RelationDetailResponse
-  status: 200
+    data: RelationDetailResponse
+    status: 200
 }
 
 export type updateRelationResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type updateRelationResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type updateRelationResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type updateRelationResponseSuccess = (updateRelationResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type updateRelationResponseError = (updateRelationResponse400 | updateRelationResponse404 | updateRelationResponse409) & {
-  headers: Headers;
+export type updateRelationResponseError =
+    (updateRelationResponse400 | updateRelationResponse404 | updateRelationResponse409)
+    & {
+    headers: Headers;
 };
 
 export type updateRelationResponse = (updateRelationResponseSuccess | updateRelationResponseError)
@@ -2998,177 +2921,175 @@ export type updateRelationResponse = (updateRelationResponseSuccess | updateRela
 export const getUpdateRelationUrl = (id: string,) => {
 
 
-
-
-  return `/v1/relations/${id}`
+    return `/v1/relations/${id}`
 }
 
 export const updateRelation = async (id: string,
-    updateRelationInput: UpdateRelationInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateRelationResponse> => {
+                                     updateRelationInput: UpdateRelationInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateRelationResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<updateRelationResponse>(getUpdateRelationUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(updateRelationInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<updateRelationResponse>(getUpdateRelationUrl(id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(updateRelationInput)
+        }
+    );
+}
 
 
 export type getImpactResponse200 = {
-  data: ImpactResponse
-  status: 200
+    data: ImpactResponse
+    status: 200
 }
 
 export type getImpactResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type getImpactResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type getImpactResponseSuccess = (getImpactResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getImpactResponseError = (getImpactResponse400 | getImpactResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getImpactResponse = (getImpactResponseSuccess | getImpactResponseError)
 
 export const getGetImpactUrl = (entityType: 'resource' | 'project' | 'folder' | 'diagram',
-    id: string,
-    params: GetImpactParams,) => {
-  const normalizedParams = new URLSearchParams();
+                                id: string,
+                                params: GetImpactParams,) => {
+    const normalizedParams = new URLSearchParams();
 
-  Object.entries(params || {}).forEach(([key, value]) => {
+    Object.entries(params || {}).forEach(([key, value]) => {
 
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
+        if (value !== undefined) {
+            normalizedParams.append(key, value === null ? 'null' : String(value))
+        }
+    });
 
-  const stringifiedParams = normalizedParams.toString();
+    const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/v1/impacts/${entityType}/${id}?${stringifiedParams}` : `/v1/impacts/${entityType}/${id}`
+    return stringifiedParams.length > 0 ? `/v1/impacts/${entityType}/${id}?${stringifiedParams}` : `/v1/impacts/${entityType}/${id}`
 }
 
 export const getImpact = async (entityType: 'resource' | 'project' | 'folder' | 'diagram',
-    id: string,
-    params: GetImpactParams, options?: Parameters<typeof thekeFetch>[1]): Promise<getImpactResponse> => {
+                                id: string,
+                                params: GetImpactParams, options?: Parameters<typeof thekeFetch>[1]): Promise<getImpactResponse> => {
 
-  return thekeFetch<getImpactResponse>(getGetImpactUrl(entityType,id,params),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getImpactResponse>(getGetImpactUrl(entityType, id, params),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type executeImpactActionResponse201 = {
-  data: ImpactResponse
-  status: 201
+    data: ImpactResponse
+    status: 201
 }
 
 export type executeImpactActionResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type executeImpactActionResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type executeImpactActionResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type executeImpactActionResponseSuccess = (executeImpactActionResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type executeImpactActionResponseError = (executeImpactActionResponse400 | executeImpactActionResponse404 | executeImpactActionResponse409) & {
-  headers: Headers;
+export type executeImpactActionResponseError =
+    (executeImpactActionResponse400 | executeImpactActionResponse404 | executeImpactActionResponse409)
+    & {
+    headers: Headers;
 };
 
 export type executeImpactActionResponse = (executeImpactActionResponseSuccess | executeImpactActionResponseError)
 
 export const getExecuteImpactActionUrl = (entityType: 'resource' | 'project' | 'folder' | 'diagram',
-    id: string,) => {
+                                          id: string,) => {
 
 
-
-
-  return `/v1/impacts/${entityType}/${id}`
+    return `/v1/impacts/${entityType}/${id}`
 }
 
 export const executeImpactAction = async (entityType: 'resource' | 'project' | 'folder' | 'diagram',
-    id: string,
-    impactConfirmationInput: ImpactConfirmationInput, options?: Parameters<typeof thekeFetch>[1]): Promise<executeImpactActionResponse> => {
+                                          id: string,
+                                          impactConfirmationInput: ImpactConfirmationInput, options?: Parameters<typeof thekeFetch>[1]): Promise<executeImpactActionResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<executeImpactActionResponse>(getExecuteImpactActionUrl(entityType,id),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(impactConfirmationInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<executeImpactActionResponse>(getExecuteImpactActionUrl(entityType, id),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(impactConfirmationInput)
+        }
+    );
+}
 
 
 export type restoreResourceResponse201 = {
-  data: ResourceResponse
-  status: 201
+    data: ResourceResponse
+    status: 201
 }
 
 export type restoreResourceResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type restoreResourceResponseSuccess = (restoreResourceResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type restoreResourceResponseError = (restoreResourceResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type restoreResourceResponse = (restoreResourceResponseSuccess | restoreResourceResponseError)
@@ -3176,31 +3097,29 @@ export type restoreResourceResponse = (restoreResourceResponseSuccess | restoreR
 export const getRestoreResourceUrl = (id: string,) => {
 
 
-
-
-  return `/v1/resources/${id}/restore`
+    return `/v1/resources/${id}/restore`
 }
 
 export const restoreResource = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<restoreResourceResponse> => {
 
-  return thekeFetch<restoreResourceResponse>(getRestoreResourceUrl(id),
-  {
-    ...options,
-    method: 'POST'
+    return thekeFetch<restoreResourceResponse>(getRestoreResourceUrl(id),
+        {
+            ...options,
+            method: 'POST'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type listLibraryFoldersResponse200 = {
-  data: LibraryFolderListResponse
-  status: 200
+    data: LibraryFolderListResponse
+    status: 200
 }
 
 export type listLibraryFoldersResponseSuccess = (listLibraryFoldersResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -3209,39 +3128,37 @@ export type listLibraryFoldersResponse = (listLibraryFoldersResponseSuccess)
 export const getListLibraryFoldersUrl = () => {
 
 
-
-
-  return `/v1/library-folders`
+    return `/v1/library-folders`
 }
 
-export const listLibraryFolders = async ( options?: Parameters<typeof thekeFetch>[1]): Promise<listLibraryFoldersResponse> => {
+export const listLibraryFolders = async (options?: Parameters<typeof thekeFetch>[1]): Promise<listLibraryFoldersResponse> => {
 
-  return thekeFetch<listLibraryFoldersResponse>(getListLibraryFoldersUrl(),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<listLibraryFoldersResponse>(getListLibraryFoldersUrl(),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type createLibraryFolderResponse201 = {
-  data: LibraryFolderResponse
-  status: 201
+    data: LibraryFolderResponse
+    status: 201
 }
 
 export type createLibraryFolderResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type createLibraryFolderResponseSuccess = (createLibraryFolderResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type createLibraryFolderResponseError = (createLibraryFolderResponse409) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type createLibraryFolderResponse = (createLibraryFolderResponseSuccess | createLibraryFolderResponseError)
@@ -3249,53 +3166,51 @@ export type createLibraryFolderResponse = (createLibraryFolderResponseSuccess | 
 export const getCreateLibraryFolderUrl = () => {
 
 
-
-
-  return `/v1/library-folders`
+    return `/v1/library-folders`
 }
 
 export const createLibraryFolder = async (libraryFolderCreateInput: LibraryFolderCreateInput, options?: Parameters<typeof thekeFetch>[1]): Promise<createLibraryFolderResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<createLibraryFolderResponse>(getCreateLibraryFolderUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(libraryFolderCreateInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<createLibraryFolderResponse>(getCreateLibraryFolderUrl(),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(libraryFolderCreateInput)
+        }
+    );
+}
 
 
 export type renameLibraryFolderResponse200 = {
-  data: LibraryFolderResponse
-  status: 200
+    data: LibraryFolderResponse
+    status: 200
 }
 
 export type renameLibraryFolderResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type renameLibraryFolderResponseSuccess = (renameLibraryFolderResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type renameLibraryFolderResponseError = (renameLibraryFolderResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type renameLibraryFolderResponse = (renameLibraryFolderResponseSuccess | renameLibraryFolderResponseError)
@@ -3303,46 +3218,44 @@ export type renameLibraryFolderResponse = (renameLibraryFolderResponseSuccess | 
 export const getRenameLibraryFolderUrl = (id: string,) => {
 
 
-
-
-  return `/v1/library-folders/${id}`
+    return `/v1/library-folders/${id}`
 }
 
 export const renameLibraryFolder = async (id: string,
-    libraryFolderInput: LibraryFolderInput, options?: Parameters<typeof thekeFetch>[1]): Promise<renameLibraryFolderResponse> => {
+                                          libraryFolderInput: LibraryFolderInput, options?: Parameters<typeof thekeFetch>[1]): Promise<renameLibraryFolderResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<renameLibraryFolderResponse>(getRenameLibraryFolderUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(libraryFolderInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<renameLibraryFolderResponse>(getRenameLibraryFolderUrl(id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(libraryFolderInput)
+        }
+    );
+}
 
 
 export type deleteLibraryFolderResponse200 = {
-  data: DeleteLibraryFolder200
-  status: 200
+    data: DeleteLibraryFolder200
+    status: 200
 }
 
 export type deleteLibraryFolderResponseSuccess = (deleteLibraryFolderResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -3351,44 +3264,42 @@ export type deleteLibraryFolderResponse = (deleteLibraryFolderResponseSuccess)
 export const getDeleteLibraryFolderUrl = (id: string,) => {
 
 
-
-
-  return `/v1/library-folders/${id}`
+    return `/v1/library-folders/${id}`
 }
 
 export const deleteLibraryFolder = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<deleteLibraryFolderResponse> => {
 
-  return thekeFetch<deleteLibraryFolderResponse>(getDeleteLibraryFolderUrl(id),
-  {
-    ...options,
-    method: 'DELETE'
+    return thekeFetch<deleteLibraryFolderResponse>(getDeleteLibraryFolderUrl(id),
+        {
+            ...options,
+            method: 'DELETE'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type moveLibraryFolderResponse200 = {
-  data: LibraryFolderResponse
-  status: 200
+    data: LibraryFolderResponse
+    status: 200
 }
 
 export type moveLibraryFolderResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type moveLibraryFolderResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type moveLibraryFolderResponseSuccess = (moveLibraryFolderResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type moveLibraryFolderResponseError = (moveLibraryFolderResponse400 | moveLibraryFolderResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type moveLibraryFolderResponse = (moveLibraryFolderResponseSuccess | moveLibraryFolderResponseError)
@@ -3396,46 +3307,44 @@ export type moveLibraryFolderResponse = (moveLibraryFolderResponseSuccess | move
 export const getMoveLibraryFolderUrl = (id: string,) => {
 
 
-
-
-  return `/v1/library-folders/${id}/parent`
+    return `/v1/library-folders/${id}/parent`
 }
 
 export const moveLibraryFolder = async (id: string,
-    folderParentInput: FolderParentInput, options?: Parameters<typeof thekeFetch>[1]): Promise<moveLibraryFolderResponse> => {
+                                        folderParentInput: FolderParentInput, options?: Parameters<typeof thekeFetch>[1]): Promise<moveLibraryFolderResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<moveLibraryFolderResponse>(getMoveLibraryFolderUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(folderParentInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<moveLibraryFolderResponse>(getMoveLibraryFolderUrl(id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(folderParentInput)
+        }
+    );
+}
 
 
 export type moveLibraryResourcesResponse200 = {
-  data: MoveLibraryResources200
-  status: 200
+    data: MoveLibraryResources200
+    status: 200
 }
 
 export type moveLibraryResourcesResponseSuccess = (moveLibraryResourcesResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -3444,97 +3353,95 @@ export type moveLibraryResourcesResponse = (moveLibraryResourcesResponseSuccess)
 export const getMoveLibraryResourcesUrl = () => {
 
 
-
-
-  return `/v1/library-folders/resources`
+    return `/v1/library-folders/resources`
 }
 
 export const moveLibraryResources = async (libraryResourceMoveInput: LibraryResourceMoveInput, options?: Parameters<typeof thekeFetch>[1]): Promise<moveLibraryResourcesResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<moveLibraryResourcesResponse>(getMoveLibraryResourcesUrl(),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(libraryResourceMoveInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<moveLibraryResourcesResponse>(getMoveLibraryResourcesUrl(),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(libraryResourceMoveInput)
+        }
+    );
+}
 
 
 export type listResourcesResponse200 = {
-  data: ResourceListResponse
-  status: 200
+    data: ResourceListResponse
+    status: 200
 }
 
 export type listResourcesResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type listResourcesResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type listResourcesResponseSuccess = (listResourcesResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type listResourcesResponseError = (listResourcesResponse400 | listResourcesResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type listResourcesResponse = (listResourcesResponseSuccess | listResourcesResponseError)
 
 export const getListResourcesUrl = (params?: ListResourcesParams,) => {
-  const normalizedParams = new URLSearchParams();
+    const normalizedParams = new URLSearchParams();
 
-  Object.entries(params || {}).forEach(([key, value]) => {
+    Object.entries(params || {}).forEach(([key, value]) => {
 
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
+        if (value !== undefined) {
+            normalizedParams.append(key, value === null ? 'null' : String(value))
+        }
+    });
 
-  const stringifiedParams = normalizedParams.toString();
+    const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/v1/resources?${stringifiedParams}` : `/v1/resources`
+    return stringifiedParams.length > 0 ? `/v1/resources?${stringifiedParams}` : `/v1/resources`
 }
 
 export const listResources = async (params?: ListResourcesParams, options?: Parameters<typeof thekeFetch>[1]): Promise<listResourcesResponse> => {
 
-  return thekeFetch<listResourcesResponse>(getListResourcesUrl(params),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<listResourcesResponse>(getListResourcesUrl(params),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type listResourcePropertyDefinitionsResponse200 = {
-  data: ListResourcePropertyDefinitions200
-  status: 200
+    data: ListResourcePropertyDefinitions200
+    status: 200
 }
 
 export type listResourcePropertyDefinitionsResponseSuccess = (listResourcePropertyDefinitionsResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 ;
 
@@ -3543,49 +3450,49 @@ export type listResourcePropertyDefinitionsResponse = (listResourcePropertyDefin
 export const getListResourcePropertyDefinitionsUrl = () => {
 
 
-
-
-  return `/v1/resources/property-definitions`
+    return `/v1/resources/property-definitions`
 }
 
-export const listResourcePropertyDefinitions = async ( options?: Parameters<typeof thekeFetch>[1]): Promise<listResourcePropertyDefinitionsResponse> => {
+export const listResourcePropertyDefinitions = async (options?: Parameters<typeof thekeFetch>[1]): Promise<listResourcePropertyDefinitionsResponse> => {
 
-  return thekeFetch<listResourcePropertyDefinitionsResponse>(getListResourcePropertyDefinitionsUrl(),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<listResourcePropertyDefinitionsResponse>(getListResourcePropertyDefinitionsUrl(),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type updateResourceMetadataResponse200 = {
-  data: ResourceMetadataResponse
-  status: 200
+    data: ResourceMetadataResponse
+    status: 200
 }
 
 export type updateResourceMetadataResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type updateResourceMetadataResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type updateResourceMetadataResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type updateResourceMetadataResponseSuccess = (updateResourceMetadataResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type updateResourceMetadataResponseError = (updateResourceMetadataResponse400 | updateResourceMetadataResponse404 | updateResourceMetadataResponse409) & {
-  headers: Headers;
+export type updateResourceMetadataResponseError =
+    (updateResourceMetadataResponse400 | updateResourceMetadataResponse404 | updateResourceMetadataResponse409)
+    & {
+    headers: Headers;
 };
 
 export type updateResourceMetadataResponse = (updateResourceMetadataResponseSuccess | updateResourceMetadataResponseError)
@@ -3593,54 +3500,52 @@ export type updateResourceMetadataResponse = (updateResourceMetadataResponseSucc
 export const getUpdateResourceMetadataUrl = (id: string,) => {
 
 
-
-
-  return `/v1/resources/${id}/metadata`
+    return `/v1/resources/${id}/metadata`
 }
 
 export const updateResourceMetadata = async (id: string,
-    updateResourceMetadataInput: UpdateResourceMetadataInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateResourceMetadataResponse> => {
+                                             updateResourceMetadataInput: UpdateResourceMetadataInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateResourceMetadataResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<updateResourceMetadataResponse>(getUpdateResourceMetadataUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(updateResourceMetadataInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<updateResourceMetadataResponse>(getUpdateResourceMetadataUrl(id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(updateResourceMetadataInput)
+        }
+    );
+}
 
 
 export type getResourceReferencesResponse200 = {
-  data: ResourceReferencesResponse
-  status: 200
+    data: ResourceReferencesResponse
+    status: 200
 }
 
 export type getResourceReferencesResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type getResourceReferencesResponseSuccess = (getResourceReferencesResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getResourceReferencesResponseError = (getResourceReferencesResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getResourceReferencesResponse = (getResourceReferencesResponseSuccess | getResourceReferencesResponseError)
@@ -3648,44 +3553,42 @@ export type getResourceReferencesResponse = (getResourceReferencesResponseSucces
 export const getGetResourceReferencesUrl = (id: string,) => {
 
 
-
-
-  return `/v1/resources/${id}/references`
+    return `/v1/resources/${id}/references`
 }
 
 export const getResourceReferences = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getResourceReferencesResponse> => {
 
-  return thekeFetch<getResourceReferencesResponse>(getGetResourceReferencesUrl(id),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getResourceReferencesResponse>(getGetResourceReferencesUrl(id),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type getResourceResponse200 = {
-  data: ResourceResponse
-  status: 200
+    data: ResourceResponse
+    status: 200
 }
 
 export type getResourceResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type getResourceResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type getResourceResponseSuccess = (getResourceResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getResourceResponseError = (getResourceResponse401 | getResourceResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getResourceResponse = (getResourceResponseSuccess | getResourceResponseError)
@@ -3693,54 +3596,54 @@ export type getResourceResponse = (getResourceResponseSuccess | getResourceRespo
 export const getGetResourceUrl = (id: string,) => {
 
 
-
-
-  return `/v1/resources/${id}`
+    return `/v1/resources/${id}`
 }
 
 export const getResource = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<getResourceResponse> => {
 
-  return thekeFetch<getResourceResponse>(getGetResourceUrl(id),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getResourceResponse>(getGetResourceUrl(id),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type renameFileResourceResponse200 = {
-  data: ResourceResponse
-  status: 200
+    data: ResourceResponse
+    status: 200
 }
 
 export type renameFileResourceResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type renameFileResourceResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type renameFileResourceResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type renameFileResourceResponse409 = {
-  data: ApiErrorResponse
-  status: 409
+    data: ApiErrorResponse
+    status: 409
 }
 
 export type renameFileResourceResponseSuccess = (renameFileResourceResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type renameFileResourceResponseError = (renameFileResourceResponse400 | renameFileResourceResponse401 | renameFileResourceResponse404 | renameFileResourceResponse409) & {
-  headers: Headers;
+export type renameFileResourceResponseError =
+    (renameFileResourceResponse400 | renameFileResourceResponse401 | renameFileResourceResponse404 | renameFileResourceResponse409)
+    & {
+    headers: Headers;
 };
 
 export type renameFileResourceResponse = (renameFileResourceResponseSuccess | renameFileResourceResponseError)
@@ -3748,118 +3651,118 @@ export type renameFileResourceResponse = (renameFileResourceResponseSuccess | re
 export const getRenameFileResourceUrl = (id: string,) => {
 
 
-
-
-  return `/v1/resources/${id}`
+    return `/v1/resources/${id}`
 }
 
 export const renameFileResource = async (id: string,
-    renameFileResourceInput: RenameFileResourceInput, options?: Parameters<typeof thekeFetch>[1]): Promise<renameFileResourceResponse> => {
+                                         renameFileResourceInput: RenameFileResourceInput, options?: Parameters<typeof thekeFetch>[1]): Promise<renameFileResourceResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<renameFileResourceResponse>(getRenameFileResourceUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(renameFileResourceInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<renameFileResourceResponse>(getRenameFileResourceUrl(id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(renameFileResourceInput)
+        }
+    );
+}
 
 
 export type getResourceAccessResponse200 = {
-  data: ResourceAccessResponse
-  status: 200
+    data: ResourceAccessResponse
+    status: 200
 }
 
 export type getResourceAccessResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type getResourceAccessResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type getResourceAccessResponseSuccess = (getResourceAccessResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getResourceAccessResponseError = (getResourceAccessResponse401 | getResourceAccessResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getResourceAccessResponse = (getResourceAccessResponseSuccess | getResourceAccessResponseError)
 
 export const getGetResourceAccessUrl = (id: string,
-    params?: GetResourceAccessParams,) => {
-  const normalizedParams = new URLSearchParams();
+                                        params?: GetResourceAccessParams,) => {
+    const normalizedParams = new URLSearchParams();
 
-  Object.entries(params || {}).forEach(([key, value]) => {
+    Object.entries(params || {}).forEach(([key, value]) => {
 
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
+        if (value !== undefined) {
+            normalizedParams.append(key, value === null ? 'null' : String(value))
+        }
+    });
 
-  const stringifiedParams = normalizedParams.toString();
+    const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/v1/resources/${id}/access?${stringifiedParams}` : `/v1/resources/${id}/access`
+    return stringifiedParams.length > 0 ? `/v1/resources/${id}/access?${stringifiedParams}` : `/v1/resources/${id}/access`
 }
 
 export const getResourceAccess = async (id: string,
-    params?: GetResourceAccessParams, options?: Parameters<typeof thekeFetch>[1]): Promise<getResourceAccessResponse> => {
+                                        params?: GetResourceAccessParams, options?: Parameters<typeof thekeFetch>[1]): Promise<getResourceAccessResponse> => {
 
-  return thekeFetch<getResourceAccessResponse>(getGetResourceAccessUrl(id,params),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getResourceAccessResponse>(getGetResourceAccessUrl(id, params),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type updateResourceAccessibilityResponse200 = {
-  data: ResourceResponse
-  status: 200
+    data: ResourceResponse
+    status: 200
 }
 
 export type updateResourceAccessibilityResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type updateResourceAccessibilityResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type updateResourceAccessibilityResponse404 = {
-  data: NotFoundResponse
-  status: 404
+    data: NotFoundResponse
+    status: 404
 }
 
 export type updateResourceAccessibilityResponseSuccess = (updateResourceAccessibilityResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type updateResourceAccessibilityResponseError = (updateResourceAccessibilityResponse400 | updateResourceAccessibilityResponse401 | updateResourceAccessibilityResponse404) & {
-  headers: Headers;
+export type updateResourceAccessibilityResponseError =
+    (updateResourceAccessibilityResponse400 | updateResourceAccessibilityResponse401 | updateResourceAccessibilityResponse404)
+    & {
+    headers: Headers;
 };
 
 export type updateResourceAccessibilityResponse = (updateResourceAccessibilityResponseSuccess | updateResourceAccessibilityResponseError)
@@ -3867,54 +3770,52 @@ export type updateResourceAccessibilityResponse = (updateResourceAccessibilityRe
 export const getUpdateResourceAccessibilityUrl = (id: string,) => {
 
 
-
-
-  return `/v1/resources/${id}/accessibility`
+    return `/v1/resources/${id}/accessibility`
 }
 
 export const updateResourceAccessibility = async (id: string,
-    accessibilityInput: AccessibilityInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateResourceAccessibilityResponse> => {
+                                                  accessibilityInput: AccessibilityInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateResourceAccessibilityResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<updateResourceAccessibilityResponse>(getUpdateResourceAccessibilityUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(accessibilityInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<updateResourceAccessibilityResponse>(getUpdateResourceAccessibilityUrl(id),
+        {
+            ...options,
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(accessibilityInput)
+        }
+    );
+}
 
 
 export type getAiStatusResponse200 = {
-  data: AiStatusResponse
-  status: 200
+    data: AiStatusResponse
+    status: 200
 }
 
 export type getAiStatusResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type getAiStatusResponseSuccess = (getAiStatusResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type getAiStatusResponseError = (getAiStatusResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type getAiStatusResponse = (getAiStatusResponseSuccess | getAiStatusResponseError)
@@ -3922,44 +3823,42 @@ export type getAiStatusResponse = (getAiStatusResponseSuccess | getAiStatusRespo
 export const getGetAiStatusUrl = () => {
 
 
-
-
-  return `/v1/ai/status`
+    return `/v1/ai/status`
 }
 
-export const getAiStatus = async ( options?: Parameters<typeof thekeFetch>[1]): Promise<getAiStatusResponse> => {
+export const getAiStatus = async (options?: Parameters<typeof thekeFetch>[1]): Promise<getAiStatusResponse> => {
 
-  return thekeFetch<getAiStatusResponse>(getGetAiStatusUrl(),
-  {
-    ...options,
-    method: 'GET'
+    return thekeFetch<getAiStatusResponse>(getGetAiStatusUrl(),
+        {
+            ...options,
+            method: 'GET'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type updateAiConsentResponse200 = {
-  data: AiStatusResponse
-  status: 200
+    data: AiStatusResponse
+    status: 200
 }
 
 export type updateAiConsentResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type updateAiConsentResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type updateAiConsentResponseSuccess = (updateAiConsentResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type updateAiConsentResponseError = (updateAiConsentResponse400 | updateAiConsentResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type updateAiConsentResponse = (updateAiConsentResponseSuccess | updateAiConsentResponseError)
@@ -3967,53 +3866,51 @@ export type updateAiConsentResponse = (updateAiConsentResponseSuccess | updateAi
 export const getUpdateAiConsentUrl = () => {
 
 
-
-
-  return `/v1/ai/consent`
+    return `/v1/ai/consent`
 }
 
 export const updateAiConsent = async (aiConsentInput: AiConsentInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateAiConsentResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<updateAiConsentResponse>(getUpdateAiConsentUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(aiConsentInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<updateAiConsentResponse>(getUpdateAiConsentUrl(),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(aiConsentInput)
+        }
+    );
+}
 
 
 export type revokeAiConsentResponse200 = {
-  data: AiStatusResponse
-  status: 200
+    data: AiStatusResponse
+    status: 200
 }
 
 export type revokeAiConsentResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type revokeAiConsentResponseSuccess = (revokeAiConsentResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type revokeAiConsentResponseError = (revokeAiConsentResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type revokeAiConsentResponse = (revokeAiConsentResponseSuccess | revokeAiConsentResponseError)
@@ -4021,44 +3918,42 @@ export type revokeAiConsentResponse = (revokeAiConsentResponseSuccess | revokeAi
 export const getRevokeAiConsentUrl = () => {
 
 
-
-
-  return `/v1/ai/revoke-consent`
+    return `/v1/ai/revoke-consent`
 }
 
-export const revokeAiConsent = async ( options?: Parameters<typeof thekeFetch>[1]): Promise<revokeAiConsentResponse> => {
+export const revokeAiConsent = async (options?: Parameters<typeof thekeFetch>[1]): Promise<revokeAiConsentResponse> => {
 
-  return thekeFetch<revokeAiConsentResponse>(getRevokeAiConsentUrl(),
-  {
-    ...options,
-    method: 'POST'
+    return thekeFetch<revokeAiConsentResponse>(getRevokeAiConsentUrl(),
+        {
+            ...options,
+            method: 'POST'
 
 
-  }
-);}
-
+        }
+    );
+}
 
 
 export type updateAiSettingsResponse200 = {
-  data: AiStatusResponse
-  status: 200
+    data: AiStatusResponse
+    status: 200
 }
 
 export type updateAiSettingsResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type updateAiSettingsResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type updateAiSettingsResponseSuccess = (updateAiSettingsResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type updateAiSettingsResponseError = (updateAiSettingsResponse400 | updateAiSettingsResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type updateAiSettingsResponse = (updateAiSettingsResponseSuccess | updateAiSettingsResponseError)
@@ -4066,58 +3961,56 @@ export type updateAiSettingsResponse = (updateAiSettingsResponseSuccess | update
 export const getUpdateAiSettingsUrl = () => {
 
 
-
-
-  return `/v1/ai/settings`
+    return `/v1/ai/settings`
 }
 
 export const updateAiSettings = async (aiSettingsInput: AiSettingsInput, options?: Parameters<typeof thekeFetch>[1]): Promise<updateAiSettingsResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<updateAiSettingsResponse>(getUpdateAiSettingsUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(aiSettingsInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<updateAiSettingsResponse>(getUpdateAiSettingsUrl(),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(aiSettingsInput)
+        }
+    );
+}
 
 
 export type suggestAiRelationResponse200 = {
-  data: RelationSuggestionResponse
-  status: 200
+    data: RelationSuggestionResponse
+    status: 200
 }
 
 export type suggestAiRelationResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type suggestAiRelationResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type suggestAiRelationResponseSuccess = (suggestAiRelationResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type suggestAiRelationResponseError = (suggestAiRelationResponse400 | suggestAiRelationResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type suggestAiRelationResponse = (suggestAiRelationResponseSuccess | suggestAiRelationResponseError)
@@ -4125,58 +4018,58 @@ export type suggestAiRelationResponse = (suggestAiRelationResponseSuccess | sugg
 export const getSuggestAiRelationUrl = () => {
 
 
-
-
-  return `/v1/ai/relation-suggestions`
+    return `/v1/ai/relation-suggestions`
 }
 
 export const suggestAiRelation = async (relationSuggestionInput: RelationSuggestionInput, options?: Parameters<typeof thekeFetch>[1]): Promise<suggestAiRelationResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<suggestAiRelationResponse>(getSuggestAiRelationUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(relationSuggestionInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<suggestAiRelationResponse>(getSuggestAiRelationUrl(),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(relationSuggestionInput)
+        }
+    );
+}
 
 
 export type prepareAiGroupGuidanceResponse201 = {
-  data: AiScopeResponse
-  status: 201
+    data: AiScopeResponse
+    status: 201
 }
 
 export type prepareAiGroupGuidanceResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type prepareAiGroupGuidanceResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type prepareAiGroupGuidanceResponseSuccess = (prepareAiGroupGuidanceResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type prepareAiGroupGuidanceResponseError = (prepareAiGroupGuidanceResponse400 | prepareAiGroupGuidanceResponse401) & {
-  headers: Headers;
+export type prepareAiGroupGuidanceResponseError =
+    (prepareAiGroupGuidanceResponse400 | prepareAiGroupGuidanceResponse401)
+    & {
+    headers: Headers;
 };
 
 export type prepareAiGroupGuidanceResponse = (prepareAiGroupGuidanceResponseSuccess | prepareAiGroupGuidanceResponseError)
@@ -4184,58 +4077,58 @@ export type prepareAiGroupGuidanceResponse = (prepareAiGroupGuidanceResponseSucc
 export const getPrepareAiGroupGuidanceUrl = () => {
 
 
-
-
-  return `/v1/ai/group-guidance/prepare`
+    return `/v1/ai/group-guidance/prepare`
 }
 
 export const prepareAiGroupGuidance = async (aiGroupScopeInput: AiGroupScopeInput, options?: Parameters<typeof thekeFetch>[1]): Promise<prepareAiGroupGuidanceResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<prepareAiGroupGuidanceResponse>(getPrepareAiGroupGuidanceUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(aiGroupScopeInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<prepareAiGroupGuidanceResponse>(getPrepareAiGroupGuidanceUrl(),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(aiGroupScopeInput)
+        }
+    );
+}
 
 
 export type prepareAiDiagramReviewResponse201 = {
-  data: AiScopeResponse
-  status: 201
+    data: AiScopeResponse
+    status: 201
 }
 
 export type prepareAiDiagramReviewResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type prepareAiDiagramReviewResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type prepareAiDiagramReviewResponseSuccess = (prepareAiDiagramReviewResponse201) & {
-  headers: Headers;
+    headers: Headers;
 };
-export type prepareAiDiagramReviewResponseError = (prepareAiDiagramReviewResponse400 | prepareAiDiagramReviewResponse401) & {
-  headers: Headers;
+export type prepareAiDiagramReviewResponseError =
+    (prepareAiDiagramReviewResponse400 | prepareAiDiagramReviewResponse401)
+    & {
+    headers: Headers;
 };
 
 export type prepareAiDiagramReviewResponse = (prepareAiDiagramReviewResponseSuccess | prepareAiDiagramReviewResponseError)
@@ -4243,58 +4136,56 @@ export type prepareAiDiagramReviewResponse = (prepareAiDiagramReviewResponseSucc
 export const getPrepareAiDiagramReviewUrl = () => {
 
 
-
-
-  return `/v1/ai/diagram-review/prepare`
+    return `/v1/ai/diagram-review/prepare`
 }
 
 export const prepareAiDiagramReview = async (aiDiagramScopeInput: AiDiagramScopeInput, options?: Parameters<typeof thekeFetch>[1]): Promise<prepareAiDiagramReviewResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<prepareAiDiagramReviewResponse>(getPrepareAiDiagramReviewUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(aiDiagramScopeInput)
-  }
-);}
-
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<prepareAiDiagramReviewResponse>(getPrepareAiDiagramReviewUrl(),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(aiDiagramScopeInput)
+        }
+    );
+}
 
 
 export type preflightAiCheckResponse200 = {
-  data: AiPreflightResponse
-  status: 200
+    data: AiPreflightResponse
+    status: 200
 }
 
 export type preflightAiCheckResponse400 = {
-  data: BadRequestResponse
-  status: 400
+    data: BadRequestResponse
+    status: 400
 }
 
 export type preflightAiCheckResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
+    data: UnauthorizedResponse
+    status: 401
 }
 
 export type preflightAiCheckResponseSuccess = (preflightAiCheckResponse200) & {
-  headers: Headers;
+    headers: Headers;
 };
 export type preflightAiCheckResponseError = (preflightAiCheckResponse400 | preflightAiCheckResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
 export type preflightAiCheckResponse = (preflightAiCheckResponseSuccess | preflightAiCheckResponseError)
@@ -4302,32 +4193,31 @@ export type preflightAiCheckResponse = (preflightAiCheckResponseSuccess | prefli
 export const getPreflightAiCheckUrl = () => {
 
 
-
-
-  return `/v1/ai/preflight-check`
+    return `/v1/ai/preflight-check`
 }
 
 export const preflightAiCheck = async (aiPreflightInput: AiPreflightInput, options?: Parameters<typeof thekeFetch>[1]): Promise<preflightAiCheckResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return thekeFetch<preflightAiCheckResponse>(getPreflightAiCheckUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(aiPreflightInput)
-  }
-);}
+        if (!h) return {};
+        if (h instanceof Headers) return Object.fromEntries(h.entries());
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+            );
+        }
+        const headers: Record<string, string | readonly string[]> = {};
+        for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+            if (value !== undefined) headers[name] = value;
+        }
+        return headers;
+    };
+    return thekeFetch<preflightAiCheckResponse>(getPreflightAiCheckUrl(),
+        {
+            ...options,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', ...getHeaders(options?.headers)},
+            body: JSON.stringify(aiPreflightInput)
+        }
+    );
+}

@@ -9,6 +9,6 @@ export type MembershipRole = typeof MembershipRole[keyof typeof MembershipRole];
 
 
 export const MembershipRole = {
-  owner: 'owner',
-  member: 'member',
+    owner: 'owner',
+    member: 'member',
 } as const;

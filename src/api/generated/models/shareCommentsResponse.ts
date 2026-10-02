@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ShareCommentsResponseData } from './shareCommentsResponseData';
+import type {ShareCommentsResponseData} from './shareCommentsResponseData';
 
 export interface ShareCommentsResponse {
-  data: ShareCommentsResponseData;
+    data: ShareCommentsResponseData;
 }

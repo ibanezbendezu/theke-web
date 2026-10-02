@@ -1,11 +1,11 @@
-import { type Node as FlowNode, type Edge } from '@xyflow/react';
+import {type Node as FlowNode, type Edge} from '@xyflow/react';
 
 export const initialNodes: FlowNode[] = [
     {
         id: '1',
         type: 'default',
-        position: { x: 250, y: 100 },
-        data: { label: '👋 ¡Bienvenido a tu nuevo lienzo!' },
+        position: {x: 250, y: 100},
+        data: {label: '👋 ¡Bienvenido a tu nuevo lienzo!'},
         style: {
             backgroundColor: 'var(--color-surface)',
             color: 'var(--color-on-background)',
@@ -19,7 +19,7 @@ export const initialNodes: FlowNode[] = [
     {
         id: 'media-1',
         type: 'media', // Llamamos a nuestro componente personalizado
-        position: { x: 100, y: 500 },
+        position: {x: 100, y: 500},
         data: {
             label: 'Demo de Interfaz.mp4',
             type: 'video',
@@ -29,7 +29,7 @@ export const initialNodes: FlowNode[] = [
     {
         id: 'media-2',
         type: 'media',
-        position: { x: 450, y: 500 },
+        position: {x: 450, y: 500},
         data: {
             label: 'Referencia Diseño.jpg',
             type: 'image',
@@ -39,7 +39,7 @@ export const initialNodes: FlowNode[] = [
     {
         id: 'text-1',
         type: 'text',
-        position: { x: 100, y: 100 },
+        position: {x: 100, y: 100},
         data: {
             text: 'Arquitectura del Proyecto 🚀\n\nEste es un lienzo de prueba. Puedes hacer clic aquí y editar este texto como si fuera un documento de Notion. Las cajas crecerán automáticamente hacia abajo.',
         },
@@ -47,7 +47,7 @@ export const initialNodes: FlowNode[] = [
     {
         id: 'shape-rect',
         type: 'shape',
-        position: { x: -400, y: 300 },
+        position: {x: -400, y: 300},
         // React Flow nos permite definir un ancho/alto inicial
         width: 300,
         height: 60,
@@ -60,7 +60,7 @@ export const initialNodes: FlowNode[] = [
     {
         id: 'shape-triangle',
         type: 'shape',
-        position: { x: -350, y: 400 },
+        position: {x: -350, y: 400},
         width: 100,
         height: 100,
         data: {
@@ -72,7 +72,7 @@ export const initialNodes: FlowNode[] = [
     {
         id: 'shape-line',
         type: 'shape',
-        position: { x: -400, y: 550 },
+        position: {x: -400, y: 550},
         width: 300,
         height: 20, // Altura del contenedor, la línea en sí mide 4px
         data: {
@@ -82,7 +82,7 @@ export const initialNodes: FlowNode[] = [
     {
         id: 'doc-1',
         type: 'document',
-        position: { x: 100, y: 700 },
+        position: {x: 100, y: 700},
         data: {
             filename: 'Reporte_Matricula_Web_2026',
             extension: 'pdf',
@@ -92,7 +92,7 @@ export const initialNodes: FlowNode[] = [
     {
         id: 'audio-1',
         type: 'audio',
-        position: { x: 400, y: 700 },
+        position: {x: 400, y: 700},
         data: {
             title: 'Grabación Sesión Piano Jazz',
             type: 'music',
@@ -102,7 +102,7 @@ export const initialNodes: FlowNode[] = [
     {
         id: 'link-1',
         type: 'link',
-        position: { x: 100, y: 850 },
+        position: {x: 100, y: 850},
         data: {
             title: 'Filtros y Scene Switcher Avanzado',
             description: 'Documentación oficial para configurar flujos automatizados de transmisión y ruteo.',

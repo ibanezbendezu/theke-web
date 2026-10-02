@@ -6,5 +6,5 @@
  */
 
 export interface ShareCommentsInput {
-  enabled: boolean;
+    enabled: boolean;
 }

@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ApiError } from './apiError';
+import type {ApiError} from './apiError';
 
 export interface ApiErrorResponse {
-  error: ApiError;
+    error: ApiError;
 }

@@ -9,12 +9,12 @@ export type UploadStatus = typeof UploadStatus[keyof typeof UploadStatus];
 
 
 export const UploadStatus = {
-  initiated: 'initiated',
-  finalizing: 'finalizing',
-  uploaded: 'uploaded',
-  scanning: 'scanning',
-  ready: 'ready',
-  rejected: 'rejected',
-  failed: 'failed',
-  cancelled: 'cancelled',
+    initiated: 'initiated',
+    finalizing: 'finalizing',
+    uploaded: 'uploaded',
+    scanning: 'scanning',
+    ready: 'ready',
+    rejected: 'rejected',
+    failed: 'failed',
+    cancelled: 'cancelled',
 } as const;

@@ -5,4 +5,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type ResourceProperties = {[key: string]: string | number | boolean | string[]};
+export type ResourceProperties = { [key: string]: string | number | boolean | string[] };

@@ -6,13 +6,13 @@
  */
 
 export interface PublicLayoutEdge {
-  id: string;
-  relationId?: string;
-  source: string;
-  target: string;
-  label?: string;
-  offsetX?: number;
-  offsetY?: number;
-  sourceHandle?: string;
-  targetHandle?: string;
+    id: string;
+    relationId?: string;
+    source: string;
+    target: string;
+    label?: string;
+    offsetX?: number;
+    offsetY?: number;
+    sourceHandle?: string;
+    targetHandle?: string;
 }

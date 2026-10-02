@@ -4,10 +4,10 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { AiStatusProviderAvailabilityReason } from './aiStatusProviderAvailabilityReason';
+import type {AiStatusProviderAvailabilityReason} from './aiStatusProviderAvailabilityReason';
 
 export type AiStatusProviderAvailability = {
-  available: boolean;
-  /** @nullable */
-  reason: AiStatusProviderAvailabilityReason;
+    available: boolean;
+    /** @nullable */
+    reason: AiStatusProviderAvailabilityReason;
 };

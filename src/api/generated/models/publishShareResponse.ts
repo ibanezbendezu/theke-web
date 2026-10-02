@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { PublishShareResult } from './publishShareResult';
+import type {PublishShareResult} from './publishShareResult';
 
 export interface PublishShareResponse {
-  data: PublishShareResult;
+    data: PublishShareResult;
 }

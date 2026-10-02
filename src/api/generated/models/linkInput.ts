@@ -6,6 +6,6 @@
  */
 
 export interface LinkInput {
-  /** @maxLength 2048 */
-  url: string;
+    /** @maxLength 2048 */
+    url: string;
 }

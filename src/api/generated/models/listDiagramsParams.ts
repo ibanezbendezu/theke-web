@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ListDiagramsStatus } from './listDiagramsStatus';
+import type {ListDiagramsStatus} from './listDiagramsStatus';
 
 export type ListDiagramsParams = {
-status?: ListDiagramsStatus;
+    status?: ListDiagramsStatus;
 };

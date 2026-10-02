@@ -6,10 +6,10 @@
  */
 
 export interface ProjectInput {
-  /**
+    /**
      * @minLength 1
      * @maxLength 120
      */
-  name: string;
-  collectionFolderId?: string;
+    name: string;
+    collectionFolderId?: string;
 }

@@ -4,24 +4,24 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ImpactAction } from './impactAction';
-import type { ImpactAffected } from './impactAffected';
-import type { ImpactEntityType } from './impactEntityType';
-import type { ImpactRecommendedAction } from './impactRecommendedAction';
+import type {ImpactAction} from './impactAction';
+import type {ImpactAffected} from './impactAffected';
+import type {ImpactEntityType} from './impactEntityType';
+import type {ImpactRecommendedAction} from './impactRecommendedAction';
 
 export interface Impact {
-  entityType: ImpactEntityType;
-  entityId: string;
-  entityName: string;
-  action: ImpactAction;
-  state: string;
-  affected: ImpactAffected;
-  locations: string[];
-  consequences: string[];
-  /** @nullable */
-  recommendedAction: ImpactRecommendedAction;
-  deletionAllowed: boolean;
-  confirmationPhrase: string;
-  impactVersion: string;
-  purgeAfter?: string;
+    entityType: ImpactEntityType;
+    entityId: string;
+    entityName: string;
+    action: ImpactAction;
+    state: string;
+    affected: ImpactAffected;
+    locations: string[];
+    consequences: string[];
+    /** @nullable */
+    recommendedAction: ImpactRecommendedAction;
+    deletionAllowed: boolean;
+    confirmationPhrase: string;
+    impactVersion: string;
+    purgeAfter?: string;
 }

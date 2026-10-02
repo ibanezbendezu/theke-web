@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/utils';
+import {cn} from '../../lib/utils';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
@@ -8,7 +8,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant = 'ghost', size = 'sm', icon: Icon, children, ...props }, ref) => {
+    ({className, variant = 'ghost', size = 'sm', icon: Icon, children, ...props}, ref) => {
         return (
             <button
                 ref={ref}
@@ -27,7 +27,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 )}
                 {...props}
             >
-                {Icon && <Icon size={16} strokeWidth={2} />}
+                {Icon && <Icon size={16} strokeWidth={2}/>}
                 {children}
             </button>
         );

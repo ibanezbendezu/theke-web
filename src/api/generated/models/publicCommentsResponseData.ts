@@ -4,13 +4,13 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { PublicComment } from './publicComment';
-import type { PublicCommentsResponseDataIdentity } from './publicCommentsResponseDataIdentity';
+import type {PublicComment} from './publicComment';
+import type {PublicCommentsResponseDataIdentity} from './publicCommentsResponseDataIdentity';
 
 export type PublicCommentsResponseData = {
-  /** @nullable */
-  identity: PublicCommentsResponseDataIdentity;
-  /** @nullable */
-  csrfToken: string | null;
-  comments: PublicComment[];
+    /** @nullable */
+    identity: PublicCommentsResponseDataIdentity;
+    /** @nullable */
+    csrfToken: string | null;
+    comments: PublicComment[];
 };

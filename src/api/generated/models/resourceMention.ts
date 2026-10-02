@@ -4,23 +4,23 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ResourceMentionResolution } from './resourceMentionResolution';
+import type {ResourceMentionResolution} from './resourceMentionResolution';
 
 export interface ResourceMention {
-  id: string;
-  sourceResourceId: string;
-  sourceVersionId: string;
-  /** @nullable */
-  targetResourceId: string | null;
-  rawTarget: string;
-  /** @nullable */
-  displayText: string | null;
-  /** @nullable */
-  anchor: string | null;
-  startOffset: number;
-  endOffset: number;
-  resolution: ResourceMentionResolution;
-  /** @nullable */
-  targetTitle?: string | null;
-  sourceTitle?: string;
+    id: string;
+    sourceResourceId: string;
+    sourceVersionId: string;
+    /** @nullable */
+    targetResourceId: string | null;
+    rawTarget: string;
+    /** @nullable */
+    displayText: string | null;
+    /** @nullable */
+    anchor: string | null;
+    startOffset: number;
+    endOffset: number;
+    resolution: ResourceMentionResolution;
+    /** @nullable */
+    targetTitle?: string | null;
+    sourceTitle?: string;
 }

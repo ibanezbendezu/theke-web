@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { MoveLibraryResources200DataItem } from './moveLibraryResources200DataItem';
+import type {MoveLibraryResources200DataItem} from './moveLibraryResources200DataItem';
 
 export type MoveLibraryResources200 = {
-  data?: MoveLibraryResources200DataItem[];
+    data?: MoveLibraryResources200DataItem[];
 };

@@ -4,17 +4,17 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { PublicCommentAnchor } from './publicCommentAnchor';
+import type {PublicCommentAnchor} from './publicCommentAnchor';
 
 export interface PublicComment {
-  id: string;
-  displayName: string;
-  content: string;
-  anchor: PublicCommentAnchor;
-  createdAt: string;
-  /** @nullable */
-  editedAt: string | null;
-  /** @minimum 1 */
-  revision: number;
-  editable: boolean;
+    id: string;
+    displayName: string;
+    content: string;
+    anchor: PublicCommentAnchor;
+    createdAt: string;
+    /** @nullable */
+    editedAt: string | null;
+    /** @minimum 1 */
+    revision: number;
+    editable: boolean;
 }

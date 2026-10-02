@@ -9,6 +9,6 @@ export type ImpactConfirmationInputAction = typeof ImpactConfirmationInputAction
 
 
 export const ImpactConfirmationInputAction = {
-  archive: 'archive',
-  delete: 'delete',
+    archive: 'archive',
+    delete: 'delete',
 } as const;

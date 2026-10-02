@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { Folder } from './folder';
+import type {Folder} from './folder';
 
 export interface FolderResponse {
-  data: Folder;
+    data: Folder;
 }

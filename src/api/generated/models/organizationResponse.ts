@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { Organization } from './organization';
+import type {Organization} from './organization';
 
 export interface OrganizationResponse {
-  data: Organization;
+    data: Organization;
 }

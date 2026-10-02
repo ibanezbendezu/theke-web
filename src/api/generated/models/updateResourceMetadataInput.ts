@@ -4,20 +4,20 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ResourcePropertyInput } from './resourcePropertyInput';
+import type {ResourcePropertyInput} from './resourcePropertyInput';
 
 export interface UpdateResourceMetadataInput {
-  /**
+    /**
      * @maxItems 20
      * @items.maxLength 80
      */
-  aliases: string[];
-  /**
+    aliases: string[];
+    /**
      * @maxItems 30
      * @items.maxLength 80
      */
-  tags: string[];
-  /** @maxItems 30 */
-  properties: ResourcePropertyInput[];
-  expectedUpdatedAt: string;
+    tags: string[];
+    /** @maxItems 30 */
+    properties: ResourcePropertyInput[];
+    expectedUpdatedAt: string;
 }

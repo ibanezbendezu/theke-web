@@ -6,6 +6,6 @@
  */
 
 export interface AiGroupScopeInput {
-  diagramId: string;
-  groupId: string;
+    diagramId: string;
+    groupId: string;
 }

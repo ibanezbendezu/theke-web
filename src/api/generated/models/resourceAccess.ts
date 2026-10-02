@@ -4,10 +4,10 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ResourceAccessMode } from './resourceAccessMode';
+import type {ResourceAccessMode} from './resourceAccessMode';
 
 export interface ResourceAccess {
-  url: string;
-  expiresIn: number;
-  mode: ResourceAccessMode;
+    url: string;
+    expiresIn: number;
+    mode: ResourceAccessMode;
 }

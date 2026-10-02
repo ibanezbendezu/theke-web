@@ -1,6 +1,6 @@
-import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
-import { cn } from '../../../lib/utils';
-import { useCanvasStore } from '../../../store/useCanvasStore';
+import {Handle, Position, type NodeProps, type Node} from '@xyflow/react';
+import {cn} from '../../../lib/utils';
+import {useCanvasStore} from '../../../store/useCanvasStore';
 
 // Definimos los datos del nodo
 export type TextNodeData = {
@@ -10,7 +10,7 @@ export type TextNodeData = {
 
 export type TextNodeType = Node<TextNodeData, 'text'>;
 
-export function TextNode({ id, data, selected }: NodeProps<TextNodeType>) {
+export function TextNode({id, data, selected}: NodeProps<TextNodeType>) {
     const updateNodeData = useCanvasStore(state => state.updateNodeData);
     const text = data.text ?? '';
 
@@ -25,7 +25,7 @@ export function TextNode({ id, data, selected }: NodeProps<TextNodeType>) {
             <textarea
                 autoFocus={!data.text} // <--- ¡Esta es la magia UX! Si está vacío, enfoca.
                 value={text}
-                onChange={(e) => updateNodeData(id, { text: e.target.value })}
+                onChange={(e) => updateNodeData(id, {text: e.target.value})}
                 placeholder={data.placeholder || "Escribe algo..."}
                 rows={Math.max(1, rows)}
                 className="w-full bg-transparent resize-none outline-none text-on-background font-sans text-base leading-relaxed nodrag nopan overflow-hidden"

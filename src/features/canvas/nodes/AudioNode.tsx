@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
-import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
-import { Mic, Music, MoreHorizontal, Play, Pause, Volume2, VolumeX } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import {useState, useRef, useEffect} from 'react';
+import {Handle, Position, type NodeProps, type Node} from '@xyflow/react';
+import {Mic, Music, MoreHorizontal, Play, Pause, Volume2, VolumeX} from 'lucide-react';
+import {cn} from '../../../lib/utils';
 
 export type AudioNodeData = {
     title: string;
@@ -19,7 +19,7 @@ const formatTime = (time: number) => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
-export function AudioNode({ data, selected }: NodeProps<AudioNodeType>) {
+export function AudioNode({data, selected}: NodeProps<AudioNodeType>) {
     // 1. Referencia al elemento de audio real (que estará oculto)
     const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -93,14 +93,16 @@ export function AudioNode({ data, selected }: NodeProps<AudioNodeType>) {
             {/* Cabecera y Menú */}
             <div className="flex items-center justify-between pr-8">
                 <div className="flex items-center gap-2 overflow-hidden">
-                    {data.type === 'voice' ? <Mic size={16} className="text-note-red flex-shrink-0" /> : <Music size={16} className="text-primary flex-shrink-0" />}
+                    {data.type === 'voice' ? <Mic size={16} className="text-note-red flex-shrink-0"/> :
+                        <Music size={16} className="text-primary flex-shrink-0"/>}
                     <span className="text-sm font-semibold text-on-background truncate">{data.title}</span>
                 </div>
             </div>
 
             <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button className="p-1 bg-background/90 backdrop-blur border border-border rounded-md text-on-surface-variant hover:text-on-background nodrag nopan">
-                    <MoreHorizontal size={14} />
+                <button
+                    className="p-1 bg-background/90 backdrop-blur border border-border rounded-md text-on-surface-variant hover:text-on-background nodrag nopan">
+                    <MoreHorizontal size={14}/>
                 </button>
             </div>
 
@@ -112,7 +114,8 @@ export function AudioNode({ data, selected }: NodeProps<AudioNodeType>) {
                         onClick={togglePlay}
                         className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-primary text-on-primary rounded-full hover:bg-primary/90 transition-colors nodrag nopan"
                     >
-                        {isPlaying ? <Pause size={14} className="fill-current" /> : <Play size={14} className="fill-current ml-0.5" />}
+                        {isPlaying ? <Pause size={14} className="fill-current"/> :
+                            <Play size={14} className="fill-current ml-0.5"/>}
                     </button>
 
                     {/* Barra de Progreso y Tiempo */}
@@ -133,8 +136,9 @@ export function AudioNode({ data, selected }: NodeProps<AudioNodeType>) {
 
                     {/* Control de Volumen */}
                     <div className="flex items-center gap-1 group/vol relative">
-                        <button onClick={toggleMute} className="text-outline hover:text-on-background transition-colors nodrag nopan">
-                            {isMuted || volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                        <button onClick={toggleMute}
+                                className="text-outline hover:text-on-background transition-colors nodrag nopan">
+                            {isMuted || volume === 0 ? <VolumeX size={16}/> : <Volume2 size={16}/>}
                         </button>
                         {/* Slider de volumen que se expande un poco al hacer hover */}
                         <input
@@ -151,8 +155,10 @@ export function AudioNode({ data, selected }: NodeProps<AudioNodeType>) {
             </div>
 
             {/* Puntos de conexión */}
-            <Handle type="target" position={Position.Left} className="w-3 h-3 bg-surface border-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-            <Handle type="source" position={Position.Right} className="w-3 h-3 bg-surface border-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Handle type="target" position={Position.Left}
+                    className="w-3 h-3 bg-surface border-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity"/>
+            <Handle type="source" position={Position.Right}
+                    className="w-3 h-3 bg-surface border-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity"/>
         </div>
     );
 }

@@ -9,6 +9,6 @@ export type AvailableRelationDirection = typeof AvailableRelationDirection[keyof
 
 
 export const AvailableRelationDirection = {
-  directed: 'directed',
-  undirected: 'undirected',
+    directed: 'directed',
+    undirected: 'undirected',
 } as const;

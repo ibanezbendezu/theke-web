@@ -9,6 +9,6 @@ export type DiagramDocumentBackgroundTone = typeof DiagramDocumentBackgroundTone
 
 
 export const DiagramDocumentBackgroundTone = {
-  default: 'default',
-  surface: 'surface',
+    default: 'default',
+    surface: 'surface',
 } as const;

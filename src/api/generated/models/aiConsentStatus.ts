@@ -4,17 +4,17 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { AiPolicy } from './aiPolicy';
+import type {AiPolicy} from './aiPolicy';
 
 export interface AiConsentStatus {
-  required: boolean;
-  currentVersion: string;
-  /** @nullable */
-  acceptedVersion: string | null;
-  /** @nullable */
-  consentedAt: string | null;
-  isConsented: boolean;
-  provider: string;
-  model: string;
-  policy: AiPolicy;
+    required: boolean;
+    currentVersion: string;
+    /** @nullable */
+    acceptedVersion: string | null;
+    /** @nullable */
+    consentedAt: string | null;
+    isConsented: boolean;
+    provider: string;
+    model: string;
+    policy: AiPolicy;
 }

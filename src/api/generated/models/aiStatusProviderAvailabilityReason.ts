@@ -8,9 +8,11 @@
 /**
  * @nullable
  */
-export type AiStatusProviderAvailabilityReason = typeof AiStatusProviderAvailabilityReason[keyof typeof AiStatusProviderAvailabilityReason] | null;
+export type AiStatusProviderAvailabilityReason =
+    typeof AiStatusProviderAvailabilityReason[keyof typeof AiStatusProviderAvailabilityReason]
+    | null;
 
 
 export const AiStatusProviderAvailabilityReason = {
-  PROVIDER_PENDING: 'PROVIDER_PENDING',
+    PROVIDER_PENDING: 'PROVIDER_PENDING',
 } as const;

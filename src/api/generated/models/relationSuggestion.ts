@@ -4,19 +4,19 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { RelationSuggestionDirection } from './relationSuggestionDirection';
-import type { RelationSuggestionEvidence } from './relationSuggestionEvidence';
+import type {RelationSuggestionDirection} from './relationSuggestionDirection';
+import type {RelationSuggestionEvidence} from './relationSuggestionEvidence';
 
 export interface RelationSuggestion {
-  sourceResourceId: string;
-  targetResourceId: string;
-  direction: RelationSuggestionDirection;
-  typeKey: string;
-  label: string;
-  explanation: string;
-  uncertainty: string;
-  evidence: RelationSuggestionEvidence[];
-  provider: string;
-  model: string;
-  createdAt: string;
+    sourceResourceId: string;
+    targetResourceId: string;
+    direction: RelationSuggestionDirection;
+    typeKey: string;
+    label: string;
+    explanation: string;
+    uncertainty: string;
+    evidence: RelationSuggestionEvidence[];
+    provider: string;
+    model: string;
+    createdAt: string;
 }

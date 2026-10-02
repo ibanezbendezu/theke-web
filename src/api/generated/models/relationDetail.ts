@@ -4,39 +4,39 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { RelationDetailDirection } from './relationDetailDirection';
-import type { RelationDetailEvidenceStatus } from './relationDetailEvidenceStatus';
-import type { RelationEndpoint } from './relationEndpoint';
-import type { RelationEvidence } from './relationEvidence';
+import type {RelationDetailDirection} from './relationDetailDirection';
+import type {RelationDetailEvidenceStatus} from './relationDetailEvidenceStatus';
+import type {RelationEndpoint} from './relationEndpoint';
+import type {RelationEvidence} from './relationEvidence';
 
 export interface RelationDetail {
-  id: string;
-  sourceResourceId: string;
-  targetResourceId: string;
-  direction: RelationDetailDirection;
-  typeKey: string;
-  typeLabel: string;
-  source: RelationEndpoint;
-  target: RelationEndpoint;
-  /** @nullable */
-  label: string | null;
-  /** @nullable */
-  explanation: string | null;
-  /** @nullable */
-  provenance: string | null;
-  evidenceStatus: RelationDetailEvidenceStatus;
-  evidence: RelationEvidence[];
-  revision: number;
-  /** @nullable */
-  archivedAt: string | null;
-  /** @nullable */
-  deletedAt: string | null;
-  /** @nullable */
-  purgeAfter: string | null;
-  /** @nullable */
-  createdByUserId: string | null;
-  /** @nullable */
-  updatedByUserId: string | null;
-  createdAt: string;
-  updatedAt: string;
+    id: string;
+    sourceResourceId: string;
+    targetResourceId: string;
+    direction: RelationDetailDirection;
+    typeKey: string;
+    typeLabel: string;
+    source: RelationEndpoint;
+    target: RelationEndpoint;
+    /** @nullable */
+    label: string | null;
+    /** @nullable */
+    explanation: string | null;
+    /** @nullable */
+    provenance: string | null;
+    evidenceStatus: RelationDetailEvidenceStatus;
+    evidence: RelationEvidence[];
+    revision: number;
+    /** @nullable */
+    archivedAt: string | null;
+    /** @nullable */
+    deletedAt: string | null;
+    /** @nullable */
+    purgeAfter: string | null;
+    /** @nullable */
+    createdByUserId: string | null;
+    /** @nullable */
+    updatedByUserId: string | null;
+    createdAt: string;
+    updatedAt: string;
 }

@@ -1,6 +1,6 @@
-import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
-import { NodeResizer } from '@xyflow/react';
-import { useCanvasStore } from '../../../store/useCanvasStore';
+import {Handle, Position, type NodeProps, type Node} from '@xyflow/react';
+import {NodeResizer} from '@xyflow/react';
+import {useCanvasStore} from '../../../store/useCanvasStore';
 
 export type ShapeNodeData = {
     shapeType: 'rectangle' | 'circle' | 'polygon' | 'line';
@@ -11,10 +11,10 @@ export type ShapeNodeData = {
 
 export type ShapeNodeType = Node<ShapeNodeData, 'shape'>;
 
-export function ShapeNode({ data, selected, width = 100, height = 100 }: NodeProps<ShapeNodeType>) {
+export function ShapeNode({data, selected, width = 100, height = 100}: NodeProps<ShapeNodeType>) {
     const beginGesture = useCanvasStore(state => state.beginGesture);
     const endGesture = useCanvasStore(state => state.endGesture);
-    const { shapeType, sides = 3, borderRadius = 8, color = 'var(--color-surface)' } = data;
+    const {shapeType, sides = 3, borderRadius = 8, color = 'var(--color-surface)'} = data;
 
     // Función matemática para dibujar polígonos de N caras (ej. Triángulo)
     const getPolygonPoints = () => {
@@ -47,21 +47,21 @@ export function ShapeNode({ data, selected, width = 100, height = 100 }: NodePro
 
             <div
                 className="relative h-full w-full"
-                style={{ width, height }}
+                style={{width, height}}
             >
                 {/* RENDERIZADO CONDICIONAL DE LA FIGURA */}
 
                 {shapeType === 'rectangle' && (
                     <div
                         className="w-full h-full border-2 border-outline/50 transition-colors group-hover:border-outline"
-                        style={{ backgroundColor: color, borderRadius: `${borderRadius}px` }}
+                        style={{backgroundColor: color, borderRadius: `${borderRadius}px`}}
                     />
                 )}
 
                 {shapeType === 'circle' && (
                     <div
                         className="w-full h-full border-2 border-outline/50 transition-colors group-hover:border-outline rounded-full"
-                        style={{ backgroundColor: color }}
+                        style={{backgroundColor: color}}
                     />
                 )}
 
@@ -70,7 +70,7 @@ export function ShapeNode({ data, selected, width = 100, height = 100 }: NodePro
                     <div className="w-full h-full flex items-center justify-center">
                         <div
                             className="w-full bg-outline transition-colors group-hover:bg-on-background"
-                            style={{ height: '4px', borderRadius: `${borderRadius}px` }}
+                            style={{height: '4px', borderRadius: `${borderRadius}px`}}
                         />
                     </div>
                 )}
@@ -90,10 +90,12 @@ export function ShapeNode({ data, selected, width = 100, height = 100 }: NodePro
                 )}
 
                 {/* Handles centrales para poder conectar líneas a estas formas */}
-                <Handle type="target" position={Position.Left} className="opacity-0 group-hover:opacity-100 w-2 h-2" />
-                <Handle type="source" position={Position.Right} className="opacity-0 group-hover:opacity-100 w-2 h-2" />
-                <Handle type="target" position={Position.Top} className="opacity-0 group-hover:opacity-100 w-2 h-2" id="top" />
-                <Handle type="source" position={Position.Bottom} className="opacity-0 group-hover:opacity-100 w-2 h-2" id="bottom" />
+                <Handle type="target" position={Position.Left} className="opacity-0 group-hover:opacity-100 w-2 h-2"/>
+                <Handle type="source" position={Position.Right} className="opacity-0 group-hover:opacity-100 w-2 h-2"/>
+                <Handle type="target" position={Position.Top} className="opacity-0 group-hover:opacity-100 w-2 h-2"
+                        id="top"/>
+                <Handle type="source" position={Position.Bottom} className="opacity-0 group-hover:opacity-100 w-2 h-2"
+                        id="bottom"/>
             </div>
         </>
     );

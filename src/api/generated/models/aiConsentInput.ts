@@ -6,6 +6,6 @@
  */
 
 export interface AiConsentInput {
-  consentVersion: string;
-  enabled?: boolean;
+    consentVersion: string;
+    enabled?: boolean;
 }

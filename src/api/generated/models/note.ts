@@ -4,21 +4,21 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { NoteVersion } from './noteVersion';
+import type {NoteVersion} from './noteVersion';
 
 export interface Note {
-  id: string;
-  /**
+    id: string;
+    /**
      * @minLength 1
      * @maxLength 160
      */
-  title: string;
-  /** @nullable */
-  description: string | null;
-  type: 'note';
-  creationMethod: 'manual';
-  createdAt: string;
-  updatedAt: string;
-  currentVersion: NoteVersion;
-  contentUnchanged?: boolean;
+    title: string;
+    /** @nullable */
+    description: string | null;
+    type: 'note';
+    creationMethod: 'manual';
+    createdAt: string;
+    updatedAt: string;
+    currentVersion: NoteVersion;
+    contentUnchanged?: boolean;
 }

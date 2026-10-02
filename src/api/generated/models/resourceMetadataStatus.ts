@@ -12,7 +12,7 @@ export type ResourceMetadataStatus = typeof ResourceMetadataStatus[keyof typeof 
 
 
 export const ResourceMetadataStatus = {
-  pending: 'pending',
-  ready: 'ready',
-  failed: 'failed',
+    pending: 'pending',
+    ready: 'ready',
+    failed: 'failed',
 } as const;

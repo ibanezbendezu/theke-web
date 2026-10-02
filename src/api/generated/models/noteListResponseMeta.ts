@@ -6,6 +6,6 @@
  */
 
 export type NoteListResponseMeta = {
-  /** @nullable */
-  nextCursor: string | null;
+    /** @nullable */
+    nextCursor: string | null;
 };

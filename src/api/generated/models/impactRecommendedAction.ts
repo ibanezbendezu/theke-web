@@ -12,5 +12,5 @@ export type ImpactRecommendedAction = typeof ImpactRecommendedAction[keyof typeo
 
 
 export const ImpactRecommendedAction = {
-  archive: 'archive',
+    archive: 'archive',
 } as const;

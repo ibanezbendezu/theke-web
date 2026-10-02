@@ -4,9 +4,9 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { MembershipRole } from './membershipRole';
+import type {MembershipRole} from './membershipRole';
 
 export interface Membership {
-  id: string;
-  role: MembershipRole;
+    id: string;
+    role: MembershipRole;
 }

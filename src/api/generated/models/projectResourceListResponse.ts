@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ProjectResource } from './projectResource';
+import type {ProjectResource} from './projectResource';
 
 export interface ProjectResourceListResponse {
-  data: ProjectResource[];
+    data: ProjectResource[];
 }

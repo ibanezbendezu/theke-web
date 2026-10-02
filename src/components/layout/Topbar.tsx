@@ -1,15 +1,15 @@
-import { Menu, Home, Folder, FileText } from 'lucide-react';
-import { useLocation, Link } from 'react-router-dom';
-import React, { useState } from 'react';
-import { useCurrentAccount } from '../../data/useCurrentAccount';
-import { useProject } from '../../data/useProjects';
-import { useResource } from '../../data/useResources';
-import { useProjectFolders } from '../../data/useProjectFolders';
-import { useLibraryFolders } from '../../data/useLibraryFolders';
-import { useProjectFolderActions } from '../../data/useProjectFolders';
-import { useLibraryFolderActions } from '../../data/useLibraryFolders';
-import { folderTrail } from '../../lib/collectionFolders';
-import { useToast } from '../ui/useToast';
+import {Menu, Home, Folder, FileText} from 'lucide-react';
+import {useLocation, Link} from 'react-router-dom';
+import React, {useState} from 'react';
+import {useCurrentAccount} from '../../data/useCurrentAccount';
+import {useProject} from '../../data/useProjects';
+import {useResource} from '../../data/useResources';
+import {useProjectFolders} from '../../data/useProjectFolders';
+import {useLibraryFolders} from '../../data/useLibraryFolders';
+import {useProjectFolderActions} from '../../data/useProjectFolders';
+import {useLibraryFolderActions} from '../../data/useLibraryFolders';
+import {folderTrail} from '../../lib/collectionFolders';
+import {useToast} from '../ui/useToast';
 
 interface TopbarProps {
     isSidebarOpen: boolean;
@@ -18,11 +18,11 @@ interface TopbarProps {
 
 // Mapeo para traducir las rutas base a español con sus iconos
 const routeDictionary: Record<string, { name: string, icon: React.ElementType }> = {
-    'library': { name: 'Biblioteca', icon: FileText },
-    'projects': { name: 'Proyectos', icon: Folder },
+    'library': {name: 'Biblioteca', icon: FileText},
+    'projects': {name: 'Proyectos', icon: Folder},
 };
 
-export function Topbar({ isSidebarOpen, setIsOpen }: TopbarProps) {
+export function Topbar({isSidebarOpen, setIsOpen}: TopbarProps) {
     const location = useLocation();
     const account = useCurrentAccount();
     const [dropTarget, setDropTarget] = useState<string | null>(null);
@@ -53,29 +53,51 @@ export function Topbar({ isSidebarOpen, setIsOpen }: TopbarProps) {
                 : false;
     };
     const dropHandlers = (destination: string | null) => ({
-        onDragOver: (event: React.DragEvent<HTMLElement>) => { if (acceptsDrop(event)) { event.preventDefault(); event.dataTransfer.dropEffect = 'move'; setDropTarget(destination ?? 'root'); } },
+        onDragOver: (event: React.DragEvent<HTMLElement>) => {
+            if (acceptsDrop(event)) {
+                event.preventDefault();
+                event.dataTransfer.dropEffect = 'move';
+                setDropTarget(destination ?? 'root');
+            }
+        },
         onDragLeave: () => setDropTarget(null),
         onDrop: async (event: React.DragEvent<HTMLElement>) => {
             if (!acceptsDrop(event)) return;
-            event.preventDefault(); setDropTarget(null);
+            event.preventDefault();
+            setDropTarget(null);
             try {
                 if (pathnames[0] === 'projects') {
                     const folderId = event.dataTransfer.getData('application/x-theke-project-folder');
                     const projectId = event.dataTransfer.getData('application/x-theke-project');
-                    if (folderId) await projectFolderActions.moveFolder.mutateAsync({ id: folderId, parentFolderId: destination });
-                    else if (projectId) await projectFolderActions.move.mutateAsync({ projectIds: [projectId], folderId: destination });
+                    if (folderId) await projectFolderActions.moveFolder.mutateAsync({
+                        id: folderId,
+                        parentFolderId: destination
+                    });
+                    else if (projectId) await projectFolderActions.move.mutateAsync({
+                        projectIds: [projectId],
+                        folderId: destination
+                    });
                 } else if (pathnames[0] === 'library') {
                     const folderId = event.dataTransfer.getData('application/x-theke-library-folder');
                     const resourceId = event.dataTransfer.getData('application/x-theke-resource');
-                    if (folderId) await libraryFolderActions.moveFolder.mutateAsync({ id: folderId, parentFolderId: destination });
-                    else if (resourceId) await libraryFolderActions.move.mutateAsync({ resourceIds: [resourceId], folderId: destination });
+                    if (folderId) await libraryFolderActions.moveFolder.mutateAsync({
+                        id: folderId,
+                        parentFolderId: destination
+                    });
+                    else if (resourceId) await libraryFolderActions.move.mutateAsync({
+                        resourceIds: [resourceId],
+                        folderId: destination
+                    });
                 }
-            } catch (reason) { toast.error(reason instanceof Error ? reason.message : 'No se pudo mover.'); }
+            } catch (reason) {
+                toast.error(reason instanceof Error ? reason.message : 'No se pudo mover.');
+            }
         },
     });
 
     return (
-        <header className="flex h-[46px] w-full flex-shrink-0 items-center justify-between bg-background px-5 text-on-background">
+        <header
+            className="flex h-[46px] w-full flex-shrink-0 items-center justify-between bg-background px-5 text-on-background">
 
             <div className="flex items-center gap-1 overflow-hidden">
                 {!isSidebarOpen && (
@@ -85,15 +107,16 @@ export function Topbar({ isSidebarOpen, setIsOpen }: TopbarProps) {
                         title="Abrir menú"
                         aria-label="Abrir barra lateral"
                     >
-                        <Menu size={18} />
+                        <Menu size={18}/>
                     </button>
                 )}
 
                 {/* Contenedor del Breadcrumb */}
                 <div className="flex items-center text-[14px]">
                     {/* El nodo raíz siempre fijo */}
-                    <Link to="/" className="flex items-center gap-1.5 px-2 py-1 rounded-[4px] hover:bg-surface-variant cursor-pointer transition-colors max-w-[150px]">
-                        <Home size={16} className="text-outline flex-shrink-0" />
+                    <Link to="/"
+                          className="flex items-center gap-1.5 px-2 py-1 rounded-[4px] hover:bg-surface-variant cursor-pointer transition-colors max-w-[150px]">
+                        <Home size={16} className="text-outline flex-shrink-0"/>
                         <span className="font-medium truncate">{account.data?.account.name ?? 'Espacio privado'}</span>
                     </Link>
 
@@ -110,14 +133,17 @@ export function Topbar({ isSidebarOpen, setIsOpen }: TopbarProps) {
                         return (
                             <React.Fragment key={to}>
                                 <span className="text-outline/40 mx-0.5 select-none">/</span>
-                                <Link to={to} {...(index === 0 ? dropHandlers(null) : {})} className={`flex items-center gap-1.5 px-2 py-1 rounded-[4px] hover:bg-surface-variant cursor-pointer transition-colors max-w-[150px] ${index === 0 && dropTarget === 'root' ? 'bg-surface-variant' : ''}`}>
-                                    <Icon size={16} className="flex-shrink-0 text-outline" />
+                                <Link to={to} {...(index === 0 ? dropHandlers(null) : {})}
+                                      className={`flex items-center gap-1.5 px-2 py-1 rounded-[4px] hover:bg-surface-variant cursor-pointer transition-colors max-w-[150px] ${index === 0 && dropTarget === 'root' ? 'bg-surface-variant' : ''}`}>
+                                    <Icon size={16} className="flex-shrink-0 text-outline"/>
                                     <span className="font-medium truncate">{name}</span>
                                 </Link>
                                 {index === 0 && trail.map(folder => <React.Fragment key={folder.id}>
                                     <span className="text-outline/40 mx-0.5 select-none">/</span>
-                                    <Link to={pathnames[0] === 'projects' ? `/projects?folder=${folder.id}` : `/library?libraryFolderId=${folder.id}`} {...dropHandlers(folder.id)} className={`flex items-center gap-1.5 px-2 py-1 rounded-[4px] hover:bg-surface-variant cursor-pointer transition-colors max-w-[150px] ${dropTarget === folder.id ? 'bg-surface-variant' : ''}`}>
-                                        <Folder size={16} className="flex-shrink-0 text-outline" />
+                                    <Link
+                                        to={pathnames[0] === 'projects' ? `/projects?folder=${folder.id}` : `/library?libraryFolderId=${folder.id}`} {...dropHandlers(folder.id)}
+                                        className={`flex items-center gap-1.5 px-2 py-1 rounded-[4px] hover:bg-surface-variant cursor-pointer transition-colors max-w-[150px] ${dropTarget === folder.id ? 'bg-surface-variant' : ''}`}>
+                                        <Folder size={16} className="flex-shrink-0 text-outline"/>
                                         <span className="font-medium truncate">{folder.name}</span>
                                     </Link>
                                 </React.Fragment>)}

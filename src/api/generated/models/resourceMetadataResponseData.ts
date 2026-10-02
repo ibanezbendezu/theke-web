@@ -4,12 +4,12 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ResourceMetadataResponseDataProperties } from './resourceMetadataResponseDataProperties';
+import type {ResourceMetadataResponseDataProperties} from './resourceMetadataResponseDataProperties';
 
 export type ResourceMetadataResponseData = {
-  id: string;
-  aliases: string[];
-  tags: string[];
-  properties: ResourceMetadataResponseDataProperties;
-  updatedAt: string;
+    id: string;
+    aliases: string[];
+    tags: string[];
+    properties: ResourceMetadataResponseDataProperties;
+    updatedAt: string;
 };

@@ -6,7 +6,7 @@
  */
 
 export interface SharePreviewWarning {
-  resourceId: string;
-  field: string;
-  message: string;
+    resourceId: string;
+    field: string;
+    message: string;
 }

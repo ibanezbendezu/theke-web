@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { DeleteLibraryFolder200Data } from './deleteLibraryFolder200Data';
+import type {DeleteLibraryFolder200Data} from './deleteLibraryFolder200Data';
 
 export type DeleteLibraryFolder200 = {
-  data?: DeleteLibraryFolder200Data;
+    data?: DeleteLibraryFolder200Data;
 };

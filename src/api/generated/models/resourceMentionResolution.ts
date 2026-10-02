@@ -9,7 +9,7 @@ export type ResourceMentionResolution = typeof ResourceMentionResolution[keyof t
 
 
 export const ResourceMentionResolution = {
-  linked: 'linked',
-  unresolved: 'unresolved',
-  ambiguous: 'ambiguous',
+    linked: 'linked',
+    unresolved: 'unresolved',
+    ambiguous: 'ambiguous',
 } as const;

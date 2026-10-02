@@ -9,14 +9,14 @@ export type PublicLayoutNodeType = typeof PublicLayoutNodeType[keyof typeof Publ
 
 
 export const PublicLayoutNodeType = {
-  resource: 'resource',
-  folder: 'folder',
-  container: 'container',
-  annotation: 'annotation',
-  text: 'text',
-  shape: 'shape',
-  link: 'link',
-  media: 'media',
-  document: 'document',
-  audio: 'audio',
+    resource: 'resource',
+    folder: 'folder',
+    container: 'container',
+    annotation: 'annotation',
+    text: 'text',
+    shape: 'shape',
+    link: 'link',
+    media: 'media',
+    document: 'document',
+    audio: 'audio',
 } as const;

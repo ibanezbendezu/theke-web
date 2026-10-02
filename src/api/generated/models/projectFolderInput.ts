@@ -6,9 +6,9 @@
  */
 
 export interface ProjectFolderInput {
-  /**
+    /**
      * @minLength 1
      * @maxLength 120
      */
-  name: string;
+    name: string;
 }

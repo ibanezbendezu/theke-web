@@ -9,6 +9,6 @@ export type GetImpactAction = typeof GetImpactAction[keyof typeof GetImpactActio
 
 
 export const GetImpactAction = {
-  archive: 'archive',
-  delete: 'delete',
+    archive: 'archive',
+    delete: 'delete',
 } as const;

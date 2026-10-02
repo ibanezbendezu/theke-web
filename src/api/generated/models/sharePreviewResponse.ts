@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { SharePreview } from './sharePreview';
+import type {SharePreview} from './sharePreview';
 
 export interface SharePreviewResponse {
-  data: SharePreview;
+    data: SharePreview;
 }

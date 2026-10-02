@@ -6,7 +6,7 @@
  */
 
 export type MoveProjectsToFolder200DataItem = {
-  id?: string;
-  /** @nullable */
-  collectionFolderId?: string | null;
+    id?: string;
+    /** @nullable */
+    collectionFolderId?: string | null;
 };

@@ -6,6 +6,6 @@
  */
 
 export interface AccessibilityInput {
-  /** @maxLength 2000 */
-  text: string;
+    /** @maxLength 2000 */
+    text: string;
 }

@@ -4,10 +4,10 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { DiagramDocument } from './diagramDocument';
+import type {DiagramDocument} from './diagramDocument';
 
 export interface DiagramSaveResult {
-  document: DiagramDocument;
-  revision: number;
-  updatedAt: string;
+    document: DiagramDocument;
+    revision: number;
+    updatedAt: string;
 }

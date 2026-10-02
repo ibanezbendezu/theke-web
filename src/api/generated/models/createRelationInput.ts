@@ -4,21 +4,21 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { CreateRelationInputDirection } from './createRelationInputDirection';
+import type {CreateRelationInputDirection} from './createRelationInputDirection';
 
 export interface CreateRelationInput {
-  sourceNodeId: string;
-  targetNodeId: string;
-  direction: CreateRelationInputDirection;
-  typeKey: string;
-  /**
+    sourceNodeId: string;
+    targetNodeId: string;
+    direction: CreateRelationInputDirection;
+    typeKey: string;
+    /**
      * @minLength 2
      * @maxLength 60
      */
-  customTypeName?: string;
-  /** @minimum 0 */
-  expectedRevision: number;
-  /** @maxLength 120 */
-  idempotencyKey: string;
-  reuseExisting?: boolean;
+    customTypeName?: string;
+    /** @minimum 0 */
+    expectedRevision: number;
+    /** @maxLength 120 */
+    idempotencyKey: string;
+    reuseExisting?: boolean;
 }

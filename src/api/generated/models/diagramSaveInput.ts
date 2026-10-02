@@ -4,12 +4,12 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { DiagramDocument } from './diagramDocument';
+import type {DiagramDocument} from './diagramDocument';
 
 export interface DiagramSaveInput {
-  document: DiagramDocument;
-  /** @minimum 0 */
-  expectedRevision: number;
-  /** @maxLength 120 */
-  idempotencyKey: string;
+    document: DiagramDocument;
+    /** @minimum 0 */
+    expectedRevision: number;
+    /** @maxLength 120 */
+    idempotencyKey: string;
 }

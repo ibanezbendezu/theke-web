@@ -6,6 +6,6 @@
  */
 
 export interface FolderParentInput {
-  /** @nullable */
-  parentFolderId: string | null;
+    /** @nullable */
+    parentFolderId: string | null;
 }

@@ -4,18 +4,18 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { UploadStatus } from './uploadStatus';
+import type {UploadStatus} from './uploadStatus';
 
 export interface Upload {
-  id: string;
-  resourceId: string;
-  name: string;
-  size: number;
-  mediaType: string;
-  status: UploadStatus;
-  /** @nullable */
-  failureReason?: string | null;
-  uploadUrl?: string;
-  createdAt: string;
-  updatedAt: string;
+    id: string;
+    resourceId: string;
+    name: string;
+    size: number;
+    mediaType: string;
+    status: UploadStatus;
+    /** @nullable */
+    failureReason?: string | null;
+    uploadUrl?: string;
+    createdAt: string;
+    updatedAt: string;
 }

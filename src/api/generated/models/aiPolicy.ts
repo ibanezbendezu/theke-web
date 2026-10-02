@@ -6,11 +6,11 @@
  */
 
 export interface AiPolicy {
-  provider: string;
-  model: string;
-  store: boolean;
-  reasoningEffort: string;
-  retentionDays: number;
-  trainModels: boolean;
-  description: string;
+    provider: string;
+    model: string;
+    store: boolean;
+    reasoningEffort: string;
+    retentionDays: number;
+    trainModels: boolean;
+    description: string;
 }

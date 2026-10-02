@@ -9,6 +9,6 @@ export type RelationSuggestionDirection = typeof RelationSuggestionDirection[key
 
 
 export const RelationSuggestionDirection = {
-  directed: 'directed',
-  undirected: 'undirected',
+    directed: 'directed',
+    undirected: 'undirected',
 } as const;

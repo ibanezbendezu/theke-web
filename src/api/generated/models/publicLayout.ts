@@ -4,12 +4,12 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { PublicLayoutBackground } from './publicLayoutBackground';
-import type { PublicLayoutEdge } from './publicLayoutEdge';
-import type { PublicLayoutNode } from './publicLayoutNode';
+import type {PublicLayoutBackground} from './publicLayoutBackground';
+import type {PublicLayoutEdge} from './publicLayoutEdge';
+import type {PublicLayoutNode} from './publicLayoutNode';
 
 export interface PublicLayout {
-  nodes: PublicLayoutNode[];
-  edges: PublicLayoutEdge[];
-  background?: PublicLayoutBackground;
+    nodes: PublicLayoutNode[];
+    edges: PublicLayoutEdge[];
+    background?: PublicLayoutBackground;
 }

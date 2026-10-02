@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { RelationDetail } from './relationDetail';
+import type {RelationDetail} from './relationDetail';
 
 export interface RelationDetailResponse {
-  data: RelationDetail;
+    data: RelationDetail;
 }

@@ -4,12 +4,12 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ImpactConfirmationInputAction } from './impactConfirmationInputAction';
+import type {ImpactConfirmationInputAction} from './impactConfirmationInputAction';
 
 export interface ImpactConfirmationInput {
-  action: ImpactConfirmationInputAction;
-  impactVersion: string;
-  confirmation: string;
-  /** @maxLength 120 */
-  idempotencyKey: string;
+    action: ImpactConfirmationInputAction;
+    impactVersion: string;
+    confirmation: string;
+    /** @maxLength 120 */
+    idempotencyKey: string;
 }

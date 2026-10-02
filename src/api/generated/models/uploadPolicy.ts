@@ -6,8 +6,8 @@
  */
 
 export interface UploadPolicy {
-  maxBatchSize: number;
-  maxFileSize: number;
-  accountQuota: number;
-  allowedMediaTypes: string[];
+    maxBatchSize: number;
+    maxFileSize: number;
+    accountQuota: number;
+    allowedMediaTypes: string[];
 }

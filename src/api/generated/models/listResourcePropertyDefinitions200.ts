@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { ResourcePropertyDefinition } from './resourcePropertyDefinition';
+import type {ResourcePropertyDefinition} from './resourcePropertyDefinition';
 
 export type ListResourcePropertyDefinitions200 = {
-  data: ResourcePropertyDefinition[];
+    data: ResourcePropertyDefinition[];
 };

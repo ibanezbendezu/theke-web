@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { Impact } from './impact';
+import type {Impact} from './impact';
 
 export interface ImpactResponse {
-  data: Impact;
+    data: Impact;
 }

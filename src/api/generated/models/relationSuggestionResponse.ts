@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { RelationSuggestion } from './relationSuggestion';
+import type {RelationSuggestion} from './relationSuggestion';
 
 export interface RelationSuggestionResponse {
-  data: RelationSuggestion;
+    data: RelationSuggestion;
 }

@@ -1,8 +1,8 @@
-import { Moon, Sun, Monitor } from "lucide-react"
-import { useTheme } from "../../providers/ThemeProvider"
+import {Moon, Sun, Monitor} from "lucide-react"
+import {useTheme} from "../../providers/ThemeProvider"
 
 export function ThemeToggle() {
-    const { theme, setTheme } = useTheme()
+    const {theme, setTheme} = useTheme()
 
     return (
         <div className="flex items-center gap-0.5" role="group" aria-label="Apariencia">
@@ -13,7 +13,7 @@ export function ThemeToggle() {
                 aria-label="Tema claro"
                 aria-pressed={theme === 'light'}
             >
-                <Sun size={16} />
+                <Sun size={16}/>
             </button>
             <button
                 onClick={() => setTheme("system")}
@@ -22,7 +22,7 @@ export function ThemeToggle() {
                 aria-label="Tema del sistema"
                 aria-pressed={theme === 'system'}
             >
-                <Monitor size={16} />
+                <Monitor size={16}/>
             </button>
             <button
                 onClick={() => setTheme("dark")}
@@ -31,7 +31,7 @@ export function ThemeToggle() {
                 aria-label="Tema oscuro"
                 aria-pressed={theme === 'dark'}
             >
-                <Moon size={16} />
+                <Moon size={16}/>
             </button>
         </div>
     )

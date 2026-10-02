@@ -4,10 +4,10 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type { DiagramDocumentBackgroundTone } from './diagramDocumentBackgroundTone';
-import type { DiagramDocumentBackgroundVariant } from './diagramDocumentBackgroundVariant';
+import type {DiagramDocumentBackgroundTone} from './diagramDocumentBackgroundTone';
+import type {DiagramDocumentBackgroundVariant} from './diagramDocumentBackgroundVariant';
 
 export type DiagramDocumentBackground = {
-  variant: DiagramDocumentBackgroundVariant;
-  tone: DiagramDocumentBackgroundTone;
+    variant: DiagramDocumentBackgroundVariant;
+    tone: DiagramDocumentBackgroundTone;
 };

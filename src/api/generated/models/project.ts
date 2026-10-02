@@ -6,20 +6,20 @@
  */
 
 export interface Project {
-  id: string;
-  /**
+    id: string;
+    /**
      * @minLength 1
      * @maxLength 120
      */
-  name: string;
-  /** @nullable */
-  collectionFolderId: string | null;
-  /** @nullable */
-  archivedAt: string | null;
-  /** @nullable */
-  deletedAt: string | null;
-  /** @nullable */
-  purgeAfter: string | null;
-  createdAt: string;
-  updatedAt: string;
+    name: string;
+    /** @nullable */
+    collectionFolderId: string | null;
+    /** @nullable */
+    archivedAt: string | null;
+    /** @nullable */
+    deletedAt: string | null;
+    /** @nullable */
+    purgeAfter: string | null;
+    createdAt: string;
+    updatedAt: string;
 }
