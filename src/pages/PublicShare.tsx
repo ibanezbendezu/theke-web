@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { ListTree, MessageCircle, MessageSquarePlus, PanelRightClose, PanelRightOpen, X } from 'lucide-react';
+import { ListTree, MessageCircle, MessageSquarePlus, MoreHorizontal, PanelRightClose, PanelRightOpen, X } from 'lucide-react';
 import type { PublicShare as PublicProjection, PublicShareResponse } from '../api/generated/models';
 import { thekeFetch } from '../api/httpClient';
 import { Button } from '../components/ui/Button';
+import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { PublicDiagramCanvas, PublicSemanticList, type PublicSelection } from './PublicDiagramCanvas';
 import { PublicResourceDetail } from './PublicResourceDetail';
 import { PublicCommentsPanel } from './PublicCommentsPanel';
@@ -20,6 +21,7 @@ function PublicShareView({ token }: { token: string | undefined }) {
   const [selection, setSelection] = useState<PublicSelection>(null);
   const [semanticOpen, setSemanticOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(true);
+  const [optionsOpen, setOptionsOpen] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(() => searchParams.get('comments') === '1');
   const [commentMode, setCommentMode] = useState(false);
   const [commentTarget, setCommentTarget] = useState<CommentTarget | null>(null);
@@ -27,6 +29,7 @@ function PublicShareView({ token }: { token: string | undefined }) {
   const [selectedCommentId, setSelectedCommentId] = useState<string | null>(null);
   const inspector = useRef<HTMLElement>(null);
   const semanticButton = useRef<HTMLButtonElement>(null);
+  const optionsButton = useRef<HTMLButtonElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const restoreFocus = () => requestAnimationFrame(() => {
     const target = returnFocus.current?.isConnected ? returnFocus.current : semanticButton.current;
@@ -80,8 +83,10 @@ function PublicShareView({ token }: { token: string | undefined }) {
           {data.commentsEnabled && <Button size="icon" className="h-10 w-10" icon={MessageSquarePlus} aria-label="Añadir comentario" aria-pressed={commentMode} onClick={() => { setCommentMode(value => !value); setCommentsOpen(false); }}/>}
           <Button size="icon" className="h-10 w-10" icon={MessageCircle} aria-label="Comentarios" aria-expanded={commentsOpen} onClick={() => { if (!commentsOpen) { setSelection(null); setDetailsOpen(false); } setCommentsOpen(value => !value); setCommentMode(false); setSemanticOpen(false); }}/>
           <Button ref={semanticButton} size="icon" className="h-10 w-10" icon={ListTree} aria-label={showSemantic ? 'Ocultar vista semántica' : 'Mostrar vista semántica'} aria-expanded={showSemantic} onClick={() => setSemanticOpen(value => !value)}/>
-          <Button size="icon" className="h-10 w-10" icon={detailsOpen ? PanelRightClose : PanelRightOpen} aria-label={detailsOpen ? 'Ocultar detalles' : 'Mostrar detalles'} aria-expanded={detailsOpen} onClick={() => setDetailsOpen(value => !value)}/>
+          {!detailsOpen && <Button size="icon" className="h-10 w-10" icon={PanelRightOpen} aria-label="Mostrar detalles" onClick={() => setDetailsOpen(true)}/>}
+          <Button ref={optionsButton} size="icon" className="h-10 w-10" icon={MoreHorizontal} aria-label="Opciones del mapa" aria-expanded={optionsOpen} aria-controls="public-map-options" onClick={() => setOptionsOpen(value => !value)}/>
         </nav>
+        {optionsOpen && <div id="public-map-options" role="dialog" aria-label="Opciones del mapa" className="pointer-events-auto absolute right-0 top-14 w-48 rounded-lg bg-surface p-3" onClick={() => { setOptionsOpen(false); optionsButton.current?.focus(); }}><p className="mb-2 text-sm font-medium">Apariencia</p><ThemeToggle/></div>}
       </div>
       {commentMode && <p role="status" className="absolute left-3 top-20 z-40 rounded-lg bg-surface px-3 py-2 text-xs">Elige un punto, recurso o relación para comentar.</p>}
       {showSemantic && <aside className="absolute bottom-3 left-3 top-20 z-40 w-[min(22rem,calc(100%-1.5rem))] overflow-auto rounded-xl bg-surface/95 p-3 backdrop-blur-md" aria-label="Panel de vista semántica"><div className="mb-2 flex justify-end">{data.layout.nodes.length > 0 && <Button size="icon" className="h-9 w-9" icon={X} aria-label="Cerrar vista semántica" onClick={() => setSemanticOpen(false)}/>}</div><PublicSemanticList resources={data.resources} relations={data.relations} visualNodes={data.layout.nodes} selection={selection} onSelect={select} commentsEnabled={data.commentsEnabled} onCommentTarget={chooseCommentTarget}/></aside>}

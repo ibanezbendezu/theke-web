@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Background, BackgroundVariant, BaseEdge, EdgeLabelRenderer, Handle, MarkerType, Position, ReactFlow, ReactFlowProvider, useReactFlow, type Edge, type EdgeProps, type Node, type NodeProps, type NodeTypes } from '@xyflow/react';
-import { File as FileIcon, FileText, Folder, Image, Layers, Link as LinkIcon, Maximize, MessageCircle, MessageSquarePlus, Music, PlaySquare, Video, ZoomIn, ZoomOut } from 'lucide-react';
+import { File as FileIcon, FileText, Folder, Image, Layers, Link as LinkIcon, Maximize, MessageCircle, Music, PlaySquare, Video, ZoomIn, ZoomOut } from 'lucide-react';
 import type { PublicLayoutNode, PublicShare, SharePreviewRelation, SharePreviewResource } from '../api/generated/models';
 import { Button } from '../components/ui/Button';
 import type { CommentTarget, PublicComment } from './publicCommentTypes';
@@ -14,10 +14,9 @@ function PublicCommentMarker({ data }: NodeProps<Node<PublicMarkerData, 'comment
   return <button type="button" className="nodrag nopan group relative flex h-8 min-w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-semibold text-on-primary ring-2 ring-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label={`Abrir comentario ${data.number} de ${data.author}`} onClick={() => data.onOpen(data.commentId)}><MessageCircle size={13} aria-hidden="true"/><span className="ml-0.5">{data.number}</span><span aria-hidden="true" className="pointer-events-none absolute bottom-full left-1/2 mb-2 hidden max-w-48 -translate-x-1/2 whitespace-nowrap rounded-md bg-on-background px-2.5 py-1.5 text-xs font-medium text-background group-hover:block group-focus-visible:block">{data.author}</span></button>;
 }
 
-function CanvasButtons({ commentsEnabled, onCommentTarget }: { commentsEnabled: boolean; onCommentTarget: (target: CommentTarget) => void }) {
-  const { zoomIn, zoomOut, fitView, screenToFlowPosition } = useReactFlow();
+function CanvasButtons() {
+  const { zoomIn, zoomOut, fitView } = useReactFlow();
   return <nav className="absolute bottom-3 right-3 z-30 flex gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md" aria-label="Controles del diagrama">
-    {commentsEnabled && <Button size="icon" className="h-11 w-11" icon={MessageSquarePlus} aria-label="Comentar centro visible" onClick={event => { const rect = event.currentTarget.closest('[aria-label="Diagrama público"]')?.getBoundingClientRect(); if (rect) onCommentTarget({ type: 'diagram', ...screenToFlowPosition({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }) }); }}/>}
     <Button size="icon" className="h-11 w-11" icon={ZoomOut} aria-label="Alejar" onClick={() => void zoomOut({ duration: 0 })}/>
     <Button size="icon" className="h-11 w-11" icon={ZoomIn} aria-label="Acercar" onClick={() => void zoomIn({ duration: 0 })}/>
     <Button size="icon" className="h-11 w-11" icon={Maximize} aria-label="Ajustar vista" onClick={() => void fitView({ duration: 0, padding: 0.2 })}/>
@@ -112,7 +111,7 @@ function PublicCanvas({ data, selection, onSelect, commentMode, commentsEnabled,
     onNodeClick={(_, node) => { if (node.type === 'comment') return; const item = node.data.item; if (commentMode && commentsEnabled) { onCommentTarget(item.resourceId ? { type: 'resource', resourceId: item.resourceId } : { type: 'diagram', x: item.x, y: item.y }); return; } if (item.resourceId) onSelect({ kind: 'resource', id: item.resourceId }); else if (item.type === 'folder') onSelect({ kind: 'folder', id: item.id }); }}
     onEdgeClick={(_, edge) => { if (edge.data?.relationId) { if (commentMode && commentsEnabled) onCommentTarget({ type: 'relation', relationId: edge.data.relationId }); else onSelect({ kind: 'relation', id: edge.data.relationId }); } }}>
     {background.variant !== 'plain' && <Background variant={background.variant === 'grid' ? BackgroundVariant.Lines : BackgroundVariant.Dots} color="var(--color-outline)" gap={24} size={background.variant === 'dots' ? 2 : undefined}/>}
-  </ReactFlow><CanvasButtons commentsEnabled={commentsEnabled} onCommentTarget={onCommentTarget}/>{menu && <div className="fixed z-[60] rounded-lg bg-surface p-1 text-sm text-on-background ring-1 ring-outline/25" style={{ left: menu.x, top: menu.y }} role="menu"><button type="button" role="menuitem" className="min-h-11 rounded-md px-3 text-left hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary" onClick={() => { onCommentTarget(menu.target); setMenu(null); }}>Comentar aquí</button></div>}</>;
+  </ReactFlow><CanvasButtons/>{menu && <div className="fixed z-[60] rounded-lg bg-surface p-1 text-sm text-on-background ring-1 ring-outline/25" style={{ left: menu.x, top: menu.y }} role="menu"><button type="button" role="menuitem" className="min-h-11 rounded-md px-3 text-left hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary" onClick={() => { onCommentTarget(menu.target); setMenu(null); }}>Comentar aquí</button></div>}</>;
 }
 
 export function PublicDiagramCanvas({ data, selection, onSelect, commentMode = false, commentsEnabled = false, comments = [], onCommentTarget = () => {}, onCommentOpen = () => {} }: { data: PublicShare; selection: PublicSelection; onSelect: (value: PublicSelection) => void; commentMode?: boolean; commentsEnabled?: boolean; comments?: PublicComment[]; onCommentTarget?: (target: CommentTarget) => void; onCommentOpen?: (id: string) => void }) {
