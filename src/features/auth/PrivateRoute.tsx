@@ -27,7 +27,7 @@ export function PrivateRoute({children}: { children: ReactNode }) {
     if (!isLoaded || (isSignedIn && account.isPending)) return <main
         className="grid min-h-screen place-items-center bg-background" aria-busy="true"><p
         aria-live="polite">Restaurando tu espacio…</p></main>;
-    if (!isSignedIn) return <Navigate replace to={`/access?returnTo=${encodeURIComponent(returnTo)}`}/>;
+    if (!isSignedIn) return <Navigate replace to={location.pathname === '/' ? '/welcome' : `/access?returnTo=${encodeURIComponent(returnTo)}`}/>;
     if (account.error instanceof ApiError && account.error.status === 401) return <InvalidSession returnTo={returnTo}
                                                                                                   signOut={signOut}/>;
     if (account.isError) return <main className="grid min-h-screen place-items-center p-6">

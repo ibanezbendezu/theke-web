@@ -13,8 +13,10 @@ import {PrivateRoute} from '../features/auth/PrivateRoute';
 import {RegisterPage} from '../features/auth/RegisterPage';
 import {DiagramEditor} from '../pages/DiagramEditor';
 import {PublicShare} from '../pages/PublicShare';
+import {Landing} from '../pages/Landing';
 
 export const router = createBrowserRouter([
+    {path: '/welcome', element: <Landing/>},
     {path: '/share/:token', element: <PublicShare/>},
     {path: '/access', element: <AccessPage/>},
     {path: '/sso-callback', element: <SsoCallback/>},
