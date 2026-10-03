@@ -255,7 +255,7 @@ function DiagramEditorCore() {
             </div>}
         </section>
         {rightOpen && <aside
-            className="absolute inset-y-0 right-0 z-50 w-[min(304px,100vw)] overflow-auto bg-surface/95 p-4 backdrop-blur-md lg:relative lg:z-0 lg:shrink-0 lg:bg-surface-variant/35"
+            className={`absolute inset-y-0 right-0 z-50 w-[min(304px,100vw)] overflow-auto bg-surface/95 p-4 backdrop-blur-md lg:relative lg:z-0 lg:shrink-0 lg:bg-surface-variant/35 ${leftPanel ? 'hidden lg:block' : ''}`}
             aria-label="Propiedades">
             <div className="mb-3 flex items-center justify-between"><h2
                 className="text-sm font-semibold">Propiedades</h2><Button size="icon" className="h-9 w-9"

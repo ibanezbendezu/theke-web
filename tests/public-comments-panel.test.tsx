@@ -26,6 +26,26 @@ it('publica sin pedir nombre y muestra el alias científico asignado', async () 
   expect(JSON.parse(fetchMock.mock.calls[1]?.[1]?.body as string)).not.toHaveProperty('displayName');
 });
 
+it('permite comentar y editar con sesión verificada sin cookie anónima', async () => {
+  auth.signedIn = true;
+  const own = { id: 'registered-1', displayName: 'Usuario Theke', content: 'Inicial', createdAt: new Date().toISOString(), editedAt: null, revision: 1, editable: true, anchor: { type: 'diagram' } };
+  fetchMock.mockResolvedValueOnce(reply({ identity: { displayName: 'Usuario Theke' }, csrfToken: null, comments: [own] }));
+  render(<PublicCommentsPanel token="registered-token" enabled open onClose={() => {}}/>);
+  await screen.findByText('Inicial');
+  fireEvent.click(screen.getByRole('button', { name: 'Editar comentario' }));
+  fireEvent.change(screen.getByRole('textbox', { name: 'Comentario' }), { target: { value: 'Corregido' } });
+  fetchMock.mockResolvedValueOnce(reply({ ...own, content: 'Corregido', revision: 2 }));
+  const save = screen.getByRole('button', { name: 'Guardar cambios' });
+  expect(save).toBeEnabled();
+  fireEvent.click(save);
+  await screen.findByText('Corregido');
+  const patch = fetchMock.mock.calls.find(([, options]) => options?.method === 'PATCH');
+  expect(patch?.[1]?.headers).toMatchObject({ Authorization: 'Bearer verified-clerk-token' });
+  expect(patch?.[1]?.headers).not.toHaveProperty('X-CSRF-Token');
+  fireEvent.change(screen.getByRole('textbox', { name: 'Comentario' }), { target: { value: 'Nuevo' } });
+  expect(screen.getByRole('button', { name: 'Publicar comentario' })).toBeEnabled();
+});
+
 it('publica con anclaje de Recurso y recupera un borrador local tras cerrar', async () => {
   const target = { type: 'resource' as const, resourceId: '11111111-1111-4111-8111-111111111111' };
   fetchMock.mockResolvedValue(reply({ identity: null, csrfToken: null, comments: [] }));

@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { SharePreviewDialog } from '../src/features/canvas/SharePreviewDialog';
 
+vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
+
 const state = vi.hoisted(() => ({ requested: vi.fn(), published: vi.fn(), comments: vi.fn(), updated: vi.fn(), revoked: vi.fn(), changed: false, ready: false,
   activeShare: null as null | { active: true; url: string; fingerprint: string; revision: number; commentsEnabled: boolean } }));
 vi.mock('../src/features/canvas/CanvasDialog', () => ({ CanvasDialog: ({ children }: { children: React.ReactNode }) => <div role="dialog">{children}</div> }));

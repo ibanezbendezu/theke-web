@@ -188,7 +188,7 @@ export function PublicCommentsPanel({
 
     const publish = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (!data || busy || loadError || ((!isSignedIn && data.identity || editing) && !data.csrfToken)) return;
+        if (!data || busy || loadError || (!isSignedIn && (data.identity || editing) && !data.csrfToken)) return;
         const nextContent = content.trim();
         const invalidContent = !nextContent || nextContent.length > 5000;
         setContentError(invalidContent ? 'Escribe un comentario de hasta 5.000 caracteres.' : '');
@@ -363,7 +363,7 @@ export function PublicCommentsPanel({
                 {publishError && <p role="alert" className="text-xs text-red-600 dark:text-red-400">{publishError}</p>}
                 <p role="status" aria-live="polite" className="sr-only">{announcement}</p>
                 <div className="flex flex-wrap items-center gap-2"><Button type="submit" variant="secondary"
-                                                                           disabled={!data || busy || loadError || Boolean((data.identity || editing) && !data.csrfToken) || Boolean(conflict)}>{busy ? 'Guardando…' : editing ? 'Guardar cambios' : 'Publicar comentario'}</Button>{editing &&
+                                                                           disabled={!data || busy || loadError || Boolean(!isSignedIn && (data.identity || editing) && !data.csrfToken) || Boolean(conflict)}>{busy ? 'Guardando…' : editing ? 'Guardar cambios' : 'Publicar comentario'}</Button>{editing &&
                     <Button type="button" onClick={cancelEditing}>Cancelar</Button>}</div>
             </form>}
         {!enabled && !editing &&

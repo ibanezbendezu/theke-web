@@ -34,6 +34,7 @@ import {
 import type {PublicLayoutNode, PublicShare, SharePreviewRelation, SharePreviewResource} from '../api/generated/models';
 import {Button} from '../components/ui/Button';
 import type {CommentTarget, PublicComment} from './publicCommentTypes';
+import {publicRelationLabel} from './publicRelationLabel';
 
 export type PublicSelection = { kind: 'resource' | 'relation' | 'folder'; id: string } | null;
 type PublicNodeData = {
@@ -296,7 +297,7 @@ function PublicCanvas({
             sourceHandle: item.sourceHandle,
             targetHandle: item.targetHandle,
             data: {
-                label: relation?.label || relation?.typeKey || item.label || '',
+                label: relation ? publicRelationLabel(relation) : item.label || '',
                 direction: relation?.direction,
                 offsetX: item.offsetX,
                 offsetY: item.offsetY,
@@ -463,10 +464,10 @@ export function PublicSemanticList({
                 aria-pressed={selection?.kind === 'relation' && selection.id === item.id} onClick={() => onSelect({
                 kind: 'relation',
                 id: item.id
-            })}>{titles.get(item.sourceResourceId)} {item.direction === 'directed' ? '→' : '↔'} {titles.get(item.targetResourceId)} · {item.label || item.typeKey}</button>
+            })}>{titles.get(item.sourceResourceId)} {item.direction === 'directed' ? '→' : '↔'} {titles.get(item.targetResourceId)} · {publicRelationLabel(item)}</button>
             {commentsEnabled && <button type="button"
                                         className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary"
-                                        aria-label={`Comentar relación ${item.label || item.typeKey}`}
+                                        aria-label={`Comentar relación ${publicRelationLabel(item)}`}
                                         onClick={() => onCommentTarget({type: 'relation', relationId: item.id})}>
                 <MessageCircle size={17}/></button>}</li>)}</ul>
         {readableVisuals.length > 0 && <><h3 className="text-sm font-semibold">Elementos visuales</h3>

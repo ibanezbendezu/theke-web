@@ -19,6 +19,13 @@ it('permite comentar Recursos y Relaciones desde la vista semántica con teclado
   expect(onCommentTarget.mock.calls.map(call => call[0])).toEqual([{ type: 'resource', resourceId: 'resource-1' }, { type: 'relation', relationId: 'relation-1' }]);
 });
 
+it('muestra el nombre público del tipo personalizado en lugar de su clave interna', () => {
+  render(<PublicSemanticList resources={[]} relations={[{ id: 'relation-1', sourceResourceId: 'one', targetResourceId: 'two', direction: 'directed', typeKey: 'custom:44444444-4444-4444-8444-444444444444', typeLabel: 'Contextualiza smoke', label: null, explanation: null }]} selection={null} onSelect={() => {}} commentsEnabled onCommentTarget={() => {}}/>);
+  expect(screen.getByRole('button', { name: /→.*· Contextualiza smoke/ })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Comentar relación Contextualiza smoke' })).toBeInTheDocument();
+  expect(screen.queryByText(/custom:44444444/)).not.toBeInTheDocument();
+});
+
 it('abre el compositor desde el menú contextual y localiza comentarios sobre el Canvas', async () => {
   vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
   const comment = { id: 'comment-1', displayName: 'Ana', content: 'Revisar esta fuente', createdAt: new Date().toISOString(), editable: false, anchored: true, anchor: { type: 'resource', resourceId: 'one', label: 'Fuente', x: 40, y: 50 } };

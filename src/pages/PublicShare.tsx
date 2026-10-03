@@ -16,6 +16,7 @@ import {ThemeToggle} from '../components/ui/ThemeToggle';
 import {PublicDiagramCanvas, PublicSemanticList, type PublicSelection} from './PublicDiagramCanvas';
 import {PublicResourceDetail} from './PublicResourceDetail';
 import {PublicCommentsPanel} from './PublicCommentsPanel';
+import {publicRelationLabel} from './publicRelationLabel';
 import type {CommentTarget, PublicComment} from './publicCommentTypes';
 
 export function PublicShare() {
@@ -192,7 +193,7 @@ function PublicShareView({token}: { token: string | undefined }) {
             {token && <PublicCommentsPanel key={token} token={token} enabled={data.commentsEnabled} open={commentsOpen}
                                            onClose={() => setCommentsOpen(false)} target={commentTarget}
                                            onTargetChange={setCommentTarget}
-                                           targetLabel={commentTarget?.type === 'resource' ? data.resources.find(item => item.id === commentTarget.resourceId)?.title ?? 'Recurso' : commentTarget?.type === 'relation' ? data.relations.find(item => item.id === commentTarget.relationId)?.label || data.relations.find(item => item.id === commentTarget.relationId)?.typeKey || 'Relación' : commentTarget ? 'Punto del mapa' : 'Mapa completo'}
+                                           targetLabel={commentTarget?.type === 'resource' ? data.resources.find(item => item.id === commentTarget.resourceId)?.title ?? 'Recurso' : commentTarget?.type === 'relation' ? publicRelationLabel(data.relations.find(item => item.id === commentTarget.relationId) ?? {label: null}) : commentTarget ? 'Punto del mapa' : 'Mapa completo'}
                                            onCommentsChange={setComments} selectedCommentId={selectedCommentId}/>}
         </section>
         {selection && detailsOpen &&
@@ -216,7 +217,7 @@ function PublicShareView({token}: { token: string | undefined }) {
                 · {selectedFolder.folderCount ?? 0} recursos</p>{selectedFolder.caption &&
                 <p>{selectedFolder.caption}</p>}</div>}
             {selectedRelation && <div className="space-y-3"><h3
-                className="text-lg font-semibold">{selectedRelation.label || selectedRelation.typeKey}</h3><p
+                className="text-lg font-semibold">{publicRelationLabel(selectedRelation)}</h3><p
                 className="text-sm text-outline">{selectedRelation.direction === 'directed' ? 'Relación dirigida' : 'Relación no dirigida'}</p>{selectedRelation.explanation &&
                 <p className="whitespace-pre-wrap">{selectedRelation.explanation}</p>}
                 <div className="flex flex-wrap gap-2"><Button

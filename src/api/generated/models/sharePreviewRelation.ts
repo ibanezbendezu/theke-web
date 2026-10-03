@@ -13,6 +13,7 @@ export interface SharePreviewRelation {
   targetResourceId: string;
   direction: SharePreviewRelationDirection;
   typeKey: string;
+  typeLabel?: string;
   /** @nullable */
   label: string | null;
   /** @nullable */

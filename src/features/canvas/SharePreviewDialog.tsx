@@ -6,6 +6,7 @@ import {usePublishShare} from '../../data/usePublishShare';
 import {useShareManagement} from '../../data/useShareManagement';
 import {CanvasDialog} from './CanvasDialog';
 import {PublicDiagramCanvas} from '../../pages/PublicDiagramCanvas';
+import {publicRelationLabel} from '../../pages/publicRelationLabel';
 
 export function SharePreviewDialog({diagramId, canPreview, onClose}: {
     diagramId: string;
@@ -41,9 +42,9 @@ export function SharePreviewDialog({diagramId, canPreview, onClose}: {
         for (const [before, after, name] of [[previous.resources, data.resources, 'Recurso'], [previous.relations, data.relations, 'Relación']] as const) {
             const prior = new Map(before.map(item => [item.id, item]));
             const current = new Map(after.map(item => [item.id, item]));
-            for (const item of after) if (!prior.has(item.id)) differences.push(`${name} añadido: ${'title' in item ? item.title : item.label || item.typeKey}`);
-            for (const item of before) if (!current.has(item.id)) differences.push(`${name} retirado: ${'title' in item ? item.title : item.label || item.typeKey}`);
-            for (const item of after) if (prior.has(item.id) && JSON.stringify(prior.get(item.id)) !== JSON.stringify(item)) differences.push(`${name} modificado: ${'title' in item ? item.title : item.label || item.typeKey}`);
+            for (const item of after) if (!prior.has(item.id)) differences.push(`${name} añadido: ${'title' in item ? item.title : publicRelationLabel(item)}`);
+            for (const item of before) if (!current.has(item.id)) differences.push(`${name} retirado: ${'title' in item ? item.title : publicRelationLabel(item)}`);
+            for (const item of after) if (prior.has(item.id) && JSON.stringify(prior.get(item.id)) !== JSON.stringify(item)) differences.push(`${name} modificado: ${'title' in item ? item.title : publicRelationLabel(item)}`);
         }
         if (JSON.stringify(previous.layout) !== JSON.stringify(data.layout)) differences.push('Posiciones o conexiones del Diagrama modificadas');
     }
@@ -101,7 +102,7 @@ export function SharePreviewDialog({diagramId, canPreview, onClose}: {
             <section aria-label="Relaciones expuestas"><h3 className="font-semibold">Relaciones
                 ({data.relations.length})</h3>
                 <ul>{data.relations.map(item => <li key={item.id}
-                                                    className="mt-2 rounded-md bg-surface-variant/60 p-2">{titles.get(item.sourceResourceId)} {item.direction === 'directed' ? '→' : '↔'} {titles.get(item.targetResourceId)} · {item.label || item.typeKey}{item.explanation &&
+                                                    className="mt-2 rounded-md bg-surface-variant/60 p-2">{titles.get(item.sourceResourceId)} {item.direction === 'directed' ? '→' : '↔'} {titles.get(item.targetResourceId)} · {publicRelationLabel(item)}{item.explanation &&
                     <p>{item.explanation}</p>}{item.evidence?.map((evidence, index) => <p key={index}>Evidencia
                     de {titles.get(evidence.resourceId)}{evidence.pageNumber ? ` · página ${evidence.pageNumber}` : ''}: {evidence.excerpt || evidence.note || 'Sin texto adicional'}</p>)}</li>)}</ul>
             </section>
