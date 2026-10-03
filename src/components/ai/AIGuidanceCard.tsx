@@ -239,7 +239,7 @@ export function AIGuidanceCard({
                             variant="primary"
                             className="w-full"
                             icon={Sparkles}
-                            disabled={settings.isPending}
+                            loading={settings.isPending}
                             onClick={() => settings.mutate({enabled: true})}
                         >
                             {settings.isPending ? 'Activando...' : 'Activar Asistencia de IA'}
@@ -251,12 +251,11 @@ export function AIGuidanceCard({
                                     variant="primary"
                                     className="flex-1"
                                     icon={Sparkles}
+                                    loading={isLoading || preflight.isPending}
                                     disabled={
-                                        isLoading ||
                                         selectedResourceIds.length === 0 ||
                                         !assessment?.allowed ||
-                                        providerPending ||
-                                        preflight.isPending
+                                        providerPending
                                     }
                                     onClick={onExecute}
                                 >

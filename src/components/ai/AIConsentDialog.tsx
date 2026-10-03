@@ -166,7 +166,7 @@ export function AIConsentDialog({
                     <Button
                         variant="primary"
                         onClick={handleSubmit}
-                        disabled={!agreed || consent.isPending}
+                        loading={consent.isPending} disabled={!agreed}
                     >
                         {consent.isPending ? 'Guardando...' : 'Aceptar y habilitar IA'}
                     </Button>

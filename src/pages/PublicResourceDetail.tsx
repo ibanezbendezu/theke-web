@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {InlineLoading} from '../components/ui/LoadingState';
 import type {SharePreviewResource} from '../api/generated/models';
 
 function safeLink(value: string | null): string | null {
@@ -13,6 +14,7 @@ function safeLink(value: string | null): string | null {
 
 export function PublicResourceDetail({resource, token}: { resource: SharePreviewResource; token: string }) {
     const [previewFailed, setPreviewFailed] = useState(false);
+    const [imageReady, setImageReady] = useState(false);
     const [requestNumber, setRequestNumber] = useState(0);
     const baseUrl = `${import.meta.env.VITE_API_URL?.replace(/\/+$/, '') ?? ''}/v1/public/shares/${encodeURIComponent(token)}/resources/${encodeURIComponent(resource.id)}/content`;
     const previewUrl = requestNumber ? `${baseUrl}?retry=${requestNumber}` : baseUrl;
@@ -37,9 +39,12 @@ export function PublicResourceDetail({resource, token}: { resource: SharePreview
             {previewFailed &&
                 <p role="alert">No se pudo cargar la vista previa. Puedes volver a intentar, abrir el archivo o
                     descargarlo.</p>}
-            {!previewFailed && image && <img className="max-h-96 max-w-full" loading="lazy" src={previewUrl}
-                                             alt={resource.accessibilityText || resource.title}
-                                             referrerPolicy="no-referrer" onError={() => setPreviewFailed(true)}/>}
+            {!previewFailed && image && <div className="relative min-h-48 bg-surface-variant/55">
+                {!imageReady && <div className="absolute inset-0 grid place-items-center"><InlineLoading label="Abriendo imagen…"/></div>}
+                <img className={`max-h-96 max-w-full ${imageReady ? '' : 'opacity-0'}`} loading="lazy" src={previewUrl}
+                     alt={resource.accessibilityText || resource.title} onLoad={() => setImageReady(true)}
+                     referrerPolicy="no-referrer" onError={() => setPreviewFailed(true)}/>
+            </div>}
             {!previewFailed && audio &&
                 <audio aria-label={`Reproducir ${resource.title}`} className="w-full" controls preload="none"
                        src={previewUrl} onError={() => setPreviewFailed(true)}>El navegador no puede reproducir este
@@ -55,6 +60,7 @@ export function PublicResourceDetail({resource, token}: { resource: SharePreview
                     onClick={() => {
                         setRequestNumber(value => value + 1);
                         setPreviewFailed(false);
+                        setImageReady(false);
                     }}>Reintentar vista previa</button>}
                 <a className="inline-flex min-h-11 items-center rounded-md bg-surface-variant px-3 py-2 underline focus-visible:outline-2 focus-visible:outline-primary"
                    href={baseUrl} target="_blank" rel="noopener noreferrer">Abrir archivo</a>

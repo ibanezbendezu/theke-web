@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react';
 import type {DragEvent} from 'react';
 import {FileText, Folder, Plus} from 'lucide-react';
 import {Button} from '../../components/ui/Button';
+import {InlineLoading} from '../../components/ui/LoadingState';
 import {CollectionItem} from '../../components/ui/CollectionItem';
 import {NameDialog} from '../../components/ui/NameDialog';
 import {ImpactDialog} from '../../components/ui/ImpactDialog';
@@ -45,7 +46,7 @@ export function CanvasResourcePanel({projectId, onAdd, onSelect, onSelectFolder}
                 size={16}/></button>
         </div>
         <Button variant="secondary" className="mt-3 w-full" onClick={onAdd}>Añadir recurso</Button>
-        {organization.isPending && <p role="status" className="mt-3 text-xs">Cargando recursos…</p>}
+        {organization.isPending && <div className="mt-3"><InlineLoading label="Cargando recursos…"/></div>}
         {organization.isError && <p role="alert" className="mt-3 text-xs">No se pudieron cargar los recursos.</p>}
         {selectedFolder && <button type="button" className="mt-3 text-xs text-outline hover:underline"
                                    onClick={() => setSelectedFolder(null)} onDragOver={event => event.preventDefault()}
@@ -141,7 +142,7 @@ export function CanvasResourcePicker({projectId, usedIds, onClose, onSelect, onF
             variant={scope === 'global' ? 'secondary' : 'ghost'} onClick={() => setScope('global')}>Toda la
             Biblioteca</Button></div>
         <div className="mt-3 min-h-0 overflow-auto" aria-label="Resultados de recursos">{current.isPending &&
-            <p role="status">Buscando…</p>}{current.isError && <p role="alert">No se pudieron cargar los
+            <InlineLoading label="Buscando recursos…"/>}{current.isError && <p role="alert">No se pudieron cargar los
             recursos.</p>}{!current.isPending && !current.isError && items.length === 0 &&
             <p className="py-4 text-sm text-outline">No se encontraron recursos.</p>}{items.map(item => <div
             key={item.id} className="flex items-center gap-2 border-b border-border py-2">

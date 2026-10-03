@@ -81,8 +81,31 @@
 
 .theke-center-panel { animation: theke-center-panel-open 180ms ease-out both; transform-origin: bottom right; }
 
+@keyframes theke-loading-breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+.theke-loading-block, .theke-loading-mark { animation: theke-loading-breathe 1.6s ease-in-out infinite; }
+
+.theke-loading-gallery {
+  max-height: min(38dvh, 16rem);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 65%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 65%, transparent 100%);
+}
+
+.theke-progress { appearance: none; height: 4px; overflow: hidden; border-radius: 999px; background: var(--surface-variant); }
+.theke-progress::-webkit-progress-bar { background: var(--surface-variant); }
+.theke-progress::-webkit-progress-value { background: var(--on-background); border-radius: 999px; }
+.theke-progress::-moz-progress-bar { background: var(--on-background); border-radius: 999px; }
+
 @media (prefers-reduced-motion: reduce) {
-  .theke-center-float, .theke-center-panel { animation: none; }
+  .theke-center-float, .theke-center-panel, .theke-loading-block, .theke-loading-mark { animation: none; }
+}
+
+@media (forced-colors: active) {
+  .theke-loading-block { border: 1px solid CanvasText; }
 }
 
 @media (prefers-reduced-motion: reduce) {

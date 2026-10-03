@@ -21,6 +21,7 @@ import {UploadTray} from '../components/uploads/UploadTray';
 import {ResourceKnowledgePanel} from '../components/resources/ResourceKnowledgePanel';
 import {FileThumbnail} from '../components/resources/FileThumbnail';
 import {Button} from '../components/ui/Button';
+import {CollectionLoading, InlineLoading} from '../components/ui/LoadingState';
 import {CollectionItem} from '../components/ui/CollectionItem';
 import {Dialog} from '../components/ui/Dialog';
 import {MoveCollectionDialog} from '../components/ui/MoveCollectionDialog';
@@ -78,6 +79,8 @@ export function Library() {
     const folderItems = folders.data ?? [];
     const visibleFolders = status === 'active' ? folderItems.filter(folder => folder.parentFolderId === (folderId || null)) : [];
     const hasVisibleFolders = visibleFolders.length > 0;
+    const collectionError = resources.isError || (status === 'active' && folders.isError);
+    const collectionPending = !collectionError && (resources.isPending || (status === 'active' && folders.isPending));
     const setFolder = (value: string) => {
         const next = new URLSearchParams(searchParams);
         if (value) next.set('libraryFolderId', value); else next.delete('libraryFolderId');
@@ -147,14 +150,14 @@ export function Library() {
                 </button>
             </div>
         </>, document.body)}
-        {resources.isPending && <p role="status">Cargando archivos…</p>}
-        {resources.isError && <div role="alert"><p>No se pudieron cargar los archivos.</p><Button
-            onClick={() => resources.refetch()}>Reintentar</Button></div>}
-        {!resources.isPending && !resources.isError && items.length === 0 && !hasVisibleFolders &&
+        {collectionPending && <CollectionLoading view={viewMode} label="Cargando archivos"/>}
+        {collectionError && <div role="alert"><p>No se pudieron cargar los archivos o sus carpetas.</p><Button
+            onClick={() => {void resources.refetch(); void folders.refetch();}}>Reintentar</Button></div>}
+        {!collectionPending && !collectionError && items.length === 0 && !hasVisibleFolders &&
             <div className="py-12 text-center text-sm text-outline"><FileIcon className="mx-auto mb-3" size={36}/>
                 <p>{query ? 'No hay resultados.' : status === 'archived' ? 'No hay archivos archivados.' : folderId ? 'Esta carpeta está vacía.' : 'Aún no hay archivos.'}</p>{status === 'active' &&
                     <Button className="mt-3" onClick={() => setUploadOpen(true)}>Subir archivos</Button>}</div>}
-        {(hasVisibleFolders || items.length > 0) && <div
+        {!collectionPending && !collectionError && (hasVisibleFolders || items.length > 0) && <div
             className={viewMode === 'grid' ? 'grid grid-cols-[repeat(auto-fill,minmax(min(100%,205px),1fr))] gap-3' : ''}>
             {visibleFolders.map(folder => <CollectionItem key={folder.id} view={viewMode} title={folder.name}
                                                           detail="Carpeta de archivos" icon={<Folder size={18}/>}
@@ -211,8 +214,9 @@ export function Library() {
                 onSelect: () => setImpact({entityType: 'resource', id: resource.id, action: 'delete'})
             }]}/>)}
         </div>}
-        {resources.hasNextPage &&
-            <Button className="mt-5" onClick={() => resources.fetchNextPage()}>Cargar más</Button>}
+        {!collectionError && resources.hasNextPage &&
+            <Button className="mt-5" loading={resources.isFetchingNextPage}
+                    onClick={() => resources.fetchNextPage()}>{resources.isFetchingNextPage ? 'Cargando…' : 'Cargar más'}</Button>}
         {resourceId &&
             <Dialog titleId="library-resource-title" onClose={closeResource} scrollable={detail.data?.type !== 'file'}
                     shadow={detail.data?.type !== 'file'}
@@ -220,7 +224,7 @@ export function Library() {
                 {detail.data?.type !== 'file' && <div className="flex justify-end"><h2 id="library-resource-title"
                                                                                        className="sr-only">{detail.data?.title ?? 'Archivo'}</h2>
                     <Button onClick={closeResource}>Cerrar</Button></div>}
-                {detail.isPending && <p role="status" className="mt-5">Cargando recurso…</p>}
+                {detail.isPending && <div className="mt-5"><InlineLoading label="Abriendo archivo…"/></div>}
                 {detail.isError && <p role="alert" className="mt-5 text-red-600">No se pudo abrir el recurso.</p>}
                 {detail.data?.type === 'note' && <NoteEditor
                     note={{...detail.data, currentVersion: {id: '', ordinal: 1, content: detail.data.content ?? ''}}}
@@ -228,7 +232,7 @@ export function Library() {
                     const saved = await noteActions.update.mutateAsync({id: detail.data!.id, body});
                     return saved.contentUnchanged;
                 }}/>}
-                {detail.data?.type === 'file' && <FileResource resource={detail.data}
+                {detail.data?.type === 'file' && <FileResource key={detail.data.id} resource={detail.data}
                                                                folderName={folderItems.find(folder => folder.id === detail.data?.libraryFolderId)?.name ?? null}
                                                                onClose={closeResource}/>}
                 {detail.data?.type === 'link' && <LinkResource resource={detail.data}/>}
@@ -288,7 +292,7 @@ function ResourceLifecycle({resource, onArchived}: { resource: ResourceDetail; o
     return <section className="mt-5 flex items-center gap-2 rounded-lg bg-surface-variant/55 p-3"
                     aria-label="Ciclo de vida del recurso">{resource.status === 'archived' ? <><p
         className="flex-1 text-sm">Este Recurso está archivado. Sus usos existentes conservan la misma identidad.</p>
-        <Button variant="primary" disabled={actions.restoreResource.isPending}
+        <Button variant="primary" loading={actions.restoreResource.isPending}
                 onClick={() => actions.restoreResource.mutate(resource.id)}>Restaurar</Button></> : <><p
         className="flex-1 text-sm">Estas acciones afectan al Recurso canónico en toda tu Cuenta.</p><Button
         variant="outline" onClick={() => setRequest({
@@ -318,6 +322,10 @@ function FileResource({resource, folderName, onClose}: {
     const impactActions = useImpactActions();
     const toast = useToast();
     const [mediaUrl, setMediaUrl] = useState('');
+    const [mediaLoading, setMediaLoading] = useState(false);
+    const [downloadLoading, setDownloadLoading] = useState(false);
+    const [readyPreviewUrl, setReadyPreviewUrl] = useState('');
+    const previewContentReady = Boolean(preview.data?.url && readyPreviewUrl === preview.data.url);
     const [previewError, setPreviewError] = useState('');
     const [renaming, setRenaming] = useState(false);
     const [title, setTitle] = useState(resource.title);
@@ -347,18 +355,24 @@ function FileResource({resource, folderName, onClose}: {
         };
     }, [menuOpen]);
     const download = async () => {
+        setDownloadLoading(true);
         try {
             const value = await actions.access(resource.id, 'download');
             window.open(value.url, '_blank', 'noopener,noreferrer');
         } catch {
             toast.error('No se pudo descargar el archivo.');
+        } finally {
+            setDownloadLoading(false);
         }
     };
     const loadMedia = async () => {
+        setMediaLoading(true);
         try {
             setMediaUrl((await actions.access(resource.id, 'inline')).url);
         } catch {
             setPreviewError('No se pudo iniciar la reproducción. El original sigue disponible.');
+        } finally {
+            setMediaLoading(false);
         }
     };
     const rename = async (event: FormEvent) => {
@@ -396,7 +410,7 @@ function FileResource({resource, folderName, onClose}: {
                            maxLength={160} value={title} onChange={event => {
                         setTitle(event.target.value);
                         setNameError('');
-                    }}/><Button type="submit" disabled={actions.renameFile.isPending}>Guardar</Button><Button
+                    }}/><Button type="submit" loading={actions.renameFile.isPending}>Guardar</Button><Button
                     type="button" onClick={() => {
                     setRenaming(false);
                     setTitle(resource.title);
@@ -434,8 +448,8 @@ function FileResource({resource, folderName, onClose}: {
                                 }}>Eliminar
                         </button>
                     </div>}</div>
-                <Button className="hidden sm:inline-flex" onClick={() => void download()}>Descargar</Button><Button
-                    size="icon" className="h-10 w-10 sm:hidden" icon={Download} aria-label="Descargar original"
+                <Button className="hidden sm:inline-flex" loading={downloadLoading} onClick={() => void download()}>Descargar</Button><Button
+                    size="icon" className="h-10 w-10 sm:hidden" icon={Download} aria-label="Descargar original" loading={downloadLoading}
                     onClick={() => void download()}/></>}
             {!renaming &&
                 <Button size="icon" className="h-10 w-10 lg:hidden" icon={Info} aria-label="Mostrar propiedades"
@@ -449,20 +463,25 @@ function FileResource({resource, folderName, onClose}: {
         {nameError && <p role="alert" className="shrink-0 px-5 pb-2 text-sm text-red-600">{nameError}</p>}
         <div className="relative flex min-h-0 flex-1">
             <section
-                className="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-auto bg-surface/70 p-3 sm:p-5"
-                aria-label="Vista previa">
-                {preview.isPending && <p role="status">Preparando vista previa…</p>}
+                className="relative flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-auto bg-surface/70 p-3 sm:p-5"
+                aria-label="Vista previa" aria-busy={Boolean(previewable && !preview.isError && (preview.isPending || (preview.data?.url && !previewContentReady && !previewError)))}>
+                {preview.isPending && <InlineLoading label="Preparando vista previa…"/>}
+                {preview.data?.url && previewable && !previewContentReady && !previewError &&
+                    <InlineLoading label="Abriendo vista previa…"/>}
                 {preview.isError &&
                     <p role="alert">No se pudo mostrar la vista previa. Puedes descargar el original.</p>}
                 {preview.data?.url && resource.mediaType?.startsWith('image/') &&
-                    <img className="h-full w-full object-contain" src={preview.data.url}
+                    <img className={`absolute inset-0 h-full w-full object-contain ${previewContentReady ? '' : 'opacity-0'}`} src={preview.data.url}
                          alt={resource.accessibilityText || resource.title}
+                         onLoad={() => setReadyPreviewUrl(preview.data?.url ?? '')}
                          onError={() => setPreviewError('La imagen no pudo previsualizarse. El original sigue disponible.')}/>}
                 {preview.data?.url && resource.mediaType === 'application/pdf' &&
-                    <iframe className="h-full min-h-0 w-full" src={preview.data.url}
+                    <iframe className={`absolute inset-0 h-full min-h-0 w-full ${previewContentReady ? '' : 'opacity-0'}`} src={preview.data.url}
                             title={`Vista previa de ${resource.title}`}
+                            tabIndex={previewContentReady ? 0 : -1} aria-hidden={!previewContentReady}
+                            onLoad={() => setReadyPreviewUrl(preview.data?.url ?? '')}
                             onError={() => setPreviewError('El PDF no pudo previsualizarse. El original sigue disponible.')}/>}
-                {media && !mediaUrl && <Button onClick={() => void loadMedia()}>Cargar reproductor</Button>}
+                {media && !mediaUrl && <Button loading={mediaLoading} onClick={() => void loadMedia()}>Cargar reproductor</Button>}
                 {mediaUrl && resource.mediaType?.startsWith('audio/') &&
                     <audio className="w-full max-w-xl" controls preload="none" src={mediaUrl}>Tu navegador no puede
                         reproducir este audio.</audio>}
@@ -537,7 +556,7 @@ function LinkResource({resource}: { resource: ResourceDetail }) {
         <p role="status" className="mt-3 text-sm text-outline">Obteniendo
             metadatos…</p>}{resource.metadataStatus === 'failed' &&
         <div role="alert" className="mt-3"><p>No se pudieron obtener los metadatos. El enlace sigue guardado.</p><Button
-            className="mt-2" variant="outline" disabled={actions.retry.isPending} onClick={async () => {
+            className="mt-2" variant="outline" loading={actions.retry.isPending} onClick={async () => {
             try {
                 await actions.retry.mutateAsync({id: resource.id});
                 toast.info('Reintento iniciado.');
@@ -552,7 +571,7 @@ function LinkResource({resource}: { resource: ResourceDetail }) {
             className="mt-4 block text-sm font-medium">Descripción<textarea
             className="mt-1 min-h-28 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
             maxLength={1000} value={description} onChange={event => setDescription(event.target.value)}/></label><Button
-            className="mt-3" type="submit" variant="primary" disabled={actions.update.isPending}>Guardar
+            className="mt-3" type="submit" variant="primary" loading={actions.update.isPending}>Guardar
             cambios</Button></form>}</article>;
 }
 
@@ -619,7 +638,7 @@ function NoteEditor({note, busy, onCancel, onSave}: {
         {message && <p role="status" className="mt-3 text-sm">{message}</p>}
         <div className="mt-5 flex gap-2"><Button type="button" onClick={onCancel}>Cancelar</Button><Button type="submit"
                                                                                                            variant="primary"
-                                                                                                           disabled={busy}>{busy ? 'Guardando…' : 'Guardar'}</Button>
+                                                                                                           loading={busy}>{busy ? 'Guardando…' : 'Guardar'}</Button>
         </div>
     </form>;
 }

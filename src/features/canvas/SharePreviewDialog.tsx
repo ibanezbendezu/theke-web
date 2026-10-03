@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import type {SharePreview} from '../../api/generated/models';
 import {Button} from '../../components/ui/Button';
+import {InlineLoading} from '../../components/ui/LoadingState';
 import {useSharePreview} from '../../data/useSharePreview';
 import {usePublishShare} from '../../data/usePublishShare';
 import {useShareManagement} from '../../data/useShareManagement';
@@ -52,13 +53,13 @@ export function SharePreviewDialog({diagramId, canPreview, onClose}: {
         <h2 id="share-preview-title" className="font-semibold">Previsualización privada para compartir</h2>
         <p className="mt-2 text-sm text-outline">Solo se calcula desde el Diagrama guardado. El enlace público se activa
             únicamente al confirmar Publicar. Guarda los cambios y vuelve a calcular para revisar una versión nueva.</p>
-        <div className="mt-3 flex flex-wrap gap-2"><Button disabled={!canPreview || preview.isPending}
+        <div className="mt-3 flex flex-wrap gap-2"><Button disabled={!canPreview} loading={preview.isPending}
                                                            onClick={calculate}>{data ? 'Recalcular inventario' : 'Calcular inventario guardado'}</Button><Button
             onClick={onClose}>Volver al editor</Button></div>
         {!canPreview &&
             <p role="status" className="mt-3">Hay cambios locales pendientes o el Canvas no está listo. Espera a que
                 aparezca «Guardado» antes de calcular.</p>}
-        {preview.isPending && <p role="status">Calculando previsualización…</p>}
+        {preview.isPending && <div className="mt-3"><InlineLoading label="Calculando previsualización…"/></div>}
         {preview.isError &&
             <p role="alert" className="mt-3">No se pudo calcular la previsualización. Revisa el Diagrama guardado y
                 vuelve a intentarlo.</p>}
@@ -117,7 +118,7 @@ export function SharePreviewDialog({diagramId, canPreview, onClose}: {
                                                                       onChange={event => setApproved(event.target.checked)}/>He
                         revisado los Recursos, Relaciones y elementos visuales que se harán públicos.</label>
                     <Button variant="primary"
-                            disabled={!canPreview || !approved || publish.isPending || management.active.isPending}
+                            loading={publish.isPending} disabled={!canPreview || !approved || management.active.isPending}
                             onClick={() => publish.mutate({
                                 fingerprint,
                                 idempotencyKey: operationKey
@@ -152,7 +153,7 @@ export function SharePreviewDialog({diagramId, canPreview, onClose}: {
                         público completo y conserva este enlace. Guarda el Canvas, calcula el inventario y revisa los
                         cambios antes de actualizar.</p>
                         <Button
-                            disabled={!canPreview || !data?.ready || !fingerprint || fingerprint === activeShare.fingerprint || management.update.isPending}
+                            loading={management.update.isPending} disabled={!canPreview || !data?.ready || !fingerprint || fingerprint === activeShare.fingerprint}
                             onClick={() => {
                                 if (fingerprint) management.update.mutate({
                                     fingerprint,
@@ -170,7 +171,7 @@ export function SharePreviewDialog({diagramId, canPreview, onClose}: {
                                                                                       className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
                                                                                       value={revokeConfirmation}
                                                                                       onChange={event => setRevokeConfirmation(event.target.value)}/></label>
-                        <Button disabled={revokeConfirmation !== 'REVOCAR' || management.revoke.isPending}
+                        <Button loading={management.revoke.isPending} disabled={revokeConfirmation !== 'REVOCAR'}
                                 onClick={() => management.revoke.mutate({
                                     expectedPublishedFingerprint: activeShare.fingerprint,
                                     confirmation: 'REVOCAR'

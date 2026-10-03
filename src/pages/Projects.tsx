@@ -4,6 +4,7 @@ import {Folder, Network} from 'lucide-react';
 import {createPortal} from 'react-dom';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {Button} from '../components/ui/Button';
+import {CollectionLoading} from '../components/ui/LoadingState';
 import {CollectionItem} from '../components/ui/CollectionItem';
 import {Dialog} from '../components/ui/Dialog';
 import {ConfirmDialog, NameDialog} from '../components/ui/NameDialog';
@@ -48,6 +49,8 @@ export function Projects() {
     const folderItems = folders.data ?? [];
     const visibleFolders = status === 'active' ? folderItems.filter(folder => folder.parentFolderId === (folderId || null)) : [];
     const hasVisibleFolders = visibleFolders.length > 0;
+    const collectionError = query.isError || (status === 'active' && folders.isError);
+    const collectionPending = !collectionError && (query.isPending || (status === 'active' && folders.isPending));
     const dropIntoFolder = async (event: React.DragEvent<HTMLElement>, destination: string | null) => {
         event.preventDefault();
         const folder = event.dataTransfer.getData('application/x-theke-project-folder');
@@ -127,15 +130,15 @@ export function Projects() {
                 </button>
             </div>
         </>, document.body)}
-        {query.isPending && <p role="status" className="text-outline">Cargando proyectosâ€¦</p>}
-        {query.isError && <div role="alert"><p className="text-red-600">No se pudieron cargar los proyectos.</p><Button
-            variant="outline" onClick={() => query.refetch()}>Reintentar</Button></div>}
-        {!query.isPending && !query.isError && items.length === 0 && !hasVisibleFolders &&
+        {collectionPending && <CollectionLoading view={viewMode} label="Cargando mapas"/>}
+        {collectionError && <div role="alert"><p className="text-red-600">No se pudieron cargar los mapas o sus carpetas.</p><Button
+            variant="outline" onClick={() => {void query.refetch(); void folders.refetch();}}>Reintentar</Button></div>}
+        {!collectionPending && !collectionError && items.length === 0 && !hasVisibleFolders &&
             <div className="py-14 text-center"><Network className="mx-auto text-outline" size={36}/><h2
                 className="mt-3 font-medium">{status === 'active' ? folderId ? 'Esta carpeta está vacía' : 'Aún no tienes mapas en la raíz' : 'No hay mapas archivados'}</h2>
                 <p className="mt-1 text-sm text-outline">{status === 'active' ? 'Crea un mapa para organizar tu trabajo.' : 'Los mapas que archives aparecerán aquí.'}</p>{status === 'active' &&
                     <Button className="mt-4" onClick={() => edit('new')}>Crear mapa</Button>}</div>}
-        {(hasVisibleFolders || items.length > 0) && <div
+        {!collectionPending && !collectionError && (hasVisibleFolders || items.length > 0) && <div
             className={viewMode === 'grid' ? 'grid grid-cols-[repeat(auto-fill,minmax(min(100%,205px),1fr))] gap-3' : ''}>
             {visibleFolders.map(folder => <CollectionItem key={folder.id} view={viewMode} title={folder.name}
                                                           detail="Carpeta de mapas" icon={<Folder size={18}/>}
@@ -188,7 +191,7 @@ export function Projects() {
                 onSelect: () => setImpactRequest({entityType: 'project', id: project.id, action: 'delete'})
             }] : [{label: 'Restaurar', onSelect: () => actions.restore.mutate(project.id)}]}/>)}
         </div>}
-        {query.hasNextPage && <Button className="mt-5" variant="outline" disabled={query.isFetchingNextPage}
+        {!collectionError && query.hasNextPage && <Button className="mt-5" variant="outline" loading={query.isFetchingNextPage}
                                       onClick={() => query.fetchNextPage()}>{query.isFetchingNextPage ? 'Cargandoâ€¦' : 'Cargar mÃ¡s'}</Button>}
         {moving &&
             <MoveCollectionDialog name={moving.name} folders={folderItems} currentParentId={moving.parentFolderId}
@@ -240,7 +243,7 @@ function Editor({name, setName, error, busy, inputRef, save, close}: {
                                                       onChange={event => setName(event.target.value)}/>{error &&
             <p id="project-name-error" role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
             <div className="mt-5 flex justify-end gap-2"><Button type="button" onClick={close}>Cancelar</Button><Button
-                type="submit" variant="primary" disabled={busy}>{busy ? 'Guardandoâ€¦' : 'Guardar'}</Button></div>
+                type="submit" variant="primary" loading={busy}>{busy ? 'Guardando…' : 'Guardar'}</Button></div>
         </form>
     </Dialog>;
 }

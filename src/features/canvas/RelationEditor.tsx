@@ -283,7 +283,7 @@ function RelationEditorForm({detail, reload, onClose}: {
             <Button type="button" disabled={busy} onClick={() => void loadRemote()}>Cargar versión
                 remota</Button>}<Button type="button" onClick={onClose}>Cancelar</Button><Button type="submit"
                                                                                                  variant="primary"
-                                                                                                 disabled={busy}>{busy ? 'Guardando…' : 'Guardar Relación'}</Button>
+                                                                                                 loading={busy}>{busy ? 'Guardando…' : 'Guardar Relación'}</Button>
         </div>
     </form>;
 }

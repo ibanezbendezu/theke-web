@@ -3,6 +3,7 @@ import {X} from 'lucide-react';
 import {useAuth} from '@clerk/clerk-react';
 import {ApiError, thekeFetch} from '../api/httpClient';
 import {Button} from '../components/ui/Button';
+import {InlineLoading} from '../components/ui/LoadingState';
 import {anchorLabel, type CommentTarget, type PublicComment} from './publicCommentTypes';
 
 type CommentsData = { identity: { displayName: string } | null; csrfToken: string | null; comments: PublicComment[]; nextCursor?: string | null };
@@ -306,7 +307,7 @@ export function PublicCommentsPanel({
                     setLoadError(false);
                     setRetry(value => value + 1);
                 }}>Reintentar</button></p>}
-            {!data && !loadError && <p role="status" className="text-outline">Cargando comentarios…</p>}
+            {!data && !loadError && <InlineLoading label="Cargando comentarios…"/>}
             {data && <>
                 <div className="mb-4 text-xs text-outline">{data.identity ?
                     <p>Participas como {data.identity.displayName}.</p> :
@@ -375,7 +376,7 @@ export function PublicCommentsPanel({
                 {publishError && <p role="alert" className="text-xs text-red-600 dark:text-red-400">{publishError}</p>}
                 <p role="status" aria-live="polite" className="sr-only">{announcement}</p>
                 <div className="flex flex-wrap items-center gap-2"><Button type="submit" variant="secondary"
-                                                                           disabled={!data || busy || loadError || Boolean(!isSignedIn && (data.identity || editing) && !data.csrfToken) || Boolean(conflict)}>{busy ? 'Guardando…' : editing ? 'Guardar cambios' : 'Publicar comentario'}</Button>{editing &&
+                                                                           loading={busy} disabled={!data || loadError || Boolean(!isSignedIn && (data.identity || editing) && !data.csrfToken) || Boolean(conflict)}>{busy ? 'Guardando…' : editing ? 'Guardar cambios' : 'Publicar comentario'}</Button>{editing &&
                     <Button type="button" onClick={cancelEditing}>Cancelar</Button>}</div>
             </form>}
         {!enabled && !editing &&

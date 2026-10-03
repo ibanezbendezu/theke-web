@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {Button} from '../../components/ui/Button';
+import {InlineLoading} from '../../components/ui/LoadingState';
 import {useResource, useResourceActions} from '../../data/useResources';
 import {useCanvasStore} from '../../store/useCanvasStore';
 import {CanvasPresentationInspector} from './CanvasPresentationInspector';
@@ -14,12 +15,12 @@ export function CanvasResourceInspector({nodeId, resourceId, caption = ''}: {
     const updateNodeData = useCanvasStore(state => state.updateNodeData);
     const [previewUrl, setPreviewUrl] = useState('');
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState<'inline' | 'download' | null>(null);
     const item = resource.data;
     const libraryUrl = `/library/${encodeURIComponent(resourceId)}`;
     const openOriginal = async (mode: 'inline' | 'download') => {
         setError('');
-        setLoading(true);
+        setLoading(mode);
         try {
             const access = await actions.access(resourceId, mode);
             if (mode === 'inline') setPreviewUrl(access.url);
@@ -27,13 +28,13 @@ export function CanvasResourceInspector({nodeId, resourceId, caption = ''}: {
         } catch {
             setError('No se pudo abrir el archivo. Puedes reintentar o abrirlo desde la Biblioteca.');
         } finally {
-            setLoading(false);
+            setLoading(null);
         }
     };
     const previewable = item?.type === 'file' && (item.mediaType === 'application/pdf' || item.mediaType?.startsWith('image/') || item.mediaType?.startsWith('audio/') || item.mediaType?.startsWith('video/'));
     return <div className="space-y-4 text-sm">
         <h2 className="font-semibold">Detalle del recurso</h2>
-        {resource.isPending && <p role="status">Cargando recurso…</p>}
+        {resource.isPending && <InlineLoading label="Cargando recurso…"/>}
         {resource.isError &&
             <div role="alert"><p>Recurso no disponible. El resto del diagrama sigue accesible.</p><Button
                 className="mt-2" onClick={() => void resource.refetch()}>Reintentar</Button></div>}
@@ -53,8 +54,10 @@ export function CanvasResourceInspector({nodeId, resourceId, caption = ''}: {
                 <a className="inline-block text-primary underline" href={libraryUrl} target="_blank"
                    rel="noopener noreferrer">Abrir en Biblioteca</a>
                 {item.type === 'file' && <div className="flex flex-wrap gap-2">{previewable &&
-                    <Button disabled={loading} onClick={() => void openOriginal('inline')}>Vista previa</Button>}<Button
-                    disabled={loading} onClick={() => void openOriginal('download')}>Descargar original</Button></div>}
+                    <Button loading={loading === 'inline'} disabled={loading !== null}
+                            onClick={() => void openOriginal('inline')}>Vista previa</Button>}<Button
+                    loading={loading === 'download'} disabled={loading !== null}
+                    onClick={() => void openOriginal('download')}>Descargar original</Button></div>}
                 {previewUrl && item.mediaType?.startsWith('image/') &&
                     <img className="max-h-72 max-w-full" src={previewUrl} alt={item.accessibilityText || item.title}
                          onError={() => setError('No se pudo mostrar la imagen. El original sigue disponible.')}/>}

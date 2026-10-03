@@ -121,10 +121,10 @@ export function RelationCreateDialog({projectId, nodes, initial, canSave, onCrea
             {!canSave && <p className="text-xs text-outline">El diagrama tiene cambios pendientes de guardar.</p>}
             <div className="flex flex-wrap justify-end gap-2"><Button type="button" onClick={onVisualAlternative}>Añadir
                 línea visual</Button><Button type="button" onClick={onClose}>Cancelar</Button>{duplicate ?
-                <Button type="button" variant="primary" disabled={busy || !canSave}
+                <Button type="button" variant="primary" loading={busy} disabled={!canSave}
                         onClick={event => void submit(event, true)}>Mostrar existente</Button> :
                 <Button type="submit" variant="primary"
-                        disabled={busy || !canSave || !sourceNodeId || !targetNodeId || (typeKey === 'custom' && customTypeName.trim().length < 2)}>{busy ? 'Creando…' : 'Crear Relación'}</Button>}
+                        loading={busy} disabled={!canSave || !sourceNodeId || !targetNodeId || (typeKey === 'custom' && customTypeName.trim().length < 2)}>{busy ? 'Creando…' : 'Crear Relación'}</Button>}
             </div>
         </form>
     </CanvasDialog>;

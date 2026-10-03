@@ -1,6 +1,6 @@
 import {useEffect, useState, type FormEvent} from 'react';
 import {useAuth, useSignIn} from '@clerk/clerk-react';
-import {ArrowLeft} from 'lucide-react';
+import {ArrowLeft, LoaderCircle} from 'lucide-react';
 import {Link, Navigate, useNavigate, useSearchParams} from 'react-router-dom';
 import {AuthShell} from './AuthShell';
 import {safeDestination} from './safeDestination';
@@ -27,7 +27,8 @@ export function AccessPage() {
     const [code, setCode] = useState('');
     const [emailAddressId, setEmailAddressId] = useState('');
     const [step, setStep] = useState<'email' | 'code'>('email');
-    const [busy, setBusy] = useState(false);
+    const [busyAction, setBusyAction] = useState<'google' | 'email' | 'code' | 'resend' | null>(null);
+    const busy = busyAction !== null;
     const [error, setError] = useState('');
     const [resendIn, setResendIn] = useState(0);
 
@@ -42,7 +43,7 @@ export function AccessPage() {
     const sendCode = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!isLoaded || busy) return;
-        setBusy(true);
+        setBusyAction('email');
         setError('');
         try {
             const attempt = await signIn.create({identifier: email.trim()});
@@ -58,14 +59,14 @@ export function AccessPage() {
         } catch {
             setError('No se pudo enviar el código. Revisa el correo y vuelve a intentarlo.');
         } finally {
-            setBusy(false);
+            setBusyAction(null);
         }
     };
 
     const verifyCode = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!isLoaded || busy) return;
-        setBusy(true);
+        setBusyAction('code');
         setError('');
         try {
             const attempt = await signIn.attemptFirstFactor({strategy: 'email_code', code: code.trim()});
@@ -76,13 +77,13 @@ export function AccessPage() {
         } catch {
             setError('El código no es válido o venció. Revísalo y vuelve a intentarlo.');
         } finally {
-            setBusy(false);
+            setBusyAction(null);
         }
     };
 
     const google = async () => {
         if (!isLoaded || busy) return;
-        setBusy(true);
+        setBusyAction('google');
         setError('');
         try {
             await signIn.authenticateWithRedirect({
@@ -92,7 +93,7 @@ export function AccessPage() {
             });
         } catch {
             setError('No se pudo iniciar el acceso con Google. Vuelve a intentarlo.');
-            setBusy(false);
+            setBusyAction(null);
         }
     };
 
@@ -101,9 +102,9 @@ export function AccessPage() {
     return <AuthShell titleId="access-title" title={step === 'email' ? 'Entra a tu espacio' : 'Revisa tu correo'}
                       description={step === 'email' ? 'Accede a tus mapas y recursos con tu correo o con Google.' : `Enviamos un código de acceso a ${email.trim()}.`}>
         {step === 'email' ? <>
-            <button type="button" onClick={() => void google()} disabled={!isLoaded || busy}
+            <button type="button" onClick={() => void google()} disabled={!isLoaded || busy} aria-busy={busyAction === 'google'}
                     className="flex h-11 w-full items-center justify-center gap-3 rounded-md bg-surface-variant/70 px-4 text-sm font-medium hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">
-                <GoogleMark/>Continuar con Google
+                {busyAction === 'google' ? <LoaderCircle size={18} aria-hidden="true" className="motion-safe:animate-spin"/> : <GoogleMark/>}Continuar con Google
             </button>
             <div className="my-6 flex items-center gap-4 text-xs text-outline"><span className="h-px flex-1 bg-border"/><span>o con correo</span><span
                 className="h-px flex-1 bg-border"/></div>
@@ -112,8 +113,9 @@ export function AccessPage() {
                 electrónico</label><input id="access-email" className={input} type="email" autoComplete="email"
                                           inputMode="email" required value={email}
                                           onChange={event => setEmail(event.target.value)} placeholder="tu@correo.com"/>
-                <button className={primary}
-                        disabled={!isLoaded || busy}>{busy ? 'Enviando…' : 'Continuar con correo'}</button>
+                <button className={primary} disabled={!isLoaded || busy} aria-busy={busyAction === 'email'}>
+                    {busyAction === 'email' && <LoaderCircle size={16} aria-hidden="true" className="mr-2 motion-safe:animate-spin"/>}
+                    {busyAction === 'email' ? 'Enviando…' : 'Continuar con correo'}</button>
             </form>
             <p className="mt-7 text-sm text-outline">¿Aún no tienes un espacio? <Link
                 className="font-medium text-on-background underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-primary"
@@ -133,12 +135,13 @@ export function AccessPage() {
                                            inputMode="numeric" required value={code}
                                            onChange={event => setCode(event.target.value)}
                                            placeholder="Código recibido"/>
-                <button className={primary}
-                        disabled={!isLoaded || busy}>{busy ? 'Verificando…' : 'Entrar a Theke'}</button>
+                <button className={primary} disabled={!isLoaded || busy} aria-busy={busyAction === 'code'}>
+                    {busyAction === 'code' && <LoaderCircle size={16} aria-hidden="true" className="mr-2 motion-safe:animate-spin"/>}
+                    {busyAction === 'code' ? 'Verificando…' : 'Entrar a Theke'}</button>
             </form>
             <button type="button" onClick={async () => {
                 if (!isLoaded || busy || !emailAddressId || resendIn) return;
-                setBusy(true);
+                setBusyAction('resend');
                 setError('');
                 try {
                     await signIn.prepareFirstFactor({strategy: 'email_code', emailAddressId});
@@ -146,10 +149,12 @@ export function AccessPage() {
                 } catch {
                     setError('No se pudo enviar otro código. Inténtalo más tarde.');
                 } finally {
-                    setBusy(false);
+                    setBusyAction(null);
                 }
             }} disabled={!isLoaded || busy || resendIn > 0}
-                    className="mt-5 rounded-md text-sm text-outline hover:text-on-background focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-60">{resendIn ? `Enviar otro código en ${resendIn} s` : 'Enviar otro código'}</button>
+                    className="mt-5 inline-flex items-center gap-2 rounded-md text-sm text-outline hover:text-on-background focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-60">
+                {busyAction === 'resend' && <LoaderCircle size={15} aria-hidden="true" className="motion-safe:animate-spin"/>}
+                {busyAction === 'resend' ? 'Enviando…' : resendIn ? `Enviar otro código en ${resendIn} s` : 'Enviar otro código'}</button>
         </>}
         {error && <p role="alert" className="mt-4 text-sm text-red-600 dark:text-red-400">{error}</p>}
     </AuthShell>;

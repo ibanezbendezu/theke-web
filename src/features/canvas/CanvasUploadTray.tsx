@@ -38,7 +38,8 @@ export function CanvasUploadTray({batches, retry, undo, createGroup}: {
                 <div className="flex items-center gap-1"><span
                     className="min-w-0 flex-1 truncate">{entry.file.name}</span><span>{labels[entry.status] ?? entry.status}</span>{['failed', 'rejected'].includes(entry.status) &&
                     <Button size="sm" onClick={() => retry(batch.id, entry.id)}>Reintentar</Button>}</div>
-                <progress className="mt-1 w-full" max={100} value={entry.progress}
+                <progress className="theke-progress mt-1 w-full" max={100}
+                          value={['uploading', 'ready', 'failed', 'rejected', 'cancelled'].includes(entry.status) ? entry.progress : undefined}
                           aria-label={`Progreso de ${entry.file.name}`}/>
                 {entry.error && <p role="alert" className="text-red-600">{entry.error}</p>}</div>)}
         </section>)}

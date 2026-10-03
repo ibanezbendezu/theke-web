@@ -174,7 +174,7 @@ export function ResourceKnowledgePanel({resource, compact = false}: { resource: 
                     <div className="flex gap-2"><Button type="button" variant="outline"
                                                         onClick={() => setProperties(current => [...current, blank()])}
                                                         disabled={properties.length >= 30}>Añadir
-                        propiedad</Button><Button type="submit" variant="primary" disabled={knowledge.save.isPending}>Guardar
+                        propiedad</Button><Button type="submit" variant="primary" loading={knowledge.save.isPending}>Guardar
                         metadatos</Button></div>
                     <p className="text-xs text-outline">El tipo de cada nombre de propiedad se comparte en tu
                         Cuenta.</p></form>}

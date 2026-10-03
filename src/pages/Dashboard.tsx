@@ -5,6 +5,7 @@ import {CollectionItem} from '../components/ui/CollectionItem';
 import {ImpactDialog, type ImpactRequest} from '../components/ui/ImpactDialog';
 import {NameDialog} from '../components/ui/NameDialog';
 import {Button} from '../components/ui/Button';
+import {CollectionLoading} from '../components/ui/LoadingState';
 import {CollectionGroup, ViewToolbar} from '../components/ui/ViewToolbar';
 import {useCollectionView} from '../components/ui/useCollectionView';
 import {type Project, useProjectActions, useProjects} from '../data/useProjects';
@@ -30,7 +31,7 @@ export function Dashboard() {
             onNew={() => navigate('/projects?create=1')}
             newLabel="Crear mapa"
         />
-        {projects.isPending && <p role="status" className="text-sm text-outline">Cargando proyectosÃ¢â‚¬Â¦</p>}
+        {projects.isPending && <CollectionLoading view={viewMode} label="Cargando mapas"/>}
         {projects.isError &&
             <div role="alert" className="text-sm"><p>No se pudieron cargar los proyectos.</p><Button className="mt-2"
                                                                                                      onClick={() => projects.refetch()}>Reintentar</Button>
@@ -55,8 +56,8 @@ export function Dashboard() {
                                 destructive: true,
                                 onSelect: () => setImpact({entityType: 'project', id: project.id, action: 'delete'})
                             }]}/>)}</div>}
-        {group === 'projects' && projects.hasNextPage && <Button className="mt-5" disabled={projects.isFetchingNextPage}
-                                                                 onClick={() => projects.fetchNextPage()}>{projects.isFetchingNextPage ? 'CargandoÃ¢â‚¬Â¦' : 'Cargar mÃƒÂ¡s'}</Button>}
+        {group === 'projects' && projects.hasNextPage && <Button className="mt-5" loading={projects.isFetchingNextPage}
+                                                                 onClick={() => projects.fetchNextPage()}>{projects.isFetchingNextPage ? 'Cargando…' : 'Cargar más'}</Button>}
         {impact && <ImpactDialog request={impact} onClose={() => setImpact(null)} onDone={() => setImpact(null)}/>}
         {renaming && <NameDialog title="Renombrar mapa" initialValue={renaming.name} onClose={() => setRenaming(null)}
                                  onSave={name => actions.rename.mutateAsync({

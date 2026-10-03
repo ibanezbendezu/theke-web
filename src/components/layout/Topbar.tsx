@@ -162,7 +162,7 @@ export function Topbar({isSidebarOpen, setIsOpen}: TopbarProps) {
                 <button type="button" className="relative grid h-8 w-8 place-items-center rounded-md text-outline hover:bg-surface-variant hover:text-on-background"
                         aria-label={`Comentarios${notifications.data?.unreadCount ? `, ${notifications.data.unreadCount} pendientes` : ''}`}
                         aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen(value => !value)}>
-                    <Bell size={17}/>{Boolean(notifications.data?.unreadCount) && <span className="absolute -right-1 -top-1 min-w-4 rounded-full bg-primary px-0.5 text-[10px] leading-4 text-on-primary">{Math.min(notifications.data!.unreadCount, 99)}{notifications.data!.unreadCount > 99 ? '+' : ''}</span>}
+                    <Bell size={17}/>{Boolean(notifications.data?.unreadCount) && <span aria-hidden="true" className="absolute bottom-0 right-0 min-w-4 rounded-full bg-primary px-0.5 text-[10px] leading-4 text-on-primary">{Math.min(notifications.data!.unreadCount, 99)}{notifications.data!.unreadCount > 99 ? '+' : ''}</span>}
                 </button>
                 {notificationsOpen && <section className="absolute right-0 top-10 z-[70] h-[min(32rem,calc(100dvh-4rem))] w-[min(22rem,calc(100vw-1.5rem))] overflow-hidden rounded-xl bg-surface ring-1 ring-border"
                                               aria-label="Avisos de comentarios"><CommentNotificationsPanel onOpen={item => {

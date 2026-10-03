@@ -14,6 +14,7 @@ import {
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {Button} from '../components/ui/Button';
+import {InlineLoading, WorkspaceLoading} from '../components/ui/LoadingState';
 import {AIGuidanceCard} from '../components/ai/AIGuidanceCard';
 import {usePrepareDiagramReview} from '../data/useAi';
 import type {AiScopePreparation} from '../api/generated/models';
@@ -164,7 +165,7 @@ function DiagramEditorCore() {
             useCanvasStore.getState().setInspectorOpen(true);
         } else if (diagram.data) useCanvasStore.getState().addFolderRepresentation(folderId, diagram.data.projectId);
     };
-    if (diagram.isPending) return <p role="status" className="p-6">Cargando diagrama…</p>;
+    if (diagram.isPending) return <WorkspaceLoading fullscreen label="Abriendo mapa…"/>;
     if (diagram.isError || !diagram.data) return <div role="alert" className="p-6"><p>No se pudo abrir el diagrama.</p>
         <Button className="mt-3" onClick={() => diagram.refetch()}>Reintentar</Button></div>;
     return <main className="relative flex h-dvh min-h-0 bg-background text-on-background">
@@ -204,7 +205,7 @@ function DiagramEditorCore() {
                                 aria-label={`${leftPanel === 'comments' ? 'Ocultar' : 'Mostrar'} comentarios, ${commentPage.data?.unreadCount ?? 0} pendientes`}
                                 aria-expanded={leftPanel === 'comments'} icon={MessageCircle}
                                 onClick={() => setLeftPanel(value => value === 'comments' ? null : 'comments')}/>
-                            {Boolean(commentPage.data?.unreadCount) && <span className="pointer-events-none absolute -right-1 -top-1 min-w-4 rounded-full bg-primary px-0.5 text-center text-[10px] leading-4 text-on-primary">{Math.min(commentPage.data!.unreadCount, 99)}{commentPage.data!.unreadCount > 99 ? '+' : ''}</span>}
+                            {Boolean(commentPage.data?.unreadCount) && <span aria-hidden="true" className="pointer-events-none absolute bottom-0 right-0 min-w-4 rounded-full bg-primary px-0.5 text-center text-[10px] leading-4 text-on-primary">{Math.min(commentPage.data!.unreadCount, 99)}{commentPage.data!.unreadCount > 99 ? '+' : ''}</span>}
                         </span>
                         <Button size="icon" className="h-10 w-10 shrink-0" title="Revisar alcance de IA"
                                 aria-label="Revisar alcance de IA" icon={ScanSearch} onClick={() => {
@@ -248,10 +249,9 @@ function DiagramEditorCore() {
                         restaurarlo.</p> : readyDiagramId === diagram.data.id ?
                         <CanvasResourcePanel projectId={diagram.data.projectId} onAdd={() => openPicker()}
                                              onSelect={id => tryAdd(id)} onSelectFolder={addFolder}/> :
-                        <p className="p-4 text-sm text-outline">Cargando recursos del
-                            mapa…</p> : readyDiagramId === diagram.data.id ?
+                        <div className="p-4"><InlineLoading label="Cargando recursos del mapa…"/></div> : readyDiagramId === diagram.data.id ?
                     <CanvasSemanticView projectId={diagram.data.projectId}/> :
-                    <p className="p-4 text-sm text-outline">Cargando vista semántica…</p>}
+                    <div className="p-4"><InlineLoading label="Cargando vista semántica…"/></div>}
             </div>}
         </section>
         {rightOpen && <aside
@@ -299,7 +299,7 @@ function DiagramEditorCore() {
                 <p className="mt-2 text-sm text-outline">Se comprobarán los nodos seleccionados o, si no hay selección,
                     el Diagrama completo en su última versión guardada. Guarda los cambios antes de preparar un alcance
                     nuevo.</p>
-                <div className="mt-3 flex gap-2"><Button disabled={review.isPending} onClick={() => {
+                <div className="mt-3 flex gap-2"><Button loading={review.isPending} onClick={() => {
                     setReviewError('');
                     setReviewScope(null);
                     const selected = readyDiagramId === diagramId ? nodes.filter(node => node.selected).map(node => node.id) : [];

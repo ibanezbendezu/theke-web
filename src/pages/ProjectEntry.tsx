@@ -1,5 +1,6 @@
 import {Navigate, useParams} from 'react-router-dom';
 import {Button} from '../components/ui/Button';
+import {WorkspaceLoading} from '../components/ui/LoadingState';
 import {useDiagrams} from '../data/useDiagrams';
 import {useProject} from '../data/useProjects';
 
@@ -9,8 +10,7 @@ export function ProjectEntry() {
     const active = useDiagrams(projectId, 'active');
     const archived = useDiagrams(projectId, 'archived');
 
-    if (project.isPending || active.isPending || archived.isPending) return <main className="px-4 py-7 md:px-8"
-                                                                                  role="status">Abriendo mapa…</main>;
+    if (project.isPending || active.isPending || archived.isPending) return <WorkspaceLoading fullscreen label="Abriendo mapa…"/>;
     if (project.isError || active.isError || archived.isError) return <main className="px-4 py-7 md:px-8" role="alert">
         <p>No se pudo abrir el mapa.</p><Button className="mt-3" onClick={() => {
         void project.refetch();

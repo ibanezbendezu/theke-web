@@ -1,6 +1,7 @@
 import {useRef, useState} from 'react';
 import {Upload, X} from 'lucide-react';
 import {Button} from '../ui/Button';
+import {InlineLoading} from '../ui/LoadingState';
 import {useUploads} from '../../data/useUploads';
 import {transferUpload} from '../../data/uploadTransfer';
 import {useLibraryFolderActions} from '../../data/useLibraryFolders';
@@ -100,7 +101,12 @@ export function UploadTray({folderId = null}: { folderId?: string | null }) {
         if (item.uploadId) await api.cancel(item.uploadId).catch(() => undefined);
         patch(item.localId, {status: 'cancelled', error: undefined});
     };
-    return <section className="mt-5" aria-label="Carga de archivos"><label
+    return <section className="mt-5" aria-label="Carga de archivos">{api.policy.isPending ?
+        <div className="grid min-h-56 place-items-center rounded-lg bg-surface-variant/60"><InlineLoading label="Preparando carga…"/></div> :
+        api.policy.isError ? <div role="alert" className="rounded-lg bg-surface-variant/60 p-5 text-sm">
+            <p>No se pudieron consultar los límites de carga.</p>
+            <Button className="mt-2" onClick={() => void api.policy.refetch()}>Reintentar</Button>
+        </div> : <label
         className="flex min-h-56 cursor-pointer flex-col items-center justify-center gap-3 rounded-lg bg-surface-variant/60 p-6 text-center text-sm text-outline hover:bg-surface-variant focus-within:outline-2 focus-within:outline-primary"
         onDragOver={event => event.preventDefault()} onDrop={event => {
         event.preventDefault();
@@ -111,12 +117,13 @@ export function UploadTray({folderId = null}: { folderId?: string | null }) {
                                 type="file" multiple onChange={event => {
         if (event.target.files) add(event.target.files);
         event.target.value = '';
-    }}/></label>{displayItems.length > 0 && <div className="mt-3 rounded-lg bg-surface-variant/50 p-3"
+    }}/></label>}{api.uploads.isPending && <div className="mt-3"><InlineLoading label="Consultando cargas…"/></div>}{displayItems.length > 0 && <div className="mt-3 rounded-lg bg-surface-variant/50 p-3"
                                                  aria-label="Progreso de cargas">{displayItems.map(item => <div
         key={item.localId} className="py-2">
         <div className="flex items-center gap-2"><span className="min-w-0 flex-1 truncate">{item.name}</span><span
             className="text-xs text-outline">{(item.size / 1024 / 1024).toFixed(1)} MiB · {labels[item.status] ?? item.status}</span>{!terminal.has(item.status) &&
             <Button size="icon" icon={X} aria-label={`Cancelar ${item.name}`} onClick={() => void cancel(item)}/>}</div>
-        <progress className="mt-1 w-full" aria-label={`Progreso de ${item.name}`} max={100} value={item.progress}/>
+        <progress className="theke-progress mt-1 w-full" aria-label={`Progreso de ${item.name}`} max={100}
+                  value={['uploading', 'ready', 'failed', 'rejected', 'cancelled'].includes(item.status) ? item.progress : undefined}/>
         {item.error && <p role="alert" className="text-sm text-red-600">{item.error}</p>}</div>)}</div>}</section>;
 }

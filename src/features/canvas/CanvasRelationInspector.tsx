@@ -1,4 +1,5 @@
 import {Button} from '../../components/ui/Button';
+import {InlineLoading} from '../../components/ui/LoadingState';
 import {ImpactDialog, type ImpactRequest} from '../../components/ui/ImpactDialog';
 import {useRelation} from '../../data/useRelations';
 import {useCanvasStore} from '../../store/useCanvasStore';
@@ -26,7 +27,7 @@ export function CanvasRelationInspector({relationId, edgeId, sourceNodeId, targe
     const detail = relation.data;
     return <div className="space-y-4 text-sm">
         <h2 className="font-semibold">Detalle de la Relación</h2>
-        {relation.isPending && <p role="status">Cargando Relación…</p>}
+        {relation.isPending && <InlineLoading label="Cargando relación…"/>}
         {relation.isError && <div role="alert"><p>No se pudo cargar la Relación.</p><Button className="mt-2"
                                                                                             onClick={() => void relation.refetch()}>Reintentar</Button>
         </div>}

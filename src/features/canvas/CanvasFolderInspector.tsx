@@ -1,5 +1,6 @@
 import {useDeferredValue, useState} from 'react';
 import {Button} from '../../components/ui/Button';
+import {InlineLoading} from '../../components/ui/LoadingState';
 import {useOrganization} from '../../data/useOrganization';
 import {useResources} from '../../data/useResources';
 import {useCanvasStore} from '../../store/useCanvasStore';
@@ -22,7 +23,7 @@ export function CanvasFolderInspector({nodeId, projectId, folderId, caption = ''
     const items = resources.data?.pages.flatMap(page => page.data) ?? [];
     return <div className="space-y-4 text-sm">
         <h2 className="font-semibold">Carpeta del proyecto</h2>
-        {organization.isPending && <p role="status">Cargando carpeta…</p>}
+        {organization.isPending && <InlineLoading label="Cargando carpeta…"/>}
         {organization.isError &&
             <p role="alert">No se pudo consultar la carpeta. Puedes reintentar desde el proyecto.</p>}
         {!organization.isPending && !organization.isError && !folder &&
@@ -40,7 +41,7 @@ export function CanvasFolderInspector({nodeId, projectId, folderId, caption = ''
                                                                                                      className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
                                                                                                      value={search}
                                                                                                      onChange={event => setSearch(event.target.value)}/></label>{resources.isPending &&
-            <p role="status" className="mt-2">Buscando…</p>}{resources.isError &&
+            <div className="mt-2"><InlineLoading label="Buscando recursos…"/></div>}{resources.isError &&
             <p role="alert" className="mt-2">No se pudieron cargar los
                 recursos.</p>}{!resources.isPending && !resources.isError && items.length === 0 &&
             <p className="mt-2 text-outline">No hay recursos en esta carpeta.</p>}

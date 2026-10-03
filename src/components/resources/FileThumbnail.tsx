@@ -42,6 +42,7 @@ export function FileThumbnail({resource, fallback}: { resource: ResourceSummary;
     const [visible, setVisible] = useState(() => !('IntersectionObserver' in window));
     const [thumbnail, setThumbnail] = useState(() => thumbnailCache.get(cacheKey) ?? '');
     const [failed, setFailed] = useState(false);
+    const [imageLoaded, setImageLoaded] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -93,12 +94,15 @@ export function FileThumbnail({resource, fallback}: { resource: ResourceSummary;
         }
     };
 
-    return <div ref={ref} className="relative flex h-full w-full items-center justify-center overflow-hidden">
+    const loadingPreview = previewable && visible && !failed && !thumbnail && !imageLoaded;
+    return <div ref={ref} className={`relative flex h-full w-full items-center justify-center overflow-hidden ${loadingPreview ? 'theke-loading-block' : ''}`}>
         {thumbnail ? <img src={thumbnail} alt=""
                           className={pdf ? 'absolute left-0 top-0 h-auto w-full' : 'h-full w-full object-cover'}/> : resource.previewImageUrl && !failed ?
             <img src={resource.previewImageUrl} alt="" className="h-full w-full object-cover" loading="lazy"
+                 onLoad={() => setImageLoaded(true)}
                  onError={() => setFailed(true)}/> : image && url && !failed ?
                 <img src={url} alt="" className="h-full w-full object-cover" loading="lazy"
+                     onLoad={() => setImageLoaded(true)}
                      onError={() => setFailed(true)}/> : fallback}
         {video && url && !thumbnail && !failed &&
             <video crossOrigin="anonymous" src={url} preload="auto" muted playsInline aria-hidden="true" tabIndex={-1}

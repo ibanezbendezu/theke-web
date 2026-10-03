@@ -47,7 +47,7 @@ export function MoveCollectionDialog({name, folders, currentParentId, movingFold
         </div>
         {error && <p role="alert" className="mt-3 text-sm text-red-600">{error}</p>}
         <div className="mt-5 flex justify-end gap-2"><Button onClick={onClose}>Cancelar</Button><Button
-            variant="primary" disabled={busy || destination === currentParentId}
+            variant="primary" loading={busy} disabled={destination === currentParentId}
             onClick={() => void save()}>{busy ? 'Moviendo…' : 'Mover'}</Button></div>
     </Dialog>;
 }

@@ -38,7 +38,7 @@ export function NameDialog({title, initialValue = '', onClose, onSave, shadow = 
             <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
             <div className="mt-5 flex justify-end gap-2"><Button type="button"
                                                                  onClick={onClose}>Cancelar</Button><Button
-                type="submit" variant="secondary" disabled={busy}>{busy ? 'Guardando…' : 'Guardar'}</Button></div>
+                type="submit" variant="secondary" loading={busy}>{busy ? 'Guardando…' : 'Guardar'}</Button></div>
         </form>
     </Dialog>;
 }
@@ -67,7 +67,7 @@ export function ConfirmDialog({title, description, onClose, onConfirm}: {
         <p className="mt-2 text-sm text-outline">{description}</p>{error &&
             <p role="alert" className="mt-3 text-sm text-red-600">{error}</p>}
         <div className="mt-5 flex justify-end gap-2"><Button onClick={onClose}>Cancelar</Button><Button
-            variant="secondary" disabled={busy}
+            variant="secondary" loading={busy}
             onClick={() => void confirm()}>{busy ? 'Procesando…' : 'Confirmar'}</Button></div>
     </Dialog>;
 }

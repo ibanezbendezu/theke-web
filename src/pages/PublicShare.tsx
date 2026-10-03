@@ -12,6 +12,7 @@ import {
 import type {PublicShare as PublicProjection, PublicShareResponse} from '../api/generated/models';
 import {thekeFetch} from '../api/httpClient';
 import {Button} from '../components/ui/Button';
+import {WorkspaceLoading} from '../components/ui/LoadingState';
 import {ThemeToggle} from '../components/ui/ThemeToggle';
 import {PublicDiagramCanvas, PublicSemanticList, type PublicSelection} from './PublicDiagramCanvas';
 import {PublicResourceDetail} from './PublicResourceDetail';
@@ -121,8 +122,7 @@ function PublicShareView({token}: { token: string | undefined }) {
             disponible</h1><p className="mt-2 text-sm text-outline">Solicita un enlace vigente a quien compartió este
             mapa.</p></section>
     </main>;
-    if (!data) return <main className="flex min-h-dvh items-center justify-center bg-background text-on-background"><p
-        role="status">Cargando compartido…</p></main>;
+    if (!data) return <WorkspaceLoading fullscreen label="Abriendo mapa compartido…"/>;
     return <main className="public-share relative flex h-dvh min-h-0 bg-background text-on-background">
         <section className="relative min-w-0 flex-1" aria-label="Lienzo compartido">
             <PublicDiagramCanvas data={data} selection={selection} onSelect={select} commentMode={commentMode}

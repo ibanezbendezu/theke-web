@@ -38,7 +38,7 @@ export function CanvasGroupInspector({groupId, diagramId}: { groupId: string; di
             <h3 className="font-medium">Preparar orientación del grupo</h3>
             <p className="text-xs text-outline">Se usa la última versión guardada del Diagrama. Guarda tus cambios para
                 actualizar el alcance.</p>
-            <Button type="button" disabled={prepare.isPending} onClick={() => {
+            <Button type="button" loading={prepare.isPending} onClick={() => {
                 setScope(null);
                 setScopeError('');
                 prepare.mutate({diagramId, groupId}, {

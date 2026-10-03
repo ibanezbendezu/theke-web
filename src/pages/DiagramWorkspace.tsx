@@ -2,6 +2,7 @@ import {useAuth} from '@clerk/clerk-react';
 import {useQueryClient} from '@tanstack/react-query';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {MarkerType} from '@xyflow/react';
+import {LoaderCircle} from 'lucide-react';
 import {ApiError} from '../api/httpClient';
 import {Button} from '../components/ui/Button';
 import {deleteCanvasDraft, readCanvasDraft, writeCanvasDraft, type CanvasDraft} from '../data/canvasJournal';
@@ -326,7 +327,8 @@ export function DiagramWorkspace({
     </div>;
     return <div className="relative h-full w-full">
         <div role="status" aria-live="polite"
-             className="absolute right-3 top-20 z-30 rounded-md bg-surface/90 px-3 py-2 text-xs backdrop-blur-md">{{
+             className="absolute right-3 top-20 z-30 inline-flex items-center gap-2 rounded-md bg-surface/90 px-3 py-2 text-xs backdrop-blur-md">
+            {status === 'saving' && <LoaderCircle size={13} aria-hidden="true" className="motion-safe:animate-spin"/>}{{
             saved: 'Guardado',
             saving: 'Guardando…',
             offline: 'Sin conexión: cambios pendientes',

@@ -5,6 +5,7 @@ import {useCurrentAccount} from '../../data/useCurrentAccount';
 import {ApiError} from '../../api/httpClient';
 import {clearPrivateCache} from '../../data/queryClient';
 import {useEffect} from 'react';
+import {WorkspaceLoading} from '../../components/ui/LoadingState';
 
 function InvalidSession({returnTo, signOut}: {
     returnTo: string;
@@ -15,8 +16,7 @@ function InvalidSession({returnTo, signOut}: {
         clearPrivateCache();
         void signOut({redirectUrl: accessUrl});
     }, [accessUrl, signOut]);
-    return <main className="grid min-h-screen place-items-center bg-background" aria-busy="true"><p
-        aria-live="polite">La sesión venció. Volviendo al acceso…</p></main>;
+    return <WorkspaceLoading fullscreen label="La sesión venció. Volviendo al acceso…"/>;
 }
 
 export function PrivateRoute({children}: { children: ReactNode }) {
@@ -24,9 +24,7 @@ export function PrivateRoute({children}: { children: ReactNode }) {
     const location = useLocation();
     const account = useCurrentAccount();
     const returnTo = `${location.pathname}${location.search}`;
-    if (!isLoaded || (isSignedIn && account.isPending)) return <main
-        className="grid min-h-screen place-items-center bg-background" aria-busy="true"><p
-        aria-live="polite">Restaurando tu espacio…</p></main>;
+    if (!isLoaded || (isSignedIn && account.isPending)) return <WorkspaceLoading fullscreen label="Restaurando tu espacio…"/>;
     if (!isSignedIn) return <Navigate replace to={location.pathname === '/' ? '/welcome' : `/access?returnTo=${encodeURIComponent(returnTo)}`}/>;
     if (account.error instanceof ApiError && account.error.status === 401) return <InvalidSession returnTo={returnTo}
                                                                                                   signOut={signOut}/>;

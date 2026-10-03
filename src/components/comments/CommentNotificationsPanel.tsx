@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {Dialog} from '../ui/Dialog';
+import {InlineLoading} from '../ui/LoadingState';
 import {anchorLabel} from '../../pages/publicCommentTypes';
 import {
     useCommentNotifications, useModerateCommentNotification, useReadCommentNotification,
@@ -62,7 +63,7 @@ export function CommentNotificationsPanel({diagramId, selectedId, onOpen}: {
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-2" aria-live="polite">
             {actionError && <p role="alert" className="px-2 py-2 text-xs text-red-600 dark:text-red-400">{actionError}</p>}
-            {list.isPending && <p className="px-2 py-4 text-outline">Cargando comentarios…</p>}
+            {list.isPending && <div className="px-2 py-4"><InlineLoading label="Cargando comentarios…"/></div>}
             {list.isError && <p role="alert" className="px-2 py-4">No se pudieron cargar. <button className="underline" onClick={() => void list.refetch()}>Reintentar</button></p>}
             {items.length === 0 && list.data && <p className="px-2 py-4 text-outline">No hay comentarios en este filtro.</p>}
             {items.map(item => <div key={item.id} className={`mb-1 rounded-md ${item.commentId === selectedId ? 'bg-surface-variant' : 'hover:bg-surface-variant/60'}`}><button ref={item.commentId === selectedId ? selectedRef : undefined}

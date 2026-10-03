@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from 'react';
 import {ApiError} from '../../api/httpClient';
 import {type ImpactAction, type ImpactEntityType, useImpact, useImpactActions} from '../../data/useImpacts';
 import {Button} from './Button';
+import {InlineLoading} from './LoadingState';
 
 export interface ImpactRequest {
     entityType: ImpactEntityType;
@@ -86,7 +87,7 @@ export function ImpactDialog({request, onClose, onDone, shadow = true}: {
              className={`max-h-[90vh] w-full max-w-lg overflow-auto rounded-xl bg-background p-5 ${shadow ? 'shadow-2xl' : ''}`}>
             <h2 id="impact-title"
                 className="text-lg font-semibold">{action === 'delete' ? 'Eliminar' : 'Archivar'} {impact.data?.entityName ?? 'elemento'}</h2>{impact.isPending &&
-            <p role="status" className="mt-4">Calculando impacto…</p>}{impact.isError &&
+            <div className="mt-4"><InlineLoading label="Calculando impacto…"/></div>}{impact.isError &&
             <div role="alert" className="mt-4"><p>No se pudo calcular el impacto.</p><Button variant="outline"
                                                                                              onClick={() => impact.refetch()}>Reintentar</Button>
             </div>}{impact.data && <><p id="impact-description"
@@ -110,7 +111,7 @@ export function ImpactDialog({request, onClose, onDone, shadow = true}: {
             <div className="mt-5 flex justify-end gap-2"><Button
                 onClick={onClose}>Cancelar</Button>{impact.data && (action !== 'delete' || impact.data.deletionAllowed) &&
                 <Button variant="primary"
-                        disabled={confirmation !== impact.data.confirmationPhrase || actions.execute.isPending}
+                        loading={actions.execute.isPending} disabled={confirmation !== impact.data.confirmationPhrase}
                         onClick={() => void confirm()}>{actions.execute.isPending ? 'Procesando…' : action === 'delete' ? 'Eliminar' : 'Archivar'}</Button>}
             </div>
         </div>
