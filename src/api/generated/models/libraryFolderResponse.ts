@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {LibraryFolder} from './libraryFolder';
+import type { LibraryFolder } from './libraryFolder';
 
 export interface LibraryFolderResponse {
-    data: LibraryFolder;
+  data: LibraryFolder;
 }

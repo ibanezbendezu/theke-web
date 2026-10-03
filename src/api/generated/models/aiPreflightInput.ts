@@ -6,6 +6,6 @@
  */
 
 export interface AiPreflightInput {
-    resourceIds: string[];
-    expectedOutputTokens?: number;
+  resourceIds: string[];
+  expectedOutputTokens?: number;
 }

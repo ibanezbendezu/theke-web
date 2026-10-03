@@ -3,6 +3,7 @@ import {
     FolderOpen,
     ListTree,
     MoreHorizontal,
+    MessageCircle,
     PanelRightClose,
     PanelRightOpen,
     ScanSearch,
@@ -11,7 +12,7 @@ import {
     X
 } from 'lucide-react';
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {Button} from '../components/ui/Button';
 import {AIGuidanceCard} from '../components/ai/AIGuidanceCard';
 import {usePrepareDiagramReview} from '../data/useAi';
@@ -34,6 +35,8 @@ import {CanvasBackgroundInspector} from '../features/canvas/CanvasPresentationIn
 import {CanvasSemanticView} from '../features/canvas/CanvasSemanticView';
 import {CanvasRelationInspector} from '../features/canvas/CanvasRelationInspector';
 import {SharePreviewDialog} from '../features/canvas/SharePreviewDialog';
+import {CommentNotificationsPanel} from '../components/comments/CommentNotificationsPanel';
+import {useCommentNotifications, useCommentNotificationStream, useReadCommentNotification, type CommentNotification} from '../data/useCommentNotifications';
 
 export function DiagramEditor() {
     const {diagramId} = useParams();
@@ -43,9 +46,23 @@ export function DiagramEditor() {
 function DiagramEditorCore() {
     const {projectId, diagramId} = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const selectedCommentId = new URLSearchParams(location.search).get('comment');
     const diagram = useDiagram(diagramId);
     const organization = useOrganizationActions(projectId ?? '');
-    const [leftPanel, setLeftPanel] = useState<'resources' | 'semantic' | null>(null);
+    const [leftPanel, setLeftPanel] = useState<'resources' | 'semantic' | 'comments' | null>(selectedCommentId ? 'comments' : null);
+    const commentPage = useCommentNotifications(1, 'all', diagramId);
+    useCommentNotificationStream();
+    const readComment = useReadCommentNotification();
+    const selectedCommentPage = useCommentNotifications(1, 'all', diagramId, selectedCommentId ?? undefined);
+    const commentNotifications = [...(commentPage.data?.items ?? [])];
+    const linkedComment = selectedCommentPage.data?.items[0];
+    if (linkedComment && !commentNotifications.some(item => item.id === linkedComment.id)) commentNotifications.push(linkedComment);
+    const openComment = (item: CommentNotification) => {
+        if (!item.readAt) readComment.mutate(item.id);
+        setLeftPanel('comments');
+        navigate(`${location.pathname}?comment=${item.commentId}`, {replace: true});
+    };
     const rightOpen = useCanvasStore(state => state.inspectorOpen);
     const setRightOpen = useCanvasStore(state => state.setInspectorOpen);
     const [pickerOpen, setPickerOpen] = useState(false);
@@ -159,6 +176,7 @@ function DiagramEditorCore() {
                     archivado. Restáuralo desde proyectos para editar.</p></div> :
             <DiagramWorkspace diagram={diagram.data} refetch={diagram.refetch} onAddResource={openPicker}
                               onDropResource={tryAdd} onDropFiles={uploadAt} onPickFiles={pickFiles}
+                              commentNotifications={commentNotifications} selectedCommentId={selectedCommentId} onCommentOpen={openComment}
                               onCanvasReady={canvasReady} onSaveStateChange={onSaveStateChange}/>}
             <div className="pointer-events-none absolute inset-x-3 top-3 z-40 flex items-start justify-between gap-3">
                 <div
@@ -181,6 +199,13 @@ function DiagramEditorCore() {
                                 aria-label={leftPanel === 'semantic' ? 'Ocultar vista semántica' : 'Mostrar vista semántica'}
                                 aria-pressed={leftPanel === 'semantic'} icon={ListTree}
                                 onClick={() => setLeftPanel(value => value === 'semantic' ? null : 'semantic')}/>
+                        <span className="relative shrink-0"><Button size="icon" className="h-10 w-10"
+                                title={leftPanel === 'comments' ? 'Ocultar comentarios' : 'Mostrar comentarios'}
+                                aria-label={`${leftPanel === 'comments' ? 'Ocultar' : 'Mostrar'} comentarios, ${commentPage.data?.unreadCount ?? 0} pendientes`}
+                                aria-expanded={leftPanel === 'comments'} icon={MessageCircle}
+                                onClick={() => setLeftPanel(value => value === 'comments' ? null : 'comments')}/>
+                            {Boolean(commentPage.data?.unreadCount) && <span className="pointer-events-none absolute -right-1 -top-1 min-w-4 rounded-full bg-primary px-0.5 text-center text-[10px] leading-4 text-on-primary">{Math.min(commentPage.data!.unreadCount, 99)}{commentPage.data!.unreadCount > 99 ? '+' : ''}</span>}
+                        </span>
                         <Button size="icon" className="h-10 w-10 shrink-0" title="Revisar alcance de IA"
                                 aria-label="Revisar alcance de IA" icon={ScanSearch} onClick={() => {
                             setReviewOpen(true);
@@ -214,10 +239,11 @@ function DiagramEditorCore() {
                                  className="absolute left-3 top-20 z-50 rounded-md bg-surface/95 px-3 py-2 text-xs text-red-600">{resourceError}</p>}
             {leftPanel && <div
                 className="absolute bottom-3 left-3 top-20 z-50 w-[min(19rem,calc(100%-1.5rem))] overflow-hidden rounded-xl bg-surface/95 backdrop-blur-md"
-                aria-label={leftPanel === 'resources' ? 'Panel de recursos' : 'Panel de vista semántica'}>
+                aria-label={leftPanel === 'resources' ? 'Panel de recursos' : leftPanel === 'comments' ? 'Panel de comentarios' : 'Panel de vista semántica'}>
                 <Button size="icon" className="absolute right-2 top-2 z-10 h-9 w-9" title="Cerrar panel"
                         aria-label="Cerrar panel" icon={X} onClick={() => setLeftPanel(null)}/>
-                {leftPanel === 'resources' ? diagram.data.archivedAt ?
+                {leftPanel === 'comments' ? <CommentNotificationsPanel diagramId={diagram.data.id}
+                                                                          selectedId={selectedCommentId} onOpen={openComment}/> : leftPanel === 'resources' ? diagram.data.archivedAt ?
                     <p className="p-4 text-sm text-outline">Los recursos del mapa archivado están disponibles al
                         restaurarlo.</p> : readyDiagramId === diagram.data.id ?
                         <CanvasResourcePanel projectId={diagram.data.projectId} onAdd={() => openPicker()}

@@ -4,18 +4,18 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {PublicRelationEvidence} from './publicRelationEvidence';
-import type {SharePreviewRelationDirection} from './sharePreviewRelationDirection';
+import type { PublicRelationEvidence } from './publicRelationEvidence';
+import type { SharePreviewRelationDirection } from './sharePreviewRelationDirection';
 
 export interface SharePreviewRelation {
-    id: string;
-    sourceResourceId: string;
-    targetResourceId: string;
-    direction: SharePreviewRelationDirection;
-    typeKey: string;
-    /** @nullable */
-    label: string | null;
-    /** @nullable */
-    explanation: string | null;
-    evidence?: PublicRelationEvidence[];
+  id: string;
+  sourceResourceId: string;
+  targetResourceId: string;
+  direction: SharePreviewRelationDirection;
+  typeKey: string;
+  /** @nullable */
+  label: string | null;
+  /** @nullable */
+  explanation: string | null;
+  evidence?: PublicRelationEvidence[];
 }

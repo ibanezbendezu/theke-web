@@ -9,7 +9,7 @@ export type AvailableRelationEvidenceStatus = typeof AvailableRelationEvidenceSt
 
 
 export const AvailableRelationEvidenceStatus = {
-    none: 'none',
-    needs_evidence: 'needs_evidence',
-    confirmed: 'confirmed',
+  none: 'none',
+  needs_evidence: 'needs_evidence',
+  confirmed: 'confirmed',
 } as const;

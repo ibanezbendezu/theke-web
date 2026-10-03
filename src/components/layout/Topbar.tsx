@@ -1,6 +1,8 @@
-import {Menu, Home, Folder, FileText} from 'lucide-react';
-import {useLocation, Link} from 'react-router-dom';
+import {Menu, Home, Folder, FileText, Bell} from 'lucide-react';
+import {useLocation, useNavigate, Link} from 'react-router-dom';
 import React, {useState} from 'react';
+import {useCommentNotifications, useCommentNotificationStream} from '../../data/useCommentNotifications';
+import {CommentNotificationsPanel} from '../comments/CommentNotificationsPanel';
 import {useCurrentAccount} from '../../data/useCurrentAccount';
 import {useProject} from '../../data/useProjects';
 import {useResource} from '../../data/useResources';
@@ -24,8 +26,12 @@ const routeDictionary: Record<string, { name: string, icon: React.ElementType }>
 
 export function Topbar({isSidebarOpen, setIsOpen}: TopbarProps) {
     const location = useLocation();
+    const navigate = useNavigate();
     const account = useCurrentAccount();
     const [dropTarget, setDropTarget] = useState<string | null>(null);
+    const [notificationsOpen, setNotificationsOpen] = useState(false);
+    const notifications = useCommentNotifications();
+    useCommentNotificationStream();
     const toast = useToast();
 
     // Convertimos la URL "/library/conquistadores" en un array: ['library', 'conquistadores']
@@ -152,7 +158,18 @@ export function Topbar({isSidebarOpen, setIsOpen}: TopbarProps) {
                     })}
                 </div>
             </div>
-
+            <div className="relative shrink-0">
+                <button type="button" className="relative grid h-8 w-8 place-items-center rounded-md text-outline hover:bg-surface-variant hover:text-on-background"
+                        aria-label={`Comentarios${notifications.data?.unreadCount ? `, ${notifications.data.unreadCount} pendientes` : ''}`}
+                        aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen(value => !value)}>
+                    <Bell size={17}/>{Boolean(notifications.data?.unreadCount) && <span className="absolute -right-1 -top-1 min-w-4 rounded-full bg-primary px-0.5 text-[10px] leading-4 text-on-primary">{Math.min(notifications.data!.unreadCount, 99)}{notifications.data!.unreadCount > 99 ? '+' : ''}</span>}
+                </button>
+                {notificationsOpen && <section className="absolute right-0 top-10 z-[70] h-[min(32rem,calc(100dvh-4rem))] w-[min(22rem,calc(100vw-1.5rem))] overflow-hidden rounded-xl bg-surface ring-1 ring-border"
+                                              aria-label="Avisos de comentarios"><CommentNotificationsPanel onOpen={item => {
+                                                  setNotificationsOpen(false);
+                                                  navigate(`/projects/${item.projectId}/diagrams/${item.diagramId}?comment=${item.commentId}`);
+                                              }}/></section>}
+            </div>
         </header>
     );
 }

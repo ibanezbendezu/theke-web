@@ -6,11 +6,11 @@
  */
 
 export interface ProjectFolderMoveInput {
-    /**
+  /**
      * @minItems 1
      * @maxItems 100
      */
-    projectIds: string[];
-    /** @nullable */
-    folderId: string | null;
+  projectIds: string[];
+  /** @nullable */
+  folderId: string | null;
 }

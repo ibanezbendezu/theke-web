@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {MoveProjectsToFolder200DataItem} from './moveProjectsToFolder200DataItem';
+import type { MoveProjectsToFolder200DataItem } from './moveProjectsToFolder200DataItem';
 
 export type MoveProjectsToFolder200 = {
-    data?: MoveProjectsToFolder200DataItem[];
+  data?: MoveProjectsToFolder200DataItem[];
 };

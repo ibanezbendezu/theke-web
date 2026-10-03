@@ -6,8 +6,8 @@
  */
 
 export interface NoteVersion {
-    id: string;
-    ordinal: number;
-    content: string;
-    createdAt: string;
+  id: string;
+  ordinal: number;
+  content: string;
+  createdAt: string;
 }

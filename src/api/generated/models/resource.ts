@@ -4,42 +4,42 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {ResourceMetadataStatus} from './resourceMetadataStatus';
-import type {ResourceProperties} from './resourceProperties';
-import type {ResourceStatus} from './resourceStatus';
-import type {ResourceType} from './resourceType';
+import type { ResourceMetadataStatus } from './resourceMetadataStatus';
+import type { ResourceProperties } from './resourceProperties';
+import type { ResourceStatus } from './resourceStatus';
+import type { ResourceType } from './resourceType';
 
 export interface Resource {
-    id: string;
-    title: string;
-    /** @nullable */
-    description?: string | null;
-    aliases: string[];
-    tags: string[];
-    properties: ResourceProperties;
-    /** @nullable */
-    versionId: string | null;
-    type: ResourceType;
-    /** @nullable */
-    mediaType?: string | null;
-    /** @nullable */
-    byteSize?: number | null;
-    origin: string;
-    status: ResourceStatus;
-    updatedAt: string;
-    /** @nullable */
-    libraryFolderId: string | null;
-    /** @nullable */
-    archivedAt: string | null;
-    content?: string;
-    /** @nullable */
-    accessibilityText?: string | null;
-    accessibilityRequired: boolean;
-    accessibilityMissing: boolean;
-    /** @nullable */
-    url?: string | null;
-    /** @nullable */
-    previewImageUrl?: string | null;
-    /** @nullable */
-    metadataStatus?: ResourceMetadataStatus;
+  id: string;
+  title: string;
+  /** @nullable */
+  description?: string | null;
+  aliases: string[];
+  tags: string[];
+  properties: ResourceProperties;
+  /** @nullable */
+  versionId: string | null;
+  type: ResourceType;
+  /** @nullable */
+  mediaType?: string | null;
+  /** @nullable */
+  byteSize?: number | null;
+  origin: string;
+  status: ResourceStatus;
+  updatedAt: string;
+  /** @nullable */
+  libraryFolderId: string | null;
+  /** @nullable */
+  archivedAt: string | null;
+  content?: string;
+  /** @nullable */
+  accessibilityText?: string | null;
+  accessibilityRequired: boolean;
+  accessibilityMissing: boolean;
+  /** @nullable */
+  url?: string | null;
+  /** @nullable */
+  previewImageUrl?: string | null;
+  /** @nullable */
+  metadataStatus?: ResourceMetadataStatus;
 }

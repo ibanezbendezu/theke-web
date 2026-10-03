@@ -9,9 +9,9 @@ export type ImpactEntityType = typeof ImpactEntityType[keyof typeof ImpactEntity
 
 
 export const ImpactEntityType = {
-    resource: 'resource',
-    project: 'project',
-    folder: 'folder',
-    diagram: 'diagram',
-    relation: 'relation',
+  resource: 'resource',
+  project: 'project',
+  folder: 'folder',
+  diagram: 'diagram',
+  relation: 'relation',
 } as const;

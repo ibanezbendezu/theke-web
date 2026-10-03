@@ -4,13 +4,13 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {AiScopePreparationExcludedItem} from './aiScopePreparationExcludedItem';
-import type {AiScopePreparationReason} from './aiScopePreparationReason';
+import type { AiScopePreparationExcludedItem } from './aiScopePreparationExcludedItem';
+import type { AiScopePreparationReason } from './aiScopePreparationReason';
 
 export interface AiScopePreparation {
-    resourceIds: string[];
-    excluded: AiScopePreparationExcludedItem[];
-    limitations: string[];
-    available: false;
-    reason: AiScopePreparationReason;
+  resourceIds: string[];
+  excluded: AiScopePreparationExcludedItem[];
+  limitations: string[];
+  available: false;
+  reason: AiScopePreparationReason;
 }

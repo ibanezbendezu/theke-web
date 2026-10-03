@@ -4,10 +4,10 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {Project} from './project';
-import type {ProjectListResponseMeta} from './projectListResponseMeta';
+import type { Project } from './project';
+import type { ProjectListResponseMeta } from './projectListResponseMeta';
 
 export interface ProjectListResponse {
-    data: Project[];
-    meta: ProjectListResponseMeta;
+  data: Project[];
+  meta: ProjectListResponseMeta;
 }

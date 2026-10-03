@@ -4,12 +4,12 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {DiagramDocument} from './diagramDocument';
+import type { DiagramDocument } from './diagramDocument';
 
 export interface CreateRelationResult {
-    relationId: string;
-    edgeId: string;
-    revision: number;
-    document: DiagramDocument;
-    reused: boolean;
+  relationId: string;
+  edgeId: string;
+  revision: number;
+  document: DiagramDocument;
+  reused: boolean;
 }

@@ -4,13 +4,13 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {PreflightResourceAssessmentType} from './preflightResourceAssessmentType';
+import type { PreflightResourceAssessmentType } from './preflightResourceAssessmentType';
 
 export interface PreflightResourceAssessment {
-    id: string;
-    title: string;
-    type: PreflightResourceAssessmentType;
-    estimatedTokens: number;
-    valid: boolean;
-    issues: string[];
+  id: string;
+  title: string;
+  type: PreflightResourceAssessmentType;
+  estimatedTokens: number;
+  valid: boolean;
+  issues: string[];
 }

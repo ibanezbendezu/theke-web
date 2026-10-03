@@ -4,9 +4,9 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {ResourceMention} from './resourceMention';
+import type { ResourceMention } from './resourceMention';
 
 export type ResourceReferencesResponseData = {
-    outgoing: ResourceMention[];
-    incoming: ResourceMention[];
+  outgoing: ResourceMention[];
+  incoming: ResourceMention[];
 };

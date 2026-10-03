@@ -6,11 +6,11 @@
  */
 
 export interface LibraryResourceMoveInput {
-    /**
+  /**
      * @minItems 1
      * @maxItems 100
      */
-    resourceIds: string[];
-    /** @nullable */
-    folderId: string | null;
+  resourceIds: string[];
+  /** @nullable */
+  folderId: string | null;
 }

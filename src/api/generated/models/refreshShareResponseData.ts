@@ -6,6 +6,6 @@
  */
 
 export type RefreshShareResponseData = {
-    fingerprint: string;
-    revision: number;
+  fingerprint: string;
+  revision: number;
 };

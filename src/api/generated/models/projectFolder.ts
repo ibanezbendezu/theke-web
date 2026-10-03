@@ -6,10 +6,10 @@
  */
 
 export interface ProjectFolder {
-    id: string;
-    name: string;
-    /** @nullable */
-    parentFolderId: string | null;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  name: string;
+  /** @nullable */
+  parentFolderId: string | null;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -4,29 +4,29 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {ListResourcesStatus} from './listResourcesStatus';
-import type {ListResourcesType} from './listResourcesType';
+import type { ListResourcesStatus } from './listResourcesStatus';
+import type { ListResourcesType } from './listResourcesType';
 
 export type ListResourcesParams = {
-    type?: ListResourcesType;
-    cursor?: string;
-    status?: ListResourcesStatus;
-    /**
-     * Coincidencia parcial por título, alias, descripción o contenido de nota
-     * @maxLength 160
-     */
-    q?: string;
-    projectId?: string;
-    /**
-     * Requiere projectId
-     */
-    folderId?: string;
-    /**
-     * UUID de carpeta o root para archivos sin carpeta
-     */
-    libraryFolderId?: string;
-    /**
-     * @maxLength 80
-     */
-    tag?: string;
+type?: ListResourcesType;
+cursor?: string;
+status?: ListResourcesStatus;
+/**
+ * Coincidencia parcial por título, alias, descripción o contenido de nota
+ * @maxLength 160
+ */
+q?: string;
+projectId?: string;
+/**
+ * Requiere projectId
+ */
+folderId?: string;
+/**
+ * UUID de carpeta o root para archivos sin carpeta
+ */
+libraryFolderId?: string;
+/**
+ * @maxLength 80
+ */
+tag?: string;
 };

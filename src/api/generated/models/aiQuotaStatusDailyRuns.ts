@@ -6,7 +6,7 @@
  */
 
 export type AiQuotaStatusDailyRuns = {
-    used: number;
-    limit: number;
-    remaining: number;
+  used: number;
+  limit: number;
+  remaining: number;
 };

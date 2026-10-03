@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {RelationTypeOption} from './relationTypeOption';
+import type { RelationTypeOption } from './relationTypeOption';
 
 export interface RelationTypeListResponse {
-    data: RelationTypeOption[];
+  data: RelationTypeOption[];
 }

@@ -6,11 +6,11 @@
  */
 
 export interface NoteInput {
-    /**
+  /**
      * @minLength 1
      * @maxLength 160
      */
-    title: string;
-    description?: string;
-    content: string;
+  title: string;
+  description?: string;
+  content: string;
 }

@@ -9,5 +9,5 @@ export type AiScopePreparationReason = typeof AiScopePreparationReason[keyof typ
 
 
 export const AiScopePreparationReason = {
-    PROVIDER_PENDING: 'PROVIDER_PENDING',
+  PROVIDER_PENDING: 'PROVIDER_PENDING',
 } as const;

@@ -6,11 +6,11 @@
  */
 
 export interface PublicRelationEvidence {
-    resourceId: string;
-    /** @nullable */
-    excerpt: string | null;
-    /** @nullable */
-    note: string | null;
-    /** @nullable */
-    pageNumber: number | null;
+  resourceId: string;
+  /** @nullable */
+  excerpt: string | null;
+  /** @nullable */
+  note: string | null;
+  /** @nullable */
+  pageNumber: number | null;
 }

@@ -9,7 +9,7 @@ export type UpdateRelationInputEvidenceStatus = typeof UpdateRelationInputEviden
 
 
 export const UpdateRelationInputEvidenceStatus = {
-    none: 'none',
-    needs_evidence: 'needs_evidence',
-    confirmed: 'confirmed',
+  none: 'none',
+  needs_evidence: 'needs_evidence',
+  confirmed: 'confirmed',
 } as const;

@@ -17,6 +17,7 @@ import {
     type AvailableRelation
 } from '../data/useRelations';
 import {useCanvasStore} from '../store/useCanvasStore';
+import type {CommentNotification} from '../data/useCommentNotifications';
 
 function snapshot(): DiagramDocument {
     const state = useCanvasStore.getState();
@@ -44,7 +45,10 @@ export function DiagramWorkspace({
                                      onDropFiles,
                                      onPickFiles,
                                      onCanvasReady,
-                                     onSaveStateChange
+                                     onSaveStateChange,
+                                     commentNotifications,
+                                     selectedCommentId,
+                                     onCommentOpen
                                  }: {
     diagram: Diagram;
     refetch: () => Promise<{ data?: Diagram }>;
@@ -53,7 +57,10 @@ export function DiagramWorkspace({
     onDropFiles?: (files: File[], position: { x: number; y: number }) => void;
     onPickFiles?: (position?: { x: number; y: number }) => void;
     onCanvasReady?: () => void;
-    onSaveStateChange?: (saved: boolean) => void
+    onSaveStateChange?: (saved: boolean) => void;
+    commentNotifications?: CommentNotification[];
+    selectedCommentId?: string | null;
+    onCommentOpen?: (item: CommentNotification) => void;
 }) {
     const {userId} = useAuth();
     const client = useQueryClient();
@@ -340,6 +347,7 @@ export function DiagramWorkspace({
         </section>}
         {document && <CanvasEditor document={document} onReady={ready} onAddResource={onAddResource}
                                    onDropResource={onDropResource} onDropFiles={onDropFiles} onPickFiles={onPickFiles}
+                                   commentNotifications={commentNotifications} selectedCommentId={selectedCommentId} onCommentOpen={onCommentOpen}
                                    onCreateRelation={(source, target) => setRelationInitial({source, target})}/>}
         {activeRelation && <RelationCreateDialog projectId={diagram.projectId} nodes={useCanvasStore.getState().nodes}
                                                  initial={activeRelation} canSave={status === 'saved'}

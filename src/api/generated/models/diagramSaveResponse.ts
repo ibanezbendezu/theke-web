@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {DiagramSaveResult} from './diagramSaveResult';
+import type { DiagramSaveResult } from './diagramSaveResult';
 
 export interface DiagramSaveResponse {
-    data: DiagramSaveResult;
+  data: DiagramSaveResult;
 }

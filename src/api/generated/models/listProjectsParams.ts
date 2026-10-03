@@ -4,18 +4,18 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {ListProjectsStatus} from './listProjectsStatus';
+import type { ListProjectsStatus } from './listProjectsStatus';
 
 export type ListProjectsParams = {
-    status?: ListProjectsStatus;
-    cursor?: string;
-    /**
-     * @minimum 1
-     * @maximum 50
-     */
-    limit?: number;
-    /**
-     * UUID de carpeta o root para proyectos sin carpeta
-     */
-    collectionFolderId?: string;
+status?: ListProjectsStatus;
+cursor?: string;
+/**
+ * @minimum 1
+ * @maximum 50
+ */
+limit?: number;
+/**
+ * UUID de carpeta o root para proyectos sin carpeta
+ */
+collectionFolderId?: string;
 };

@@ -6,8 +6,8 @@
  */
 
 export interface ApiError {
-    code: string;
-    message: string;
-    details?: unknown;
-    requestId: string;
+  code: string;
+  message: string;
+  details?: unknown;
+  requestId: string;
 }

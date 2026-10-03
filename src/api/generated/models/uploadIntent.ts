@@ -6,14 +6,14 @@
  */
 
 export interface UploadIntent {
-    /** @maxLength 160 */
-    name: string;
-    /**
+  /** @maxLength 160 */
+  name: string;
+  /**
      * @minimum 1
      * @maximum 262144000
      */
-    size: number;
-    mediaType: string;
-    /** @maxLength 120 */
-    idempotencyKey: string;
+  size: number;
+  mediaType: string;
+  /** @maxLength 120 */
+  idempotencyKey: string;
 }

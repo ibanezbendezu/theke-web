@@ -9,6 +9,6 @@ export type ListDiagramsStatus = typeof ListDiagramsStatus[keyof typeof ListDiag
 
 
 export const ListDiagramsStatus = {
-    active: 'active',
-    archived: 'archived',
+  active: 'active',
+  archived: 'archived',
 } as const;

@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {UploadPolicy} from './uploadPolicy';
+import type { UploadPolicy } from './uploadPolicy';
 
 export interface UploadPolicyResponse {
-    data: UploadPolicy;
+  data: UploadPolicy;
 }

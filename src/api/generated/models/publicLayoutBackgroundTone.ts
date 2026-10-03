@@ -9,6 +9,6 @@ export type PublicLayoutBackgroundTone = typeof PublicLayoutBackgroundTone[keyof
 
 
 export const PublicLayoutBackgroundTone = {
-    default: 'default',
-    surface: 'surface',
+  default: 'default',
+  surface: 'surface',
 } as const;

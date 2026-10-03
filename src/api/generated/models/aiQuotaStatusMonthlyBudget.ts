@@ -6,7 +6,7 @@
  */
 
 export type AiQuotaStatusMonthlyBudget = {
-    usedUsd: number;
-    limitUsd: number;
-    remainingUsd: number;
+  usedUsd: number;
+  limitUsd: number;
+  remainingUsd: number;
 };

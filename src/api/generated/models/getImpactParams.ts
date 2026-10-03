@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {GetImpactAction} from './getImpactAction';
+import type { GetImpactAction } from './getImpactAction';
 
 export type GetImpactParams = {
-    action: GetImpactAction;
+action: GetImpactAction;
 };

@@ -9,6 +9,6 @@ export type RelationDetailDirection = typeof RelationDetailDirection[keyof typeo
 
 
 export const RelationDetailDirection = {
-    directed: 'directed',
-    undirected: 'undirected',
+  directed: 'directed',
+  undirected: 'undirected',
 } as const;

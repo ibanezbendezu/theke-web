@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {DeleteProjectFolder200Data} from './deleteProjectFolder200Data';
+import type { DeleteProjectFolder200Data } from './deleteProjectFolder200Data';
 
 export type DeleteProjectFolder200 = {
-    data?: DeleteProjectFolder200Data;
+  data?: DeleteProjectFolder200Data;
 };

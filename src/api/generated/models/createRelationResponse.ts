@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {CreateRelationResult} from './createRelationResult';
+import type { CreateRelationResult } from './createRelationResult';
 
 export interface CreateRelationResponse {
-    data: CreateRelationResult;
+  data: CreateRelationResult;
 }

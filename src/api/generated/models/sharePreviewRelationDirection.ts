@@ -9,6 +9,6 @@ export type SharePreviewRelationDirection = typeof SharePreviewRelationDirection
 
 
 export const SharePreviewRelationDirection = {
-    directed: 'directed',
-    undirected: 'undirected',
+  directed: 'directed',
+  undirected: 'undirected',
 } as const;

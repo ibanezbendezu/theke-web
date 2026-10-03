@@ -6,5 +6,5 @@
  */
 
 export interface RelationSuggestionInput {
-    relationId: string;
+  relationId: string;
 }

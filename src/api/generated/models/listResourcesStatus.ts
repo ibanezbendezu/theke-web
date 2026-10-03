@@ -9,6 +9,6 @@ export type ListResourcesStatus = typeof ListResourcesStatus[keyof typeof ListRe
 
 
 export const ListResourcesStatus = {
-    active: 'active',
-    archived: 'archived',
+  active: 'active',
+  archived: 'archived',
 } as const;

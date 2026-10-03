@@ -4,10 +4,10 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {Resource} from './resource';
-import type {ResourceListResponseMeta} from './resourceListResponseMeta';
+import type { Resource } from './resource';
+import type { ResourceListResponseMeta } from './resourceListResponseMeta';
 
 export interface ResourceListResponse {
-    data: Resource[];
-    meta: ResourceListResponseMeta;
+  data: Resource[];
+  meta: ResourceListResponseMeta;
 }

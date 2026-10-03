@@ -6,5 +6,5 @@
  */
 
 export type DeleteLibraryFolder200Data = {
-    id?: string;
+  id?: string;
 };

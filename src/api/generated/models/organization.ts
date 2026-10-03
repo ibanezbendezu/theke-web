@@ -4,10 +4,10 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {Folder} from './folder';
-import type {ProjectResource} from './projectResource';
+import type { Folder } from './folder';
+import type { ProjectResource } from './projectResource';
 
 export interface Organization {
-    folders: Folder[];
-    resources: ProjectResource[];
+  folders: Folder[];
+  resources: ProjectResource[];
 }

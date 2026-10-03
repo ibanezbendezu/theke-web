@@ -9,7 +9,7 @@ export type RelationDetailEvidenceStatus = typeof RelationDetailEvidenceStatus[k
 
 
 export const RelationDetailEvidenceStatus = {
-    none: 'none',
-    needs_evidence: 'needs_evidence',
-    confirmed: 'confirmed',
+  none: 'none',
+  needs_evidence: 'needs_evidence',
+  confirmed: 'confirmed',
 } as const;

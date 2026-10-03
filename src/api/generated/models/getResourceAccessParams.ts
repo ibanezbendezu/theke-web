@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {GetResourceAccessMode} from './getResourceAccessMode';
+import type { GetResourceAccessMode } from './getResourceAccessMode';
 
 export type GetResourceAccessParams = {
-    mode?: GetResourceAccessMode;
+mode?: GetResourceAccessMode;
 };

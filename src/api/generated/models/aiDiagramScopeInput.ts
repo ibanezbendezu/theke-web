@@ -6,7 +6,7 @@
  */
 
 export interface AiDiagramScopeInput {
-    diagramId: string;
-    /** @maxItems 1000 */
-    nodeIds?: string[];
+  diagramId: string;
+  /** @maxItems 1000 */
+  nodeIds?: string[];
 }

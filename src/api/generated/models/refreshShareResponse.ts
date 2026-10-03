@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {RefreshShareResponseData} from './refreshShareResponseData';
+import type { RefreshShareResponseData } from './refreshShareResponseData';
 
 export interface RefreshShareResponse {
-    data: RefreshShareResponseData;
+  data: RefreshShareResponseData;
 }

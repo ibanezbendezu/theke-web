@@ -6,10 +6,10 @@
  */
 
 export interface RenameFileResourceInput {
-    /**
+  /**
      * @minLength 1
      * @maxLength 160
      */
-    title: string;
-    expectedUpdatedAt: string;
+  title: string;
+  expectedUpdatedAt: string;
 }

@@ -6,7 +6,7 @@
  */
 
 export interface RevokeShareInput {
-    /** @pattern ^[a-f0-9]{64}$ */
-    expectedPublishedFingerprint: string;
-    confirmation: 'REVOCAR';
+  /** @pattern ^[a-f0-9]{64}$ */
+  expectedPublishedFingerprint: string;
+  confirmation: 'REVOCAR';
 }

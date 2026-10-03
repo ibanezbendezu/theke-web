@@ -4,15 +4,15 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {PreflightResourceAssessment} from './preflightResourceAssessment';
+import type { PreflightResourceAssessment } from './preflightResourceAssessment';
 
 export interface AiPreflightResult {
-    allowed: boolean;
-    reason?: string;
-    errorCode?: string;
-    resources: PreflightResourceAssessment[];
-    totalEstimatedInputTokens: number;
-    maxInputTokens: number;
-    remainingDailyRuns: number;
-    remainingMonthlyBudgetUsd: number;
+  allowed: boolean;
+  reason?: string;
+  errorCode?: string;
+  resources: PreflightResourceAssessment[];
+  totalEstimatedInputTokens: number;
+  maxInputTokens: number;
+  remainingDailyRuns: number;
+  remainingMonthlyBudgetUsd: number;
 }

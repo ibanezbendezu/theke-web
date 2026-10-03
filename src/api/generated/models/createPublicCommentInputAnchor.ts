@@ -9,13 +9,13 @@
  * Requerido por el compositor contextual; omitido solo por clientes anteriores.
  */
 export type CreatePublicCommentInputAnchor = {
-    type: 'diagram';
-    x: number;
-    y: number;
+  type: 'diagram';
+  x: number;
+  y: number;
 } | {
-    type: 'resource';
-    resourceId: string;
+  type: 'resource';
+  resourceId: string;
 } | {
-    type: 'relation';
-    relationId: string;
+  type: 'relation';
+  relationId: string;
 };

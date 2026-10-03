@@ -6,9 +6,9 @@
  */
 
 export interface User {
-    id: string;
-    /** @nullable */
-    email: string | null;
-    /** @nullable */
-    displayName: string | null;
+  id: string;
+  /** @nullable */
+  email: string | null;
+  /** @nullable */
+  displayName: string | null;
 }

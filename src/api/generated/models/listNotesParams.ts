@@ -6,5 +6,5 @@
  */
 
 export type ListNotesParams = {
-    cursor?: string;
+cursor?: string;
 };

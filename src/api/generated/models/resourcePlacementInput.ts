@@ -6,8 +6,8 @@
  */
 
 export interface ResourcePlacementInput {
-    /** @minItems 1 */
-    resourceIds: string[];
-    /** @nullable */
-    folderId?: string | null;
+  /** @minItems 1 */
+  resourceIds: string[];
+  /** @nullable */
+  folderId?: string | null;
 }

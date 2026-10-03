@@ -6,7 +6,7 @@
  */
 
 export type MoveLibraryResources200DataItem = {
-    id?: string;
-    /** @nullable */
-    libraryFolderId?: string | null;
+  id?: string;
+  /** @nullable */
+  libraryFolderId?: string | null;
 };

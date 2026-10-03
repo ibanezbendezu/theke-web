@@ -9,6 +9,6 @@ export type GetResourceAccessMode = typeof GetResourceAccessMode[keyof typeof Ge
 
 
 export const GetResourceAccessMode = {
-    inline: 'inline',
-    download: 'download',
+  inline: 'inline',
+  download: 'download',
 } as const;

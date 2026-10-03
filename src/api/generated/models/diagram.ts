@@ -4,20 +4,20 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {DiagramDocument} from './diagramDocument';
+import type { DiagramDocument } from './diagramDocument';
 
 export interface Diagram {
-    id: string;
-    projectId: string;
-    /**
+  id: string;
+  projectId: string;
+  /**
      * @minLength 1
      * @maxLength 120
      */
-    name: string;
-    document: DiagramDocument;
-    revision: number;
-    /** @nullable */
-    archivedAt: string | null;
-    createdAt: string;
-    updatedAt: string;
+  name: string;
+  document: DiagramDocument;
+  revision: number;
+  /** @nullable */
+  archivedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 }

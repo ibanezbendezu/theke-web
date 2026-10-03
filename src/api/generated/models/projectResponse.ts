@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {Project} from './project';
+import type { Project } from './project';
 
 export interface ProjectResponse {
-    data: Project;
+  data: Project;
 }

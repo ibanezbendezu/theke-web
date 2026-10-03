@@ -6,14 +6,14 @@
  */
 
 export interface LinkUpdateInput {
-    /**
+  /**
      * @minLength 1
      * @maxLength 160
      */
-    title: string;
-    /**
+  title: string;
+  /**
      * @maxLength 1000
      * @nullable
      */
-    description: string | null;
+  description: string | null;
 }

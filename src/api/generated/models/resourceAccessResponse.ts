@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {ResourceAccess} from './resourceAccess';
+import type { ResourceAccess } from './resourceAccess';
 
 export interface ResourceAccessResponse {
-    data: ResourceAccess;
+  data: ResourceAccess;
 }

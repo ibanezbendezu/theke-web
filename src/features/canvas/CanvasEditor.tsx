@@ -5,6 +5,7 @@ import {
     BackgroundVariant,
     type NodeTypes,
     ReactFlowProvider,
+    ViewportPortal,
     useReactFlow,
     type Node as FlowNode,
     type OnConnectStart,
@@ -20,6 +21,8 @@ import {
     UploadCloud,
     Layers
 } from 'lucide-react';
+import {MessageCircle} from 'lucide-react';
+import type {CommentNotification} from '../../data/useCommentNotifications';
 import {useCanvasStore} from '../../store/useCanvasStore';
 import {MediaNode} from './nodes/MediaNode';
 import {TextNode} from './nodes/TextNode';
@@ -52,13 +55,16 @@ const edgeTypes = {
     editable: EditableEdge,
 };
 
-function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPickFiles, onCreateRelation}: {
+function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPickFiles, onCreateRelation, commentNotifications, selectedCommentId, onCommentOpen}: {
     viewport?: DiagramDocument['viewport'];
     onAddResource?: (position?: { x: number; y: number }) => void;
     onDropResource?: (resourceId: string, position: { x: number; y: number }) => void;
     onDropFiles?: (files: File[], position: { x: number; y: number }) => void;
     onPickFiles?: (position?: { x: number; y: number }) => void;
-    onCreateRelation?: (source?: string, target?: string) => void
+    onCreateRelation?: (source?: string, target?: string) => void;
+    commentNotifications?: CommentNotification[];
+    selectedCommentId?: string | null;
+    onCommentOpen?: (item: CommentNotification) => void;
 }) {
     const {
         nodes,
@@ -77,6 +83,13 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
     const background = useCanvasStore(state => state.background);
     const focusRequest = useCanvasStore(state => state.focusRequest);
     const focusEdgeRequest = useCanvasStore(state => state.focusEdgeRequest);
+    const selectedComment = commentNotifications?.find(item => item.commentId === selectedCommentId);
+    useEffect(() => {
+        if (typeof selectedComment?.anchor.x !== 'number' || typeof selectedComment.anchor.y !== 'number') return;
+        void setCenter(selectedComment.anchor.x, selectedComment.anchor.y, {
+            duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 300
+        });
+    }, [selectedComment, setCenter]);
     useEffect(() => {
         if (viewport) void setViewport(viewport);
     }, [viewport, setViewport]);
@@ -315,6 +328,15 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                 style={{backgroundColor: background.tone === 'surface' ? 'var(--color-surface)' : 'var(--color-background)'}}
                 minZoom={0.1}
             >
+                {commentNotifications && <ViewportPortal>{commentNotifications.map((item, index) =>
+                    typeof item.anchor.x === 'number' && typeof item.anchor.y === 'number' ?
+                        <button key={item.id} type="button" title={item.displayName}
+                                aria-label={`Comentario de ${item.displayName}: ${item.content}`}
+                                aria-pressed={item.commentId === selectedCommentId}
+                                className={`nodrag nopan absolute z-10 flex h-8 min-w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-1 rounded-full px-1.5 text-xs font-semibold ring-2 ring-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${item.commentId === selectedCommentId ? 'bg-on-background text-background' : 'bg-primary text-on-primary'}`}
+                                style={{left: item.anchor.x, top: item.anchor.y}}
+                                onClick={() => onCommentOpen?.(item)}><MessageCircle size={12}/>{index + 1}</button>
+                        : null)}</ViewportPortal>}
                 {background.variant !== 'plain' && <Background
                     variant={background.variant === 'grid' ? BackgroundVariant.Lines : BackgroundVariant.Dots}
                     color="var(--color-outline)" gap={24} size={background.variant === 'dots' ? 2 : undefined}/>}
@@ -395,7 +417,10 @@ export function CanvasEditor({
                                  onDropResource,
                                  onDropFiles,
                                  onPickFiles,
-                                 onCreateRelation
+                                 onCreateRelation,
+                                 commentNotifications,
+                                 selectedCommentId,
+                                 onCommentOpen
                              }: {
     document?: DiagramDocument;
     onReady?: () => void;
@@ -403,7 +428,10 @@ export function CanvasEditor({
     onDropResource?: (resourceId: string, position: { x: number; y: number }) => void;
     onDropFiles?: (files: File[], position: { x: number; y: number }) => void;
     onPickFiles?: (position?: { x: number; y: number }) => void;
-    onCreateRelation?: (source?: string, target?: string) => void
+    onCreateRelation?: (source?: string, target?: string) => void;
+    commentNotifications?: CommentNotification[];
+    selectedCommentId?: string | null;
+    onCommentOpen?: (item: CommentNotification) => void;
 }) {
     const loadDocument = useCanvasStore(state => state.loadDocument);
     useEffect(() => {
@@ -478,7 +506,8 @@ export function CanvasEditor({
              onKeyDown={onShortcut}>
             <ReactFlowProvider>
                 <CanvasCore viewport={document?.viewport} onAddResource={onAddResource} onDropResource={onDropResource}
-                            onDropFiles={onDropFiles} onPickFiles={onPickFiles} onCreateRelation={onCreateRelation}/>
+                            onDropFiles={onDropFiles} onPickFiles={onPickFiles} onCreateRelation={onCreateRelation}
+                            commentNotifications={commentNotifications} selectedCommentId={selectedCommentId} onCommentOpen={onCommentOpen}/>
                 <CanvasToolbar onAddResource={onAddResource}
                                onCreateRelation={onCreateRelation ? () => onCreateRelation() : undefined}/>
             </ReactFlowProvider>

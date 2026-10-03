@@ -9,7 +9,7 @@ export type PublicLayoutBackgroundVariant = typeof PublicLayoutBackgroundVariant
 
 
 export const PublicLayoutBackgroundVariant = {
-    plain: 'plain',
-    dots: 'dots',
-    grid: 'grid',
+  plain: 'plain',
+  dots: 'dots',
+  grid: 'grid',
 } as const;

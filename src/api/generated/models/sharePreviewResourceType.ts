@@ -9,7 +9,7 @@ export type SharePreviewResourceType = typeof SharePreviewResourceType[keyof typ
 
 
 export const SharePreviewResourceType = {
-    note: 'note',
-    file: 'file',
-    link: 'link',
+  note: 'note',
+  file: 'file',
+  link: 'link',
 } as const;

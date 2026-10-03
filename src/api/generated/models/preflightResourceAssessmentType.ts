@@ -9,7 +9,7 @@ export type PreflightResourceAssessmentType = typeof PreflightResourceAssessment
 
 
 export const PreflightResourceAssessmentType = {
-    note: 'note',
-    file: 'file',
-    link: 'link',
+  note: 'note',
+  file: 'file',
+  link: 'link',
 } as const;

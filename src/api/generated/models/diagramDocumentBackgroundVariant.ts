@@ -9,7 +9,7 @@ export type DiagramDocumentBackgroundVariant = typeof DiagramDocumentBackgroundV
 
 
 export const DiagramDocumentBackgroundVariant = {
-    plain: 'plain',
-    dots: 'dots',
-    grid: 'grid',
+  plain: 'plain',
+  dots: 'dots',
+  grid: 'grid',
 } as const;

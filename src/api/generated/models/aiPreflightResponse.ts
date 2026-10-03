@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {AiPreflightResult} from './aiPreflightResult';
+import type { AiPreflightResult } from './aiPreflightResult';
 
 export interface AiPreflightResponse {
-    data: AiPreflightResult;
+  data: AiPreflightResult;
 }

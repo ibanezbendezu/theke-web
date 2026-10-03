@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {Upload} from './upload';
+import type { Upload } from './upload';
 
 export interface UploadResponse {
-    data: Upload;
+  data: Upload;
 }

@@ -4,10 +4,10 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {Note} from './note';
-import type {NoteListResponseMeta} from './noteListResponseMeta';
+import type { Note } from './note';
+import type { NoteListResponseMeta } from './noteListResponseMeta';
 
 export interface NoteListResponse {
-    data: Note[];
-    meta: NoteListResponseMeta;
+  data: Note[];
+  meta: NoteListResponseMeta;
 }

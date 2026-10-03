@@ -6,6 +6,6 @@
  */
 
 export type ClaimPublicCommentsResponseData = {
-    /** @minimum 0 */
-    claimed: number;
+  /** @minimum 0 */
+  claimed: number;
 };

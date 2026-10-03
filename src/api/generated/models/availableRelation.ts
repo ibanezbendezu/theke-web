@@ -4,21 +4,21 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {AvailableRelationDirection} from './availableRelationDirection';
-import type {AvailableRelationEvidenceStatus} from './availableRelationEvidenceStatus';
+import type { AvailableRelationDirection } from './availableRelationDirection';
+import type { AvailableRelationEvidenceStatus } from './availableRelationEvidenceStatus';
 
 export interface AvailableRelation {
-    relationId: string;
-    sourceResourceId: string;
-    targetResourceId: string;
-    sourceNodeId: string;
-    targetNodeId: string;
-    sourceTitle: string;
-    targetTitle: string;
-    direction: AvailableRelationDirection;
-    typeKey: string;
-    typeLabel: string;
-    /** @nullable */
-    label: string | null;
-    evidenceStatus: AvailableRelationEvidenceStatus;
+  relationId: string;
+  sourceResourceId: string;
+  targetResourceId: string;
+  sourceNodeId: string;
+  targetNodeId: string;
+  sourceTitle: string;
+  targetTitle: string;
+  direction: AvailableRelationDirection;
+  typeKey: string;
+  typeLabel: string;
+  /** @nullable */
+  label: string | null;
+  evidenceStatus: AvailableRelationEvidenceStatus;
 }

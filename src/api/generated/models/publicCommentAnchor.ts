@@ -6,19 +6,19 @@
  */
 
 export type PublicCommentAnchor = {
-    type: 'diagram';
-    x?: number;
-    y?: number;
+  type: 'diagram';
+  x?: number;
+  y?: number;
 } | {
-    type: 'resource';
-    resourceId: string;
-    label: string;
-    x?: number;
-    y?: number;
+  type: 'resource';
+  resourceId: string;
+  label: string;
+  x?: number;
+  y?: number;
 } | {
-    type: 'relation';
-    relationId: string;
-    label: string;
-    x?: number;
-    y?: number;
+  type: 'relation';
+  relationId: string;
+  label: string;
+  x?: number;
+  y?: number;
 };

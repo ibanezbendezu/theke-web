@@ -6,6 +6,6 @@
  */
 
 export interface RelationTypeOption {
-    key: string;
-    label: string;
+  key: string;
+  label: string;
 }

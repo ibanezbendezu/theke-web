@@ -4,10 +4,10 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {PublicLayoutBackgroundTone} from './publicLayoutBackgroundTone';
-import type {PublicLayoutBackgroundVariant} from './publicLayoutBackgroundVariant';
+import type { PublicLayoutBackgroundTone } from './publicLayoutBackgroundTone';
+import type { PublicLayoutBackgroundVariant } from './publicLayoutBackgroundVariant';
 
 export type PublicLayoutBackground = {
-    variant: PublicLayoutBackgroundVariant;
-    tone: PublicLayoutBackgroundTone;
+  variant: PublicLayoutBackgroundVariant;
+  tone: PublicLayoutBackgroundTone;
 };

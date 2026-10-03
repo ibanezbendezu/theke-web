@@ -4,15 +4,15 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {PublicLayout} from './publicLayout';
-import type {SharePreviewRelation} from './sharePreviewRelation';
-import type {SharePreviewResource} from './sharePreviewResource';
+import type { PublicLayout } from './publicLayout';
+import type { SharePreviewRelation } from './sharePreviewRelation';
+import type { SharePreviewResource } from './sharePreviewResource';
 
 export interface PublicShare {
-    diagramName: string;
-    revision: number;
-    resources: SharePreviewResource[];
-    relations: SharePreviewRelation[];
-    layout: PublicLayout;
-    commentsEnabled: boolean;
+  diagramName: string;
+  revision: number;
+  resources: SharePreviewResource[];
+  relations: SharePreviewRelation[];
+  layout: PublicLayout;
+  commentsEnabled: boolean;
 }

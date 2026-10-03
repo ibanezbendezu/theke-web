@@ -9,6 +9,6 @@ export type ListProjectsStatus = typeof ListProjectsStatus[keyof typeof ListProj
 
 
 export const ListProjectsStatus = {
-    active: 'active',
-    archived: 'archived',
+  active: 'active',
+  archived: 'archived',
 } as const;

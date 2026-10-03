@@ -6,6 +6,6 @@
  */
 
 export type AiScopePreparationExcludedItem = {
-    nodeId: string;
-    reason: string;
+  nodeId: string;
+  reason: string;
 };

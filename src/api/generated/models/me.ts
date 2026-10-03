@@ -4,12 +4,12 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {Account} from './account';
-import type {Membership} from './membership';
-import type {User} from './user';
+import type { Account } from './account';
+import type { Membership } from './membership';
+import type { User } from './user';
 
 export interface Me {
-    user: User;
-    account: Account;
-    membership: Membership;
+  user: User;
+  account: Account;
+  membership: Membership;
 }

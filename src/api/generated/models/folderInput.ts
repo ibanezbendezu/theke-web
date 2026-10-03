@@ -6,11 +6,11 @@
  */
 
 export interface FolderInput {
-    /**
+  /**
      * @minLength 1
      * @maxLength 120
      */
-    name?: string;
-    /** @nullable */
-    parentFolderId?: string | null;
+  name?: string;
+  /** @nullable */
+  parentFolderId?: string | null;
 }

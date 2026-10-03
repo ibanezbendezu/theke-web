@@ -6,6 +6,6 @@
  */
 
 export interface RelationEndpoint {
-    id: string;
-    title: string;
+  id: string;
+  title: string;
 }

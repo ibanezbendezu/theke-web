@@ -6,5 +6,5 @@
  */
 
 export interface AiSettingsInput {
-    enabled: boolean;
+  enabled: boolean;
 }

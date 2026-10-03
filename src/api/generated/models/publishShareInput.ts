@@ -6,11 +6,11 @@
  */
 
 export interface PublishShareInput {
-    /** @pattern ^[a-f0-9]{64}$ */
-    fingerprint: string;
-    /**
+  /** @pattern ^[a-f0-9]{64}$ */
+  fingerprint: string;
+  /**
      * @minLength 1
      * @maxLength 120
      */
-    idempotencyKey: string;
+  idempotencyKey: string;
 }

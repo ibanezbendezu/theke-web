@@ -6,15 +6,15 @@
  */
 
 export interface Folder {
-    id: string;
-    projectId: string;
-    /**
+  id: string;
+  projectId: string;
+  /**
      * @minLength 1
      * @maxLength 120
      */
-    name: string;
-    /** @nullable */
-    parentFolderId: string | null;
-    /** @nullable */
-    archivedAt: string | null;
+  name: string;
+  /** @nullable */
+  parentFolderId: string | null;
+  /** @nullable */
+  archivedAt: string | null;
 }

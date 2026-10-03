@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {AiScopePreparation} from './aiScopePreparation';
+import type { AiScopePreparation } from './aiScopePreparation';
 
 export interface AiScopeResponse {
-    data: AiScopePreparation;
+  data: AiScopePreparation;
 }

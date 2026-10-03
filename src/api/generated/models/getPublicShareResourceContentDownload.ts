@@ -9,5 +9,5 @@ export type GetPublicShareResourceContentDownload = typeof GetPublicShareResourc
 
 
 export const GetPublicShareResourceContentDownload = {
-    NUMBER_1: '1',
+  NUMBER_1: '1',
 } as const;

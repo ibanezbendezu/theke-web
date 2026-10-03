@@ -6,5 +6,5 @@
  */
 
 export type DeleteProjectFolder200Data = {
-    id?: string;
+  id?: string;
 };

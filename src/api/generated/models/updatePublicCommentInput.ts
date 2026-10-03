@@ -6,8 +6,8 @@
  */
 
 export interface UpdatePublicCommentInput {
-    /** @maxLength 5000 */
-    content: string;
-    /** @minimum 1 */
-    expectedRevision: number;
+  /** @maxLength 5000 */
+  content: string;
+  /** @minimum 1 */
+  expectedRevision: number;
 }

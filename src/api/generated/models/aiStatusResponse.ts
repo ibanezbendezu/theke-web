@@ -4,8 +4,8 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {AiStatus} from './aiStatus';
+import type { AiStatus } from './aiStatus';
 
 export interface AiStatusResponse {
-    data: AiStatus;
+  data: AiStatus;
 }

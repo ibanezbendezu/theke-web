@@ -6,6 +6,6 @@
  */
 
 export type ResourceListResponseMeta = {
-    /** @nullable */
-    nextCursor: string | null;
+  /** @nullable */
+  nextCursor: string | null;
 };

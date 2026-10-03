@@ -9,7 +9,7 @@ export type ResourceType = typeof ResourceType[keyof typeof ResourceType];
 
 
 export const ResourceType = {
-    note: 'note',
-    file: 'file',
-    link: 'link',
+  note: 'note',
+  file: 'file',
+  link: 'link',
 } as const;

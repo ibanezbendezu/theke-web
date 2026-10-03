@@ -6,5 +6,5 @@
  */
 
 export type RevokeShareResponseData = {
-    active: false;
+  active: false;
 };

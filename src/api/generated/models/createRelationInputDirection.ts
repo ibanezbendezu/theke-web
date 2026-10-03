@@ -9,6 +9,6 @@ export type CreateRelationInputDirection = typeof CreateRelationInputDirection[k
 
 
 export const CreateRelationInputDirection = {
-    directed: 'directed',
-    undirected: 'undirected',
+  directed: 'directed',
+  undirected: 'undirected',
 } as const;

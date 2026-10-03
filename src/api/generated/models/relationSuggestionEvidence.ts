@@ -6,6 +6,6 @@
  */
 
 export interface RelationSuggestionEvidence {
-    resourceId: string;
-    excerpt: string;
+  resourceId: string;
+  excerpt: string;
 }

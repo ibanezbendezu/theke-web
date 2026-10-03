@@ -6,8 +6,8 @@
  */
 
 export interface RefreshShareInput {
-    /** @pattern ^[a-f0-9]{64}$ */
-    fingerprint: string;
-    /** @pattern ^[a-f0-9]{64}$ */
-    expectedPublishedFingerprint: string;
+  /** @pattern ^[a-f0-9]{64}$ */
+  fingerprint: string;
+  /** @pattern ^[a-f0-9]{64}$ */
+  expectedPublishedFingerprint: string;
 }

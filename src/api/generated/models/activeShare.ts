@@ -6,11 +6,11 @@
  */
 
 export type ActiveShare = {
-    active: false;
+  active: false;
 } | {
-    active: true;
-    url: string;
-    fingerprint: string;
-    revision: number;
-    commentsEnabled: boolean;
+  active: true;
+  url: string;
+  fingerprint: string;
+  revision: number;
+  commentsEnabled: boolean;
 };

@@ -6,15 +6,15 @@
  */
 
 export interface ProjectResource {
-    id: string;
-    resourceId: string;
-    /** @nullable */
-    folderId: string | null;
-    title?: string;
-    /** @nullable */
-    description?: string | null;
-    type?: string;
-    /** @nullable */
-    archivedAt: string | null;
-    updatedAt?: string;
+  id: string;
+  resourceId: string;
+  /** @nullable */
+  folderId: string | null;
+  title?: string;
+  /** @nullable */
+  description?: string | null;
+  type?: string;
+  /** @nullable */
+  archivedAt: string | null;
+  updatedAt?: string;
 }

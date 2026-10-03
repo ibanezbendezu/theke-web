@@ -4,11 +4,11 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {ResourcePropertyInputType} from './resourcePropertyInputType';
+import type { ResourcePropertyInputType } from './resourcePropertyInputType';
 
 export interface ResourcePropertyInput {
-    /** @maxLength 40 */
-    key: string;
-    type: ResourcePropertyInputType;
-    value: string | number | boolean | string[];
+  /** @maxLength 40 */
+  key: string;
+  type: ResourcePropertyInputType;
+  value: string | number | boolean | string[];
 }

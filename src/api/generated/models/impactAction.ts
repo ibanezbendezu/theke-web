@@ -9,6 +9,6 @@ export type ImpactAction = typeof ImpactAction[keyof typeof ImpactAction];
 
 
 export const ImpactAction = {
-    archive: 'archive',
-    delete: 'delete',
+  archive: 'archive',
+  delete: 'delete',
 } as const;

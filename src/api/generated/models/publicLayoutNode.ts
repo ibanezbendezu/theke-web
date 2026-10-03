@@ -4,42 +4,42 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
-import type {PublicLayoutNodeType} from './publicLayoutNodeType';
+import type { PublicLayoutNodeType } from './publicLayoutNodeType';
 
 export interface PublicLayoutNode {
-    id: string;
-    type?: PublicLayoutNodeType;
-    resourceId?: string;
-    x: number;
-    y: number;
-    width?: number;
-    height?: number;
-    caption?: string;
-    accent?: string;
-    folderName?: string;
-    folderCount?: number;
-    label?: string;
-    color?: string;
-    annotationKind?: string;
-    text?: string;
-    fontSize?: number;
-    align?: string;
-    shape?: string;
-    thickness?: number;
-    dash?: string;
-    x1?: number;
-    y1?: number;
-    x2?: number;
-    y2?: number;
-    shapeType?: string;
-    sides?: number;
-    borderRadius?: number;
-    title?: string;
-    description?: string;
-    url?: string;
-    imageUrl?: string;
-    mediaType?: string;
-    filename?: string;
-    extension?: string;
-    size?: string;
+  id: string;
+  type?: PublicLayoutNodeType;
+  resourceId?: string;
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  caption?: string;
+  accent?: string;
+  folderName?: string;
+  folderCount?: number;
+  label?: string;
+  color?: string;
+  annotationKind?: string;
+  text?: string;
+  fontSize?: number;
+  align?: string;
+  shape?: string;
+  thickness?: number;
+  dash?: string;
+  x1?: number;
+  y1?: number;
+  x2?: number;
+  y2?: number;
+  shapeType?: string;
+  sides?: number;
+  borderRadius?: number;
+  title?: string;
+  description?: string;
+  url?: string;
+  imageUrl?: string;
+  mediaType?: string;
+  filename?: string;
+  extension?: string;
+  size?: string;
 }
