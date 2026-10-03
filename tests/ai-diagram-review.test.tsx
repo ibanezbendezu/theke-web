@@ -3,7 +3,12 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { DiagramEditor } from '../src/pages/DiagramEditor';
 
 const state = vi.hoisted(() => ({ prepare: vi.fn(), setInspectorOpen: vi.fn(), focusNode: vi.fn() }));
-vi.mock('react-router-dom', () => ({ useParams: () => ({ diagramId: 'diagram-1', projectId: 'project-1' }), useNavigate: () => vi.fn() }));
+vi.mock('react-router-dom', () => ({ useParams: () => ({ diagramId: 'diagram-1', projectId: 'project-1' }), useNavigate: () => vi.fn(), useLocation: () => ({pathname: '/projects/project-1/diagrams/diagram-1', search: ''}) }));
+vi.mock('../src/data/useCommentNotifications', () => ({
+  useCommentNotifications: () => ({data: {items: [], unreadCount: 0}}),
+  useCommentNotificationStream: () => undefined,
+  useReadCommentNotification: () => ({mutate: vi.fn()}),
+}));
 vi.mock('../src/data/useDiagrams', () => ({ useDiagram: () => ({ data: { id: 'diagram-1', name: 'Mi diagrama', projectId: 'project-1', archivedAt: null, document: { nodes: [] } }, isPending: false, isError: false, refetch: vi.fn() }) }));
 vi.mock('../src/data/useOrganization', () => ({ useOrganizationActions: () => ({ addResources: { mutateAsync: vi.fn() } }) }));
 vi.mock('../src/data/useAi', () => ({ usePrepareDiagramReview: () => ({ mutate: state.prepare, isPending: false }) }));

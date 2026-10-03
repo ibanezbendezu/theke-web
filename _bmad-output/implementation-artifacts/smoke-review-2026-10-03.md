@@ -28,3 +28,17 @@ El comentario de prueba permanece **resuelto** en el mapa. Su texto empieza por 
 - La integración visual transversal aún necesita recorridos completos con datos reales en Inicio, Proyectos y Biblioteca. El otro mapa local mostraba cambios sin confirmar; no se usó como fixture.
 - Las historias 4.2–4.4 siguen en desarrollo con el proveedor de IA aplazado; esta revisión no valida inferencia real.
 - La política UX solicita subtítulos sincronizados para video, mientras la publicación implementa alternativa textual. Se requiere decisión de producto antes de cerrar 5.5.
+
+## Seguimiento BMAD del 2026-10-03
+
+- El usuario confirmó que aún no hay entorno desplegado y que la IA debe permanecer aplazada. Las historias 4.2–4.4 y el control operativo de 5.2 siguen abiertos por esas decisiones; no se habilitó el proveedor ni se publicó un entorno.
+- La prueba de integración de Compartidos y la de comentarios pasaron con PostgreSQL real (2/2). La suite completa de web pasó (81/81) después de actualizar cuatro archivos de pruebas que montaban interfaces anteriores. API pasó 79 pruebas unitarias, 4 E2E con dobles, lint, build y contrato; web pasó lint, build y contrato.
+- `sprint-status.yaml` tenía `last_updated` sin hora y una acción pendiente fuera del esquema. Se corrigieron ambos y la validación BMAD informa `valid: true`.
+
+## Revisión de código y cierre local
+
+- Los Compartidos antiguos ya no consultan etiquetas privadas de Relaciones al abrirse: la migración `0030` congela la etiqueta visible en la proyección publicada. Se aplicó a PostgreSQL local y pasó la integración de Compartidos y comentarios.
+- La lista de comentarios públicos usa cursor estable y páginas de 100; el panel permite cargar los anteriores. La integración comprobó más de 100 comentarios, continuidad sin duplicados y rechazo de un cursor inválido.
+- Los marcadores de comentarios se cargan aunque el panel esté cerrado o Clerk siga inicializando. Las imágenes externas de nodos visuales se solicitan solo tras «Mostrar imagen».
+- Puertas finales locales: API lint, build, contrato, 79 pruebas unitarias y 4 E2E con dobles; PostgreSQL real 2/2. Web lint, build, contrato y 84/84 pruebas con dos workers. Se actualizaron pruebas obsoletas de autenticación, proyectos e IA. La ejecución web con workers ilimitados produjo esperas por carga de la máquina; la repetición acotada pasó completa.
+- Permanecen abiertos los criterios que requieren entorno desplegado, proveedor de IA, contenido multimedia real o decisiones de producto. Ninguna de esas historias se marcó `done` sin evidencia.

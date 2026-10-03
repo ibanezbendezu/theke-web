@@ -1,57 +1,46 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { MemoryRouter } from 'react-router-dom';
-import { Projects } from '../src/pages/Projects';
+import {cleanup, fireEvent, render, screen, waitFor} from '@testing-library/react';
+import {afterEach, describe, expect, it, vi} from 'vitest';
+import {MemoryRouter} from 'react-router-dom';
+import {Projects} from '../src/pages/Projects';
+import {ToastProvider} from '../src/components/ui/ToastProvider';
 
-const state = vi.hoisted(() => ({
-  createFolder: vi.fn(),
-  addResources: vi.fn(),
-  createDiagram: vi.fn(),
-}));
-
+const state = vi.hoisted(() => ({createFolder: vi.fn(), createProject: vi.fn()}));
 vi.mock('../src/data/useProjects', () => ({
-  useProjects: () => ({ data: { pages: [] }, isPending: false, isError: false }),
-  useProject: () => ({ data: { id: 'project-1', name: 'Investigación', updatedAt: new Date().toISOString() }, isPending: false, isError: false }),
-  useProjectActions: () => ({ create: { mutateAsync: vi.fn(), isPending: false }, rename: { mutateAsync: vi.fn(), isPending: false }, archive: { mutate: vi.fn() }, restore: { mutate: vi.fn() } }),
-}));
-vi.mock('../src/data/useOrganization', () => ({
-  useOrganization: () => ({ data: { folders: [], resources: [] }, isPending: false, isError: false }),
-  useOrganizationActions: () => ({
-    createFolder: { mutateAsync: state.createFolder }, renameFolder: { mutate: vi.fn() }, archiveFolder: { mutate: vi.fn() }, restoreFolder: { mutate: vi.fn() },
-    addResources: { mutate: state.addResources }, moveResources: { mutate: vi.fn() },
+  useProjects: () => ({data: {pages: [{data: []}]}, isPending: false, isError: false, hasNextPage: false}),
+  useProjectActions: () => ({
+    create: {mutateAsync: state.createProject, isPending: false},
+    rename: {mutateAsync: vi.fn(), isPending: false},
+    restore: {mutate: vi.fn()},
   }),
 }));
-vi.mock('../src/data/useNotes', () => ({
-  useNotes: () => ({ data: { pages: [{ data: [{ id: 'note-1', title: 'Fuente útil' }] }] } }),
-}));
-vi.mock('../src/data/useDiagrams', () => ({
-  useDiagrams: () => ({ data: [], isPending: false, isError: false }),
-  useDiagramActions: () => ({ create: { mutateAsync: state.createDiagram, isPending: false }, rename: { mutate: vi.fn() }, duplicate: { mutate: vi.fn() }, restore: { mutate: vi.fn() } }),
+vi.mock('../src/data/useProjectFolders', () => ({
+  useProjectFolders: () => ({data: []}),
+  useProjectFolderActions: () => ({
+    create: {mutateAsync: state.createFolder}, rename: {mutateAsync: vi.fn()},
+    remove: {mutateAsync: vi.fn()}, move: {mutateAsync: vi.fn()}, moveFolder: {mutateAsync: vi.fn()},
+  }),
 }));
 
-afterEach(() => { cleanup(); vi.clearAllMocks(); });
+const mount = (path = '/projects') => render(<ToastProvider><MemoryRouter initialEntries={[path]}><Projects/></MemoryRouter></ToastProvider>);
+afterEach(() => {cleanup(); vi.clearAllMocks();});
 
-describe('organización de un proyecto', () => {
-  it('crea carpetas y permite añadir recursos de la Biblioteca', async () => {
+describe('organización de mapas', () => {
+  it('crea una carpeta desde el menú contextual de la colección', async () => {
     state.createFolder.mockResolvedValue(undefined);
-    render(<MemoryRouter initialEntries={['/projects/project-1']}><Projects /></MemoryRouter>);
-
-    fireEvent.change(screen.getByRole('textbox', { name: 'Nombre de carpeta' }), { target: { value: 'Fuentes' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Crear carpeta' }));
-    expect(state.createFolder).toHaveBeenCalledWith('Fuentes');
-
-    fireEvent.click(screen.getByRole('button', { name: 'Añadir desde Biblioteca' }));
-    expect(screen.getByText('Fuente útil')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Añadir' }));
-    expect(state.addResources).toHaveBeenCalledWith(['note-1']);
+    mount();
+    fireEvent.contextMenu(screen.getByRole('region', {name: 'Proyectos'}));
+    fireEvent.click(screen.getByRole('menuitem', {name: 'Crear carpeta'}));
+    fireEvent.change(screen.getByRole('textbox', {name: 'Nombre'}), {target: {value: 'Fuentes'}});
+    fireEvent.click(screen.getByRole('button', {name: 'Guardar'}));
+    await waitFor(() => expect(state.createFolder).toHaveBeenCalledWith({name: 'Fuentes', parentFolderId: null}));
   });
-  it('explica el lienzo vacío y crea un diagrama asociado', async () => {
-    state.createDiagram.mockResolvedValue({ id: 'diagram-1' });
-    render(<MemoryRouter initialEntries={['/projects/project-1']}><Projects /></MemoryRouter>);
-    expect(screen.getByText('Aún no hay diagramas')).toBeInTheDocument();
-    expect(screen.getByText(/nodos, grupos y enlaces/i)).toBeInTheDocument();
-    fireEvent.change(screen.getByRole('textbox', { name: 'Nombre del diagrama' }), { target: { value: 'Mapa de ideas' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Crear diagrama' }));
-    expect(state.createDiagram).toHaveBeenCalledWith('Mapa de ideas');
+
+  it('crea un mapa dentro de la carpeta seleccionada', async () => {
+    state.createProject.mockResolvedValue({id: 'project-1'});
+    mount('/projects?folder=folder-1');
+    fireEvent.click(screen.getAllByRole('button', {name: 'Crear mapa'})[0]);
+    fireEvent.change(screen.getByRole('textbox'), {target: {value: 'Mapa de ideas'}});
+    fireEvent.click(screen.getByRole('button', {name: 'Guardar'}));
+    await waitFor(() => expect(state.createProject).toHaveBeenCalledWith({name: 'Mapa de ideas', collectionFolderId: 'folder-1'}));
   });
 });

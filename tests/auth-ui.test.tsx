@@ -9,7 +9,11 @@ import { clearPrivateCache, registerPrivateQueryClient } from '../src/data/query
 import { ApiError } from '../src/api/httpClient';
 
 const state = vi.hoisted(() => ({ auth: { isLoaded: false, isSignedIn: false, signOut: vi.fn() }, account: { isPending: false, isError: false, error: null as unknown, data: undefined as unknown, refetch: vi.fn() } }));
-vi.mock('@clerk/clerk-react', () => ({ useAuth: () => state.auth, SignIn: () => <button>Continuar con Clerk</button>, SignUp: () => <button>Crear cuenta con Clerk</button> }));
+vi.mock('@clerk/clerk-react', () => ({
+  useAuth: () => state.auth,
+  useSignIn: () => ({isLoaded: true, signIn: {}, setActive: vi.fn()}),
+  SignUp: ({forceRedirectUrl}: {forceRedirectUrl: string}) => <button data-redirect={forceRedirectUrl}>Crear cuenta con Clerk</button>,
+}));
 vi.mock('../src/data/useCurrentAccount', () => ({ useCurrentAccount: () => state.account }));
 afterEach(() => { cleanup(); state.auth = { isLoaded: false, isSignedIn: false, signOut: vi.fn() }; state.account = { isPending: false, isError: false, error: null, data: undefined, refetch: vi.fn() }; });
 
@@ -40,12 +44,15 @@ describe('estados de autenticación', () => {
   it('ofrece OTP o Google sin enumerar cuentas y permite reintentar/cancelar dentro de Clerk', () => {
     state.auth = { isLoaded: true, isSignedIn: false, signOut: vi.fn() };
     render(<MemoryRouter initialEntries={['/access']}><AccessPage /></MemoryRouter>);
-    expect(screen.getByText(/Google o recibe un código/)).toBeInTheDocument(); expect(screen.getByRole('button', { name: 'Continuar con Clerk' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Continuar con Google' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Continuar con correo' })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', {name: 'Correo electrónico'})).toBeInTheDocument();
   });
   it('ofrece un alta Clerk separada y conserva el destino seguro', () => {
     state.auth = { isLoaded: true, isSignedIn: false, signOut: vi.fn() };
     render(<MemoryRouter initialEntries={['/register?returnTo=%2Flibrary']}><RegisterPage /></MemoryRouter>);
-    expect(screen.getByRole('heading', { name: 'Crea tu espacio Theke' })).toBeInTheDocument(); expect(screen.getByRole('button', { name: 'Crear cuenta con Clerk' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Crea tu espacio' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Crear cuenta con Clerk' })).toHaveAttribute('data-redirect', '/library');
   });
   it('limpia toda la caché privada al cerrar sesión', () => {
     const client = new QueryClient(); client.setQueryData(['private', 'me'], { secret: true }); registerPrivateQueryClient(client); clearPrivateCache();

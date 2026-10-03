@@ -15,16 +15,16 @@
   evidence: Requiere cuentas, credenciales, política aprobada y ejecución en infraestructura externa; `theke-api/docs/data-retention-and-recovery.md` define el checklist y prohíbe declarar el piloto listo antes de cerrarlo.
 - source_spec: `_bmad-output/implementation-artifacts/spec-4-2-recibir-y-decidir-sugerencias-para-relaciones.md`
   summary: Habilitar deliberadamente el proveedor de IA tras verificar credenciales y privacidad; implementar SSE, aceptación de tipo/dirección con auditoría y prueba de inferencia real.
-  evidence: La inferencia permanece cerrada por defecto mediante `AI_PROVIDER_ENABLED`; las Stories 4.2–4.4 siguen abiertas y las preparaciones no envían recursos ni generan sugerencias.
+  evidence: El 2026-10-03 el usuario decidió mantener aplazado el proveedor. `AI_PROVIDER_ENABLED` sigue cerrado por defecto; las Stories 4.2–4.4 continúan abiertas y las preparaciones no envían recursos ni generan sugerencias.
 - source_spec: `_bmad-output/implementation-artifacts/spec-5-2-publicar-mediante-un-enlace-no-listado.md`
   summary: Configurar `SHARE_TOKEN_SECRET` de forma estable en el despliegue y verificar TLS, Clerk y apertura pública real sin sesión.
-  evidence: Se generó un secreto local aleatorio de 48 bytes en `theke-api/.env`, ignorado por Git. El servidor ya entrega archivos con token validado sin exponer el bucket, audita publicación y reintentos, y las migraciones 0017/0018 se aplicaron al PostgreSQL de desarrollo. La prueba de integración usa PostgreSQL; queda pendiente la comprobación operativa de la Story 5.2 antes de marcarla done.
+  evidence: El 2026-10-03 el usuario confirmó que todavía no existe un entorno desplegado. El secreto local permanece ignorado por Git; la prueba de integración real con PostgreSQL pasó y GET público sin credenciales respondió 200 con `no-store`, pero esto no verifica TLS ni un navegador anónimo aislado.
 - source_spec: `_bmad-output/implementation-artifacts/spec-5-3-administrar-un-compartido-vivo-y-revocable.md`
-  summary: En la Story 6.2, exigir `commentsEnabled` del Compartido activo antes de aceptar nuevos comentarios y conservar los comentarios anteriores al desactivarlo.
-  evidence: La Story 5.3 guarda y publica la configuración, pero todavía no existe el endpoint de comentarios. La Story 5.3 queda en review hasta revisar también el flujo real con Clerk y navegador.
+  summary: Revisar el flujo de actualización y revocación de un Compartido real en una publicación de prueba aislada.
+  evidence: El endpoint de comentarios ya exige `commentsEnabled`. El 2026-10-03 se desactivó y reactivó la opción en el navegador: la lista histórica permaneció y POST respondió 409 mientras estaba cerrada. Actualización y revocación pasaron con PostgreSQL, pero no se ejercieron sobre el enlace activo del usuario.
 - source_spec: `_bmad-output/implementation-artifacts/spec-5-4-explorar-un-diagrama-publico-sin-editarlo.md`
-  summary: Verificar el Canvas público con una publicación real en navegador, navegación por teclado, alto contraste, movimiento reducido y tiempo de contenido útil en banda ancha.
-  evidence: La proyección y la UI están implementadas con pruebas focalizadas, pero el navegador de automatización no estuvo disponible en esta sesión. La Story 5.4 permanece in-progress.
+  summary: Medir tiempo de contenido útil en banda ancha y comprobar preferencias de alto contraste y movimiento reducido.
+  evidence: El 2026-10-03 se revisó una publicación real en Canvas y vista semántica a 320 px, 768 px y escritorio, con selección, inspector y retorno de foco. La Story 5.4 permanece in-progress por los criterios de medición y preferencias visuales.
 - source_spec: `_bmad-output/implementation-artifacts/spec-5-5-abrir-recursos-publicos-en-cualquier-dispositivo.md`
-  summary: Revisar visualmente el compartido real a 320 CSS px, tablet y escritorio; comprobar foco, controles táctiles y alternativas multimedia; decidir cómo representar subtítulos sincronizados para video antes de la épica 6.
-  evidence: El visor, la descarga y la revalidación por solicitud están implementados y probados de forma focalizada. Falta navegador disponible para validar la experiencia real y el modelo publicado solo contiene alternativa textual para video.
+  summary: Probar archivos y multimedia en una publicación real y decidir cómo representar subtítulos sincronizados para video.
+  evidence: El 2026-10-03 se revisó una nota pública en escritorio, tablet y 320 px, incluido el foco de la hoja inferior móvil. El Compartido de prueba no contiene archivos; las pruebas de API con PostgreSQL cubren apertura y revocación de medios. El modelo publicado solo contiene alternativa textual para video, mientras UX exige subtítulos sincronizados.

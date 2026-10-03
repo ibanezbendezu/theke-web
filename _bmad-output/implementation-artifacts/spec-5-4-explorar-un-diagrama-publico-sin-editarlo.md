@@ -25,7 +25,7 @@ La web presenta el mapa público en un lienzo a pantalla completa con el fondo, 
 
 Revisión de composición: el Canvas y el inspector ahora coexisten en escritorio amplio. En tablet el detalle aparece como panel superpuesto cerrable y en móvil como hoja inferior; `Escape` y el botón de cierre devuelven el foco al elemento invocador. Cuando una publicación carece de posiciones visuales, la vista semántica aparece directamente. Los controles y filas públicas usan superficies tonales del Design Spine y objetivos táctiles de al menos 44 px.
 
-Las pruebas focalizadas de proyección pública y vista compartida, lint y build de API y web pasan. Pendiente para pasar a `review`: smoke visual en navegador con una publicación real y una comprobación de tiempo de contenido útil en banda ancha. `@Browser` no estuvo disponible en esta sesión; las pruebas de componentes no sustituyen esa verificación.
+Las pruebas focalizadas de proyección pública y vista compartida, lint y build de API y web pasan. El 2026-10-03 se revisó una publicación real en Canvas y vista semántica a 320 px, 768 px y escritorio: selección, inspector, foco al cerrar y etiquetas de Relaciones personalizadas. Pendiente para pasar a `review`: medir el tiempo de contenido útil en banda ancha y comprobar alto contraste y movimiento reducido. Véase `smoke-review-2026-10-03.md`.
 
 ## Referencias
 

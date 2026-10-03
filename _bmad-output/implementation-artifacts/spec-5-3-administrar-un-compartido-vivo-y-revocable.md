@@ -22,7 +22,7 @@ En revisión. Se añadieron los endpoints autenticados para consultar, cambiar c
 
 Una prueba de integración con PostgreSQL cubre actualización íntegra, rechazo de huellas obsoletas, cambios de comentarios, revocación, indisponibilidad del token anterior, republicación con otro token y auditoría. API: lint, build y contrato pasaron; web: build, contrato y pruebas focalizadas pasaron. El lint global de web conserva tres errores previos en componentes de IA ajenos a esta historia.
 
-Pendiente antes de `done`: revisión de código y flujo real con Clerk y navegador tras cerrar el control de despliegue de 5.2. La Story 6.2 debe comprobar `commentsEnabled` en el servidor antes de aceptar nuevos comentarios; todavía no existe un endpoint de comentarios. La interfaz pública interactiva del Canvas corresponde a 5.4.
+El 2026-10-03 se comprobó en navegador que desactivar nuevos comentarios conserva los anteriores y que el servidor rechaza un POST con 409; la opción quedó reactivada. La integración de actualización y revocación pasó con PostgreSQL real. Pendiente antes de `done`: revisión de código y flujo de actualización y revocación en una publicación de prueba aislada, además del control de despliegue de 5.2. La interfaz pública interactiva del Canvas corresponde a 5.4.
 
 ## Referencias
 

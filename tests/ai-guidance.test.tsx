@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AIGuidanceCard } from '../src/components/ai/AIGuidanceCard';
 import { AIConsentDialog } from '../src/components/ai/AIConsentDialog';
 import { AISettingsDialog } from '../src/components/ai/AISettingsDialog';
+import { ToastProvider } from '../src/components/ui/ToastProvider';
 
 const mockState = vi.hoisted(() => ({
   status: {
@@ -224,9 +225,9 @@ describe('Gobernanza de IA y Componentes de Consentimiento', () => {
     };
 
     render(
-      <QueryClientProvider client={queryClient}>
+      <ToastProvider><QueryClientProvider client={queryClient}>
         <AISettingsDialog isOpen={true} onClose={vi.fn()} />
-      </QueryClientProvider>,
+      </QueryClientProvider></ToastProvider>,
     );
 
     expect(screen.getByText('Configuración y Privacidad de IA')).toBeInTheDocument();

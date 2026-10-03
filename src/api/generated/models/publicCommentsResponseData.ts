@@ -13,4 +13,6 @@ export type PublicCommentsResponseData = {
   /** @nullable */
   csrfToken: string | null;
   comments: PublicComment[];
+  /** @nullable */
+  nextCursor: string | null;
 };

@@ -87,6 +87,8 @@ function NodeHandles({group = false}: { group?: boolean }) {
 
 function PublicCanvasNode({data, selected}: NodeProps<Node<PublicNodeData, 'public'>>) {
     const {item, resource, onSelect} = data;
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewFailed, setPreviewFailed] = useState(false);
     const width = item.width ?? (item.type === 'container' ? 350 : item.type === 'annotation' ? 240 : 288);
     const height = item.height ?? (item.type === 'container' ? 250 : item.type === 'annotation' ? 100 : 112);
     if (!item.type || item.type === 'resource') {
@@ -185,13 +187,26 @@ function PublicCanvasNode({data, selected}: NodeProps<Node<PublicNodeData, 'publ
             className="truncate text-sm font-semibold">{item.title}</p><p
             className="line-clamp-2 text-xs text-outline">{item.description}</p><p
             className="truncate text-[10px] text-outline">{item.url}</p></div>
-        {item.imageUrl && <img src={item.imageUrl} alt="" className="h-full w-[100px] object-cover"/>}<NodeHandles/>
+        {item.imageUrl && (previewOpen && !previewFailed
+            ? <img src={item.imageUrl} alt="" referrerPolicy="no-referrer" className="h-full w-[100px] object-cover"
+                   onError={() => setPreviewFailed(true)}/>
+            : <button type="button" className="nodrag nopan flex h-full w-[100px] shrink-0 flex-col items-center justify-center gap-1 bg-surface-variant px-2 text-center text-xs focus-visible:outline-2 focus-visible:outline-primary"
+                      onClick={() => {setPreviewFailed(false); setPreviewOpen(true);}}>
+                <Image size={20} aria-hidden="true"/>{previewFailed ? 'Reintentar imagen' : 'Mostrar imagen'}
+            </button>)}<NodeHandles/>
     </div>;
     if (item.type === 'media') return <div
         className="relative w-[280px] overflow-hidden rounded-xl border border-border bg-background">
         <div
-            className="flex h-40 items-center justify-center bg-surface-variant">{item.mediaType === 'image' && item.url ?
-            <img src={item.url} alt="" className="h-full w-full object-cover"/> : <PlaySquare size={32}/>}</div>
+            className="flex h-40 items-center justify-center bg-surface-variant">{item.mediaType === 'image' && item.url
+            ? previewOpen && !previewFailed
+                ? <img src={item.url} alt="" referrerPolicy="no-referrer" className="h-full w-full object-cover"
+                       onError={() => setPreviewFailed(true)}/>
+                : <button type="button" className="nodrag nopan flex h-full w-full flex-col items-center justify-center gap-2 text-xs focus-visible:outline-2 focus-visible:outline-primary"
+                          onClick={() => {setPreviewFailed(false); setPreviewOpen(true);}}>
+                    <Image size={32} aria-hidden="true"/>{previewFailed ? 'Reintentar imagen' : 'Mostrar imagen'}
+                </button>
+            : <PlaySquare size={32}/>}</div>
         <p className="truncate px-3 py-2 text-sm font-medium">{item.label}</p><NodeHandles/></div>;
     if (item.type === 'document') return <div
         className="relative flex w-[260px] items-center gap-3 rounded-xl border border-border bg-background p-3">

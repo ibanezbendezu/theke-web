@@ -5,7 +5,7 @@ import {ApiError, thekeFetch} from '../api/httpClient';
 import {Button} from '../components/ui/Button';
 import {anchorLabel, type CommentTarget, type PublicComment} from './publicCommentTypes';
 
-type CommentsData = { identity: { displayName: string } | null; csrfToken: string | null; comments: PublicComment[] };
+type CommentsData = { identity: { displayName: string } | null; csrfToken: string | null; comments: PublicComment[]; nextCursor?: string | null };
 type Draft = { name: string; content: string; target: CommentTarget | null };
 type EditConflict = { content: string; revision: number; editedAt: string | null };
 type Props = {
@@ -43,6 +43,7 @@ export function PublicCommentsPanel({
     const [publishError, setPublishError] = useState('');
     const [busy, setBusy] = useState(false);
     const [retry, setRetry] = useState(0);
+    const [pageCount, setPageCount] = useState(1);
     const [draftAvailable, setDraftAvailable] = useState(() => {
         try {
             return Boolean(sessionStorage.getItem(`theke:comment-draft:${token}`));
@@ -85,7 +86,7 @@ export function PublicCommentsPanel({
         wasOpen.current = open;
     }, [open, content, target, draftKey, editing]);
     useEffect(() => {
-        if (!open || !authLoaded) return;
+        if (!token) return;
         const controller = new AbortController();
         const load = async () => {
             const bearer = isSignedIn ? await getToken() : null;
@@ -117,9 +118,19 @@ export function PublicCommentsPanel({
                     signal: controller.signal
                 });
             }
+            const firstPage = response.data.data;
+            const comments = [...firstPage.comments];
+            let nextCursor = firstPage.nextCursor;
+            for (let page = 1; page < pageCount && nextCursor; page += 1) {
+                const next = await thekeFetch<{ data: { data: CommentsData } }>(`${path}?cursor=${encodeURIComponent(nextCursor)}`, {
+                    credentials: 'include', headers, cache: 'no-store', signal: controller.signal
+                });
+                comments.push(...next.data.data.comments);
+                nextCursor = next.data.data.nextCursor;
+            }
             if (!controller.signal.aborted) {
-                setData(response.data.data);
-                onCommentsChange(response.data.data.comments);
+                setData({...firstPage, comments, nextCursor});
+                onCommentsChange(comments);
                 setLoadError(false);
             }
         };
@@ -127,12 +138,11 @@ export function PublicCommentsPanel({
             if (!controller.signal.aborted) setLoadError(true);
         });
         return () => controller.abort();
-    }, [open, token, retry, onCommentsChange, authLoaded, isSignedIn, getToken]);
+    }, [token, retry, pageCount, onCommentsChange, authLoaded, isSignedIn, getToken]);
     useEffect(() => {
-        if (!open) return;
         const timer = window.setInterval(() => setRetry(value => value + 1), 20_000);
         return () => window.clearInterval(timer);
-    }, [open]);
+    }, []);
     useEffect(() => {
         if (open && selectedCommentId) document.getElementById(`public-comment-${selectedCommentId}`)?.scrollIntoView?.({block: 'nearest'});
     }, [open, selectedCommentId, data]);
@@ -229,6 +239,7 @@ export function PublicCommentsPanel({
                 body: JSON.stringify({content: nextContent, ...(target ? {anchor: target} : {})}),
             });
             const next = [result.data.data, ...data.comments];
+            setPageCount(1);
             setContent('');
             onCommentsChange(next);
             setAnnouncement('Comentario publicado.');
@@ -318,6 +329,7 @@ export function PublicCommentsPanel({
                             className="mt-2 min-h-11 rounded-md px-2 text-xs font-medium hover:bg-background/70 focus-visible:outline-2 focus-visible:outline-primary"
                             disabled={Boolean(editing)} onClick={() => startEditing(comment)}>Editar
                         comentario</button>}</li>)}</ol>
+                {data.nextCursor && <button type="button" className="mt-3 min-h-11 rounded-md px-2 text-sm font-medium underline focus-visible:outline-2 focus-visible:outline-primary" onClick={() => setPageCount(count => count + 1)}>Cargar comentarios anteriores</button>}
             </>}
         </div>
         {(enabled || editing) &&

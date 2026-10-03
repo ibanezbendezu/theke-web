@@ -22,7 +22,7 @@ Permitir que un visitante consulte cada Recurso de la proyección pública desde
 
 Pasaron las pruebas focalizadas del visor público y controlador, build y lint de los archivos modificados, y la verificación de contrato de API y web. El lint global web conserva tres errores previos en los componentes de IA.
 
-Pendiente antes de pasar a `review`: comprobar visualmente una publicación real en 320 CSS px, tablet y escritorio; revisar controles táctiles, foco y alternativas multimedia en navegadores reales. El navegador de automatización no estuvo disponible en esta sesión. La política UX también pide subtítulos sincronizados para video, mientras el modelo publicado ofrece una alternativa textual; ese desfase requiere decisión durante la revisión UI/UX previa a la épica 6.
+El 2026-10-03 se revisó una nota publicada en escritorio, tablet y 320 CSS px; el inspector móvil y el retorno de foco funcionaron. La publicación local no contiene archivos multimedia, así que siguen pendientes su apertura, descarga, reintento y alternativas en navegador real. La política UX pide subtítulos sincronizados para video, mientras el modelo publicado ofrece una alternativa textual; ese desfase requiere una decisión de producto. Véase `smoke-review-2026-10-03.md`.
 
 ## Referencias
 

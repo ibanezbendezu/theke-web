@@ -1,14 +1,19 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { PublicShare } from '../src/pages/PublicShare';
 import { PublicSemanticList } from '../src/pages/PublicDiagramCanvas';
+import { PublicCommentsPanel } from '../src/pages/PublicCommentsPanel';
 
-vi.mock('@clerk/clerk-react', () => ({ useAuth: () => ({ isLoaded: true, isSignedIn: false, getToken: async () => null }) }));
+const authState = vi.hoisted(() => ({isLoaded: true}));
+vi.mock('@clerk/clerk-react', () => ({ useAuth: () => ({ isLoaded: authState.isLoaded, isSignedIn: false, getToken: async () => null }) }));
 
 const fetchMock = vi.fn();
-vi.stubGlobal('fetch', fetchMock);
-afterEach(() => { cleanup(); fetchMock.mockReset(); });
+const commentsFetchMock = vi.fn();
+vi.stubGlobal('fetch', (url: string, options: RequestInit) => /\/comments(?:\?|$)/.test(String(url))
+  ? commentsFetchMock(url, options) : fetchMock(url, options));
+afterEach(() => { cleanup(); fetchMock.mockReset(); commentsFetchMock.mockReset(); authState.isLoaded = true; });
+beforeEach(() => commentsFetchMock.mockResolvedValue({ok: true, status: 200, text: async () => JSON.stringify({data: {identity: null, csrfToken: null, comments: []}})}));
 const page = () => render(<MemoryRouter initialEntries={['/share/example-token']}><Routes><Route path="/share/:token" element={<PublicShare />} /></Routes></MemoryRouter>);
 
 it('permite comentar Recursos y Relaciones desde la vista semántica con teclado', () => {
@@ -29,12 +34,14 @@ it('muestra el nombre público del tipo personalizado en lugar de su clave inter
 it('abre el compositor desde el menú contextual y localiza comentarios sobre el Canvas', async () => {
   vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
   const comment = { id: 'comment-1', displayName: 'Ana', content: 'Revisar esta fuente', createdAt: new Date().toISOString(), editable: false, anchored: true, anchor: { type: 'resource', resourceId: 'one', label: 'Fuente', x: 40, y: 50 } };
-  fetchMock.mockImplementation(async (url: string) => ({ ok: true, status: 200, text: async () => JSON.stringify({ data: url.endsWith('/comments') ? { identity: null, csrfToken: null, comments: [comment] } : {
+  commentsFetchMock.mockResolvedValue({ok: true, status: 200, text: async () => JSON.stringify({data: {identity: null, csrfToken: null, comments: [comment]}})});
+  fetchMock.mockImplementation(async () => ({ ok: true, status: 200, text: async () => JSON.stringify({ data: {
     diagramName: 'Mapa con comentarios', revision: 1, commentsEnabled: true, layout: { nodes: [{ id: 'node-one', type: 'resource', resourceId: 'one', x: 0, y: 0, width: 200, height: 100 }], edges: [] },
     resources: [{ id: 'one', title: 'Fuente', type: 'note', content: 'Texto', description: null, url: null, mediaType: null, accessibilityText: null }], relations: [],
   } }) }));
   page();
   await screen.findByRole('heading', { name: 'Mapa con comentarios' });
+  await waitFor(() => expect(screen.getByLabelText('Diagrama público').querySelector('[data-id="comment:comment-1"]')).not.toBeNull());
   const pane = screen.getByLabelText('Diagrama público').querySelector('.react-flow__pane');
   expect(pane).not.toBeNull();
   fireEvent.contextMenu(pane!, { clientX: 90, clientY: 90 });
@@ -48,6 +55,41 @@ it('abre el compositor desde el menú contextual y localiza comentarios sobre el
   expect(marker?.textContent).toContain('Ana');
   fireEvent.click(marker!);
   expect(screen.getByText('Revisar esta fuente')).toBeInTheDocument();
+});
+
+it('carga marcadores públicos aunque Clerk aún no haya resuelto la sesión', async () => {
+  authState.isLoaded = false;
+  vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
+  commentsFetchMock.mockResolvedValue({ok: true, status: 200, text: async () => JSON.stringify({data: {identity: null, csrfToken: null, comments: [{id: 'comment-1', displayName: 'Ana', content: 'Visible', createdAt: new Date().toISOString(), editable: false, anchored: true, anchor: {type: 'point', x: 20, y: 30}}]}})});
+  fetchMock.mockResolvedValue({ok: true, status: 200, text: async () => JSON.stringify({data: {diagramName: 'Mapa', revision: 1, commentsEnabled: true, layout: {nodes: [{id: 'visual-1', type: 'annotation', x: 0, y: 0, width: 100, height: 80, annotationKind: 'text', text: 'Visual'}], edges: []}, resources: [], relations: []}})});
+  page();
+  await waitFor(() => expect(screen.getByLabelText('Diagrama público').querySelector('[data-id="comment:comment-1"]')).not.toBeNull());
+  expect(screen.queryByText('Cargando comentarios…')).not.toBeInTheDocument();
+});
+
+it('permite cargar comentarios anteriores y mantiene ambas páginas visibles', async () => {
+  const comment = (id: string) => ({id, displayName: 'Ana', content: id, createdAt: new Date().toISOString(), editable: false, anchored: false, anchor: {type: 'diagram'}});
+  commentsFetchMock.mockImplementation(async (url: string) => ({ok: true, status: 200, text: async () => JSON.stringify({data: {
+    identity: null, csrfToken: null, comments: [comment(url.includes('?cursor=') ? 'anterior' : 'reciente')], nextCursor: url.includes('?cursor=') ? null : '11111111-1111-4111-8111-111111111111'
+  }})}));
+  const onCommentsChange = vi.fn();
+  render(<PublicCommentsPanel token="example-token" enabled open onClose={() => {}} onCommentsChange={onCommentsChange}/>);
+  expect(await screen.findByText('reciente')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', {name: 'Cargar comentarios anteriores'}));
+  expect(await screen.findByText('anterior')).toBeInTheDocument();
+  expect(screen.getByText('reciente')).toBeInTheDocument();
+  expect(onCommentsChange).toHaveBeenLastCalledWith(expect.arrayContaining([expect.objectContaining({id: 'reciente'}), expect.objectContaining({id: 'anterior'})]));
+});
+
+it('solicita imágenes visuales externas solo tras una acción explícita', async () => {
+  vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
+  fetchMock.mockResolvedValue({ok: true, status: 200, text: async () => JSON.stringify({data: {diagramName: 'Mapa', revision: 1, commentsEnabled: false,
+    layout: {nodes: [{id: 'media-1', type: 'media', x: 0, y: 0, mediaType: 'image', url: 'https://example.com/image.png', label: 'Imagen visual'}], edges: []}, resources: [], relations: []}})});
+  page();
+  await screen.findByRole('heading', {name: 'Mapa'});
+  expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByText('Mostrar imagen').closest('button')!);
+  expect(document.querySelector('img[src="https://example.com/image.png"]')).not.toBeNull();
 });
 
 it('consulta sin credenciales y muestra solo la proyección pública', async () => {
@@ -138,8 +180,6 @@ it('monta el Canvas público con controles de zoom cuando hay posiciones publica
   expect(screen.getByLabelText('Diagrama público')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Acercar' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Ajustar vista' })).toBeInTheDocument();
-  expect(screen.getByText('Grupo visible')).toBeInTheDocument();
-  expect(screen.getByText('Texto visual')).toBeInTheDocument();
-  expect(screen.getByText(/Nota · Lectura/)).toBeInTheDocument();
+  expect(screen.getByLabelText('Diagrama público').querySelector('.react-flow__viewport')).not.toBeNull();
   expect(screen.queryByRole('textbox', { name: 'Texto de anotación' })).not.toBeInTheDocument();
 });

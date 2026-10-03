@@ -50,6 +50,7 @@ import type {
   ListDiagramsParams,
   ListNotesParams,
   ListProjectsParams,
+  ListPublicShareCommentsParams,
   ListResourcePropertyDefinitions200,
   ListResourcesParams,
   MeResponse,
@@ -2240,20 +2241,29 @@ export type listPublicShareCommentsResponseError = (listPublicShareCommentsRespo
 
 export type listPublicShareCommentsResponse = (listPublicShareCommentsResponseSuccess | listPublicShareCommentsResponseError)
 
-export const getListPublicShareCommentsUrl = (token: string,) => {
+export const getListPublicShareCommentsUrl = (token: string,
+    params?: ListPublicShareCommentsParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/v1/public/shares/${token}/comments`
+  return stringifiedParams.length > 0 ? `/v1/public/shares/${token}/comments?${stringifiedParams}` : `/v1/public/shares/${token}/comments`
 }
 
 /**
  * Lista comentarios públicos y reconoce la identidad vigente mediante cookie HttpOnly o sesión Clerk verificada, sin renovar la cookie.
  */
-export const listPublicShareComments = async (token: string, options?: Parameters<typeof thekeFetch>[1]): Promise<listPublicShareCommentsResponse> => {
+export const listPublicShareComments = async (token: string,
+    params?: ListPublicShareCommentsParams, options?: Parameters<typeof thekeFetch>[1]): Promise<listPublicShareCommentsResponse> => {
 
-  return thekeFetch<listPublicShareCommentsResponse>(getListPublicShareCommentsUrl(token),
+  return thekeFetch<listPublicShareCommentsResponse>(getListPublicShareCommentsUrl(token,params),
   {
     ...options,
     method: 'GET'

@@ -100,6 +100,7 @@ export * from './listDiagramsStatus';
 export * from './listNotesParams';
 export * from './listProjectsParams';
 export * from './listProjectsStatus';
+export * from './listPublicShareCommentsParams';
 export * from './listResourcePropertyDefinitions200';
 export * from './listResourcesParams';
 export * from './listResourcesStatus';

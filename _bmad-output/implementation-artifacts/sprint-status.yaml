@@ -18,7 +18,7 @@
 # - Code Review valida la implementación antes de marcarla done.
 
 generated: 09-21-2026 09:45
-last_updated: 10-03-2026
+last_updated: 10-03-2026 15:36
 project: Theke
 project_key: NOKEY
 tracking_system: file-system
@@ -82,4 +82,15 @@ development_status:
   epic-6-retrospective: optional
 
 action_items:
-  - "Completar integración visual compartida y revisión en navegador según ux-foundation-2026-09-29.md antes de la épica 6."
+  - epic: 5
+    action: "Completar integración visual compartida y revisión en navegador según ux-foundation-2026-09-29.md."
+    owner: "Theke"
+    status: open
+  - epic: 5
+    action: "Verificar secreto estable, TLS y enlace anónimo en un entorno desplegado cuando exista."
+    owner: "Theke"
+    status: open
+  - epic: 4
+    action: "Retomar inferencia real y criterios 4.2–4.4 cuando se autorice activar el proveedor de IA."
+    owner: "Theke"
+    status: open
