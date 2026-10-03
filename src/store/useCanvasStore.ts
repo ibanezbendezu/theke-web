@@ -71,6 +71,7 @@ interface CanvasState {
     setInspectorOpen: (open: boolean) => void;
     openCanvasNode: (id: string) => void;
     updateNodeData: (nodeId: string, data: Record<string, unknown>) => void;
+    setLineEndpoints: (nodeId: string, start: { x: number; y: number }, end: { x: number; y: number }) => void;
     updateNodeSize: (nodeId: string, width: number, height: number) => void;
     updateNodePresentation: (nodeId: string, value: {
         width?: number;
@@ -355,6 +356,29 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     updateNodeData: (nodeId, data) => set(state => ({
         ...history(state),
         nodes: state.nodes.map(node => node.id === nodeId ? {...node, data: {...node.data, ...data}} : node)
+    })),
+    setLineEndpoints: (nodeId, start, end) => set(state => ({
+        ...history(state),
+        nodes: state.nodes.map(node => {
+            if (node.id !== nodeId || node.type !== 'annotation' || node.data.kind !== 'line') return node;
+            const left = Math.min(start.x, end.x) - 12;
+            const top = Math.min(start.y, end.y) - 12;
+            const width = Math.max(24, Math.abs(end.x - start.x) + 24);
+            const height = Math.max(24, Math.abs(end.y - start.y) + 24);
+            return {
+                ...node,
+                position: {x: left, y: top},
+                width,
+                height,
+                data: {
+                    ...node.data,
+                    x1: (start.x - left) / width * 100,
+                    y1: (start.y - top) / height * 100,
+                    x2: (end.x - left) / width * 100,
+                    y2: (end.y - top) / height * 100
+                }
+            };
+        })
     })),
     updateNodeSize: (nodeId, width, height) => set(state => ({
         ...history(state),
