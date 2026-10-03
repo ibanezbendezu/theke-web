@@ -11,6 +11,7 @@ export interface PublicComment {
   displayName: string;
   content: string;
   anchor: PublicCommentAnchor;
+  anchored: boolean;
   createdAt: string;
   /** @nullable */
   editedAt: string | null;

@@ -53,6 +53,7 @@ import type {
   ListResourcePropertyDefinitions200,
   ListResourcesParams,
   MeResponse,
+  ModerateCommentResponse,
   MoveLibraryResources200,
   MoveProjectsToFolder200,
   NotFoundResponse,
@@ -93,6 +94,7 @@ import type {
   ShareCommentsInput,
   ShareCommentsResponse,
   SharePreviewResponse,
+  TooManyRequestsResponse,
   UnauthorizedResponse,
   UpdatePublicCommentInput,
   UpdateRelationInput,
@@ -2561,6 +2563,156 @@ export const readCommentNotification = async (id: string, options?: Parameters<t
   {
     ...options,
     method: 'PATCH'
+
+
+  }
+);}
+
+
+
+export type resolveCommentNotificationResponse200 = {
+  data: ModerateCommentResponse
+  status: 200
+}
+
+export type resolveCommentNotificationResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type resolveCommentNotificationResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type resolveCommentNotificationResponse429 = {
+  data: TooManyRequestsResponse
+  status: 429
+}
+
+export type resolveCommentNotificationResponseSuccess = (resolveCommentNotificationResponse200) & {
+  headers: Headers;
+};
+export type resolveCommentNotificationResponseError = (resolveCommentNotificationResponse401 | resolveCommentNotificationResponse404 | resolveCommentNotificationResponse429) & {
+  headers: Headers;
+};
+
+export type resolveCommentNotificationResponse = (resolveCommentNotificationResponseSuccess | resolveCommentNotificationResponseError)
+
+export const getResolveCommentNotificationUrl = (id: string,) => {
+
+
+
+
+  return `/v1/comment-notifications/${id}/resolve`
+}
+
+export const resolveCommentNotification = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<resolveCommentNotificationResponse> => {
+
+  return thekeFetch<resolveCommentNotificationResponse>(getResolveCommentNotificationUrl(id),
+  {
+    ...options,
+    method: 'PATCH'
+
+
+  }
+);}
+
+
+
+export type reopenCommentNotificationResponse200 = {
+  data: ModerateCommentResponse
+  status: 200
+}
+
+export type reopenCommentNotificationResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type reopenCommentNotificationResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type reopenCommentNotificationResponse429 = {
+  data: TooManyRequestsResponse
+  status: 429
+}
+
+export type reopenCommentNotificationResponseSuccess = (reopenCommentNotificationResponse200) & {
+  headers: Headers;
+};
+export type reopenCommentNotificationResponseError = (reopenCommentNotificationResponse401 | reopenCommentNotificationResponse404 | reopenCommentNotificationResponse429) & {
+  headers: Headers;
+};
+
+export type reopenCommentNotificationResponse = (reopenCommentNotificationResponseSuccess | reopenCommentNotificationResponseError)
+
+export const getReopenCommentNotificationUrl = (id: string,) => {
+
+
+
+
+  return `/v1/comment-notifications/${id}/reopen`
+}
+
+export const reopenCommentNotification = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<reopenCommentNotificationResponse> => {
+
+  return thekeFetch<reopenCommentNotificationResponse>(getReopenCommentNotificationUrl(id),
+  {
+    ...options,
+    method: 'PATCH'
+
+
+  }
+);}
+
+
+
+export type deleteCommentNotificationResponse200 = {
+  data: ModerateCommentResponse
+  status: 200
+}
+
+export type deleteCommentNotificationResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type deleteCommentNotificationResponse404 = {
+  data: NotFoundResponse
+  status: 404
+}
+
+export type deleteCommentNotificationResponse429 = {
+  data: TooManyRequestsResponse
+  status: 429
+}
+
+export type deleteCommentNotificationResponseSuccess = (deleteCommentNotificationResponse200) & {
+  headers: Headers;
+};
+export type deleteCommentNotificationResponseError = (deleteCommentNotificationResponse401 | deleteCommentNotificationResponse404 | deleteCommentNotificationResponse429) & {
+  headers: Headers;
+};
+
+export type deleteCommentNotificationResponse = (deleteCommentNotificationResponseSuccess | deleteCommentNotificationResponseError)
+
+export const getDeleteCommentNotificationUrl = (id: string,) => {
+
+
+
+
+  return `/v1/comment-notifications/${id}`
+}
+
+export const deleteCommentNotification = async (id: string, options?: Parameters<typeof thekeFetch>[1]): Promise<deleteCommentNotificationResponse> => {
+
+  return thekeFetch<deleteCommentNotificationResponse>(getDeleteCommentNotificationUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
 
 
   }

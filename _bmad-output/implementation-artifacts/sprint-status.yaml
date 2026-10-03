@@ -78,7 +78,7 @@ development_status:
   6-2-añadir-un-comentario-contextual: review
   6-3-editar-comentarios-propios: review
   6-4-recibir-y-localizar-comentarios-como-autor: review
-  6-5-resolver-eliminar-y-conservar-comentarios-sin-anclaje: backlog
+  6-5-resolver-eliminar-y-conservar-comentarios-sin-anclaje: review
   epic-6-retrospective: optional
 
 action_items:

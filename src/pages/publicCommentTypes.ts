@@ -16,6 +16,7 @@ export type PublicComment = {
     editedAt: string | null;
     revision: number;
     editable: boolean;
+    anchored: boolean;
     anchor: CommentAnchor
 };
 

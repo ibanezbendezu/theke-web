@@ -129,6 +129,11 @@ export function PublicCommentsPanel({
         return () => controller.abort();
     }, [open, token, retry, onCommentsChange, authLoaded, isSignedIn, getToken]);
     useEffect(() => {
+        if (!open) return;
+        const timer = window.setInterval(() => setRetry(value => value + 1), 20_000);
+        return () => window.clearInterval(timer);
+    }, [open]);
+    useEffect(() => {
         if (open && selectedCommentId) document.getElementById(`public-comment-${selectedCommentId}`)?.scrollIntoView?.({block: 'nearest'});
     }, [open, selectedCommentId, data]);
 
@@ -306,7 +311,7 @@ export function PublicCommentsPanel({
                         className="truncate text-xs font-medium">{comment.displayName}</strong><span
                         className="text-xs text-outline">{comment.editable ? `Tú · #${index + 1}` : `#${index + 1}`}</span>
                     </div>
-                    <p className="mt-1 text-xs text-outline">{anchorLabel(comment.anchor)}{comment.editedAt &&
+                    <p className="mt-1 text-xs text-outline">{comment.anchored ? anchorLabel(comment.anchor) : `Sin anclaje · ${anchorLabel(comment.anchor)}`}{comment.editedAt &&
                         <span> · Editado {new Date(comment.editedAt).toLocaleString('es-CL')}</span>}</p><p
                     className="mt-2 whitespace-pre-wrap break-words">{comment.content}</p>{comment.editable && enabled &&
                     <button type="button"

@@ -51,6 +51,19 @@ export function useReadCommentNotification() {
     });
 }
 
+export function useModerateCommentNotification() {
+    const {getToken} = useAuth();
+    const client = useQueryClient();
+    return useMutation({
+        mutationFn: async ({id, action}: {id: string; action: 'resolve' | 'reopen' | 'delete'}) =>
+            thekeFetch(`/v1/comment-notifications/${id}${action === 'delete' ? '' : `/${action}`}`, {
+                method: action === 'delete' ? 'DELETE' : 'PATCH',
+                headers: {Authorization: `Bearer ${await getToken()}`}, cache: 'no-store'
+            }),
+        onSuccess: () => void client.invalidateQueries({queryKey: ['comment-notifications']})
+    });
+}
+
 export function useCommentNotificationStream() {
     const {getToken, userId} = useAuth();
     const client = useQueryClient();

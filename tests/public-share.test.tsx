@@ -21,7 +21,7 @@ it('permite comentar Recursos y Relaciones desde la vista semántica con teclado
 
 it('abre el compositor desde el menú contextual y localiza comentarios sobre el Canvas', async () => {
   vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
-  const comment = { id: 'comment-1', displayName: 'Ana', content: 'Revisar esta fuente', createdAt: new Date().toISOString(), editable: false, anchor: { type: 'resource', resourceId: 'one', label: 'Fuente', x: 40, y: 50 } };
+  const comment = { id: 'comment-1', displayName: 'Ana', content: 'Revisar esta fuente', createdAt: new Date().toISOString(), editable: false, anchored: true, anchor: { type: 'resource', resourceId: 'one', label: 'Fuente', x: 40, y: 50 } };
   fetchMock.mockImplementation(async (url: string) => ({ ok: true, status: 200, text: async () => JSON.stringify({ data: url.endsWith('/comments') ? { identity: null, csrfToken: null, comments: [comment] } : {
     diagramName: 'Mapa con comentarios', revision: 1, commentsEnabled: true, layout: { nodes: [{ id: 'node-one', type: 'resource', resourceId: 'one', x: 0, y: 0, width: 200, height: 100 }], edges: [] },
     resources: [{ id: 'one', title: 'Fuente', type: 'note', content: 'Texto', description: null, url: null, mediaType: null, accessibilityText: null }], relations: [],

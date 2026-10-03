@@ -275,7 +275,7 @@ function PublicCanvas({
             draggable: false,
             connectable: false
         })),
-        ...comments.flatMap((comment, index) => typeof comment.anchor.x === 'number' && typeof comment.anchor.y === 'number' ? [{
+        ...comments.flatMap((comment, index) => comment.anchored && typeof comment.anchor.x === 'number' && typeof comment.anchor.y === 'number' ? [{
             id: `comment:${comment.id}`,
             type: 'comment' as const,
             position: {x: comment.anchor.x, y: comment.anchor.y},

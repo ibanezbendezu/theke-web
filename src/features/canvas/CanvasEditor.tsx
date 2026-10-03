@@ -85,7 +85,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
     const focusEdgeRequest = useCanvasStore(state => state.focusEdgeRequest);
     const selectedComment = commentNotifications?.find(item => item.commentId === selectedCommentId);
     useEffect(() => {
-        if (typeof selectedComment?.anchor.x !== 'number' || typeof selectedComment.anchor.y !== 'number') return;
+        if (!selectedComment?.anchored || typeof selectedComment.anchor.x !== 'number' || typeof selectedComment.anchor.y !== 'number') return;
         void setCenter(selectedComment.anchor.x, selectedComment.anchor.y, {
             duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 300
         });
@@ -329,7 +329,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                 minZoom={0.1}
             >
                 {commentNotifications && <ViewportPortal>{commentNotifications.map((item, index) =>
-                    typeof item.anchor.x === 'number' && typeof item.anchor.y === 'number' ?
+                    item.anchored && typeof item.anchor.x === 'number' && typeof item.anchor.y === 'number' ?
                         <button key={item.id} type="button" title={item.displayName}
                                 aria-label={`Comentario de ${item.displayName}: ${item.content}`}
                                 aria-pressed={item.commentId === selectedCommentId}
