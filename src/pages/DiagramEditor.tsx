@@ -202,7 +202,7 @@ function DiagramEditorCore() {
                                 onClick={() => setLeftPanel(value => value === 'semantic' ? null : 'semantic')}/>
                         <span className="relative shrink-0"><Button size="icon" className="h-10 w-10"
                                 title={leftPanel === 'comments' ? 'Ocultar comentarios' : 'Mostrar comentarios'}
-                                aria-label={`${leftPanel === 'comments' ? 'Ocultar' : 'Mostrar'} comentarios, ${commentPage.data?.unreadCount ?? 0} pendientes`}
+                                aria-label={`${leftPanel === 'comments' ? 'Ocultar' : 'Mostrar'} comentarios${commentPage.data?.unreadCount ? `, ${commentPage.data.unreadCount} pendientes` : ''}`}
                                 aria-expanded={leftPanel === 'comments'} icon={MessageCircle}
                                 onClick={() => setLeftPanel(value => value === 'comments' ? null : 'comments')}/>
                             {Boolean(commentPage.data?.unreadCount) && <span aria-hidden="true" className="pointer-events-none absolute bottom-0 right-0 min-w-4 rounded-full bg-primary px-0.5 text-center text-[10px] leading-4 text-on-primary">{Math.min(commentPage.data!.unreadCount, 99)}{commentPage.data!.unreadCount > 99 ? '+' : ''}</span>}
