@@ -80,7 +80,9 @@ export function Library() {
     const visibleFolders = status === 'active' ? folderItems.filter(folder => folder.parentFolderId === (folderId || null)) : [];
     const hasVisibleFolders = visibleFolders.length > 0;
     const collectionError = resources.isError || (status === 'active' && folders.isError);
-    const collectionPending = !collectionError && (resources.isPending || (status === 'active' && folders.isPending));
+    const collectionPending = !collectionError && (
+        resources.isPending || resources.isPlaceholderData || (status === 'active' && folders.isPending)
+    );
     const setFolder = (value: string) => {
         const next = new URLSearchParams(searchParams);
         if (value) next.set('libraryFolderId', value); else next.delete('libraryFolderId');

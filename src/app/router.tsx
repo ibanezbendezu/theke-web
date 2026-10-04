@@ -37,10 +37,10 @@ export const router = createBrowserRouter([
                 path: 'projects',
                 element: <Projects/>,
             },
-            {path: 'projects/:projectId', element: <ProjectEntry/>},
             {path: 'account-error', element: <Placeholder title="No se pudo cargar la cuenta"/>},
         ],
     },
+    {path: '/projects/:projectId', element: <PrivateRoute><ProjectEntry/></PrivateRoute>},
     {path: '/projects/:projectId/diagrams/:diagramId', element: <PrivateRoute><DiagramEditor/></PrivateRoute>},
     {
         path: '/canvas',
