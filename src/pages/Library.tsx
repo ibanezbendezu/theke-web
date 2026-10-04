@@ -1,4 +1,4 @@
-import {useDeferredValue, useEffect, useRef, useState} from 'react';
+import {useCallback, useDeferredValue, useEffect, useRef, useState} from 'react';
 import type {FormEvent} from 'react';
 import {createPortal} from 'react-dom';
 import {
@@ -20,6 +20,7 @@ import {useLocation, useNavigate, useSearchParams} from 'react-router-dom';
 import {UploadTray} from '../components/uploads/UploadTray';
 import {ResourceKnowledgePanel} from '../components/resources/ResourceKnowledgePanel';
 import {FileThumbnail} from '../components/resources/FileThumbnail';
+import {PdfDocumentViewer} from '../components/resources/PdfDocumentViewer';
 import {Button} from '../components/ui/Button';
 import {CollectionLoading, InlineLoading} from '../components/ui/LoadingState';
 import {CollectionItem} from '../components/ui/CollectionItem';
@@ -329,6 +330,8 @@ function FileResource({resource, folderName, onClose}: {
     const [readyPreviewUrl, setReadyPreviewUrl] = useState('');
     const previewContentReady = Boolean(preview.data?.url && readyPreviewUrl === preview.data.url);
     const [previewError, setPreviewError] = useState('');
+    const handlePdfReady = useCallback(() => setReadyPreviewUrl(preview.data?.url ?? ''), [preview.data?.url]);
+    const handlePdfError = useCallback(() => setPreviewError('El PDF no pudo previsualizarse. El original sigue disponible.'), []);
     const [renaming, setRenaming] = useState(false);
     const [title, setTitle] = useState(resource.title);
     const [nameError, setNameError] = useState('');
@@ -478,11 +481,10 @@ function FileResource({resource, folderName, onClose}: {
                          onLoad={() => setReadyPreviewUrl(preview.data?.url ?? '')}
                          onError={() => setPreviewError('La imagen no pudo previsualizarse. El original sigue disponible.')}/>}
                 {preview.data?.url && resource.mediaType === 'application/pdf' &&
-                    <iframe className={`absolute inset-0 h-full min-h-0 w-full ${previewContentReady ? '' : 'opacity-0'}`} src={preview.data.url}
-                            title={`Vista previa de ${resource.title}`}
-                            tabIndex={previewContentReady ? 0 : -1} aria-hidden={!previewContentReady}
-                            onLoad={() => setReadyPreviewUrl(preview.data?.url ?? '')}
-                            onError={() => setPreviewError('El PDF no pudo previsualizarse. El original sigue disponible.')}/>}
+                    <div className={`absolute inset-0 min-h-0 ${previewContentReady ? '' : 'opacity-0'}`}>
+                        <PdfDocumentViewer url={preview.data.url} title={resource.title}
+                                           onReady={handlePdfReady} onError={handlePdfError}/>
+                    </div>}
                 {media && !mediaUrl && <Button loading={mediaLoading} onClick={() => void loadMedia()}>Cargar reproductor</Button>}
                 {mediaUrl && resource.mediaType?.startsWith('audio/') &&
                     <audio className="w-full max-w-xl" controls preload="none" src={mediaUrl}>Tu navegador no puede

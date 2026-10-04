@@ -4,6 +4,7 @@
 @layer base {
   :root {
     /* Exact Notion Palette - Light Mode */
+    color-scheme: light;
     --background: #FFFFFF;
     --on-background: #37352F;
     --surface: #F7F7F5;
@@ -13,10 +14,13 @@
     --primary: #2383E2;
     --on-primary: #FFFFFF;
     --secondary: #E9E9E7;
+    --scrollbar-thumb: rgba(55, 53, 47, 0.3);
+    --scrollbar-thumb-hover: rgba(55, 53, 47, 0.48);
   }
 
   .dark {
     /* Exact Notion Palette - Dark Mode */
+    color-scheme: dark;
     --background: #191919;
     --on-background: #EDEDED;
     --surface: #202020;
@@ -25,6 +29,8 @@
     --outline: #A5A5A5;
     --primary: #3264C8;
     --on-primary: #FFFFFF;
+    --scrollbar-thumb: rgba(255, 255, 255, 0.26);
+    --scrollbar-thumb-hover: rgba(255, 255, 255, 0.42);
   }
 }
 
@@ -43,6 +49,33 @@
 }
 
 @layer base {
+  * {
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+    scrollbar-width: thin;
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track,
+  *::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: var(--scrollbar-thumb);
+    background-clip: padding-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    background-clip: padding-box;
+  }
+
   html, body, #root {
     width: 100vw;
     height: 100vh;
