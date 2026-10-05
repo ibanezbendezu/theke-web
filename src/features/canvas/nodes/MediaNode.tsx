@@ -52,8 +52,8 @@ export function MediaNode({data, selected}: NodeProps<MediaNodeType>) {
                 <span className="text-sm font-medium text-on-background truncate">{data.label}</span>
             </div>
 
-            <Handle type="target" position={Position.Left} className="w-3 h-3 bg-surface border-2 border-primary"/>
-            <Handle type="source" position={Position.Right} className="w-3 h-3 bg-surface border-2 border-primary"/>
+            <Handle id="left" type="target" position={Position.Left} className="w-3 h-3 bg-surface border-2 border-primary"/>
+            <Handle id="right" type="source" position={Position.Right} className="w-3 h-3 bg-surface border-2 border-primary"/>
         </div>
     );
 }

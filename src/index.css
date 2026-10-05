@@ -126,6 +126,10 @@
   overflow: hidden;
 }
 
+.react-flow__edgelabel-renderer {
+  z-index: 2;
+}
+
 .theke-progress { appearance: none; height: 4px; overflow: hidden; border-radius: 999px; background: var(--surface-variant); }
 .theke-progress::-webkit-progress-bar { background: var(--surface-variant); }
 .theke-progress::-webkit-progress-value { background: var(--on-background); border-radius: 999px; }

@@ -163,7 +163,7 @@ function RelationEditorForm({detail, reload, onClose}: {
         }
     };
     return <form className="mt-3 space-y-4 text-sm" onSubmit={event => void save(event)}>
-        <section aria-label="Identidad canónica" className="rounded border border-border p-3">
+        <section aria-label="Identidad de la relación" className="rounded border border-border p-3">
             <h3 className="font-medium">Vínculo entre Recursos</h3>
             <p className="mt-1">{detail.source.title} {detail.direction === 'directed' ? '→' : '↔'} {detail.target.title}</p>
             <p className="text-outline">Tipo: {detail.typeLabel} · {detail.direction === 'directed' ? 'Dirigida' : 'No dirigida'}</p>
@@ -204,10 +204,9 @@ function RelationEditorForm({detail, reload, onClose}: {
                 <p role="status">Sugerencia aplicada al borrador; revisa los datos y pulsa Guardar Relación para
                     confirmar.</p>}
         </section>
-        <section aria-label="Contenido canónico" className="space-y-3">
+        <section aria-label="Contenido de la relación" className="space-y-3">
             <div><h3 className="font-medium">Datos de la Relación</h3><p className="text-xs text-outline">Estos datos
-                pertenecen a la Cuenta y se comparten entre Diagramas. El estilo y la visibilidad de cada línea son
-                locales.</p></div>
+                pertenecen a este mapa. Otros mapas pueden usar los mismos Recursos con otra interpretación.</p></div>
             <label className="block">Etiqueta<input
                 className="mt-1 w-full rounded border border-border bg-background p-2" maxLength={160}
                 value={draft.label}

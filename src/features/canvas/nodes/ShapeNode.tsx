@@ -90,8 +90,8 @@ export function ShapeNode({data, selected, width = 100, height = 100}: NodeProps
                 )}
 
                 {/* Handles centrales para poder conectar líneas a estas formas */}
-                <Handle type="target" position={Position.Left} className="opacity-0 group-hover:opacity-100 w-2 h-2"/>
-                <Handle type="source" position={Position.Right} className="opacity-0 group-hover:opacity-100 w-2 h-2"/>
+                <Handle id="left" type="target" position={Position.Left} className="opacity-0 group-hover:opacity-100 w-2 h-2"/>
+                <Handle id="right" type="source" position={Position.Right} className="opacity-0 group-hover:opacity-100 w-2 h-2"/>
                 <Handle type="target" position={Position.Top} className="opacity-0 group-hover:opacity-100 w-2 h-2"
                         id="top"/>
                 <Handle type="source" position={Position.Bottom} className="opacity-0 group-hover:opacity-100 w-2 h-2"

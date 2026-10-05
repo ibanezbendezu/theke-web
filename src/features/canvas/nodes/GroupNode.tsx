@@ -60,9 +60,9 @@ export function GroupNode({id, data, selected, width = 350, height = 250}: NodeP
                 />
             </div>
 
-            <Handle type="target" position={Position.Left}
+            <Handle id="left" type="target" position={Position.Left}
                     className="w-3 h-3 bg-surface border-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity z-50"/>
-            <Handle type="source" position={Position.Right}
+            <Handle id="right" type="source" position={Position.Right}
                     className="w-3 h-3 bg-surface border-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity z-50"/>
             <Handle type="target" position={Position.Top}
                     className="w-3 h-3 bg-surface border-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity z-50"

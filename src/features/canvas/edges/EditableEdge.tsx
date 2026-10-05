@@ -92,6 +92,13 @@ export function EditableEdge({
                   className="react-flow__edge-interaction cursor-pointer" onMouseEnter={() => setHovered(true)}
                   onMouseLeave={() => setHovered(false)}/>
 
+            {(selected || hovered) && <>
+                <circle cx={sourceX} cy={sourceY} r={8} fill="var(--color-background)"
+                        stroke="var(--color-primary)" strokeWidth={2} pointerEvents="none" aria-hidden="true"/>
+                <circle cx={targetX} cy={targetY} r={8} fill="var(--color-background)"
+                        stroke="var(--color-primary)" strokeWidth={2} pointerEvents="none" aria-hidden="true"/>
+            </>}
+
             <EdgeLabelRenderer>
                 <div
                     style={{

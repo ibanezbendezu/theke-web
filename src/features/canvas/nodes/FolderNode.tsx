@@ -34,7 +34,7 @@ export function FolderNode({id, data, selected, width = 288, height = 112}: Node
                     className="nodrag nopan rounded border border-border px-2 py-1 text-xs hover:bg-surface-variant"
                     onClick={() => openCanvasNode(id)} aria-label={`Abrir carpeta ${folder?.name ?? ''}`}>Abrir
             </button>
-            <Handle type="target" position={Position.Left} className="bg-primary"/><Handle type="source"
+            <Handle id="left" type="target" position={Position.Left} className="bg-primary"/><Handle id="right" type="source"
                                                                                            position={Position.Right}
                                                                                            className="bg-primary"/>
         </article>

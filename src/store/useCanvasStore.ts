@@ -46,6 +46,7 @@ interface CanvasState {
     onNodesChange: (changes: NodeChange[]) => void;
     onEdgesChange: (changes: EdgeChange[]) => void;
     onConnect: (connection: Connection) => void;
+    reconnectEdge: (edgeId: string, connection: Connection) => void;
     addNode: (node: FlowNode) => void;
     addAnnotation: (kind: 'text' | 'shape' | 'line', preferred?: { x: number; y: number }) => string;
     duplicateNode: (id: string) => string | null;
@@ -157,6 +158,16 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         };
         set(state => ({...history(state), edges: addEdge(newEdge, state.edges)}));
     },
+    reconnectEdge: (edgeId, connection) => set(state => ({
+        ...history(state),
+        edges: state.edges.map(edge => edge.id === edgeId ? {
+            ...edge,
+            source: connection.source,
+            target: connection.target,
+            sourceHandle: connection.sourceHandle,
+            targetHandle: connection.targetHandle
+        } : edge)
+    })),
 
     addNode: node => set(state => ({...history(state), nodes: [...state.nodes, node]})),
     addAnnotation: (kind, preferred) => {

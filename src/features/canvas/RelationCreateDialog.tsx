@@ -1,15 +1,15 @@
 import {useState, type FormEvent} from 'react';
 import type {Node} from '@xyflow/react';
-import {ApiError} from '../../api/httpClient';
 import {Button} from '../../components/ui/Button';
 import {useOrganization} from '../../data/useOrganization';
-import {useRelationTypes, type CreateRelationInput} from '../../data/useRelations';
+import {useRelationTypes, type AvailableRelation, type CreateRelationInput} from '../../data/useRelations';
 import {CanvasDialog} from './CanvasDialog';
 
-export function RelationCreateDialog({projectId, nodes, initial, canSave, onCreate, onVisualAlternative, onClose}: {
+export function RelationCreateDialog({projectId, nodes, availableRelations, initial, canSave, onCreate, onVisualAlternative, onClose}: {
     projectId: string;
     nodes: Node[];
-    initial: { source?: string; target?: string };
+    availableRelations: AvailableRelation[];
+    initial: { source?: string; target?: string; replaceEdgeId?: string };
     canSave: boolean;
     onCreate: (input: Omit<CreateRelationInput, 'expectedRevision'>) => Promise<void>;
     onVisualAlternative: () => void;
@@ -25,7 +25,6 @@ export function RelationCreateDialog({projectId, nodes, initial, canSave, onCrea
     const [typeKey, setTypeKey] = useState('related_to');
     const [customTypeName, setCustomTypeName] = useState('');
     const [operationId, setOperationId] = useState(() => crypto.randomUUID());
-    const [duplicate, setDuplicate] = useState(false);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState(initial.source && !valid(initial.source) || initial.target && !valid(initial.target) ? 'Las Relaciones del MVP solo conectan Recursos. Puedes usar una línea visual para otros elementos.' : '');
     const label = (node: Node) => {
@@ -33,12 +32,16 @@ export function RelationCreateDialog({projectId, nodes, initial, canSave, onCrea
         const title = organization.data?.resources.find(item => item.resourceId === node.data?.resourceId)?.title;
         return `${typeof caption === 'string' && caption.trim() ? caption : title ?? 'Recurso'} (${node.id.slice(0, 8)})`;
     };
+    const sourceResourceId = resources.find(node => node.id === sourceNodeId)?.data?.resourceId;
+    const targetResourceId = resources.find(node => node.id === targetNodeId)?.data?.resourceId;
+    const existing = availableRelations.find(item => item.typeKey === typeKey && item.direction === direction &&
+        (item.sourceResourceId === sourceResourceId && item.targetResourceId === targetResourceId ||
+            direction === 'undirected' && item.sourceResourceId === targetResourceId && item.targetResourceId === sourceResourceId));
     const reset = () => {
-        setDuplicate(false);
         setError('');
         setOperationId(crypto.randomUUID());
     };
-    const submit = async (event: FormEvent, reuseExisting = false) => {
+    const submit = async (event: FormEvent) => {
         event.preventDefault();
         if (!canSave) {
             setError('Espera a que el diagrama termine de guardarse antes de crear la Relación.');
@@ -57,23 +60,18 @@ export function RelationCreateDialog({projectId, nodes, initial, canSave, onCrea
                 direction,
                 typeKey, ...(typeKey === 'custom' ? {customTypeName} : {}),
                 idempotencyKey: operationId,
-                reuseExisting
+                reuseExisting: true
             });
         } catch (reason) {
-            if (reason instanceof ApiError && reason.status === 409 && reason.message.includes('equivalente')) {
-                setDuplicate(true);
-                setError('Esta Relación ya existe. Puedes mostrarla aquí sin duplicarla.');
-            } else {
-                setError(reason instanceof Error ? reason.message : 'No se pudo crear la Relación.');
-            }
+            setError(reason instanceof Error ? reason.message : 'No se pudo crear la Relación.');
         } finally {
             setBusy(false);
         }
     };
     return <CanvasDialog titleId="create-relation-title" onClose={onClose} className="max-w-md">
         <h2 id="create-relation-title" className="text-lg font-semibold">Crear Relación</h2>
-        <p className="mt-1 text-sm text-outline">La Relación pertenece a tu Cuenta. Esta línea pertenece solo al
-            Diagrama.</p>
+        <p className="mt-1 text-sm text-outline">Esta Relación pertenece a este mapa. Otros mapas pueden interpretar los mismos Recursos de otra forma.</p>
+        {initial.replaceEdgeId && <p className="mt-2 text-sm text-outline">Al conectar otro Recurso se creará una Relación nueva. Si la anterior queda sin líneas, se eliminará al guardar.</p>}
         <form className="mt-4 space-y-3" onSubmit={event => void submit(event)}>
             <label className="block text-sm">Origen<select
                 className="mt-1 w-full rounded border border-border bg-background p-2" value={sourceNodeId}
@@ -117,14 +115,13 @@ export function RelationCreateDialog({projectId, nodes, initial, canSave, onCrea
             }} placeholder="Por ejemplo: contextualiza"/></label>}
             {types.isError &&
                 <p role="alert" className="text-sm text-red-600">No se pudo cargar el catálogo de tipos.</p>}
+            {existing && <p role="status" className="text-sm text-outline">Esta Relación ya existe en este mapa. Se añadirá otra línea sin duplicarla.</p>}
             {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
             {!canSave && <p className="text-xs text-outline">El diagrama tiene cambios pendientes de guardar.</p>}
             <div className="flex flex-wrap justify-end gap-2"><Button type="button" onClick={onVisualAlternative}>Añadir
-                línea visual</Button><Button type="button" onClick={onClose}>Cancelar</Button>{duplicate ?
-                <Button type="button" variant="primary" loading={busy} disabled={!canSave}
-                        onClick={event => void submit(event, true)}>Mostrar existente</Button> :
+                línea visual</Button><Button type="button" onClick={onClose}>Cancelar</Button>
                 <Button type="submit" variant="primary"
-                        loading={busy} disabled={!canSave || !sourceNodeId || !targetNodeId || (typeKey === 'custom' && customTypeName.trim().length < 2)}>{busy ? 'Creando…' : 'Crear Relación'}</Button>}
+                        loading={busy} disabled={!canSave || !sourceNodeId || !targetNodeId || (typeKey === 'custom' && customTypeName.trim().length < 2)}>{busy ? 'Guardando…' : existing ? 'Mostrar en el mapa' : 'Guardar Relación'}</Button>
             </div>
         </form>
     </CanvasDialog>;

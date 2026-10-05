@@ -7,7 +7,7 @@ paradigm: frontend y backend separados; backend como monolito modular con límit
 scope: Plataforma Theke MVP, desde el frontend existente hasta servicios backend y operación
 status: final
 created: 2026-09-20
-updated: 2026-09-21
+updated: 2026-10-04
 binds: [FR-1..FR-40, NFR-1..NFR-22]
 sources:
   - ../../prds/prd-Theke-2026-09-19/prd.md
@@ -19,6 +19,8 @@ companions: []
 ---
 
 # Architecture Spine — Theke
+
+**Revisión de identidad (2026-10-04):** la decisión de producto posterior reemplaza las menciones a Relaciones canónicas de cuenta en este documento. `Resource` sigue siendo canónico de cuenta; `Relation` pertenece a un `Diagram` y su unicidad se acota a ese mapa. El documento JSONB referencia sus Relaciones locales. Al guardar la eliminación de la última línea, la Relación se marca como eliminada y recuperable. La duplicación del mapa copia Relaciones y evidencias con nuevos IDs. Véase la revisión de la Story 3.4.
 
 ## Paradigma de diseño
 
@@ -62,13 +64,13 @@ flowchart LR
 
 - **Binds:** FR-3..FR-23, FR-32..FR-35; NFR-3, NFR-6, NFR-11
 - **Prevents:** duplicar conocimiento por diagrama o mezclar contenido global con presentación local.
-- **Rule:** Recursos y Relaciones son entidades canónicas normalizadas. Cada cambio de texto crea atómicamente una `ResourceVersion` inmutable con hash y ordinal, y actualiza `resource.current_version_id` mediante revisión esperada. Para archivos, una versión nace como candidata y solo actualiza `current_version_id` después de que los bytes promovidos estén `ready`; rechazo o fallo conserva la versión limpia anterior. Una Relación tiene dos extremos de Recurso, dirección, tipo, explicación, evidencia y procedencia. La Relación y su `RelationType` pertenecen a la Cuenta; el tipo registra `origin_project_id`, su catálogo se descubre inicialmente solo dentro de ese Proyecto y, una vez usado, se mantiene estable y solo se archiva. Carpetas y sus membresías pertenecen al Proyecto y solo se representan de forma compacta en el Canvas. Cada Diagrama persiste un documento JSONB versionado con Representaciones, Grupos, Anotaciones, presentación y visibilidad local, referenciando IDs canónicos; mostrar u ocultar una Relación en un Diagrama no altera la entidad canónica.
+- **Rule:** Los Recursos son entidades canónicas de Cuenta. Cada cambio de texto crea atómicamente una `ResourceVersion` inmutable con hash y ordinal, y actualiza `resource.current_version_id` mediante revisión esperada. Para archivos, una versión nace como candidata y solo actualiza `current_version_id` después de que los bytes promovidos estén `ready`; rechazo o fallo conserva la versión limpia anterior. Una Relación pertenece a un Diagrama y conecta dos Recursos con dirección, tipo, explicación, evidencia y procedencia. `RelationType` conserva su catálogo por Proyecto. Carpetas y sus membresías pertenecen al Proyecto y solo se representan de forma compacta en el Canvas. Cada Diagrama persiste un documento JSONB versionado con Representaciones, Grupos, Anotaciones y Relaciones propias. Ocultar una línea conserva la Relación; quitar su última línea y guardar la elimina de forma recuperable.
 
 ### AD-5 — Cuenta como tenant [ADOPTED]
 
 - **Binds:** FR-1..FR-5, FR-9, FR-19..FR-23; NFR-6, NFR-9
 - **Prevents:** propiedad ambigua y fugas entre cuentas.
-- **Rule:** La cuenta/workspace en PostgreSQL es el tenant de seguridad. El webhook verificado de Clerk y el primer request autenticado comparten un `ensureLocalUser` idempotente para crear usuario local y cuenta personal sin depender del orden de llegada; `memberships` prepara colaboración futura. Recursos y Relaciones pertenecen a la cuenta; Proyectos seleccionan y organizan referencias. El `clerk_user_id` es identidad externa única, no clave primaria del dominio.
+- **Rule:** La cuenta/workspace en PostgreSQL es el tenant de seguridad. El webhook verificado de Clerk y el primer request autenticado comparten un `ensureLocalUser` idempotente para crear usuario local y cuenta personal sin depender del orden de llegada; `memberships` prepara colaboración futura. Recursos pertenecen a la Cuenta y Relaciones a sus Diagramas; ambos conservan el aislamiento del tenant. El `clerk_user_id` es identidad externa única, no clave primaria del dominio.
 
 ### AD-6 — Clerk autentica; Theke autoriza
 

@@ -2,7 +2,7 @@
 title: "PRD: Theke"
 status: final
 created: 2026-09-19
-updated: 2026-09-19
+updated: 2026-10-04
 ---
 
 # PRD: Theke
@@ -20,7 +20,7 @@ El repositorio ya contiene un editor de grafo funcional basado en React, TypeScr
 ## Objetivos del MVP
 
 - Convertir fuentes dispersas en una visualización ordenada y persistente.
-- Permitir que recursos y relaciones se reutilicen entre diagramas sin duplicar conocimiento.
+- Permitir reutilizar Recursos entre mapas independientes y expresar en cada mapa sus propias Relaciones.
 - Preservar la construcción manual como parte del aprendizaje.
 - Ofrecer asistencia de IA explicable, opcional y controlada por el usuario.
 - Compartir un diagrama interactivo sin conceder edición de su composición.
@@ -48,7 +48,7 @@ Los elementos `Should` pertenecen al alcance objetivo, pero no bloquean la prime
 
 ### Diferido / fuera del MVP
 
-- Otras gramáticas visuales, comenzando por línea de tiempo; deberán reutilizar la misma Biblioteca, Recursos y Relaciones canónicas en lugar de crear silos.
+- Otras gramáticas visuales, comenzando por línea de tiempo; deberán reutilizar la misma Biblioteca y los mismos Recursos, conservando las Relaciones propias de cada mapa.
 - Coedición de diagramas.
 - Plataforma pública para descubrir contenido.
 - Generación automática de diagramas completos.
@@ -106,9 +106,9 @@ Daniel recibe la retroalimentación en contexto y en una lista, la resuelve o el
 
 ## Principios e invariantes
 
-- **Conocimiento canónico:** Recursos y Relaciones conservan identidad a nivel de cuenta; Proyectos y Diagramas los reutilizan sin copiar contenido. FR-3, FR-9 y FR-19 a FR-23.
+- **Conocimiento canónico (revisión 2026-10-04):** los Recursos conservan identidad a nivel de cuenta; las Relaciones pertenecen al mapa que interpreta esos Recursos. FR-3, FR-9 y FR-19 a FR-23.
 - **Presentación local:** posición, tamaño, estilo y visibilidad pertenecen al Diagrama; quitar una Representación no elimina su Recurso. FR-20 y FR-23.
-- **Cambios globales seguros:** editar contenido canónico actualiza sus usos y eliminarlo exige mostrar impacto, solicitar confirmación y preferir archivo cuando siga en uso. FR-19 y FR-23; NFR-7.
+- **Cambios globales seguros:** editar un Recurso actualiza sus usos y eliminarlo exige mostrar impacto. Quitar la última línea de una Relación elimina esa interpretación solo en su mapa, con recuperación temporal. FR-19 y FR-23; NFR-7.
 - **Importación con procedencia:** Theke administra una copia de cada archivo y registra origen, tipo, fecha y método; las URL siguen siendo referencias externas y no existe sincronización bidireccional en el MVP. FR-6 a FR-8.
 - **Privacidad y publicación mínima:** el contenido es privado por defecto y cada Compartido expone solo los Recursos incluidos, después de una previsualización explícita. FR-32 a FR-34; NFR-8 a NFR-13.
 - **Comentarios separados:** los comentarios pertenecen al Compartido, no al conocimiento canónico; si pierden su objetivo permanecen sin anclaje hasta resolverse o eliminarse. FR-36 a FR-40.
@@ -144,8 +144,8 @@ Daniel recibe la retroalimentación en contexto y en una lista, la resuelve o el
 - **FR-19 — Edición de recurso:** el autor puede editar metadatos y, cuando el tipo lo permite, contenido del Recurso. El cambio se refleja en todas sus Representaciones y Compartidos vivos.
 - **FR-20 — Representación local:** mover, redimensionar, estilizar, mostrar u ocultar una Representación afecta solamente su Diagrama.
 - **FR-21 — Relación explicada:** el autor puede crear una Relación dirigida o no dirigida cuyos extremos sean Recursos. Puede elegir un tipo común sugerido por Theke o crear un tipo personalizado reutilizable dentro del Proyecto. En ambos casos, puede añadir una etiqueta, una explicación, evidencia y procedencia. Carpetas, Grupos y Anotaciones visuales no pueden ser extremos de una Relación en el MVP.
-- **FR-22 — Reutilización de relación:** al utilizar Recursos relacionados en otro Diagrama, Theke informa que existe la Relación y permite decidir si se muestra allí.
-- **FR-23 — Ciclo de vida seguro:** quitar una Representación no elimina su Recurso. Antes de eliminar o archivar un Recurso o Relación global, Theke muestra sus usos y consecuencias.
+- **FR-22 — Independencia de relaciones por mapa (revisión 2026-10-04):** cada mapa conserva sus propias Relaciones, aunque use los mismos Recursos que otro. Una Relación equivalente puede reutilizarse para varias líneas dentro del mismo mapa. La reutilización entre mapas requiere una acción explícita futura.
+- **FR-23 — Ciclo de vida seguro (revisión 2026-10-04):** quitar una Representación no elimina su Recurso. Quitar la última línea de una Relación y guardar el mapa la elimina de forma recuperable; archivar o eliminar un Recurso compartido exige revisar sus usos y consecuencias.
 
 ### Asistencia de IA
 

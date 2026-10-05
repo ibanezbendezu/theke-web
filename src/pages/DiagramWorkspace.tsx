@@ -2,14 +2,15 @@ import {useAuth} from '@clerk/clerk-react';
 import {useQueryClient} from '@tanstack/react-query';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {MarkerType} from '@xyflow/react';
-import {LoaderCircle} from 'lucide-react';
+import {Link2, LoaderCircle, X} from 'lucide-react';
 import {ApiError} from '../api/httpClient';
 import {Button} from '../components/ui/Button';
 import {deleteCanvasDraft, readCanvasDraft, writeCanvasDraft, type CanvasDraft} from '../data/canvasJournal';
 import {migrateCanvasDocument} from '../data/canvasDocument';
 import {type Diagram, type DiagramDocument, useSaveDiagramDocument} from '../data/useDiagrams';
-import {CanvasEditor} from '../features/canvas/CanvasEditor';
+import {CanvasEditor, type RelationEdgeGeometry} from '../features/canvas/CanvasEditor';
 import {RelationCreateDialog} from '../features/canvas/RelationCreateDialog';
+import {mergeCreatedRelation} from '../features/canvas/mergeCreatedRelation';
 import {RelationEditor} from '../features/canvas/RelationEditor';
 import {
     useAvailableRelations,
@@ -72,7 +73,8 @@ export function DiagramWorkspace({
     const available = useAvailableRelations(diagram.id);
     const canvasNodes = useCanvasStore(state => state.nodes);
     const canvasEdges = useCanvasStore(state => state.edges);
-    const [relationInitial, setRelationInitial] = useState<{ source?: string; target?: string } | null>(null);
+    const [relationInitial, setRelationInitial] = useState<{ source?: string; target?: string; replaceEdgeId?: string; geometry?: RelationEdgeGeometry } | null>(null);
+    const [availableOpen, setAvailableOpen] = useState(false);
     const relationRequest = useCanvasStore(state => state.relationRequest);
     const [dismissedRelationNonce, setDismissedRelationNonce] = useState(() => useCanvasStore.getState().relationRequest?.nonce ?? null);
     const activeRelation = relationInitial ?? (relationRequest && relationRequest.nonce !== dismissedRelationNonce ? relationRequest : null);
@@ -108,7 +110,6 @@ export function DiagramWorkspace({
     const retryRef = useRef<CanvasDraft | null>(null);
     const savingRef = useRef(false);
     const blockedRef = useRef(false);
-    const unsubscribeRef = useRef<(() => void) | null>(null);
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const journalQueue = useRef<Promise<unknown>>(Promise.resolve());
     const pumpRef = useRef<() => Promise<void>>(async () => {
@@ -203,10 +204,14 @@ export function DiagramWorkspace({
         return () => {
             active = false;
             if (timerRef.current) clearTimeout(timerRef.current);
-            unsubscribeRef.current?.();
-            unsubscribeRef.current = null;
         };
     }, [draftKey]);
+    useEffect(() => {
+        if (choice !== 'ready') return;
+        const unsubscribe = useCanvasStore.subscribe(markChanged);
+        markChanged();
+        return unsubscribe;
+    }, [choice, markChanged]);
     useEffect(() => {
         const online = () => {
             if (status === 'offline') schedule(0);
@@ -215,7 +220,6 @@ export function DiagramWorkspace({
         return () => window.removeEventListener('online', online);
     }, [schedule, status]);
     const ready = useCallback(() => {
-        if (!unsubscribeRef.current) unsubscribeRef.current = useCanvasStore.subscribe(markChanged);
         markChanged();
         onCanvasReady?.();
     }, [markChanged, onCanvasReady]);
@@ -287,17 +291,21 @@ export function DiagramWorkspace({
     };
     const createCanonicalRelation = async (input: Omit<CreateRelationInput, 'expectedRevision'>) => {
         if (status !== 'saved' || latestRef.current || savingRef.current) throw new Error('Espera a que el diagrama termine de guardarse.');
+        const currentDocument = snapshot();
         const result = await createRelation({...input, expectedRevision: revisionRef.current});
+        const gestureGeometry = relationInitial?.source === input.sourceNodeId && relationInitial?.target === input.targetNodeId
+            ? relationInitial.geometry : undefined;
+        const nextDocument = mergeCreatedRelation(currentDocument, result, relationInitial?.replaceEdgeId, gestureGeometry);
         revisionRef.current = result.revision;
         confirmedRef.current = fingerprint(result.document);
         client.setQueryData<Diagram>(['private', 'diagram', userId, diagram.id], current => current ? {
             ...current,
-            document: result.document,
+            document: nextDocument,
             revision: result.revision
         } : current);
         void client.invalidateQueries({queryKey: ['private', 'relation-types', userId, diagram.projectId]});
         void client.invalidateQueries({queryKey: ['private', 'available-relations', userId, diagram.id]});
-        setDocument(result.document);
+        setDocument(nextDocument);
         closeRelation();
         setStatus('saved');
     };
@@ -335,23 +343,30 @@ export function DiagramWorkspace({
             conflict: 'Conflicto de revisión',
             'storage-error': 'No se pudo proteger el borrador local'
         }[status]}</div>
-        {suggestions.length > 0 && <section aria-label="Relaciones existentes"
-                                            className="absolute left-20 top-20 z-30 max-h-64 w-[min(20rem,calc(100%-6rem))] overflow-auto rounded-lg bg-surface/95 p-3 text-sm backdrop-blur-md">
-            <h2 className="font-semibold">Relaciones existentes ({suggestions.length})</h2><p
-            className="mt-1 text-xs text-outline">Estos Recursos ya tienen una Relación en la Cuenta. Elige cuáles
-            mostrar aquí.</p>
-            <ul className="mt-2 space-y-2">{suggestions.map(item => <li key={item.relationId}
-                                                                        className="rounded-md bg-surface-variant/55 p-2">
-                <p className="font-medium">{item.label || item.typeLabel}</p><p
-                className="text-xs">{item.sourceTitle} {item.direction === 'directed' ? '→' : '↔'} {item.targetTitle}</p>
-                <Button className="mt-2" disabled={status !== 'saved'} onClick={() => showRelation(item)}>Mostrar
-                    aquí</Button></li>)}</ul>
-        </section>}
+        {suggestions.length > 0 && <div className="absolute left-20 top-20 z-30 w-[min(20rem,calc(100%-6rem))] text-sm">
+            {!availableOpen ? <button type="button" aria-expanded={false}
+                                      onClick={() => setAvailableOpen(true)}
+                                      className="inline-flex items-center gap-2 rounded-lg bg-surface/90 px-3 py-2 text-xs text-on-background backdrop-blur-md hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary">
+                <Link2 size={14} aria-hidden="true"/>Relaciones disponibles <span className="text-outline">{suggestions.length}</span>
+            </button> : <section id="available-relations" aria-label="Relaciones existentes"
+                                 className="max-h-[min(24rem,calc(100dvh-8rem))] overflow-auto rounded-lg bg-surface/95 p-3 backdrop-blur-md">
+                <div className="flex items-start justify-between gap-2"><h2 className="font-semibold">Relaciones existentes ({suggestions.length})</h2>
+                    <button type="button" aria-label="Cerrar relaciones existentes" onClick={() => setAvailableOpen(false)}
+                            className="rounded-md p-1 text-outline hover:bg-surface-variant hover:text-on-background focus-visible:outline-2 focus-visible:outline-primary"><X size={16}/></button></div>
+                <p className="mt-1 text-xs text-outline">Relaciones de este mapa que no tienen una línea visible. Elige cuáles mostrar.</p>
+                <ul className="mt-2 space-y-2">{suggestions.map(item => <li key={item.relationId}
+                                                                            className="rounded-md bg-surface-variant/55 p-2">
+                    <p className="font-medium">{item.label || item.typeLabel}</p><p
+                    className="text-xs">{item.sourceTitle} {item.direction === 'directed' ? '→' : '↔'} {item.targetTitle}</p>
+                    <Button className="mt-2" disabled={status !== 'saved'} onClick={() => showRelation(item)}>Mostrar aquí</Button></li>)}</ul>
+            </section>}
+        </div>}
         {document && <CanvasEditor document={document} onReady={ready} onAddResource={onAddResource}
                                    onDropResource={onDropResource} onDropFiles={onDropFiles} onPickFiles={onPickFiles}
                                    commentNotifications={commentNotifications} selectedCommentId={selectedCommentId} onCommentOpen={onCommentOpen}
-                                   onCreateRelation={(source, target) => setRelationInitial({source, target})}/>}
+                                   onCreateRelation={(source, target, replaceEdgeId, geometry) => setRelationInitial({source, target, replaceEdgeId, geometry})}/>}
         {activeRelation && <RelationCreateDialog projectId={diagram.projectId} nodes={useCanvasStore.getState().nodes}
+                                                 availableRelations={available.data ?? []}
                                                  initial={activeRelation} canSave={status === 'saved'}
                                                  onCreate={createCanonicalRelation} onVisualAlternative={() => {
             useCanvasStore.getState().addAnnotation('line');

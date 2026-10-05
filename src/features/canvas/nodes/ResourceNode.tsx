@@ -1,5 +1,6 @@
-import {Handle, NodeResizer, Position, type Node, type NodeProps} from '@xyflow/react';
+import {NodeResizer, type Node, type NodeProps} from '@xyflow/react';
 import {File as FileIcon, FileText, Image, Link as LinkIcon, Music, Video} from 'lucide-react';
+import {ResourceConnectionHandles} from '../../../components/ui/ResourceConnectionHandles';
 import {useResource} from '../../../data/useResources';
 import {useCanvasStore} from '../../../store/useCanvasStore';
 
@@ -34,9 +35,7 @@ export function ResourceNode({id, data, selected, width = 288, height = 112}: No
                     onClick={() => openCanvasNode(id)}
                     aria-label={`Abrir detalle de ${resource.data?.title ?? 'recurso'}`}>Abrir
             </button>
-            <Handle type="target" position={Position.Left} className="bg-primary"/><Handle type="source"
-                                                                                           position={Position.Right}
-                                                                                           className="bg-primary"/>
+            <ResourceConnectionHandles editable/>
         </article>
     </div>;
 }

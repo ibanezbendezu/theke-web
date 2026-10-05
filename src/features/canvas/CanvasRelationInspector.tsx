@@ -1,9 +1,7 @@
 import {Button} from '../../components/ui/Button';
 import {InlineLoading} from '../../components/ui/LoadingState';
-import {ImpactDialog, type ImpactRequest} from '../../components/ui/ImpactDialog';
 import {useRelation} from '../../data/useRelations';
 import {useCanvasStore} from '../../store/useCanvasStore';
-import {useState} from 'react';
 import {useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@clerk/clerk-react';
 import {thekeFetch} from '../../api/httpClient';
@@ -20,7 +18,6 @@ export function CanvasRelationInspector({relationId, edgeId, sourceNodeId, targe
     const relation = useRelation(relationId);
     const client = useQueryClient();
     const {getToken} = useAuth();
-    const [impact, setImpact] = useState<ImpactRequest | null>(null);
     const toast = useToast();
     const focusNode = useCanvasStore(state => state.focusNode);
     const requestEdit = useCanvasStore(state => state.requestEditRelation);
@@ -32,8 +29,8 @@ export function CanvasRelationInspector({relationId, edgeId, sourceNodeId, targe
                                                                                             onClick={() => void relation.refetch()}>Reintentar</Button>
         </div>}
         {detail && <>
-            <section aria-label="Relación canónica" className="space-y-2 rounded-md bg-surface-variant/60 p-3">
-                <h3 className="font-medium">En la Cuenta</h3>
+            <section aria-label="Relación del mapa" className="space-y-2 rounded-md bg-surface-variant/60 p-3">
+                <h3 className="font-medium">En este mapa</h3>
                 <p className="font-medium">{detail.label || detail.typeLabel}</p>
                 <p>{detail.source.title} {detail.direction === 'directed' ? '→' : '↔'} {detail.target.title}</p>
                 <p className="text-xs text-outline">{detail.typeLabel} · {detail.direction === 'directed' ? 'Dirigida' : 'No dirigida'} · {evidenceLabel[detail.evidenceStatus]}</p>
@@ -70,27 +67,16 @@ export function CanvasRelationInspector({relationId, edgeId, sourceNodeId, targe
                         toast.error(error instanceof Error ? error.message : 'No se pudo restaurar.');
                     }
                 })()}>Restaurar Relación</Button>}
-                <div className="flex flex-wrap gap-2"><Button variant="outline" onClick={() => setImpact({
-                    entityType: 'relation',
-                    id: relationId,
-                    action: 'archive'
-                })}>Archivar Relación</Button><Button variant="outline" onClick={() => setImpact({
-                    entityType: 'relation',
-                    id: relationId,
-                    action: 'delete'
-                })}>Eliminar Relación</Button></div>
             </section>
             <section aria-label="Presentación local" className="rounded-md bg-surface-variant/60 p-3"><h3
-                className="font-medium">Solo en este Diagrama</h3><p className="mt-1 text-xs text-outline">La posición,
-                el trazo y la visibilidad de esta línea no cambian la Relación canónica.</p>
+                className="font-medium">Línea en el lienzo</h3><p className="mt-1 text-xs text-outline">Si quitas la última línea de esta Relación, se eliminará del mapa al guardar. Puedes deshacer antes de guardar.</p>
                 <div className="mt-3 flex flex-wrap gap-2"><Button
                     onClick={() => useCanvasStore.getState().setEdgeHidden(edgeId, true)}>Ocultar línea</Button><Button
-                    onClick={() => useCanvasStore.getState().removeEdge(edgeId)}>Quitar del Diagrama</Button></div>
+                    onClick={() => {
+                        useCanvasStore.getState().removeEdge(edgeId);
+                        toast.info('Línea quitada. Si era la última, la Relación se eliminará al guardar.');
+                    }}>Quitar relación</Button></div>
             </section>
         </>}
-        {impact && <ImpactDialog request={impact} onClose={() => setImpact(null)} onDone={() => {
-            setImpact(null);
-            void client.invalidateQueries({queryKey: ['private']});
-        }}/>}
     </div>;
 }

@@ -1,5 +1,6 @@
 import {useEffect, useRef, type PointerEvent as ReactPointerEvent} from 'react';
 import {NodeResizer, useViewport, type Node, type NodeProps} from '@xyflow/react';
+import {GripHorizontal} from 'lucide-react';
 import {useCanvasStore} from '../../../store/useCanvasStore';
 
 export type AnnotationData = {
@@ -75,16 +76,21 @@ export function AnnotationNode({id, data, selected, width = 240, height = 100}: 
     };
     return <div role="group"
                 aria-label={`Anotación visual: ${data.kind === 'text' ? 'texto' : data.kind === 'line' ? 'línea' : 'forma'}`}
-                className={`relative ${selected && data.kind !== 'line' ? 'ring-1 ring-primary' : ''}`} style={{width, height}}>
+                className={`group relative ${selected && data.kind !== 'line' ? 'ring-1 ring-primary' : ''}`} style={{width, height}}>
         {data.kind === 'shape' && <NodeResizer isVisible={selected} color="var(--color-primary)" minWidth={40}
                                               minHeight={40} onResizeStart={beginGesture}
                                               onResizeEnd={endGesture}/>}
-        {data.kind === 'text' && <textarea
-            className="nodrag nopan h-full w-full resize-none rounded border border-border bg-background/90 p-2 outline-none"
-            aria-label="Texto de anotación" value={data.text ?? ''}
-            onChange={event => updateNodeData(id, {text: event.target.value})}
-            style={{fontSize: data.fontSize ?? 16, textAlign: data.align ?? 'left', color}}
-            placeholder="Escribe una anotación…"/>}
+        {data.kind === 'text' && <>
+            <span aria-hidden="true" title="Arrastrar anotación"
+                  className={`absolute -top-4 left-2 z-10 flex h-5 w-8 cursor-grab items-center justify-center rounded-md bg-surface text-outline transition-opacity hover:text-on-background group-hover:opacity-100 active:cursor-grabbing ${selected ? 'opacity-100' : 'opacity-0'}`}
+            ><GripHorizontal size={14}/></span>
+            <textarea
+                className="nodrag nopan h-full w-full resize-none rounded border border-border bg-background/90 p-2 outline-none"
+                aria-label="Texto de anotación" value={data.text ?? ''}
+                onChange={event => updateNodeData(id, {text: event.target.value})}
+                style={{fontSize: data.fontSize ?? 16, textAlign: data.align ?? 'left', color}}
+                placeholder="Escribe una anotación…"/>
+        </>}
         {data.kind === 'shape' && <div aria-label={`Forma ${data.shape === 'ellipse' ? 'elipse' : 'rectángulo'}`}
                                        className="h-full w-full bg-surface-variant" style={{
             border: `${data.thickness ?? 2}px ${data.dash ?? 'solid'} ${color}`,

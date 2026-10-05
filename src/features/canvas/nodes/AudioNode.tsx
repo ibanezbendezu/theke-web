@@ -155,9 +155,9 @@ export function AudioNode({data, selected}: NodeProps<AudioNodeType>) {
             </div>
 
             {/* Puntos de conexión */}
-            <Handle type="target" position={Position.Left}
+            <Handle id="left" type="target" position={Position.Left}
                     className="w-3 h-3 bg-surface border-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity"/>
-            <Handle type="source" position={Position.Right}
+            <Handle id="right" type="source" position={Position.Right}
                     className="w-3 h-3 bg-surface border-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity"/>
         </div>
     );

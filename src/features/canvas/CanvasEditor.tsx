@@ -1,13 +1,15 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
     ReactFlow,
     Background,
     BackgroundVariant,
+    ConnectionMode,
     type NodeTypes,
     ReactFlowProvider,
     ViewportPortal,
     useReactFlow,
     type Node as FlowNode,
+    type Edge as FlowEdge,
     type OnConnectStart,
     type OnConnectEnd,
     type OnNodeDrag
@@ -37,6 +39,7 @@ import {ResourceNode} from './nodes/ResourceNode';
 import {FolderNode} from './nodes/FolderNode';
 import {AnnotationNode} from './nodes/AnnotationNode';
 import type {DiagramDocument} from '../../data/useDiagrams';
+import {useToast} from '../../components/ui/useToast';
 
 const nodeTypes: NodeTypes = {
     media: MediaNode,
@@ -55,13 +58,19 @@ const edgeTypes = {
     editable: EditableEdge,
 };
 
+export type RelationEdgeGeometry = {
+    sourceHandle?: string | null;
+    targetHandle?: string | null;
+    offset?: { x: number; y: number };
+};
+
 function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPickFiles, onCreateRelation, commentNotifications, selectedCommentId, onCommentOpen}: {
     viewport?: DiagramDocument['viewport'];
     onAddResource?: (position?: { x: number; y: number }) => void;
     onDropResource?: (resourceId: string, position: { x: number; y: number }) => void;
     onDropFiles?: (files: File[], position: { x: number; y: number }) => void;
     onPickFiles?: (position?: { x: number; y: number }) => void;
-    onCreateRelation?: (source?: string, target?: string) => void;
+    onCreateRelation?: (source?: string, target?: string, replaceEdgeId?: string, geometry?: RelationEdgeGeometry) => void;
     commentNotifications?: CommentNotification[];
     selectedCommentId?: string | null;
     onCommentOpen?: (item: CommentNotification) => void;
@@ -72,18 +81,64 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
         onNodesChange,
         onEdgesChange,
         onConnect,
+        reconnectEdge,
         addNode,
         addAnnotation,
         setNodeParent,
         beginGesture,
         endGesture
     } = useCanvasStore();
+    const toast = useToast();
     const {screenToFlowPosition, getIntersectingNodes, setViewport, setCenter} = useReactFlow();
     const saveViewport = useCanvasStore(state => state.setViewport);
     const background = useCanvasStore(state => state.background);
     const focusRequest = useCanvasStore(state => state.focusRequest);
     const focusEdgeRequest = useCanvasStore(state => state.focusEdgeRequest);
     const selectedComment = commentNotifications?.find(item => item.commentId === selectedCommentId);
+    const visibleEdges = useMemo<FlowEdge[]>(() => {
+        const center = (id: string) => {
+            const node = nodes.find(item => item.id === id);
+            if (!node) return null;
+            let x = node.position.x + (node.width ?? 288) / 2;
+            let y = node.position.y + (node.height ?? 112) / 2;
+            let parentId = node.parentId;
+            while (parentId) {
+                const parent = nodes.find(item => item.id === parentId);
+                if (!parent) break;
+                x += parent.position.x;
+                y += parent.position.y;
+                parentId = parent.parentId;
+            }
+            return {x, y};
+        };
+        const groups = new Map<string, typeof edges>();
+        for (const edge of edges.filter(item => !item.hidden)) {
+            const key = [edge.source, edge.target].sort().join(':');
+            groups.set(key, [...(groups.get(key) ?? []), edge]);
+        }
+        return edges.map(edge => {
+            const group = groups.get([edge.source, edge.target].sort().join(':')) ?? [];
+            const a = center([edge.source, edge.target].sort()[0]);
+            const b = center([edge.source, edge.target].sort()[1]);
+            const distance = a && b ? Math.hypot(b.x - a.x, b.y - a.y) : 0;
+            const lane = group.length > 1 ? group.indexOf(edge) - (group.length - 1) / 2 : 0;
+            const offset = distance > 0 ? {
+                x: -(b!.y - a!.y) / distance * lane * 160,
+                y: (b!.x - a!.x) / distance * lane * 160
+            } : {x: 0, y: 0};
+            const source = center(edge.source);
+            const target = center(edge.target);
+            const dx = target && source ? target.x - source.x : 0;
+            const dy = target && source ? target.y - source.y : 0;
+            const vertical = Math.abs(dy) > Math.abs(dx);
+            return {
+                ...edge,
+                sourceHandle: edge.sourceHandle ?? (vertical ? (dy > 0 ? 'bottom' : 'top') : (dx < 0 ? 'left' : 'right')),
+                targetHandle: edge.targetHandle ?? (vertical ? (dy > 0 ? 'top' : 'bottom') : (dx < 0 ? 'right' : 'left')),
+                data: {...edge.data, offset: edge.data?.offset ?? offset} as Record<string, unknown>
+            };
+        });
+    }, [edges, nodes]);
     useEffect(() => {
         if (!selectedComment?.anchored || typeof selectedComment.anchor.x !== 'number' || typeof selectedComment.anchor.y !== 'number') return;
         void setCenter(selectedComment.anchor.x, selectedComment.anchor.y, {
@@ -142,6 +197,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
     }, [focusEdgeRequest, setCenter]);
 
     const connectingNodeId = useRef<string | null>(null);
+    const reconnectingEdge = useRef(false);
 
     const [menu, setMenu] = useState<{
         isOpen: boolean;
@@ -213,13 +269,22 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
     }, []);
 
     const onConnectEnd: OnConnectEnd = useCallback((event) => {
+        if (reconnectingEdge.current) {
+            reconnectingEdge.current = false;
+            connectingNodeId.current = null;
+            return;
+        }
+        const target = event.target as Element;
+        if (!target.classList.contains('react-flow__pane')) {
+            connectingNodeId.current = null;
+            return;
+        }
         if (onCreateRelation && connectingNodeId.current) {
             onCreateRelation(connectingNodeId.current);
             connectingNodeId.current = null;
             return;
         }
-        const target = event.target as Element;
-        if (target.classList.contains('react-flow__pane') && connectingNodeId.current) {
+        if (connectingNodeId.current) {
             const {clientX, clientY} = 'touches' in event ? event.touches[0] : event;
             setMenu({
                 isOpen: true,
@@ -305,13 +370,54 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
         }}>
             <ReactFlow
                 nodes={nodes}
-                edges={edges}
+                edges={visibleEdges}
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
+                connectionMode={ConnectionMode.Loose}
+                reconnectRadius={18}
+                edgesReconnectable
+                isValidConnection={connection => {
+                    const current = useCanvasStore.getState().nodes;
+                    return connection.source !== connection.target &&
+                        current.some(node => node.id === connection.source && node.type === 'resource') &&
+                        current.some(node => node.id === connection.target && node.type === 'resource');
+                }}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
+                onEdgesDelete={deleted => {
+                    if (deleted.some(edge => typeof edge.data?.relationId === 'string')) {
+                        toast.info('Línea quitada. Si era la última, la Relación se eliminará al guardar.');
+                    }
+                }}
+                onReconnectStart={() => {
+                    reconnectingEdge.current = true;
+                }}
+                onReconnectEnd={() => {
+                    reconnectingEdge.current = false;
+                    connectingNodeId.current = null;
+                }}
+                onReconnect={(edge, connection) => {
+                    connectingNodeId.current = null;
+                    const current = useCanvasStore.getState().nodes;
+                    const resourceId = (nodeId: string) => current.find(node => node.id === nodeId)?.data?.resourceId;
+                    if (typeof edge.data?.relationId === 'string' &&
+                        (resourceId(edge.source) !== resourceId(connection.source) ||
+                            resourceId(edge.target) !== resourceId(connection.target))) {
+                        const offset = edge.data?.offset;
+                        onCreateRelation?.(connection.source, connection.target, edge.id, {
+                            sourceHandle: connection.sourceHandle,
+                            targetHandle: connection.targetHandle,
+                            ...(offset && typeof offset === 'object' && 'x' in offset && 'y' in offset &&
+                            typeof offset.x === 'number' && typeof offset.y === 'number'
+                                ? {offset: {x: offset.x, y: offset.y}} : {})
+                        });
+                    } else reconnectEdge(edge.id, connection);
+                }}
                 onConnect={connection => {
-                    if (onCreateRelation) onCreateRelation(connection.source, connection.target); else onConnect(connection);
+                    if (onCreateRelation) onCreateRelation(connection.source, connection.target, undefined, {
+                        sourceHandle: connection.sourceHandle,
+                        targetHandle: connection.targetHandle
+                    }); else onConnect(connection);
                     connectingNodeId.current = null;
                 }}
                 onConnectStart={onConnectStart}
@@ -428,7 +534,7 @@ export function CanvasEditor({
     onDropResource?: (resourceId: string, position: { x: number; y: number }) => void;
     onDropFiles?: (files: File[], position: { x: number; y: number }) => void;
     onPickFiles?: (position?: { x: number; y: number }) => void;
-    onCreateRelation?: (source?: string, target?: string) => void;
+    onCreateRelation?: (source?: string, target?: string, replaceEdgeId?: string, geometry?: RelationEdgeGeometry) => void;
     commentNotifications?: CommentNotification[];
     selectedCommentId?: string | null;
     onCommentOpen?: (item: CommentNotification) => void;

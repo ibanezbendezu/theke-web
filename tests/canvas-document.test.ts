@@ -35,4 +35,19 @@ describe('migración de documentos del canvas', () => {
     expect(migrated.nodes[0]).toMatchObject({ width: 288, height: 112 });
     expect(node).not.toHaveProperty('width');
   });
+  it('conserva la relación al cambiar el punto visual de conexión y permite deshacer', () => {
+    const edge = {id: 'edge-1', source: 'a', target: 'b', type: 'editable', data: {relationId: 'relation-1'}};
+    useCanvasStore.getState().loadDocument([
+      {id: 'a', type: 'resource', position: {x: 0, y: 0}, data: {resourceId: 'resource-a'}},
+      {id: 'b', type: 'resource', position: {x: 300, y: 0}, data: {resourceId: 'resource-b'}}
+    ], [edge]);
+    useCanvasStore.getState().reconnectEdge('edge-1', {
+      source: 'a', target: 'b', sourceHandle: 'bottom', targetHandle: 'top'
+    });
+    expect(useCanvasStore.getState().edges[0]).toMatchObject({
+      sourceHandle: 'bottom', targetHandle: 'top', data: {relationId: 'relation-1'}
+    });
+    useCanvasStore.getState().undo();
+    expect(useCanvasStore.getState().edges[0]).toEqual(edge);
+  });
 });

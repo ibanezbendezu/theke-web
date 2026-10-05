@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import type {PublicLayoutNode, PublicShare, SharePreviewRelation, SharePreviewResource} from '../api/generated/models';
 import {Button} from '../components/ui/Button';
+import {ResourceConnectionHandles} from '../components/ui/ResourceConnectionHandles';
 import type {CommentTarget, PublicComment} from './publicCommentTypes';
 import {publicRelationLabel} from './publicRelationLabel';
 
@@ -76,8 +77,8 @@ function CanvasButtons() {
 }
 
 function NodeHandles({group = false}: { group?: boolean }) {
-    return <><Handle type="target" position={Position.Left} className="!border-0 !bg-primary !opacity-0"/><Handle
-        type="source" position={Position.Right} className="!border-0 !bg-primary !opacity-0"/>
+    return <><Handle id="left" type="target" position={Position.Left} className="!border-0 !bg-primary !opacity-0"/><Handle
+        id="right" type="source" position={Position.Right} className="!border-0 !bg-primary !opacity-0"/>
         {group && <><Handle id="top" type="target" position={Position.Top}
                             className="!border-0 !bg-primary !opacity-0"/><Handle id="bottom" type="source"
                                                                                   position={Position.Bottom}
@@ -108,7 +109,7 @@ function PublicCanvasNode({data, selected}: NodeProps<Node<PublicNodeData, 'publ
                         onClick={() => item.resourceId && onSelect({kind: 'resource', id: item.resourceId})}
                         aria-label={`Abrir detalle de ${resource?.title ?? 'recurso'}`}>Abrir
                 </button>
-                <NodeHandles/>
+                <ResourceConnectionHandles/>
             </article>
         </div>;
     }
@@ -309,8 +310,8 @@ function PublicCanvas({
             type: 'public',
             source: item.source,
             target: item.target,
-            sourceHandle: item.sourceHandle,
-            targetHandle: item.targetHandle,
+            sourceHandle: item.sourceHandle ?? 'right',
+            targetHandle: item.targetHandle ?? 'left',
             data: {
                 label: relation ? publicRelationLabel(relation) : item.label || '',
                 direction: relation?.direction,
