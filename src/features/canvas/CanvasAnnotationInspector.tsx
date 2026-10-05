@@ -1,4 +1,5 @@
 import {Button} from '../../components/ui/Button';
+import {Select} from '../../components/ui/Select';
 import {useCanvasStore} from '../../store/useCanvasStore';
 import type {AnnotationData} from './nodes/AnnotationNode';
 
@@ -24,13 +25,12 @@ export function CanvasAnnotationInspector({nodeId}: { nodeId: string }) {
     return <div className="space-y-4 text-sm"><h2 className="font-semibold">Anotación visual</h2><p
         className="text-xs text-outline">Solo existe en este diagrama; no es un Recurso ni una Relación.</p>
         {data.kind === 'text' && <p className="text-xs text-outline">Edita el texto con doble clic y usa la barra contextual para darle formato.</p>}
-        {data.kind === 'shape' && <label className="block">Forma<select
-            className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
+        {data.kind === 'shape' && <label className="block">Forma<Select label="Forma" className="mt-1"
             value={data.shape ?? 'rectangle'}
-            onChange={event => set({shape: event.target.value as AnnotationData['shape']})}>
+            onValueChange={value => set({shape: value as AnnotationData['shape']})}>
             <option value="rectangle">Rectángulo</option>
             <option value="ellipse">Elipse</option>
-        </select></label>}
+        </Select></label>}
         {data.kind !== 'text' && <>
             <div className="flex gap-2"><label className="min-w-0 flex-1">Ancho<input type="number" min={40} max={2000}
                                                                                       className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
@@ -45,12 +45,11 @@ export function CanvasAnnotationInspector({nodeId}: { nodeId: string }) {
                                                   className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
                                                   value={data.thickness ?? 2}
                                                   onChange={event => set({thickness: numeric(event.target.value, 1, 16)})}/></label><label
-            className="block">Estilo<select
-            className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
-            value={data.dash ?? 'solid'} onChange={event => set({dash: event.target.value as AnnotationData['dash']})}>
+            className="block">Estilo<Select label="Estilo" className="mt-1"
+            value={data.dash ?? 'solid'} onValueChange={value => set({dash: value as AnnotationData['dash']})}>
             <option value="solid">Continuo</option>
             <option value="dashed">Discontinuo</option>
-        </select></label></>}
+        </Select></label></>}
         {data.kind === 'line' && <fieldset className="grid grid-cols-2 gap-2">
             <legend className="font-medium">Extremos de línea (%)</legend>
             {(['x1', 'y1', 'x2', 'y2'] as const).map(axis => <label key={axis}>{axis.toUpperCase()}<input type="number"
@@ -65,14 +64,13 @@ export function CanvasAnnotationInspector({nodeId}: { nodeId: string }) {
                                                                                                           }[axis])}
                                                                                                           onChange={event => set({[axis]: numeric(event.target.value, 0, 100)})}/></label>)}
         </fieldset>}
-        {data.kind !== 'text' && <label className="block">Color<select
-            className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
+        {data.kind !== 'text' && <label className="block">Color<Select label="Color" className="mt-1"
             value={data.color ?? 'default'}
-            onChange={event => set({color: event.target.value as AnnotationData['color']})}>
+            onValueChange={value => set({color: value as AnnotationData['color']})}>
             <option value="default">Texto del tema</option>
             <option value="primary">Primario</option>
             <option value="muted">Tenue</option>
-        </select></label>}
+        </Select></label>}
         <label className="flex items-center gap-2"><input type="checkbox" checked={Boolean(node.hidden)}
                                                           onChange={event => updateNodePresentation(nodeId, {hidden: event.target.checked})}/>Ocultar
             en el Canvas</label>

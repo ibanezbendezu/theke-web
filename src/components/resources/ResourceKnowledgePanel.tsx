@@ -1,6 +1,7 @@
 import {useState, type FormEvent} from 'react';
 import {Link} from 'react-router-dom';
 import {Button} from '../ui/Button';
+import {Select} from '../ui/Select';
 import {useToast} from '../ui/useToast';
 import {
     type PropertyInput,
@@ -143,16 +144,15 @@ export function ResourceKnowledgePanel({resource, compact = false}: { resource: 
                            className="rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
                            placeholder="nombre_propiedad" value={item.key}
                            onChange={event => change(index, {...item, key: event.target.value})}
-                           list="known-property-keys"/><select aria-label={`Tipo de propiedad ${index + 1}`}
-                                                               className="rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
-                                                               value={item.type} onChange={event => {
-                    const type = event.target.value as PropertyType;
+                           list="known-property-keys"/><Select label={`Tipo de propiedad ${index + 1}`}
+                                                               value={item.type} onValueChange={value => {
+                    const type = value as PropertyType;
                     change(index, {
                         ...item,
                         type,
                         value: type === 'checkbox' ? false : type === 'number' ? 0 : type === 'list' ? [] : ''
                     });
-                }}>{types.map(type => <option key={type.value} value={type.value}>{type.label}</option>)}</select>
+                }}>{types.map(type => <option key={type.value} value={type.value}>{type.label}</option>)}</Select>
                     <div className="flex gap-2">{item.type === 'checkbox' ?
                         <label className="flex flex-1 items-center gap-2"><input type="checkbox"
                                                                                  checked={Boolean(item.value)}

@@ -1,6 +1,7 @@
 import {useState, type FormEvent} from 'react';
 import type {Node} from '@xyflow/react';
 import {Button} from '../../components/ui/Button';
+import {Select} from '../../components/ui/Select';
 import {useOrganization} from '../../data/useOrganization';
 import {useRelationTypes, type AvailableRelation, type CreateRelationInput} from '../../data/useRelations';
 import {CanvasDialog} from './CanvasDialog';
@@ -73,40 +74,40 @@ export function RelationCreateDialog({projectId, nodes, availableRelations, init
         <p className="mt-1 text-sm text-outline">Esta Relación pertenece a este mapa. Otros mapas pueden interpretar los mismos Recursos de otra forma.</p>
         {initial.replaceEdgeId && <p className="mt-2 text-sm text-outline">Al conectar otro Recurso se creará una Relación nueva. Si la anterior queda sin líneas, se eliminará al guardar.</p>}
         <form className="mt-4 space-y-3" onSubmit={event => void submit(event)}>
-            <label className="block text-sm">Origen<select
-                className="mt-1 w-full rounded border border-border bg-background p-2" value={sourceNodeId}
-                onChange={event => {
-                    setSourceNodeId(event.target.value);
+            <label className="block text-sm">Origen<Select label="Origen"
+                className="mt-1" value={sourceNodeId}
+                onValueChange={value => {
+                    setSourceNodeId(value);
                     reset();
                 }}>
                 <option value="">Selecciona un Recurso</option>
-                {resources.map(node => <option key={node.id} value={node.id}>{label(node)}</option>)}</select></label>
-            <label className="block text-sm">Destino<select
-                className="mt-1 w-full rounded border border-border bg-background p-2" value={targetNodeId}
-                onChange={event => {
-                    setTargetNodeId(event.target.value);
+                {resources.map(node => <option key={node.id} value={node.id}>{label(node)}</option>)}</Select></label>
+            <label className="block text-sm">Destino<Select label="Destino"
+                className="mt-1" value={targetNodeId}
+                onValueChange={value => {
+                    setTargetNodeId(value);
                     reset();
                 }}>
                 <option value="">Selecciona un Recurso</option>
-                {resources.map(node => <option key={node.id} value={node.id}>{label(node)}</option>)}</select></label>
-            <label className="block text-sm">Dirección<select
-                className="mt-1 w-full rounded border border-border bg-background p-2" value={direction}
-                onChange={event => {
-                    setDirection(event.target.value as 'directed' | 'undirected');
+                {resources.map(node => <option key={node.id} value={node.id}>{label(node)}</option>)}</Select></label>
+            <label className="block text-sm">Dirección<Select label="Dirección"
+                className="mt-1" value={direction}
+                onValueChange={value => {
+                    setDirection(value as 'directed' | 'undirected');
                     reset();
                 }}>
                 <option value="directed">Dirigida: origen → destino</option>
                 <option value="undirected">No dirigida: ambos sentidos</option>
-            </select></label>
-            <label className="block text-sm">Tipo<select
-                className="mt-1 w-full rounded border border-border bg-background p-2" value={typeKey}
-                onChange={event => {
-                    setTypeKey(event.target.value);
+            </Select></label>
+            <label className="block text-sm">Tipo<Select label="Tipo"
+                className="mt-1" value={typeKey}
+                onValueChange={value => {
+                    setTypeKey(value);
                     reset();
                 }}>{(types.data ?? [{key: 'related_to', label: 'Se relaciona con'}]).map(item => <option key={item.key}
                                                                                                          value={item.key}>{item.label}</option>)}
                 <option value="custom">Crear tipo personalizado…</option>
-            </select></label>
+            </Select></label>
             {typeKey === 'custom' && <label className="block text-sm">Nombre del tipo<input
                 className="mt-1 w-full rounded border border-border bg-background p-2" maxLength={60}
                 value={customTypeName} onChange={event => {

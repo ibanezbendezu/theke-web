@@ -1,6 +1,7 @@
 import type {ReactNode} from 'react';
 import {AlignCenter, AlignJustify, AlignLeft, AlignRight, List, ListOrdered} from 'lucide-react';
 import type {Node} from '@xyflow/react';
+import {Select} from '../../components/ui/Select';
 import {useCanvasStore} from '../../store/useCanvasStore';
 import type {AnnotationData} from './nodes/AnnotationNode';
 
@@ -79,10 +80,10 @@ export function CanvasVisualTextInspector({nodeId, section}: {nodeId: string; se
             <label className="block text-xs text-outline">Opacidad · {data.opacity ?? 100}%<input type="range" min={0} max={100}
                 value={data.opacity ?? 100} onPointerDown={beginGesture} onPointerUp={endGesture} onPointerCancel={endGesture}
                 onChange={event => set({opacity: Number(event.target.value)})} className="mt-1 w-full accent-primary"/></label>
-            <label className="block text-xs text-outline">Sombra<select value={data.shadow ?? 'none'}
-                onChange={event => set({shadow: event.target.value as AnnotationData['shadow']})} className={`mt-1 ${surface}`}>
+            <label className="block text-xs text-outline">Sombra<Select label="Sombra" value={data.shadow ?? 'none'}
+                onValueChange={value => set({shadow: value as AnnotationData['shadow']})} className="mt-1">
                 <option value="none">Sin sombra</option><option value="soft">Suave</option><option value="strong">Marcada</option>
-            </select></label>
+            </Select></label>
             <div className="flex items-end gap-2"><NumberField label="Contorno (px)" value={data.outlineWidth ?? 0} min={0} max={12}
                 onCommit={outlineWidth => set({outlineWidth})}/><label className="text-xs text-outline">Color<input type="color"
                 aria-label="Color del contorno" value={data.outlineColor ?? '#787774'} onChange={event => set({outlineColor: event.target.value})}

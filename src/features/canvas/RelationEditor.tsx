@@ -3,6 +3,7 @@ import {useQueryClient} from '@tanstack/react-query';
 import {ApiError} from '../../api/httpClient';
 import {AIGuidanceCard} from '../../components/ai/AIGuidanceCard';
 import {Button} from '../../components/ui/Button';
+import {Select} from '../../components/ui/Select';
 import {useRelationSuggestion, type RelationSuggestion} from '../../data/useAi';
 import {useResources} from '../../data/useResources';
 import {useRelation, useUpdateRelation, type RelationDetail, type UpdateRelationInput} from '../../data/useRelations';
@@ -222,16 +223,16 @@ function RelationEditorForm({detail, reload, onClose}: {
                 placeholder="Cómo se llegó a esta interpretación"/></label>
         </section>
         <section aria-label="Evidencia" className="space-y-3 border-t border-border pt-3">
-            <label className="block">Estado de evidencia<select
-                className="mt-1 w-full rounded border border-border bg-background p-2" value={draft.evidenceStatus}
-                onChange={event => setDraft(value => ({
+            <label className="block">Estado de evidencia<Select label="Estado de evidencia"
+                className="mt-1" value={draft.evidenceStatus}
+                onValueChange={selected => setDraft(value => ({
                     ...value,
-                    evidenceStatus: event.target.value as Draft['evidenceStatus']
+                    evidenceStatus: selected as Draft['evidenceStatus']
                 }))}>
                 <option value="none">Sin evidencia citada</option>
                 <option value="needs_evidence">Falta evidencia o debe completarse</option>
                 <option value="confirmed">Evidencia citada</option>
-            </select></label>
+            </Select></label>
             {draft.evidenceStatus === 'needs_evidence' &&
                 <p className="rounded border border-amber-500 p-2 text-amber-700" role="status">Esta Relación necesita
                     respaldo adicional.</p>}

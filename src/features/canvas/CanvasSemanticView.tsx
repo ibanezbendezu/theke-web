@@ -1,4 +1,5 @@
 import {useEffect, useMemo, useRef, useState} from 'react';
+import {Select} from '../../components/ui/Select';
 import {useOrganization} from '../../data/useOrganization';
 import {useCanvasStore} from '../../store/useCanvasStore';
 import {useRelation} from '../../data/useRelations';
@@ -152,12 +153,11 @@ export function CanvasSemanticView({projectId}: { projectId: string }) {
                     <button key={label} type="button" className="rounded-md bg-surface-variant/60 p-2"
                             onClick={() => move(axis, amount)}>Mover {label.toLowerCase()}</button>)}</div>
                 {selected.type !== 'container' &&
-                    <label className="block">Grupo<select aria-label="Grupo visual del elemento"
-                                                          className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
+                    <label className="block">Grupo<Select label="Grupo visual del elemento" className="mt-1"
                                                           value={selected.parentId ?? ''}
-                                                          onChange={event => useCanvasStore.getState().moveNodeToGroup(selected.id, event.target.value || undefined)}>
+                                                          onValueChange={value => useCanvasStore.getState().moveNodeToGroup(selected.id, value || undefined)}>
                         <option value="">Sin grupo</option>
-                        {groups.map(group => <option key={group.id} value={group.id}>{title(group)}</option>)}</select></label>}
+                        {groups.map(group => <option key={group.id} value={group.id}>{title(group)}</option>)}</Select></label>}
                 <button type="button" className="w-full rounded-md bg-surface-variant/60 p-2 text-left"
                         onClick={remove}>Quitar representación del diagrama
                 </button>

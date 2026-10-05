@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState, type ReactNode} from 'react';
 import {AlignLeft, Bold, Copy, Eye, EyeOff, Italic, Layers, MoreHorizontal, Palette, SlidersHorizontal, Strikethrough, Trash2, Underline} from 'lucide-react';
 import {useCanvasStore} from '../../store/useCanvasStore';
+import {Select} from '../../components/ui/Select';
 import {visualFonts, visualTextPalette} from './visualTextStyle';
 import type {AnnotationData} from './nodes/AnnotationNode';
 import type {VisualTextPanel} from './CanvasVisualTextInspector';
@@ -42,11 +43,11 @@ export function CanvasVisualTextToolbar({nodeId, activePanel, onPanelToggle}: {
         <Tool label={label} active={activePanel === panel} onClick={() => {setPopover(null); onPanelToggle(panel);}}>{icon}</Tool>;
     return <div ref={toolbarRef} role="toolbar" aria-label="Formato del texto visual"
         className="relative flex max-w-full items-center gap-0.5 rounded-lg bg-surface/60 p-1 backdrop-blur-xl">
-        <select aria-label="Fuente del texto visual" title="Fuente" value={data.fontFamily ?? 'system'}
-            onChange={event => set({fontFamily: event.target.value as AnnotationData['fontFamily']})}
-            className={`${control} w-27 shrink-0 px-2`}>
+        <Select label="Fuente del texto visual" title="Fuente" value={data.fontFamily ?? 'system'}
+            onValueChange={value => set({fontFamily: value as AnnotationData['fontFamily']})}
+            className="theke-select--toolbar shrink-0 text-sm">
             {Object.entries(visualFonts).map(([key, font]) => <option key={key} value={key}>{font.label}</option>)}
-        </select>
+        </Select>
         <input key={`${nodeId}-${data.fontSize ?? 16}`} type="number" inputMode="numeric" min={8} max={144}
             defaultValue={data.fontSize ?? 16} aria-label="Tamaño de letra" title="Tamaño de letra"
             onBlur={event => {
