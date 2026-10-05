@@ -5,11 +5,12 @@ export function mergeCreatedRelation(current: DiagramDocument, result: CreatedRe
                                      geometry?: {sourceHandle?: string | null; targetHandle?: string | null; offset?: {x: number; y: number}}): DiagramDocument {
     const createdEdge = result.document.edges.find(edge => edge.id === result.edgeId);
     if (!createdEdge) throw new Error('La respuesta no incluyó la línea de la Relación. Recarga el diagrama.');
+    const offset = geometry?.offset ?? (result.reused ? createdEdge.data?.offset : {x: 0, y: 0});
     const visualEdge = {
         ...createdEdge,
         ...(geometry?.sourceHandle ? {sourceHandle: geometry.sourceHandle} : {}),
         ...(geometry?.targetHandle ? {targetHandle: geometry.targetHandle} : {}),
-        data: {...createdEdge.data, ...(geometry?.offset ? {offset: geometry.offset} : {})}
+        data: {...createdEdge.data, ...(offset ? {offset} : {})}
     };
 
     const sameRelation = (edge: DiagramDocument['edges'][number]) =>

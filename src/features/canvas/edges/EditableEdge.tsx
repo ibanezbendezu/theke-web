@@ -19,6 +19,8 @@ export function EditableEdge({
                              }: EdgeProps) {
     const [hovered, setHovered] = useState(false);
     const updateEdgeData = useCanvasStore(state => state.updateEdgeData);
+    const beginGesture = useCanvasStore(state => state.beginGesture);
+    const endGesture = useCanvasStore(state => state.endGesture);
     const requestEditRelation = useCanvasStore(state => state.requestEditRelation);
     const relationId = typeof data?.relationId === 'string' ? data.relationId : undefined;
     const relation = useRelation(relationId);
@@ -51,6 +53,7 @@ export function EditableEdge({
 
     const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
         e.stopPropagation();
+        beginGesture();
         const target = e.target as HTMLElement;
         target.setPointerCapture(e.pointerId);
 
@@ -68,10 +71,13 @@ export function EditableEdge({
             target.releasePointerCapture(upEvent.pointerId);
             target.removeEventListener('pointermove', onPointerMove);
             target.removeEventListener('pointerup', onPointerUp);
+            target.removeEventListener('pointercancel', onPointerUp);
+            endGesture();
         };
 
         target.addEventListener('pointermove', onPointerMove);
         target.addEventListener('pointerup', onPointerUp);
+        target.addEventListener('pointercancel', onPointerUp);
     };
 
     return (

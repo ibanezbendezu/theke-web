@@ -88,6 +88,7 @@ interface CanvasState {
     setViewport: (viewport: { x: number; y: number; zoom: number }) => void;
     updateEdgeData: (edgeId: string, newData: Record<string, unknown>) => void;
     addRelationEdge: (edge: Edge) => void;
+    replaceRelationEdges: (edges: Edge[]) => void;
     setEdgeHidden: (edgeId: string, hidden: boolean) => void;
     removeEdge: (edgeId: string) => void;
     // Función para manejar el agrupamiento
@@ -432,6 +433,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         ...history(state),
         edges: [...state.edges, edge]
     }),
+    replaceRelationEdges: edges => set(state => ({...history(state), edges})),
     setEdgeHidden: (edgeId, hidden) => set(state => ({
         ...history(state),
         edges: state.edges.map(edge => edge.id === edgeId ? {...edge, hidden, selected: false} : edge)

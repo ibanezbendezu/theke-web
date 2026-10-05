@@ -12,6 +12,13 @@ const document = (edges: DiagramDocument['edges']): DiagramDocument => ({
 });
 
 describe('mergeCreatedRelation', () => {
+    it('starts a new relation straight when it has no curve gesture', () => {
+        const created = {id: 'new-edge', source: 'a', target: 'b', data: {relationId: 'new-relation', offset: {x: 0, y: 80}}};
+        const result: CreatedRelation = {relationId: 'new-relation', edgeId: created.id, revision: 2,
+            document: document([created]), reused: false};
+        expect(mergeCreatedRelation(document([]), result).edges[0].data?.offset).toEqual({x: 0, y: 0});
+    });
+
     it('adds only the requested line when the server response still contains older lines', () => {
         const previous = Array.from({length: 4}, (_, index) => ({
             id: `old-${index}`, source: 'a', target: 'b', data: {relationId: `old-relation-${index}`}

@@ -305,9 +305,8 @@ export function DiagramWorkspace({
         } : current);
         void client.invalidateQueries({queryKey: ['private', 'relation-types', userId, diagram.projectId]});
         void client.invalidateQueries({queryKey: ['private', 'available-relations', userId, diagram.id]});
-        setDocument(nextDocument);
+        useCanvasStore.getState().replaceRelationEdges(nextDocument.edges);
         closeRelation();
-        setStatus('saved');
     };
     const suggestions = (available.data ?? []).filter(item => !canvasEdges.some(edge => edge.data?.relationId === item.relationId) && canvasNodes.some(node => node.id === item.sourceNodeId && node.data?.resourceId === item.sourceResourceId) && canvasNodes.some(node => node.id === item.targetNodeId && node.data?.resourceId === item.targetResourceId));
     const showRelation = (item: AvailableRelation) => {

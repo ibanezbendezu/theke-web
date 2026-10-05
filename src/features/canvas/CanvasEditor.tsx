@@ -40,6 +40,7 @@ import {FolderNode} from './nodes/FolderNode';
 import {AnnotationNode} from './nodes/AnnotationNode';
 import type {DiagramDocument} from '../../data/useDiagrams';
 import {useToast} from '../../components/ui/useToast';
+import {RelationConnectionLine} from './RelationConnectionLine';
 
 const nodeTypes: NodeTypes = {
     media: MediaNode,
@@ -373,6 +374,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                 edges={visibleEdges}
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
+                connectionLineComponent={RelationConnectionLine}
                 connectionMode={ConnectionMode.Loose}
                 reconnectRadius={18}
                 edgesReconnectable
@@ -414,10 +416,13 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                     } else reconnectEdge(edge.id, connection);
                 }}
                 onConnect={connection => {
-                    if (onCreateRelation) onCreateRelation(connection.source, connection.target, undefined, {
-                        sourceHandle: connection.sourceHandle,
-                        targetHandle: connection.targetHandle
-                    }); else onConnect(connection);
+                    if (onCreateRelation) {
+                        onCreateRelation(connection.source, connection.target, undefined, {
+                            sourceHandle: connection.sourceHandle,
+                            targetHandle: connection.targetHandle,
+                            offset: {x: 0, y: 0}
+                        });
+                    } else onConnect(connection);
                     connectingNodeId.current = null;
                 }}
                 onConnectStart={onConnectStart}

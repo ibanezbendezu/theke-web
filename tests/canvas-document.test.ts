@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { migrateCanvasDocument } from '../src/data/canvasDocument';
 import { useCanvasStore } from '../src/store/useCanvasStore';
+import {mergeCreatedRelation} from '../src/features/canvas/mergeCreatedRelation';
+import type {DiagramDocument} from '../src/data/useDiagrams';
+import type {CreatedRelation} from '../src/data/useRelations';
 
 describe('migración de documentos del canvas', () => {
   it('convierte el esquema anterior de forma determinista', () => {
@@ -49,5 +52,23 @@ describe('migración de documentos del canvas', () => {
     });
     useCanvasStore.getState().undo();
     expect(useCanvasStore.getState().edges[0]).toEqual(edge);
+  });
+  it('mantiene la geometría elegida y permite deshacer y rehacer una relación nueva', () => {
+    const nodes = [
+      {id: 'smoke-a', type: 'resource', position: {x: 400, y: 300}, width: 288, height: 112, data: {resourceId: 'a'}},
+      {id: 'smoke-b', type: 'resource', position: {x: 80, y: 40}, width: 288, height: 112, data: {resourceId: 'b'}}
+    ];
+    const offset = {x: 0, y: 0};
+    const base: DiagramDocument = {schemaVersion: 1, nodes, edges: [], viewport: {x: 0, y: 0, zoom: 1}, background: {variant: 'plain', tone: 'default'}};
+    const edge = {id: 'new-edge', source: 'smoke-a', target: 'smoke-b', type: 'editable', data: {relationId: 'relation', offset: {x: 0, y: 64}}};
+    const result: CreatedRelation = {relationId: 'relation', edgeId: edge.id, revision: 2, document: {...base, edges: [edge]}, reused: false};
+    useCanvasStore.getState().loadDocument(nodes, []);
+    const merged = mergeCreatedRelation(base, result, undefined, {sourceHandle: 'top', targetHandle: 'bottom', offset});
+    useCanvasStore.getState().replaceRelationEdges(merged.edges);
+    expect(useCanvasStore.getState().edges[0]).toMatchObject({sourceHandle: 'top', targetHandle: 'bottom', data: {offset}});
+    useCanvasStore.getState().undo();
+    expect(useCanvasStore.getState().edges).toEqual([]);
+    useCanvasStore.getState().redo();
+    expect(useCanvasStore.getState().edges[0]).toMatchObject({sourceHandle: 'top', targetHandle: 'bottom', data: {offset}});
   });
 });
