@@ -1,6 +1,7 @@
 import {Button} from '../../components/ui/Button';
 import {useCanvasStore} from '../../store/useCanvasStore';
 import type {AnnotationData} from './nodes/AnnotationNode';
+import {CanvasVisualTextInspector} from './CanvasVisualTextInspector';
 
 const numeric = (value: string, min: number, max: number) => {
     const parsed = Number(value);
@@ -23,21 +24,7 @@ export function CanvasAnnotationInspector({nodeId}: { nodeId: string }) {
     const set = (value: Partial<AnnotationData>) => updateNodeData(nodeId, value);
     return <div className="space-y-4 text-sm"><h2 className="font-semibold">Anotación visual</h2><p
         className="text-xs text-outline">Solo existe en este diagrama; no es un Recurso ni una Relación.</p>
-        {data.kind === 'text' && <><label className="block">Texto<textarea
-            className="mt-1 min-h-28 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
-            value={data.text ?? ''} onChange={event => set({text: event.target.value})}/></label><label
-            className="block">Tamaño de letra<input type="number" min={12} max={48}
-                                                    className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
-                                                    value={data.fontSize ?? 16}
-                                                    onChange={event => set({fontSize: numeric(event.target.value, 12, 48)})}/></label><label
-            className="block">Alineación<select
-            className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
-            value={data.align ?? 'left'}
-            onChange={event => set({align: event.target.value as AnnotationData['align']})}>
-            <option value="left">Izquierda</option>
-            <option value="center">Centro</option>
-            <option value="right">Derecha</option>
-        </select></label></>}
+        {data.kind === 'text' && <CanvasVisualTextInspector nodeId={nodeId}/>}
         {data.kind === 'shape' && <label className="block">Forma<select
             className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
             value={data.shape ?? 'rectangle'}
@@ -79,14 +66,14 @@ export function CanvasAnnotationInspector({nodeId}: { nodeId: string }) {
                                                                                                           }[axis])}
                                                                                                           onChange={event => set({[axis]: numeric(event.target.value, 0, 100)})}/></label>)}
         </fieldset>}
-        <label className="block">Color<select
+        {data.kind !== 'text' && <label className="block">Color<select
             className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
             value={data.color ?? 'default'}
             onChange={event => set({color: event.target.value as AnnotationData['color']})}>
             <option value="default">Texto del tema</option>
             <option value="primary">Primario</option>
             <option value="muted">Tenue</option>
-        </select></label>
+        </select></label>}
         <label className="flex items-center gap-2"><input type="checkbox" checked={Boolean(node.hidden)}
                                                           onChange={event => updateNodePresentation(nodeId, {hidden: event.target.checked})}/>Ocultar
             en el Canvas</label>

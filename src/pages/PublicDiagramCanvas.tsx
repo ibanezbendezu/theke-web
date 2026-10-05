@@ -34,6 +34,9 @@ import {
 import type {PublicLayoutNode, PublicShare, SharePreviewRelation, SharePreviewResource} from '../api/generated/models';
 import {Button} from '../components/ui/Button';
 import {ResourceConnectionHandles} from '../components/ui/ResourceConnectionHandles';
+import {VisualTextContent} from '../features/canvas/VisualTextContent';
+import {visualTextStyle} from '../features/canvas/visualTextStyle';
+import type {AnnotationData} from '../features/canvas/nodes/AnnotationNode';
 import type {CommentTarget, PublicComment} from './publicCommentTypes';
 import {publicRelationLabel} from './publicRelationLabel';
 
@@ -150,12 +153,10 @@ function PublicCanvasNode({data, selected}: NodeProps<Node<PublicNodeData, 'publ
                           y2={`${item.y2 ?? 50}%`} stroke={color} strokeWidth={item.thickness ?? 3}
                           strokeDasharray={item.dash === 'dashed' ? '8 5' : undefined}/>
                 </svg> : <div
-                    className="h-full w-full overflow-hidden whitespace-pre-wrap rounded border border-border bg-background/90 p-2"
-                    style={{
-                        fontSize: item.fontSize ?? 16,
-                        textAlign: (item.align as 'left' | 'center' | 'right') ?? 'left',
-                        color
-                    }}>{item.text}</div>}<NodeHandles/>
+                    className="h-full w-full overflow-visible p-2"
+                    style={visualTextStyle(item as unknown as AnnotationData)}>
+                    <VisualTextContent text={item.text ?? ''} listStyle={item.listStyle as AnnotationData['listStyle']}/>
+                </div>}<NodeHandles/>
         </div>;
     }
     if (item.type === 'text') return <div
@@ -288,7 +289,7 @@ function PublicCanvas({
             position: {x: item.x, y: item.y},
             data: {item, resource: item.resourceId ? resources.get(item.resourceId) : undefined, onSelect},
             selected: selection?.kind === 'folder' ? item.type === 'folder' && selection.id === item.id : selection?.kind === 'resource' && selection.id === item.resourceId,
-            zIndex: item.type === 'container' ? 0 : 1,
+            zIndex: item.zIndex ?? (item.type === 'container' ? 0 : 1),
             draggable: false,
             connectable: false
         })),

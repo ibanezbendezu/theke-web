@@ -35,6 +35,8 @@ interface CanvasState {
     edges: Edge[];
     viewport: { x: number; y: number; zoom: number };
     background: CanvasBackground;
+    canvasSize: {width: number; height: number};
+    setCanvasSize: (width: number, height: number) => void;
     setBackground: (background: CanvasBackground) => void;
     past: CanvasSnapshot[];
     future: CanvasSnapshot[];
@@ -72,6 +74,10 @@ interface CanvasState {
     setInspectorOpen: (open: boolean) => void;
     openCanvasNode: (id: string) => void;
     updateNodeData: (nodeId: string, data: Record<string, unknown>) => void;
+    fitTextNodeHeight: (nodeId: string, height: number) => void;
+    setNodeAbsolutePosition: (nodeId: string, position: {x: number; y: number}) => void;
+    alignNodeToViewport: (nodeId: string, axis: 'x' | 'y', placement: 'start' | 'center' | 'end') => void;
+    moveNodeLayer: (nodeId: string, direction: 'front' | 'back') => void;
     setLineEndpoints: (nodeId: string, start: { x: number; y: number }, end: { x: number; y: number }) => void;
     updateNodeSize: (nodeId: string, width: number, height: number) => void;
     updateNodePresentation: (nodeId: string, value: {
@@ -100,6 +106,8 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     edges: initialEdges,
     viewport: {x: 0, y: 0, zoom: 1},
     background: {variant: 'dots', tone: 'default'},
+    canvasSize: {width: 0, height: 0},
+    setCanvasSize: (width, height) => set(state => state.canvasSize.width === width && state.canvasSize.height === height ? state : {canvasSize: {width, height}}),
     setBackground: background => set(state => ({...history(state), background})),
     past: [], future: [], gestureSnapshot: null,
     beginGesture: () => set(state => state.gestureSnapshot ? state : {gestureSnapshot: snapshot(state)}),
@@ -180,7 +188,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         };
         const data = kind === 'text' ? {
             kind,
-            text: '',
+            text: 'Escribe una anotación',
             fontSize: 16,
             align: 'left',
             color: 'default'
@@ -198,7 +206,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
                 type: 'annotation',
                 position,
                 width: kind === 'line' ? 220 : 240,
-                height: kind === 'line' ? 40 : kind === 'text' ? 100 : 160,
+                height: kind === 'line' ? 40 : kind === 'text' ? 40 : 160,
                 data,
                 selected: true
             }]
@@ -369,6 +377,63 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         ...history(state),
         nodes: state.nodes.map(node => node.id === nodeId ? {...node, data: {...node.data, ...data}} : node)
     })),
+    fitTextNodeHeight: (nodeId, height) => set(state => {
+        if (!Number.isFinite(height)) return state;
+        const fittedHeight = Math.max(40, Math.min(5000, Math.ceil(height)));
+        const node = state.nodes.find(item => item.id === nodeId);
+        if (!node || node.type !== 'annotation' || node.data.kind !== 'text' || Math.abs((node.height ?? 0) - fittedHeight) < 1) return state;
+        return {nodes: state.nodes.map(item => item.id === nodeId ? {...item, height: fittedHeight} : item)};
+    }),
+    setNodeAbsolutePosition: (nodeId, position) => set(state => {
+        const node = state.nodes.find(item => item.id === nodeId);
+        if (!node || !Number.isFinite(position.x) || !Number.isFinite(position.y)) return state;
+        let parentId = node.parentId;
+        let parentX = 0;
+        let parentY = 0;
+        const visited = new Set<string>();
+        while (parentId && !visited.has(parentId)) {
+            visited.add(parentId);
+            const parent = state.nodes.find(item => item.id === parentId);
+            if (!parent) break;
+            parentX += parent.position.x;
+            parentY += parent.position.y;
+            parentId = parent.parentId;
+        }
+        return {...history(state), nodes: state.nodes.map(item => item.id === nodeId ? {
+            ...item, position: {x: position.x - parentX, y: position.y - parentY}
+        } : item)};
+    }),
+    alignNodeToViewport: (nodeId, axis, placement) => {
+        const state = get();
+        const node = state.nodes.find(item => item.id === nodeId);
+        if (!node) return;
+        const size = axis === 'x' ? state.canvasSize.width : state.canvasSize.height;
+        if (size <= 0) return;
+        let x = node.position.x;
+        let y = node.position.y;
+        let parentId = node.parentId;
+        const visited = new Set<string>();
+        while (parentId && !visited.has(parentId)) {
+            visited.add(parentId);
+            const parent = state.nodes.find(item => item.id === parentId);
+            if (!parent) break;
+            x += parent.position.x;
+            y += parent.position.y;
+            parentId = parent.parentId;
+        }
+        const nodeSize = axis === 'x' ? (node.width ?? 240) : (node.height ?? 100);
+        const offset = placement === 'start' ? 0 : placement === 'center' ? (size - nodeSize * state.viewport.zoom) / 2 : size - nodeSize * state.viewport.zoom;
+        const coordinate = (offset - (axis === 'x' ? state.viewport.x : state.viewport.y)) / state.viewport.zoom;
+        get().setNodeAbsolutePosition(nodeId, axis === 'x' ? {x: coordinate, y} : {x, y: coordinate});
+    },
+    moveNodeLayer: (nodeId, direction) => set(state => {
+        const node = state.nodes.find(item => item.id === nodeId);
+        if (!node) return state;
+        const peers = state.nodes.filter(item => item.parentId === node.parentId && item.id !== nodeId);
+        const levels = peers.map(item => item.zIndex ?? 0);
+        const zIndex = direction === 'front' ? Math.max(0, ...levels) + 1 : Math.min(0, ...levels) - 1;
+        return {...history(state), nodes: state.nodes.map(item => item.id === nodeId ? {...item, zIndex} : item)};
+    }),
     setLineEndpoints: (nodeId, start, end) => set(state => ({
         ...history(state),
         nodes: state.nodes.map(node => {

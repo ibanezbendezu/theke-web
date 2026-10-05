@@ -71,4 +71,28 @@ describe('migración de documentos del canvas', () => {
     useCanvasStore.getState().redo();
     expect(useCanvasStore.getState().edges[0]).toMatchObject({sourceHandle: 'top', targetHandle: 'bottom', data: {offset}});
   });
+  it('alinea un texto en la vista y cambia su capa sin perder el historial', () => {
+    const text = {id: 'label', type: 'annotation', position: {x: 20, y: 30}, width: 200, height: 80, data: {kind: 'text', text: 'Idea'}};
+    const sibling = {id: 'other', type: 'annotation', position: {x: 400, y: 30}, data: {kind: 'text', text: 'Otra'}};
+    useCanvasStore.getState().loadDocument([text, sibling], [], {x: 0, y: 0, zoom: 1});
+    useCanvasStore.getState().setCanvasSize(800, 600);
+    useCanvasStore.getState().alignNodeToViewport('label', 'x', 'center');
+    expect(useCanvasStore.getState().nodes[0].position.x).toBe(300);
+    useCanvasStore.getState().moveNodeLayer('label', 'front');
+    expect(useCanvasStore.getState().nodes[0].zIndex).toBeGreaterThan(useCanvasStore.getState().nodes[1].zIndex ?? 0);
+    useCanvasStore.getState().undo();
+    expect(useCanvasStore.getState().nodes[0].zIndex).toBeUndefined();
+    useCanvasStore.getState().undo();
+    expect(useCanvasStore.getState().nodes[0].position.x).toBe(20);
+  });
+  it('crea texto visible y ajusta su alto al contenido sin añadir pasos al historial', () => {
+    useCanvasStore.getState().loadDocument([], []);
+    const id = useCanvasStore.getState().addAnnotation('text', {x: 20, y: 30});
+    const created = useCanvasStore.getState().nodes.find(node => node.id === id);
+    expect(created).toMatchObject({height: 40, data: {kind: 'text', text: 'Escribe una anotación'}});
+    const historyLength = useCanvasStore.getState().past.length;
+    useCanvasStore.getState().fitTextNodeHeight(id, 92.4);
+    expect(useCanvasStore.getState().nodes.find(node => node.id === id)?.height).toBe(93);
+    expect(useCanvasStore.getState().past).toHaveLength(historyLength);
+  });
 });

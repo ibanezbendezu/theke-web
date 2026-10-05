@@ -90,12 +90,23 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
         endGesture
     } = useCanvasStore();
     const toast = useToast();
+    const canvasRef = useRef<HTMLDivElement>(null);
+    const setCanvasSize = useCanvasStore(state => state.setCanvasSize);
     const {screenToFlowPosition, getIntersectingNodes, setViewport, setCenter} = useReactFlow();
     const saveViewport = useCanvasStore(state => state.setViewport);
     const background = useCanvasStore(state => state.background);
     const focusRequest = useCanvasStore(state => state.focusRequest);
     const focusEdgeRequest = useCanvasStore(state => state.focusEdgeRequest);
     const selectedComment = commentNotifications?.find(item => item.commentId === selectedCommentId);
+    useEffect(() => {
+        if (!canvasRef.current) return;
+        const observer = new ResizeObserver(entries => {
+            const size = entries[0]?.contentRect;
+            if (size) setCanvasSize(size.width, size.height);
+        });
+        observer.observe(canvasRef.current);
+        return () => observer.disconnect();
+    }, [setCanvasSize]);
     const visibleEdges = useMemo<FlowEdge[]>(() => {
         const center = (id: string) => {
             const node = nodes.find(item => item.id === id);
@@ -356,7 +367,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
     };
 
     return (
-        <div className="w-full h-full" onDragOver={event => {
+        <div ref={canvasRef} className="w-full h-full" onDragOver={event => {
             if (event.dataTransfer.types.includes('application/x-theke-resource') || event.dataTransfer.types.includes('Files')) event.preventDefault();
         }} onDrop={event => {
             const id = event.dataTransfer.getData('application/x-theke-resource');

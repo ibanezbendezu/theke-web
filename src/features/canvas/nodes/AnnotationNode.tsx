@@ -1,13 +1,30 @@
-import {useEffect, useRef, type PointerEvent as ReactPointerEvent} from 'react';
-import {NodeResizer, useViewport, type Node, type NodeProps} from '@xyflow/react';
-import {GripHorizontal} from 'lucide-react';
+import {useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent} from 'react';
+import {NodeResizeControl, NodeResizer, useViewport, type Node, type NodeProps, type OnResize, type OnResizeStart} from '@xyflow/react';
 import {useCanvasStore} from '../../../store/useCanvasStore';
+import {VisualTextContent} from '../VisualTextContent';
+import {visualTextStyle, visualFonts} from '../visualTextStyle';
 
 export type AnnotationData = {
     kind: 'text' | 'shape' | 'line';
     text?: string;
     fontSize?: number;
-    align?: 'left' | 'center' | 'right';
+    align?: 'left' | 'center' | 'right' | 'justify';
+    fontFamily?: keyof typeof visualFonts;
+    textColor?: string;
+    bold?: boolean;
+    italic?: boolean;
+    underline?: boolean;
+    strike?: boolean;
+    textCase?: 'normal' | 'upper' | 'lower';
+    listStyle?: 'none' | 'bullet' | 'number';
+    letterSpacing?: number;
+    lineHeight?: number;
+    opacity?: number;
+    shadow?: 'none' | 'soft' | 'strong';
+    outlineWidth?: number;
+    outlineColor?: string;
+    backgroundColor?: string;
+    cornerRadius?: number;
     shape?: 'rectangle' | 'ellipse';
     color?: 'default' | 'primary' | 'muted';
     thickness?: number;
@@ -19,15 +36,62 @@ export type AnnotationData = {
 };
 export type AnnotationNodeType = Node<AnnotationData, 'annotation'>;
 const annotationColor = (value?: AnnotationData['color']) => value === 'primary' ? 'var(--color-primary)' : value === 'muted' ? 'var(--color-outline)' : 'var(--color-on-background)';
+const emptyText = 'Escribe una anotación';
 
 export function AnnotationNode({id, data, selected, width = 240, height = 100}: NodeProps<AnnotationNodeType>) {
     const updateNodeData = useCanvasStore(state => state.updateNodeData);
     const setLineEndpoints = useCanvasStore(state => state.setLineEndpoints);
     const beginGesture = useCanvasStore(state => state.beginGesture);
     const endGesture = useCanvasStore(state => state.endGesture);
+    const fitTextNodeHeight = useCanvasStore(state => state.fitTextNodeHeight);
     const {zoom} = useViewport();
     const stopDragging = useRef<(() => void) | null>(null);
+    const scaleStart = useRef<{width: number; fontSize: number} | null>(null);
+    const [editingText, setEditingText] = useState(false);
+    const editorRef = useRef<HTMLTextAreaElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
     useEffect(() => () => stopDragging.current?.(), []);
+    useEffect(() => { if (editingText && selected) editorRef.current?.focus(); }, [editingText, selected]);
+    const measureText = useCallback(() => {
+        if (scaleStart.current || !contentRef.current) return;
+        const contentHeight = contentRef.current.offsetHeight;
+        const editorHeight = editingText ? editorRef.current?.scrollHeight ?? 0 : 0;
+        fitTextNodeHeight(id, Math.max(contentHeight, editorHeight));
+    }, [editingText, fitTextNodeHeight, id]);
+    useEffect(() => {
+        if (data.kind !== 'text' || !contentRef.current) return;
+        const observer = new ResizeObserver(measureText);
+        observer.observe(contentRef.current);
+        return () => observer.disconnect();
+    }, [data.kind, measureText]);
+    useEffect(() => { if (data.kind === 'text') measureText(); });
+    const startScale = useCallback<OnResizeStart>((_, params) => {
+        const node = useCanvasStore.getState().nodes.find(item => item.id === id);
+        scaleStart.current = {width: params.width, fontSize: Number(node?.data.fontSize) || 16};
+        beginGesture();
+    }, [beginGesture, id]);
+    const scaleText = useCallback<OnResize>((_, params) => {
+        const start = scaleStart.current;
+        if (!start || start.width <= 0) return;
+        const fontSize = Math.max(8, Math.min(144, Math.round(start.fontSize * params.width / start.width)));
+        const node = useCanvasStore.getState().nodes.find(item => item.id === id);
+        if (node?.data.fontSize !== fontSize) updateNodeData(id, {fontSize});
+    }, [id, updateNodeData]);
+    const finishResize = useCallback(() => {
+        scaleStart.current = null;
+        endGesture();
+        requestAnimationFrame(measureText);
+    }, [endGesture, measureText]);
+    const startEditing = () => {
+        beginGesture();
+        setEditingText(true);
+    };
+    const finishEditing = () => {
+        const node = useCanvasStore.getState().nodes.find(item => item.id === id);
+        if (!String(node?.data.text ?? '').trim()) updateNodeData(id, {text: emptyText});
+        setEditingText(false);
+        endGesture();
+    };
     const color = annotationColor(data.color);
     const startEndpointDrag = (event: ReactPointerEvent<SVGCircleElement>, endpoint: 'start' | 'end') => {
         event.preventDefault();
@@ -76,20 +140,35 @@ export function AnnotationNode({id, data, selected, width = 240, height = 100}: 
     };
     return <div role="group"
                 aria-label={`Anotación visual: ${data.kind === 'text' ? 'texto' : data.kind === 'line' ? 'línea' : 'forma'}`}
-                className={`group relative ${selected && data.kind !== 'line' ? 'ring-1 ring-primary' : ''}`} style={{width, height}}>
+                className={`group relative ${selected && data.kind !== 'line' ? 'ring-1 ring-primary' : ''}`}
+                style={data.kind === 'text' ? {width: '100%', height: '100%'} : {width, height}}>
         {data.kind === 'shape' && <NodeResizer isVisible={selected} color="var(--color-primary)" minWidth={40}
                                               minHeight={40} onResizeStart={beginGesture}
                                               onResizeEnd={endGesture}/>}
         {data.kind === 'text' && <>
-            <span aria-hidden="true" title="Arrastrar anotación"
-                  className={`absolute -top-4 left-2 z-10 flex h-5 w-8 cursor-grab items-center justify-center rounded-md bg-surface text-outline transition-opacity hover:text-on-background group-hover:opacity-100 active:cursor-grabbing ${selected ? 'opacity-100' : 'opacity-0'}`}
-            ><GripHorizontal size={14}/></span>
-            <textarea
-                className="nodrag nopan h-full w-full resize-none rounded border border-border bg-background/90 p-2 outline-none"
+            {selected && !editingText && <>
+                {(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const).map(position =>
+                    <NodeResizeControl key={position} position={position} color="var(--color-primary)"
+                        minWidth={40} minHeight={40} keepAspectRatio
+                        onResizeStart={startScale} onResize={scaleText} onResizeEnd={finishResize}/>)}
+                {(['left', 'right'] as const).map(position =>
+                    <NodeResizeControl key={position} position={position} color="var(--color-primary)"
+                        minWidth={40} resizeDirection="horizontal"
+                        onResizeStart={beginGesture} onResizeEnd={finishResize}/>)}
+            </>}
+            <div ref={contentRef} role="textbox" aria-label="Texto visual" aria-readonly="true" tabIndex={editingText ? -1 : 0}
+                title="Doble clic para editar"
+                onDoubleClick={event => { event.stopPropagation(); startEditing(); }}
+                onKeyDown={event => { if (event.key === 'Enter') {event.stopPropagation(); startEditing();} }}
+                className={`min-h-10 w-full cursor-move select-none p-2 ${editingText ? 'invisible' : ''}`}
+                style={visualTextStyle(data)}><VisualTextContent text={data.text?.trim() ? data.text : emptyText} listStyle={data.listStyle}/></div>
+            {editingText && selected && <textarea ref={editorRef}
+                className="nodrag nopan absolute inset-0 h-full w-full resize-none overflow-hidden bg-transparent p-2 outline-none focus-visible:ring-1 focus-visible:ring-primary"
                 aria-label="Texto de anotación" value={data.text ?? ''}
                 onChange={event => updateNodeData(id, {text: event.target.value})}
-                style={{fontSize: data.fontSize ?? 16, textAlign: data.align ?? 'left', color}}
-                placeholder="Escribe una anotación…"/>
+                onBlur={finishEditing}
+                style={{...visualTextStyle(data), opacity: 1}}
+                placeholder={emptyText}/>}
         </>}
         {data.kind === 'shape' && <div aria-label={`Forma ${data.shape === 'ellipse' ? 'elipse' : 'rectángulo'}`}
                                        className="h-full w-full bg-surface-variant" style={{
