@@ -1,7 +1,6 @@
 import {Button} from '../../components/ui/Button';
 import {useCanvasStore} from '../../store/useCanvasStore';
 import type {AnnotationData} from './nodes/AnnotationNode';
-import {CanvasVisualTextInspector} from './CanvasVisualTextInspector';
 
 const numeric = (value: string, min: number, max: number) => {
     const parsed = Number(value);
@@ -24,7 +23,7 @@ export function CanvasAnnotationInspector({nodeId}: { nodeId: string }) {
     const set = (value: Partial<AnnotationData>) => updateNodeData(nodeId, value);
     return <div className="space-y-4 text-sm"><h2 className="font-semibold">Anotación visual</h2><p
         className="text-xs text-outline">Solo existe en este diagrama; no es un Recurso ni una Relación.</p>
-        {data.kind === 'text' && <CanvasVisualTextInspector nodeId={nodeId}/>}
+        {data.kind === 'text' && <p className="text-xs text-outline">Edita el texto con doble clic y usa la barra contextual para darle formato.</p>}
         {data.kind === 'shape' && <label className="block">Forma<select
             className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
             value={data.shape ?? 'rectangle'}

@@ -10,6 +10,14 @@ export const visualFonts = {
     courier: {label: 'Courier New', family: '"Courier New", Courier, monospace'}
 } as const;
 
+export const visualTextPalette = [
+    {name: 'Negro', value: '#222222'}, {name: 'Blanco', value: '#ffffff'},
+    {name: 'Gris', value: '#787774'}, {name: 'Rojo', value: '#d44c47'},
+    {name: 'Naranja', value: '#d9730d'}, {name: 'Amarillo', value: '#b88700'},
+    {name: 'Verde', value: '#448361'}, {name: 'Azul', value: '#337ea9'},
+    {name: 'Morado', value: '#9065b0'}
+] as const;
+
 const solid = (value: string | undefined, fallback: string) => value && /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
 
 export function visualTextStyle(data: AnnotationData): CSSProperties {

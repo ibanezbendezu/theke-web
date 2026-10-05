@@ -32,12 +32,18 @@ import {CanvasResourceInspector} from '../features/canvas/CanvasResourceInspecto
 import {CanvasFolderInspector} from '../features/canvas/CanvasFolderInspector';
 import {CanvasGroupInspector} from '../features/canvas/CanvasGroupInspector';
 import {CanvasAnnotationInspector} from '../features/canvas/CanvasAnnotationInspector';
+import {CanvasVisualTextInspector, type VisualTextPanel} from '../features/canvas/CanvasVisualTextInspector';
+import {CanvasVisualTextToolbar} from '../features/canvas/CanvasVisualTextToolbar';
 import {CanvasBackgroundInspector} from '../features/canvas/CanvasPresentationInspector';
 import {CanvasSemanticView} from '../features/canvas/CanvasSemanticView';
 import {CanvasRelationInspector} from '../features/canvas/CanvasRelationInspector';
 import {SharePreviewDialog} from '../features/canvas/SharePreviewDialog';
 import {CommentNotificationsPanel} from '../components/comments/CommentNotificationsPanel';
 import {useCommentNotifications, useCommentNotificationStream, useReadCommentNotification, type CommentNotification} from '../data/useCommentNotifications';
+
+const textPanelLabels: Record<VisualTextPanel, string> = {
+    paragraph: 'Párrafo', appearance: 'Apariencia', position: 'Posición'
+};
 
 export function DiagramEditor() {
     const {diagramId} = useParams();
@@ -51,7 +57,7 @@ function DiagramEditorCore() {
     const selectedCommentId = new URLSearchParams(location.search).get('comment');
     const diagram = useDiagram(diagramId);
     const organization = useOrganizationActions(projectId ?? '');
-    const [leftPanel, setLeftPanel] = useState<'resources' | 'semantic' | 'comments' | null>(selectedCommentId ? 'comments' : null);
+    const [leftPanel, setLeftPanel] = useState<'resources' | 'semantic' | 'comments' | `text-${VisualTextPanel}` | null>(selectedCommentId ? 'comments' : null);
     const commentPage = useCommentNotifications(1, 'all', diagramId);
     useCommentNotificationStream();
     const readComment = useReadCommentNotification();
@@ -137,6 +143,10 @@ function DiagramEditorCore() {
     const selectedFolder = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'folder' && typeof node.data?.folderId === 'string') : undefined;
     const selectedGroup = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'container') : undefined;
     const selectedAnnotation = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'annotation') : undefined;
+    const selectedVisualText = selectedAnnotation?.data.kind === 'text' ? selectedAnnotation : undefined;
+    const activeLeftPanel = leftPanel?.startsWith('text-') && !selectedVisualText ? null : leftPanel;
+    const activeTextPanel = activeLeftPanel?.startsWith('text-') ? activeLeftPanel.slice(5) as VisualTextPanel : null;
+    const toggleTextPanel = (panel: VisualTextPanel) => setLeftPanel(current => current === `text-${panel}` ? null : `text-${panel}`);
     const openPicker = (position?: { x: number; y: number }) => {
         setPreferred(position);
         setPickerOpen(true);
@@ -221,7 +231,7 @@ function DiagramEditorCore() {
                             <Button size="icon" className="h-10 w-10 shrink-0" title="Cargar archivos en el canvas"
                                     aria-label="Cargar archivos en el canvas" icon={Upload}
                                     onClick={() => pickFiles()}/>}
-                        {!rightOpen && <Button size="icon" className="h-10 w-10 shrink-0" title="Mostrar propiedades"
+                        {!rightOpen && !selectedVisualText && <Button size="icon" className="h-10 w-10 shrink-0" title="Mostrar propiedades"
                                                aria-label="Mostrar propiedades" icon={PanelRightOpen}
                                                onClick={() => setRightOpen(true)}/>}
                     </div>
@@ -238,13 +248,17 @@ function DiagramEditorCore() {
             </div>
             {resourceError && <p role="alert"
                                  className="absolute left-3 top-20 z-50 rounded-md bg-surface/95 px-3 py-2 text-xs text-red-600">{resourceError}</p>}
-            {leftPanel && <div
-                className="absolute bottom-3 left-3 top-20 z-50 w-[min(19rem,calc(100%-1.5rem))] overflow-hidden rounded-xl bg-surface/95 backdrop-blur-md"
-                aria-label={leftPanel === 'resources' ? 'Panel de recursos' : leftPanel === 'comments' ? 'Panel de comentarios' : 'Panel de vista semántica'}>
+            {activeLeftPanel && <div
+                className={activeTextPanel
+                    ? 'absolute right-3 top-20 z-50 w-[min(19rem,calc(100%-1.5rem))] max-h-[calc(100dvh-11rem)] overflow-hidden rounded-lg bg-surface/80 backdrop-blur-xl'
+                    : `absolute left-3 top-20 z-50 w-[min(19rem,calc(100%-1.5rem))] overflow-hidden rounded-xl bg-surface/95 backdrop-blur-md ${selectedVisualText ? 'bottom-32 md:bottom-20' : 'bottom-3'}`}
+                aria-label={activeTextPanel ? `Panel de texto visual: ${textPanelLabels[activeTextPanel]}` : activeLeftPanel === 'resources' ? 'Panel de recursos' : activeLeftPanel === 'comments' ? 'Panel de comentarios' : 'Panel de vista semántica'}>
                 <Button size="icon" className="absolute right-2 top-2 z-10 h-9 w-9" title="Cerrar panel"
                         aria-label="Cerrar panel" icon={X} onClick={() => setLeftPanel(null)}/>
-                {leftPanel === 'comments' ? <CommentNotificationsPanel diagramId={diagram.data.id}
-                                                                          selectedId={selectedCommentId} onOpen={openComment}/> : leftPanel === 'resources' ? diagram.data.archivedAt ?
+                {activeTextPanel && selectedVisualText ? <div className="max-h-[calc(100dvh-11rem)] overflow-y-auto p-4 pt-12">
+                    <CanvasVisualTextInspector nodeId={selectedVisualText.id} section={activeTextPanel}/>
+                </div> : activeLeftPanel === 'comments' ? <CommentNotificationsPanel diagramId={diagram.data.id}
+                                                                          selectedId={selectedCommentId} onOpen={openComment}/> : activeLeftPanel === 'resources' ? diagram.data.archivedAt ?
                     <p className="p-4 text-sm text-outline">Los recursos del mapa archivado están disponibles al
                         restaurarlo.</p> : readyDiagramId === diagram.data.id ?
                         <CanvasResourcePanel projectId={diagram.data.projectId} onAdd={() => openPicker()}
@@ -253,9 +267,16 @@ function DiagramEditorCore() {
                     <CanvasSemanticView projectId={diagram.data.projectId}/> :
                     <div className="p-4"><InlineLoading label="Cargando vista semántica…"/></div>}
             </div>}
+            {selectedVisualText && !diagram.data.archivedAt && <div
+                className="pointer-events-none absolute bottom-20 left-3 right-3 z-40 flex justify-center md:bottom-3 md:left-28 md:right-40">
+                <div className="pointer-events-auto flex min-w-0 max-w-full justify-center">
+                    <CanvasVisualTextToolbar key={selectedVisualText.id} nodeId={selectedVisualText.id}
+                        activePanel={activeTextPanel} onPanelToggle={toggleTextPanel}/>
+                </div>
+            </div>}
         </section>
-        {rightOpen && <aside
-            className={`absolute inset-y-0 right-0 z-50 w-[min(304px,100vw)] overflow-auto bg-surface/95 p-4 backdrop-blur-md lg:relative lg:z-0 lg:shrink-0 lg:bg-surface-variant/35 ${leftPanel ? 'hidden lg:block' : ''}`}
+        {rightOpen && !selectedVisualText && <aside
+            className={`absolute inset-y-0 right-0 z-50 w-[min(304px,100vw)] overflow-auto bg-surface/95 p-4 backdrop-blur-md lg:relative lg:z-0 lg:shrink-0 lg:bg-surface-variant/35 ${activeLeftPanel ? 'hidden lg:block' : ''}`}
             aria-label="Propiedades">
             <div className="mb-3 flex items-center justify-between"><h2
                 className="text-sm font-semibold">Propiedades</h2><Button size="icon" className="h-9 w-9"
