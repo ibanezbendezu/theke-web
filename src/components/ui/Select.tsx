@@ -70,7 +70,7 @@ export function Select({value, onValueChange, children, className = '', label, t
         if (enabled.length) setActive(current => enabled[(enabled.indexOf(current) + step + enabled.length) % enabled.length] ?? enabled[0]);
     };
     return <>
-        <button ref={trigger} type="button" title={title} aria-label={label} aria-haspopup="listbox"
+        <button ref={trigger} type="button" data-tooltip={title} aria-label={label} aria-haspopup="listbox"
             aria-expanded={open} aria-controls={open ? menuId : undefined} disabled={disabled}
             onClick={() => open ? setOpen(false) : show()}
             onKeyDown={event => {

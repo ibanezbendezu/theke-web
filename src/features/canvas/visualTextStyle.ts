@@ -40,6 +40,7 @@ export function visualTextStyle(data: AnnotationData): CSSProperties {
         border: data.outlineWidth ? `${data.outlineWidth}px solid ${solid(data.outlineColor, 'var(--color-outline)')}` : 'none',
         borderRadius: data.cornerRadius ?? 0,
         boxShadow: shadow,
+        transform: data.rotation ? `rotate(${data.rotation}deg)` : undefined,
         overflowWrap: 'anywhere',
         whiteSpace: 'pre-wrap'
     };

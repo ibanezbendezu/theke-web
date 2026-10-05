@@ -11,19 +11,19 @@ type Popover = 'fill' | 'stroke' | 'opacity' | 'more' | null;
 
 function ColorChoices({value, label, onChange, allowNone = false}: {value?: string; label: string; onChange: (value?: string) => void; allowNone?: boolean}) {
     return <div role="group" aria-label={label} className="flex flex-wrap items-center gap-2">
-        <button type="button" aria-label="Color del tema" title="Color del tema" aria-pressed={!value}
+        <button type="button" aria-label="Color del tema" data-tooltip="Color del tema" aria-pressed={!value}
             onClick={() => onChange(undefined)}
             className="h-7 rounded-md bg-surface-variant/60 px-2 text-xs text-on-background focus-visible:outline-2 focus-visible:outline-primary">Tema</button>
-        {allowNone && <button type="button" aria-label="Ninguno, fondo transparente" title="Ninguno" aria-pressed={value === 'transparent'}
+        {allowNone && <button type="button" aria-label="Ninguno, fondo transparente" data-tooltip="Ninguno" aria-pressed={value === 'transparent'}
             onClick={() => onChange('transparent')}
             className={`flex h-7 w-7 items-center justify-center rounded-md focus-visible:outline-2 focus-visible:outline-primary ${value === 'transparent' ? 'bg-surface-variant ring-1 ring-primary' : 'hover:bg-surface-variant/55'}`}>
             <TransparentSwatch className="h-5 w-5"/>
         </button>}
-        {visualTextPalette.map(item => <button key={item.value} type="button" title={item.name} aria-label={`Color ${item.name}`}
+        {visualTextPalette.map(item => <button key={item.value} type="button" data-tooltip={item.name} aria-label={`Color ${item.name}`}
             aria-pressed={value === item.value} onClick={() => onChange(item.value)}
             style={{backgroundColor: item.value}}
             className={`h-6 w-6 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${value === item.value ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}`}/>)}
-        <label title="Color personalizado" className="relative h-7 w-7 cursor-pointer overflow-hidden rounded-full bg-surface-variant/60">
+        <label data-tooltip="Color personalizado" className="relative h-7 w-7 cursor-pointer overflow-hidden rounded-full bg-surface-variant/60">
             <input type="color" aria-label={`Color personalizado: ${label.toLowerCase()}`} value={value && /^#[0-9a-f]{6}$/i.test(value) ? value : '#787774'}
                 onChange={event => onChange(event.target.value)} className="absolute -inset-2 h-12 w-12 cursor-pointer"/>
         </label>
@@ -78,7 +78,7 @@ export function CanvasVisualElementToolbar({nodeId, activePanel, onPanelToggle}:
             <ColorChoices value={data.outlineColor} label={shape ? 'Contorno' : 'Línea'} onChange={outlineColor => set({outlineColor, color: 'default'})}/>
         </div>}</div>
         <input key={`${nodeId}-${data.thickness ?? (shape ? 2 : 3)}`} type="number" inputMode="numeric" min={shape ? 0 : 1} max={16}
-            defaultValue={data.thickness ?? (shape ? 2 : 3)} aria-label={shape ? 'Grosor del contorno' : 'Grosor de la línea'} title={shape ? 'Grosor del contorno' : 'Grosor de la línea'}
+            defaultValue={data.thickness ?? (shape ? 2 : 3)} aria-label={shape ? 'Grosor del contorno' : 'Grosor de la línea'} data-tooltip={shape ? 'Grosor del contorno' : 'Grosor de la línea'}
             onBlur={event => {
                 const value = Number(event.currentTarget.value);
                 if (Number.isFinite(value)) set({thickness: Math.max(shape ? 0 : 1, Math.min(16, Math.round(value)))});

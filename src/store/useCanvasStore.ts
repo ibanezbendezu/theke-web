@@ -74,6 +74,7 @@ interface CanvasState {
     setInspectorOpen: (open: boolean) => void;
     openCanvasNode: (id: string) => void;
     updateNodeData: (nodeId: string, data: Record<string, unknown>) => void;
+    setAnnotationFrame: (nodeId: string, frame: {position: {x: number; y: number}; width: number; height: number; fontSize?: number}) => void;
     fitTextNodeHeight: (nodeId: string, height: number) => void;
     setNodeAbsolutePosition: (nodeId: string, position: {x: number; y: number}) => void;
     alignNodeToViewport: (nodeId: string, axis: 'x' | 'y', placement: 'start' | 'center' | 'end') => void;
@@ -377,6 +378,19 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         ...history(state),
         nodes: state.nodes.map(node => node.id === nodeId ? {...node, data: {...node.data, ...data}} : node)
     })),
+    setAnnotationFrame: (nodeId, frame) => set(state => {
+        if (![frame.position.x, frame.position.y, frame.width, frame.height].every(Number.isFinite)) return state;
+        return {
+            ...history(state),
+            nodes: state.nodes.map(node => node.id === nodeId && node.type === 'annotation' ? {
+                ...node,
+                position: frame.position,
+                width: frame.width,
+                height: frame.height,
+                data: frame.fontSize === undefined ? node.data : {...node.data, fontSize: frame.fontSize}
+            } : node)
+        };
+    }),
     fitTextNodeHeight: (nodeId, height) => set(state => {
         if (!Number.isFinite(height)) return state;
         const fittedHeight = Math.max(40, Math.min(5000, Math.ceil(height)));

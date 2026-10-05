@@ -80,7 +80,7 @@ export function CanvasVisualElementInspector({nodeId, section}: {nodeId: string;
                     onCommit={next => updateNodeSize(nodeId, next, height)}/><NumberField label="Alto" value={height} min={40} max={2000}
                     onCommit={next => updateNodeSize(nodeId, width, next)}/></div>
                 <div role="group" aria-label="Alinear con el área visible" className="grid grid-cols-3 gap-1">{([['x', 'start', 'Izquierda'], ['x', 'center', 'Centro'], ['x', 'end', 'Derecha'], ['y', 'start', 'Arriba'], ['y', 'center', 'Medio'], ['y', 'end', 'Abajo']] as const).map(([axis, place, label]) =>
-                    <button key={`${axis}-${place}`} type="button" title={`Alinear ${label.toLowerCase()} con la vista`} onClick={() => alignToViewport(nodeId, axis, place)}
+                    <button key={`${axis}-${place}`} type="button" aria-label={`Alinear ${label.toLowerCase()} con la vista`} data-tooltip={`Alinear ${label.toLowerCase()} con la vista`} onClick={() => alignToViewport(nodeId, axis, place)}
                         className="min-h-8 rounded-md bg-surface-variant/55 px-1 text-xs hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary">{label}</button>)}</div>
             </> : <>
                 <div className="grid grid-cols-2 gap-2"><NumberField label="Inicio X" value={start.x} min={-1_000_000} max={1_000_000}

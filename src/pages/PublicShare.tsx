@@ -137,7 +137,7 @@ function PublicShareView({token}: { token: string | undefined }) {
             <div className="pointer-events-none absolute inset-x-3 top-3 z-40 flex items-start justify-between gap-3">
                 <div
                     className="pointer-events-auto flex min-w-0 max-w-[55%] items-center rounded-lg bg-surface/90 px-4 py-3 backdrop-blur-md">
-                    <h1 className="truncate text-sm font-semibold" title={data.diagramName}>{data.diagramName}</h1>
+                    <h1 className="truncate text-sm font-semibold" data-tooltip={data.diagramName}>{data.diagramName}</h1>
                 </div>
                 <nav aria-label="Opciones del mapa compartido"
                      className="pointer-events-auto flex shrink-0 gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md">

@@ -9,7 +9,7 @@ export function CanvasContextTool({label, active, onClick, children}: {
     onClick: () => void;
     children: ReactNode;
 }) {
-    return <button type="button" aria-label={label} title={label} aria-pressed={active} onClick={onClick}
+    return <button type="button" aria-label={label} data-tooltip={label} aria-pressed={active} onClick={onClick}
         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md focus-visible:outline-2 focus-visible:outline-primary ${active ? 'bg-surface-variant/85 text-on-background' : 'text-outline hover:bg-surface-variant/55 hover:text-on-background'}`}>
         {children}
     </button>;

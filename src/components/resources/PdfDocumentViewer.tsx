@@ -52,13 +52,13 @@ export function PdfDocumentViewer({url, title, onReady, onError}: PdfDocumentVie
                         className="grid h-8 w-8 place-items-center rounded-md hover:bg-surface-variant disabled:opacity-35"
                         onClick={() => setZoom(value => Math.max(0.75, Number((value - 0.25).toFixed(2))))}><Minus size={16}/></button>
                 <button type="button" className="min-w-12 rounded-md px-1 py-1.5 text-center hover:bg-surface-variant"
-                        aria-label="Restablecer zoom" title="Ajustar al ancho"
+                        aria-label="Restablecer zoom" data-tooltip="Ajustar al ancho"
                         onClick={() => setZoom(1)}>{Math.round(zoom * 100)}%</button>
                 <button type="button" aria-label="Ampliar zoom" disabled={zoom >= 2}
                         className="grid h-8 w-8 place-items-center rounded-md hover:bg-surface-variant disabled:opacity-35"
                         onClick={() => setZoom(value => Math.min(2, Number((value + 0.25).toFixed(2))))}><Plus size={16}/></button>
                 <a href={url} target="_blank" rel="noopener noreferrer" aria-label="Abrir PDF original"
-                   title="Abrir PDF original" className="ml-1 grid h-8 w-8 place-items-center rounded-md hover:bg-surface-variant">
+                   data-tooltip="Abrir PDF original" className="ml-1 grid h-8 w-8 place-items-center rounded-md hover:bg-surface-variant">
                     <ExternalLink size={15}/>
                 </a>
             </div>

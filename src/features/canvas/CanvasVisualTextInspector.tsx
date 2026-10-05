@@ -12,7 +12,7 @@ const surface = 'min-h-9 w-full rounded-md border-0 bg-surface-variant/55 px-2.5
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 function Option({label, pressed, onClick, children}: {label: string; pressed?: boolean; onClick: () => void; children: ReactNode}) {
-    return <button type="button" aria-label={label} title={label} aria-pressed={pressed}
+    return <button type="button" aria-label={label} data-tooltip={label} aria-pressed={pressed}
                    onClick={onClick}
                    className={`flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-sm focus-visible:outline-2 focus-visible:outline-primary ${pressed ? 'bg-surface-variant text-on-background' : 'text-outline hover:bg-surface-variant/55 hover:text-on-background'}`}>{children}</button>;
 }
@@ -105,7 +105,7 @@ export function CanvasVisualTextInspector({nodeId, section}: {nodeId: string; se
             <NumberField label="Ancho" value={Math.round(node.width ?? 240)} min={40} max={2000}
                 onCommit={width => updateNodeSize(nodeId, width, node.height ?? 40)}/>
             <div role="group" aria-label="Alinear con el área visible" className="grid grid-cols-3 gap-1">{([['x', 'start', 'Izquierda'], ['x', 'center', 'Centro'], ['x', 'end', 'Derecha'], ['y', 'start', 'Arriba'], ['y', 'center', 'Medio'], ['y', 'end', 'Abajo']] as const).map(([axis, place, label]) =>
-                <button key={`${axis}-${place}`} type="button" title={`Alinear ${label.toLowerCase()} con la vista`} onClick={() => alignToViewport(nodeId, axis, place)}
+                <button key={`${axis}-${place}`} type="button" aria-label={`Alinear ${label.toLowerCase()} con la vista`} data-tooltip={`Alinear ${label.toLowerCase()} con la vista`} onClick={() => alignToViewport(nodeId, axis, place)}
                     className="min-h-8 rounded-md bg-surface-variant/55 px-1 text-xs hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary">{label}</button>)}</div>
             <div className="flex gap-2"><button type="button" onClick={() => moveLayer(nodeId, 'front')}
                 className={`${surface} hover:bg-outline/15`}>Traer al frente</button><button type="button" onClick={() => moveLayer(nodeId, 'back')}

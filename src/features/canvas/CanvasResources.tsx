@@ -42,7 +42,7 @@ export function CanvasResourcePanel({projectId, onAdd, onSelect, onSelectFolder}
     return <aside className="h-full w-full overflow-auto p-4" aria-label="Recursos">
         <div className="flex items-center justify-between pr-10"><h2 className="text-sm font-semibold">Recursos</h2>
             <button type="button" className="grid h-9 w-9 place-items-center rounded-md hover:bg-surface-variant"
-                    aria-label="Crear carpeta" title="Crear carpeta" onClick={() => setFolderDialog(true)}><Plus
+                    aria-label="Crear carpeta" data-tooltip="Crear carpeta" onClick={() => setFolderDialog(true)}><Plus
                 size={16}/></button>
         </div>
         <Button variant="secondary" className="mt-3 w-full" onClick={onAdd}>Añadir recurso</Button>

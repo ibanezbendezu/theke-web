@@ -39,7 +39,7 @@ export function ViewToolbar({
                         onClick={() => setViewMode('grid')} aria-label="Vista de galería"
                         aria-pressed={viewMode === 'grid'}><LayoutGrid size={18}/></button>
                 {onNew && <button type="button" className={cn(control, 'ml-1')} onClick={onNew} aria-label={newLabel}
-                                  title={newLabel}><Plus size={20}/></button>}
+                                  data-tooltip={newLabel}><Plus size={20}/></button>}
             </div>
         </div>
     );

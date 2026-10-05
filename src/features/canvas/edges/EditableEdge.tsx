@@ -121,7 +121,7 @@ export function EditableEdge({
                     {relationId ? <button type="button"
                                           className={`flex max-w-48 items-center gap-1 rounded border bg-background px-2 py-1 text-xs font-medium text-on-background focus-visible:outline-2 focus-visible:outline-primary ${selected || hovered ? 'border-primary ring-1 ring-primary' : 'border-border'}`}
                                           aria-label={`Editar Relación ${sourceTitle} ${relationDirection === 'directed' ? 'hacia' : 'con'} ${targetTitle}, ${relationLabel}, ${relationDirection === 'directed' ? 'dirigida' : 'no dirigida'}, ${relationEvidence}`}
-                                          title={relationLabel} onFocus={() => setHovered(true)}
+                                          data-tooltip={relationLabel} onFocus={() => setHovered(true)}
                                           onBlur={() => setHovered(false)} onMouseEnter={() => setHovered(true)}
                                           onMouseLeave={() => setHovered(false)}
                                           onClick={() => requestEditRelation(relationId)}>

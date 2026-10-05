@@ -10,7 +10,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({className, variant = 'ghost', size = 'sm', icon: Icon, loading = false, children, disabled, ...props}, ref) => {
+    ({className, variant = 'ghost', size = 'sm', icon: Icon, loading = false, children, disabled, title, ...props}, ref) => {
         return (
             <button
                 ref={ref}
@@ -29,6 +29,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 )}
                 disabled={disabled || loading}
                 aria-busy={loading || undefined}
+                data-tooltip={title}
+                aria-label={props['aria-label'] ?? (size === 'icon' ? title : undefined)}
                 {...props}
             >
                 {loading ? <LoaderCircle size={16} aria-hidden="true" className="shrink-0 motion-safe:animate-spin"/>

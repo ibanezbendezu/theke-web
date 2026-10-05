@@ -9,7 +9,7 @@ export function ThemeToggle() {
             <button
                 onClick={() => setTheme("light")}
                 className={`rounded-md p-1.5 hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary ${theme === 'light' ? 'bg-surface-variant text-on-background' : 'text-outline hover:text-on-background'}`}
-                title="Claro"
+                data-tooltip="Claro"
                 aria-label="Tema claro"
                 aria-pressed={theme === 'light'}
             >
@@ -18,7 +18,7 @@ export function ThemeToggle() {
             <button
                 onClick={() => setTheme("system")}
                 className={`rounded-md p-1.5 hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary ${theme === 'system' ? 'bg-surface-variant text-on-background' : 'text-outline hover:text-on-background'}`}
-                title="Sistema"
+                data-tooltip="Sistema"
                 aria-label="Tema del sistema"
                 aria-pressed={theme === 'system'}
             >
@@ -27,7 +27,7 @@ export function ThemeToggle() {
             <button
                 onClick={() => setTheme("dark")}
                 className={`rounded-md p-1.5 hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary ${theme === 'dark' ? 'bg-surface-variant text-on-background' : 'text-outline hover:text-on-background'}`}
-                title="Oscuro"
+                data-tooltip="Oscuro"
                 aria-label="Tema oscuro"
                 aria-pressed={theme === 'dark'}
             >

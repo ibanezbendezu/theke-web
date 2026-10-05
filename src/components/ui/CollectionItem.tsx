@@ -61,7 +61,7 @@ export function CollectionItem({
         });
         requestAnimationFrame(() => menuRef.current?.querySelector<HTMLButtonElement>('button')?.focus());
     };
-    const menuButton = <button type="button" aria-label={`Opciones de ${title}`} aria-haspopup="menu"
+    const menuButton = <button type="button" aria-label={`Opciones de ${title}`} data-tooltip={`Opciones de ${title}`} aria-haspopup="menu"
                                aria-expanded={Boolean(menu)}
                                className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-outline hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary"
                                onClick={event => {
@@ -82,7 +82,7 @@ export function CollectionItem({
     }}
                 className={`${view === 'grid' ? 'group relative min-w-0 overflow-hidden rounded-lg bg-surface-variant/65 hover:bg-surface-variant' : 'group flex min-w-0 items-center gap-2 border-b border-border/45 px-2 py-1 hover:bg-surface-variant/65'} ${dropActive ? 'bg-primary/10' : ''}`}>
         {view === 'grid' ? <>
-            <button type="button" onClick={onOpen}
+            <button type="button" onClick={onOpen} data-tooltip={title}
                     className="block w-full text-left focus-visible:outline-2 focus-visible:outline-primary">
                 <div
                     className="flex aspect-[1.18] items-center justify-center overflow-hidden bg-background/55 text-outline">{preview ?? icon}</div>
@@ -92,7 +92,7 @@ export function CollectionItem({
             </button>
             {actions.length > 0 && <div
                 className="absolute right-2 top-2 rounded-md bg-background/85 backdrop-blur-sm">{menuButton}</div>}</> : <>
-            <button type="button" onClick={onOpen}
+            <button type="button" onClick={onOpen} data-tooltip={title}
                     className="flex min-w-0 flex-1 items-center gap-3 py-2 text-left focus-visible:outline-2 focus-visible:outline-primary">
                 <span className="shrink-0 text-outline">{icon}</span><span
                 className="min-w-0 flex-1 truncate text-sm font-medium">{title}</span></button>

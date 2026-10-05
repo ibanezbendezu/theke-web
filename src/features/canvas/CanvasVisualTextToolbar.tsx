@@ -41,7 +41,7 @@ export function CanvasVisualTextToolbar({nodeId, activePanel, onPanelToggle}: {
             {Object.entries(visualFonts).map(([key, font]) => <option key={key} value={key}>{font.label}</option>)}
         </Select>
         <input key={`${nodeId}-${data.fontSize ?? 16}`} type="number" inputMode="numeric" min={8} max={144}
-            defaultValue={data.fontSize ?? 16} aria-label="Tamaño de letra" title="Tamaño de letra"
+            defaultValue={data.fontSize ?? 16} aria-label="Tamaño de letra" data-tooltip="Tamaño de letra"
             onBlur={event => {
                 const size = Number(event.currentTarget.value);
                 if (Number.isFinite(size)) set({fontSize: Math.max(8, Math.min(144, Math.round(size)))});
@@ -54,14 +54,14 @@ export function CanvasVisualTextToolbar({nodeId, activePanel, onPanelToggle}: {
             {popover === 'color' && <div role="group" aria-label="Color del texto"
                 className="absolute bottom-full left-0 z-50 mb-2 w-52 rounded-lg bg-surface/95 p-2.5 backdrop-blur-xl">
                 <div className="flex flex-wrap items-center gap-2">
-                    <button type="button" aria-label="Color del tema" title="Color del tema" aria-pressed={!data.textColor}
+                    <button type="button" aria-label="Color del tema" data-tooltip="Color del tema" aria-pressed={!data.textColor}
                         onClick={() => set({textColor: undefined, color: 'default'})}
                         className="h-7 rounded-md bg-surface-variant/60 px-2 text-xs text-on-background focus-visible:outline-2 focus-visible:outline-primary">Tema</button>
-                    {visualTextPalette.map(item => <button key={item.value} type="button" title={item.name} aria-label={`Color ${item.name}`}
+                    {visualTextPalette.map(item => <button key={item.value} type="button" data-tooltip={item.name} aria-label={`Color ${item.name}`}
                         aria-pressed={data.textColor === item.value} onClick={() => set({textColor: item.value})}
                         style={{backgroundColor: item.value}}
                         className={`h-6 w-6 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${data.textColor === item.value ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}`}/>)}
-                    <label title="Color personalizado" className="relative h-7 w-7 cursor-pointer overflow-hidden rounded-full bg-surface-variant/60">
+                    <label data-tooltip="Color personalizado" className="relative h-7 w-7 cursor-pointer overflow-hidden rounded-full bg-surface-variant/60">
                         <input type="color" aria-label="Color personalizado del texto" value={data.textColor ?? '#37352f'}
                             onChange={event => set({textColor: event.target.value})} className="absolute -inset-2 h-12 w-12 cursor-pointer"/>
                     </label>

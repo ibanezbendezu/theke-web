@@ -47,7 +47,7 @@ export function CanvasFolderInspector({nodeId, projectId, folderId, caption = ''
             <p className="mt-2 text-outline">No hay recursos en esta carpeta.</p>}
             <div className="mt-2 space-y-2">{items.map(item => <div key={item.id}
                                                                     className="flex items-center gap-2 border-t border-border pt-2">
-                <span className="min-w-0 flex-1 truncate" title={item.title}>{item.title}</span><Button
+                <span className="min-w-0 flex-1 truncate" data-tooltip={item.title}>{item.title}</span><Button
                 onClick={() => onAddResource(item.id)}>Añadir</Button></div>)}</div>
             {resources.hasNextPage && <Button className="mt-3" disabled={resources.isFetchingNextPage}
                                               onClick={() => void resources.fetchNextPage()}>Cargar más</Button>}

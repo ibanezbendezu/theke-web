@@ -217,7 +217,7 @@ function DiagramEditorCore() {
                     <Button size="icon" className="h-10 w-10 shrink-0" title="Volver a proyectos"
                             aria-label="Volver a proyectos" icon={ArrowLeft} onClick={() => navigate('/projects')}/>
                     <h1 className="min-w-0 truncate px-2 text-sm font-semibold"
-                        title={diagram.data.name}>{diagram.data.name}</h1>
+                        data-tooltip={diagram.data.name}>{diagram.data.name}</h1>
                 </div>
                 <nav aria-label="Acciones del mapa"
                      className="pointer-events-auto flex min-w-0 max-w-[55%] shrink-0 items-center gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md">

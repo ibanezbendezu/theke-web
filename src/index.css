@@ -1,6 +1,23 @@
 @import "tailwindcss";
 @import "@xyflow/react/dist/style.css";
 
+.theke-tooltip {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  max-width: min(18rem, calc(100vw - 24px));
+  padding: 0.4rem 0.65rem;
+  border-radius: 0.375rem;
+  background: var(--tooltip-background);
+  color: var(--tooltip-foreground);
+  font: 500 0.75rem/1.35 var(--font-sans);
+  text-align: center;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
 @layer base {
   :root {
     /* Exact Notion Palette - Light Mode */
@@ -16,6 +33,8 @@
     --secondary: #E9E9E7;
     --scrollbar-thumb: rgba(55, 53, 47, 0.3);
     --scrollbar-thumb-hover: rgba(55, 53, 47, 0.48);
+    --tooltip-background: #37352F;
+    --tooltip-foreground: #FFFFFF;
   }
 
   .dark {
@@ -31,6 +50,8 @@
     --on-primary: #FFFFFF;
     --scrollbar-thumb: rgba(255, 255, 255, 0.26);
     --scrollbar-thumb-hover: rgba(255, 255, 255, 0.42);
+    --tooltip-background: #343434;
+    --tooltip-foreground: #EDEDED;
   }
 }
 
@@ -58,6 +79,51 @@
 .theke-select--toolbar { width: 6.75rem; min-height: 2.25rem; padding-left: 0.5rem; padding-right: 0.35rem; background-color: transparent; }
 .theke-select--toolbar:hover:not(:disabled) { background-color: var(--surface-variant); }
 .dark .theke-select--toolbar:hover:not(:disabled) { background-color: rgba(255, 255, 255, 0.09); }
+
+/* A generous drag target around selected shapes, with a quiet one-pixel guide. */
+.react-flow__resize-control.line.theke-shape-resize-line {
+  z-index: 2;
+  border: 0;
+  touch-action: none;
+}
+
+.react-flow__resize-control.line.theke-shape-resize-line.left,
+.react-flow__resize-control.line.theke-shape-resize-line.right { width: 12px; }
+
+.react-flow__resize-control.line.theke-shape-resize-line.top,
+.react-flow__resize-control.line.theke-shape-resize-line.bottom { height: 12px; }
+
+.react-flow__resize-control.line.theke-shape-resize-line::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  background: var(--primary);
+}
+
+.react-flow__resize-control.line.theke-shape-resize-line.left::after,
+.react-flow__resize-control.line.theke-shape-resize-line.right::after {
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 0.5px);
+  width: 1px;
+}
+
+.react-flow__resize-control.line.theke-shape-resize-line.top::after,
+.react-flow__resize-control.line.theke-shape-resize-line.bottom::after {
+  left: 0;
+  right: 0;
+  top: calc(50% - 0.5px);
+  height: 1px;
+}
+
+.react-flow__resize-control.handle.theke-shape-resize-handle {
+  z-index: 3;
+  width: 9px;
+  height: 9px;
+  border-color: var(--background);
+  border-radius: 2px;
+  touch-action: none;
+}
 
 @theme {
   --color-background: var(--background);

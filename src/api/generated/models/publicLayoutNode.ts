@@ -36,6 +36,7 @@ export interface PublicLayoutNode {
   letterSpacing?: number;
   lineHeight?: number;
   opacity?: number;
+  rotation?: number;
   shadow?: string;
   outlineWidth?: number;
   outlineColor?: string;

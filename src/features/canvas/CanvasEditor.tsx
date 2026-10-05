@@ -452,7 +452,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
             >
                 {commentNotifications && <ViewportPortal>{commentNotifications.map((item, index) =>
                     item.anchored && typeof item.anchor.x === 'number' && typeof item.anchor.y === 'number' ?
-                        <button key={item.id} type="button" title={item.displayName}
+                        <button key={item.id} type="button" data-tooltip={item.displayName}
                                 aria-label={`Comentario de ${item.displayName}: ${item.content}`}
                                 aria-pressed={item.commentId === selectedCommentId}
                                 className={`nodrag nopan absolute z-10 flex h-8 min-w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-1 rounded-full px-1.5 text-xs font-semibold ring-2 ring-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${item.commentId === selectedCommentId ? 'bg-on-background text-background' : 'bg-primary text-on-primary'}`}

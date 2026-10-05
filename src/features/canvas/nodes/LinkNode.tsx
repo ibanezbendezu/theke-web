@@ -25,7 +25,7 @@ export function LinkNode({data, selected}: NodeProps<LinkNodeType>) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-1.5 bg-background/90 backdrop-blur border border-border rounded-md text-primary hover:bg-surface-variant nodrag nopan"
-                    title="Visitar enlace"
+                    data-tooltip="Visitar enlace"
                 >
                     <ExternalLink size={14}/>
                 </a>

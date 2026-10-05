@@ -110,7 +110,7 @@ export function Topbar({isSidebarOpen, setIsOpen}: TopbarProps) {
                     <button
                         onClick={() => setIsOpen(true)}
                         className="p-1.5 mr-1 rounded-[4px] hover:bg-surface-variant text-outline hover:text-on-background transition-colors"
-                        title="Abrir menú"
+                        data-tooltip="Abrir menú"
                         aria-label="Abrir barra lateral"
                     >
                         <Menu size={18}/>

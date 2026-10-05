@@ -270,7 +270,7 @@ export function AIGuidanceCard({
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setConsentDialogOpen(true)}
-                                title="Ver condiciones y política"
+                                data-tooltip="Ver condiciones y política"
                             >
                                 Condiciones
                             </Button>

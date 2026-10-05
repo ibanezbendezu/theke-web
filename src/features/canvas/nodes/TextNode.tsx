@@ -23,7 +23,7 @@ export function TextNode({id, data, selected}: NodeProps<TextNodeType>) {
             "relative group min-w-[250px] p-2 rounded-lg transition-colors",
             selected ? "bg-surface-variant/50 ring-1 ring-border" : "hover:bg-surface-variant/30"
         )}>
-            <span aria-hidden="true" title="Arrastrar texto"
+            <span aria-hidden="true" data-tooltip="Arrastrar texto"
                   className={`absolute -top-4 left-2 z-10 flex h-5 w-8 cursor-grab items-center justify-center rounded-md bg-surface text-outline transition-opacity group-hover:opacity-100 active:cursor-grabbing ${selected ? 'opacity-100' : 'opacity-0'}`}>
                 <GripHorizontal size={14}/>
             </span>

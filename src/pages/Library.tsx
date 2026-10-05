@@ -422,7 +422,7 @@ function FileResource({resource, folderName, onClose}: {
                     setNameError('');
                 }}>Cancelar</Button></form> :
                 <h2 id="library-resource-title" className="truncate text-base font-semibold"
-                    title={resource.title}>{resource.title}</h2>}</div>
+                    data-tooltip={resource.title}>{resource.title}</h2>}</div>
             {!renaming && <><Button size="icon" className="h-10 w-10" icon={Pencil} aria-label="Renombrar archivo"
                                     title="Renombrar archivo" onClick={() => {
                 setMenuOpen(false);
