@@ -5,15 +5,7 @@ import {Select} from '../../components/ui/Select';
 import {visualFonts, visualTextPalette} from './visualTextStyle';
 import type {AnnotationData} from './nodes/AnnotationNode';
 import type {VisualTextPanel} from './CanvasVisualTextInspector';
-
-const control = 'h-9 rounded-md border-0 bg-transparent text-sm text-on-background focus-visible:outline-2 focus-visible:outline-primary hover:bg-surface-variant/50';
-
-function Tool({label, active, onClick, children}: {label: string; active?: boolean; onClick: () => void; children: ReactNode}) {
-    return <button type="button" aria-label={label} title={label} aria-pressed={active} onClick={onClick}
-        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md focus-visible:outline-2 focus-visible:outline-primary ${active ? 'bg-surface-variant/85 text-on-background' : 'text-outline hover:bg-surface-variant/55 hover:text-on-background'}`}>
-        {children}
-    </button>;
-}
+import {CanvasContextTool as Tool, canvasContextInputClass, canvasContextToolbarClass} from './CanvasContextTool';
 
 export function CanvasVisualTextToolbar({nodeId, activePanel, onPanelToggle}: {
     nodeId: string;
@@ -42,7 +34,7 @@ export function CanvasVisualTextToolbar({nodeId, activePanel, onPanelToggle}: {
     const panelTool = (panel: VisualTextPanel, label: string, icon: ReactNode) =>
         <Tool label={label} active={activePanel === panel} onClick={() => {setPopover(null); onPanelToggle(panel);}}>{icon}</Tool>;
     return <div ref={toolbarRef} role="toolbar" aria-label="Formato del texto visual"
-        className="relative flex max-w-full items-center gap-0.5 rounded-lg bg-surface/60 p-1 backdrop-blur-xl">
+        className={canvasContextToolbarClass}>
         <Select label="Fuente del texto visual" title="Fuente" value={data.fontFamily ?? 'system'}
             onValueChange={value => set({fontFamily: value as AnnotationData['fontFamily']})}
             className="theke-select--toolbar shrink-0 text-sm">
@@ -54,13 +46,13 @@ export function CanvasVisualTextToolbar({nodeId, activePanel, onPanelToggle}: {
                 const size = Number(event.currentTarget.value);
                 if (Number.isFinite(size)) set({fontSize: Math.max(8, Math.min(144, Math.round(size)))});
             }} onKeyDown={event => {if (event.key === 'Enter') event.currentTarget.blur();}}
-            className={`${control} w-12 shrink-0 px-1 text-center`}/>
+            className={`${canvasContextInputClass} w-12`}/>
         <div className="relative shrink-0">
             <Tool label="Color del texto" active={popover === 'color'} onClick={() => setPopover(value => value === 'color' ? null : 'color')}>
                 <Palette size={17} color={data.textColor ?? 'currentColor'}/>
             </Tool>
             {popover === 'color' && <div role="group" aria-label="Color del texto"
-                className="absolute bottom-full left-0 z-50 mb-2 w-52 rounded-lg bg-surface/90 p-2.5 backdrop-blur-xl">
+                className="absolute bottom-full left-0 z-50 mb-2 w-52 rounded-lg bg-surface/95 p-2.5 backdrop-blur-xl">
                 <div className="flex flex-wrap items-center gap-2">
                     <button type="button" aria-label="Color del tema" title="Color del tema" aria-pressed={!data.textColor}
                         onClick={() => set({textColor: undefined, color: 'default'})}
@@ -94,7 +86,7 @@ export function CanvasVisualTextToolbar({nodeId, activePanel, onPanelToggle}: {
         <div className="relative shrink-0">
             <Tool label="Más opciones del texto" active={popover === 'more'} onClick={() => setPopover(value => value === 'more' ? null : 'more')}><MoreHorizontal size={18}/></Tool>
             {popover === 'more' && <div role="menu" aria-label="Opciones del texto visual"
-                className="absolute bottom-full right-0 z-50 mb-2 min-w-44 rounded-lg bg-surface/90 p-1 text-sm backdrop-blur-xl">
+                className="absolute bottom-full right-0 z-50 mb-2 min-w-44 rounded-lg bg-surface/95 p-1 text-sm backdrop-blur-xl">
                 <button role="menuitem" type="button" onClick={() => {duplicateNode(nodeId); setPopover(null);}}
                     className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left hover:bg-surface-variant/55"><Copy size={16}/>Duplicar</button>
                 <button role="menuitem" type="button" onClick={() => {updateNodePresentation(nodeId, {hidden: !node.hidden}); setPopover(null);}}

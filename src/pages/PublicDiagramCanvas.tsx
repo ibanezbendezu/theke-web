@@ -143,14 +143,20 @@ function PublicCanvasNode({data, selected}: NodeProps<Node<PublicNodeData, 'publ
         <NodeHandles group/></div>;
     if (item.type === 'annotation') {
         const color = item.color === 'primary' ? 'var(--color-primary)' : item.color === 'muted' ? 'var(--color-outline)' : 'var(--color-on-background)';
+        const stroke = item.outlineColor && /^#[0-9a-f]{6}$/i.test(item.outlineColor) ? item.outlineColor : color;
+        const shadow = item.shadow === 'soft' ? '0 2px 8px rgb(0 0 0 / 18%)' : item.shadow === 'strong' ? '0 8px 24px rgb(0 0 0 / 28%)' : undefined;
         return <div role="group" aria-label="Anotación visual" className="relative" style={{width, height}}>
-            {item.annotationKind === 'shape' ? <div className="h-full w-full bg-surface-variant" style={{
-                border: `${item.thickness ?? 2}px ${item.dash ?? 'solid'} ${color}`,
-                borderRadius: item.shape === 'ellipse' ? '50%' : 8
+            {item.annotationKind === 'shape' ? <div className="h-full w-full" style={{
+                backgroundColor: item.backgroundColor ?? 'var(--color-surface-variant)',
+                border: `${item.thickness ?? 2}px ${item.dash ?? 'solid'} ${stroke}`,
+                borderRadius: item.shape === 'ellipse' ? '50%' : item.cornerRadius ?? 8,
+                opacity: (item.opacity ?? 100) / 100,
+                boxShadow: shadow
             }}/> : item.annotationKind === 'line' ?
                 <svg role="img" aria-label="Línea decorativa" className="h-full w-full overflow-visible">
                     <line x1={`${item.x1 ?? 5}%`} y1={`${item.y1 ?? 50}%`} x2={`${item.x2 ?? 95}%`}
-                          y2={`${item.y2 ?? 50}%`} stroke={color} strokeWidth={item.thickness ?? 3}
+                          y2={`${item.y2 ?? 50}%`} stroke={stroke} strokeWidth={item.thickness ?? 3}
+                          strokeLinecap="round" opacity={(item.opacity ?? 100) / 100}
                           strokeDasharray={item.dash === 'dashed' ? '8 5' : undefined}/>
                 </svg> : <div
                     className="h-full w-full overflow-visible p-2"

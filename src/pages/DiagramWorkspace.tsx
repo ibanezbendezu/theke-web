@@ -96,6 +96,7 @@ export function DiagramWorkspace({
         }
     }, [diagram.document]);
     const initialRemote = useRef(remote);
+    const initialRevision = useRef(diagram.revision);
     const [choice, setChoice] = useState<'checking' | 'draft' | 'ready'>('checking');
     const [document, setDocument] = useState<DiagramDocument | null>(null);
     const [status, setStatus] = useState<SaveStatus>('saved');
@@ -149,8 +150,14 @@ export function DiagramWorkspace({
             await journalQueue.current;
             const saved = await saveRef.current(draft.document, draft.baseRevision, draft.operationId);
             revisionRef.current = saved.revision;
-            confirmedRef.current = fingerprint(draft.document);
+            confirmedRef.current = fingerprint(saved.document);
             retryRef.current = null;
+            client.setQueryData<Diagram>(['private', 'diagram', userId, diagram.id], current => current ? {
+                ...current,
+                document: saved.document,
+                revision: saved.revision,
+                updatedAt: saved.updatedAt
+            } : current);
             void client.invalidateQueries({queryKey: ['private', 'available-relations', userId, diagram.id]});
             if (latestRef.current?.operationId === draft.operationId) {
                 latestRef.current = null;
@@ -186,13 +193,29 @@ export function DiagramWorkspace({
         if (!opening) return;
         readCanvasDraft(draftKey).then(draft => {
             if (!active) return;
-            if (draft && fingerprint(draft.document) !== fingerprint(opening)) {
-                latestRef.current = draft;
-                setChoice('draft');
-            } else {
+            let recovered: DiagramDocument | null = null;
+            if (draft) {
+                try {
+                    recovered = migrateCanvasDocument(draft.document);
+                } catch {
+                    latestRef.current = draft;
+                    setChoice('draft');
+                    return;
+                }
+            }
+            if (!draft || (recovered && fingerprint(recovered) === fingerprint(opening))) {
                 if (draft) void deleteCanvasDraft(draftKey);
                 setDocument(opening);
                 setChoice('ready');
+            } else if (draft.baseRevision === initialRevision.current && recovered) {
+                latestRef.current = {...draft, document: recovered};
+                setDocument(recovered);
+                setStatus('saving');
+                setChoice('ready');
+                schedule(0);
+            } else {
+                latestRef.current = draft;
+                setChoice('draft');
             }
         }).catch(() => {
             if (active) {
@@ -205,7 +228,7 @@ export function DiagramWorkspace({
             active = false;
             if (timerRef.current) clearTimeout(timerRef.current);
         };
-    }, [draftKey]);
+    }, [draftKey, schedule]);
     useEffect(() => {
         if (choice !== 'ready') return;
         const unsubscribe = useCanvasStore.subscribe(markChanged);
@@ -336,7 +359,7 @@ export function DiagramWorkspace({
         <div role="status" aria-live="polite"
              className="absolute right-3 top-20 z-30 inline-flex items-center gap-2 rounded-md bg-surface/90 px-3 py-2 text-xs backdrop-blur-md">
             {status === 'saving' && <LoaderCircle size={13} aria-hidden="true" className="motion-safe:animate-spin"/>}{{
-            saved: 'Guardado',
+            saved: 'Guardado en servidor',
             saving: 'Guardando…',
             offline: 'Sin conexión: cambios pendientes',
             conflict: 'Conflicto de revisión',

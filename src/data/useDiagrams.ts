@@ -57,6 +57,9 @@ export function useDiagram(id?: string) {
     return useQuery({
         queryKey: ['private', 'diagram', userId, id],
         enabled: Boolean(userId && id),
+        staleTime: 0,
+        refetchOnMount: 'always',
+        refetchOnWindowFocus: false,
         queryFn: async ({signal}) => {
             const response = await thekeFetch<{
                 data: Envelope<Diagram>

@@ -4,6 +4,7 @@ import type {Node} from '@xyflow/react';
 import {Select} from '../../components/ui/Select';
 import {useCanvasStore} from '../../store/useCanvasStore';
 import type {AnnotationData} from './nodes/AnnotationNode';
+import {TransparentSwatch} from './TransparentSwatch';
 
 export type VisualTextPanel = 'paragraph' | 'appearance' | 'position';
 
@@ -91,7 +92,9 @@ export function CanvasVisualTextInspector({nodeId, section}: {nodeId: string; se
             <div className="flex items-end gap-2"><label className="min-w-0 flex-1 text-xs text-outline">Fondo<input type="color"
                 aria-label="Color de fondo" value={data.backgroundColor ?? '#ffffff'} onChange={event => set({backgroundColor: event.target.value})}
                 className="mt-1 block h-9 w-12 cursor-pointer rounded-md border-0 bg-surface-variant/55 p-1"/></label>
-                <Option label="Sin fondo" pressed={!data.backgroundColor} onClick={() => set({backgroundColor: undefined})}>Ninguno</Option></div>
+                <Option label="Sin fondo" pressed={!data.backgroundColor} onClick={() => set({backgroundColor: undefined})}>
+                    <span className="flex items-center gap-1.5"><TransparentSwatch/>Ninguno</span>
+                </Option></div>
             <div className="flex items-end gap-2"><NumberField label="Esquinas (px)" value={data.cornerRadius ?? 0} min={0} max={40}
                 onCommit={cornerRadius => set({cornerRadius})}/><Option label="Puntas rectas" pressed={!data.cornerRadius} onClick={() => set({cornerRadius: 0})}>Rectas</Option><Option label="Puntas curvas" pressed={Boolean(data.cornerRadius)} onClick={() => set({cornerRadius: 12})}>Curvas</Option></div>
         </Section>}

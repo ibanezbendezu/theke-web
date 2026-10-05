@@ -22,18 +22,21 @@ export function CanvasToolbar({onAddResource, onCreateRelation}: {
     return (
         <>
             {(onAddResource || onCreateRelation) && <nav aria-label="Herramientas del lienzo"
-                                                         className="absolute left-3 top-1/2 z-30 flex max-h-[calc(100dvh-11rem)] -translate-y-1/2 flex-col gap-0.5 overflow-y-auto rounded-lg bg-surface/90 p-1 backdrop-blur-md">
+                                                         className="absolute left-3 top-1/2 z-30 flex max-h-[calc(100dvh-11rem)] -translate-y-1/2 flex-col gap-2 overflow-y-auto">
+                <div role="group" aria-label="Acciones del mapa" className="flex flex-col gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md">
                 {onAddResource && <Button variant="ghost" size="icon" icon={Plus} aria-label="Añadir recurso"
                                           title="Añadir recurso (A)" onClick={onAddResource}
                                           className="h-11 w-11 shrink-0"/>}
                 {onCreateRelation && <Button variant="ghost" size="icon" icon={Link2} aria-label="Crear Relación"
                                              title="Crear Relación entre Recursos" onClick={onCreateRelation}
                                              className="h-11 w-11 shrink-0"/>}
+                </div>
+                {onAddResource && <div role="group" aria-label="Elementos visuales" className="flex flex-col gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md">
                 {selectedIds.length >= 2 &&
                     <Button variant="ghost" size="icon" icon={Group} aria-label="Crear grupo visual"
                             title="Agrupar selección" onClick={() => groupNodes(selectedIds)}
                             className="h-11 w-11 shrink-0"/>}
-                {onAddResource && <><Button variant="ghost" size="icon" icon={Type} aria-label="Añadir texto visual"
+                <Button variant="ghost" size="icon" icon={Type} aria-label="Añadir texto visual"
                                             title="Añadir anotación de texto" onClick={() => addAnnotation('text')}
                                             className="h-11 w-11 shrink-0"/><Button variant="ghost" size="icon"
                                                                                     icon={Square}
@@ -43,7 +46,8 @@ export function CanvasToolbar({onAddResource, onCreateRelation}: {
                                                                                     className="h-11 w-11 shrink-0"/><Button
                     variant="ghost" size="icon" icon={Minus} aria-label="Añadir línea visual"
                     title="Añadir línea decorativa" onClick={() => addAnnotation('line')}
-                    className="h-11 w-11 shrink-0"/></>}
+                    className="h-11 w-11 shrink-0"/>
+                </div>}
             </nav>}
             <div className="absolute bottom-3 left-3 z-30 flex gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md">
                 <Button variant="ghost" size="icon" icon={Undo2} aria-label="Deshacer" disabled={!canUndo}

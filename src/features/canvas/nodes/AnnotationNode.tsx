@@ -93,6 +93,8 @@ export function AnnotationNode({id, data, selected, width = 240, height = 100}: 
         endGesture();
     };
     const color = annotationColor(data.color);
+    const stroke = data.outlineColor && /^#[0-9a-f]{6}$/i.test(data.outlineColor) ? data.outlineColor : color;
+    const shadow = data.shadow === 'soft' ? '0 2px 8px rgb(0 0 0 / 18%)' : data.shadow === 'strong' ? '0 8px 24px rgb(0 0 0 / 28%)' : undefined;
     const startEndpointDrag = (event: ReactPointerEvent<SVGCircleElement>, endpoint: 'start' | 'end') => {
         event.preventDefault();
         event.stopPropagation();
@@ -171,15 +173,20 @@ export function AnnotationNode({id, data, selected, width = 240, height = 100}: 
                 placeholder={emptyText}/>}
         </>}
         {data.kind === 'shape' && <div aria-label={`Forma ${data.shape === 'ellipse' ? 'elipse' : 'rectángulo'}`}
-                                       className="h-full w-full bg-surface-variant" style={{
-            border: `${data.thickness ?? 2}px ${data.dash ?? 'solid'} ${color}`,
-            borderRadius: data.shape === 'ellipse' ? '50%' : 8
+                                       className="h-full w-full" style={{
+            backgroundColor: data.backgroundColor ?? 'var(--color-surface-variant)',
+            border: `${data.thickness ?? 2}px ${data.dash ?? 'solid'} ${stroke}`,
+            borderRadius: data.shape === 'ellipse' ? '50%' : data.cornerRadius ?? 8,
+            opacity: (data.opacity ?? 100) / 100,
+            boxShadow: shadow
         }}/>}
         {data.kind === 'line' &&
             <svg aria-label="Línea decorativa" role="img" className="h-full w-full overflow-visible">
                 <line x1={`${data.x1 ?? 5}%`} y1={`${data.y1 ?? 50}%`} x2={`${data.x2 ?? 95}%`} y2={`${data.y2 ?? 50}%`}
-                      stroke={color} strokeWidth={data.thickness ?? 3}
-                      strokeDasharray={data.dash === 'dashed' ? '8 5' : undefined}/>
+                      stroke="transparent" strokeWidth={Math.max(18, data.thickness ?? 3)} className="cursor-move"/>
+                <line x1={`${data.x1 ?? 5}%`} y1={`${data.y1 ?? 50}%`} x2={`${data.x2 ?? 95}%`} y2={`${data.y2 ?? 50}%`}
+                      stroke={stroke} strokeWidth={data.thickness ?? 3} strokeLinecap="round" pointerEvents="none"
+                      opacity={(data.opacity ?? 100) / 100} strokeDasharray={data.dash === 'dashed' ? '8 5' : undefined}/>
                 {selected && <>
                     <circle className="nodrag nopan cursor-crosshair touch-none" cx={`${data.x1 ?? 5}%`}
                             cy={`${data.y1 ?? 50}%`} r={7} fill="var(--color-background)" stroke="var(--color-primary)"
