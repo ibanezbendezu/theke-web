@@ -33,7 +33,7 @@ async function firstPdfPage(url: string) {
     }
 }
 
-export function FileThumbnail({resource, fallback}: { resource: ResourceSummary; fallback: ReactNode }) {
+export function FileThumbnail({resource, fallback, directUrl}: { resource: Pick<ResourceSummary, 'id' | 'updatedAt' | 'type' | 'mediaType' | 'previewImageUrl'>; fallback: ReactNode; directUrl?: string }) {
     const image = resource.mediaType?.startsWith('image/');
     const video = resource.mediaType?.startsWith('video/');
     const pdf = resource.mediaType === 'application/pdf';
@@ -57,8 +57,8 @@ export function FileThumbnail({resource, fallback}: { resource: ResourceSummary;
         return () => observer.disconnect();
     }, [previewable]);
 
-    const access = useResourceAccess(resource.id, visible && previewable && !thumbnail && !failed);
-    const url = access.data?.url;
+    const access = useResourceAccess(resource.id, !directUrl && visible && previewable && !thumbnail && !failed);
+    const url = directUrl ?? access.data?.url;
 
     useEffect(() => {
         if (!pdf || !url || thumbnail || failed) return;
@@ -105,7 +105,7 @@ export function FileThumbnail({resource, fallback}: { resource: ResourceSummary;
                      onLoad={() => setImageLoaded(true)}
                      onError={() => setFailed(true)}/> : fallback}
         {video && url && !thumbnail && !failed &&
-            <video crossOrigin="anonymous" src={url} preload="auto" muted playsInline aria-hidden="true" tabIndex={-1}
+            <video crossOrigin="anonymous" src={url} preload="metadata" muted playsInline aria-hidden="true" tabIndex={-1}
                    className="pointer-events-none absolute h-px w-px opacity-0" onLoadedMetadata={event => {
                 const duration = event.currentTarget.duration;
                 event.currentTarget.currentTime = Number.isFinite(duration) ? Math.min(0.5, duration / 2) : 0;

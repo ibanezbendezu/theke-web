@@ -1,5 +1,5 @@
 import {useCallback, useDeferredValue, useEffect, useRef, useState} from 'react';
-import type {FormEvent} from 'react';
+import type {FormEvent, ReactNode} from 'react';
 import {createPortal} from 'react-dom';
 import {
     Download,
@@ -16,7 +16,7 @@ import {
     Video,
     X
 } from 'lucide-react';
-import {useLocation, useNavigate, useSearchParams} from 'react-router-dom';
+import {Link, useLocation, useNavigate, useSearchParams} from 'react-router-dom';
 import {UploadTray} from '../components/uploads/UploadTray';
 import {ResourceKnowledgePanel} from '../components/resources/ResourceKnowledgePanel';
 import {FileThumbnail} from '../components/resources/FileThumbnail';
@@ -31,7 +31,7 @@ import {ImpactDialog, type ImpactRequest} from '../components/ui/ImpactDialog';
 import {CollectionGroup, ViewToolbar} from '../components/ui/ViewToolbar';
 import {useToast} from '../components/ui/useToast';
 import {useCollectionView} from '../components/ui/useCollectionView';
-import {type Note, type NoteInput, useNoteActions} from '../data/useNotes';
+import {useNoteActions} from '../data/useNotes';
 import {type LibraryFolder, useLibraryFolderActions, useLibraryFolders} from '../data/useLibraryFolders';
 import {useImpactActions} from '../data/useImpacts';
 import {
@@ -70,12 +70,10 @@ export function Library() {
     const folderActions = useLibraryFolderActions();
     const resources = useResources({
         query: deferredQuery || undefined,
-        type: 'file',
         status,
         libraryFolderId: status === 'archived' ? undefined : folderId || 'root'
     });
     const detail = useResource(resourceId);
-    const noteActions = useNoteActions();
     const items = resources.data?.pages.flatMap(page => page.data) ?? [];
     const folderItems = folders.data ?? [];
     const visibleFolders = status === 'active' ? folderItems.filter(folder => folder.parentFolderId === (folderId || null)) : [];
@@ -136,7 +134,7 @@ export function Library() {
                          onClick={() => setStatus('archived')}>Archivados</CollectionGroup></>} search={<label
             className="flex h-9 items-center gap-2 rounded-md bg-surface-variant px-3 text-outline focus-within:outline-2 focus-within:outline-primary"><Search
             size={16}/><input type="search" value={query} onChange={event => setQuery(event.target.value)}
-                              placeholder="Buscar archivos" aria-label="Buscar archivos"
+                              placeholder="Buscar recursos" aria-label="Buscar recursos"
                               className="min-w-0 flex-1 border-0 bg-transparent text-sm text-on-background outline-none placeholder:text-outline"/></label>}/>
         {collectionMenu && createPortal(<>
             <button type="button" className="fixed inset-0 z-[89] cursor-default" aria-label="Cerrar menú"
@@ -153,17 +151,17 @@ export function Library() {
                 </button>
             </div>
         </>, document.body)}
-        {collectionPending && <CollectionLoading view={viewMode} label="Cargando archivos"/>}
-        {collectionError && <div role="alert"><p>No se pudieron cargar los archivos o sus carpetas.</p><Button
+        {collectionPending && <CollectionLoading view={viewMode} label="Cargando recursos"/>}
+        {collectionError && <div role="alert"><p>No se pudieron cargar los recursos o sus carpetas.</p><Button
             onClick={() => {void resources.refetch(); void folders.refetch();}}>Reintentar</Button></div>}
         {!collectionPending && !collectionError && items.length === 0 && !hasVisibleFolders &&
             <div className="py-12 text-center text-sm text-outline"><FileIcon className="mx-auto mb-3" size={36}/>
-                <p>{query ? 'No hay resultados.' : status === 'archived' ? 'No hay archivos archivados.' : folderId ? 'Esta carpeta está vacía.' : 'Aún no hay archivos.'}</p>{status === 'active' &&
+                <p>{query ? 'No hay resultados.' : status === 'archived' ? 'No hay recursos archivados.' : folderId ? 'Esta carpeta está vacía.' : 'Aún no hay recursos.'}</p>{status === 'active' &&
                     <Button className="mt-3" onClick={() => setUploadOpen(true)}>Subir archivos</Button>}</div>}
         {!collectionPending && !collectionError && (hasVisibleFolders || items.length > 0) && <div
             className={viewMode === 'grid' ? 'grid grid-cols-[repeat(auto-fill,minmax(min(100%,205px),1fr))] gap-3' : ''}>
             {visibleFolders.map(folder => <CollectionItem key={folder.id} view={viewMode} title={folder.name}
-                                                          detail="Carpeta de archivos" icon={<Folder size={18}/>}
+                                                          detail="Carpeta" icon={<Folder size={18}/>}
                                                           preview={<Folder size={44}/>}
                                                           onOpen={() => setFolder(folder.id)} onDragStart={event => {
                 event.dataTransfer.setData('application/x-theke-library-folder', folder.id);
@@ -186,13 +184,14 @@ export function Library() {
                 onSelect: () => setFolderDialog({id: folder.id, name: folder.name})
             }, {label: 'Eliminar carpeta', destructive: true, onSelect: () => setDeletingFolder(folder)}]}/>)}
             {items.map(resource => <CollectionItem key={`${resource.id}:${resource.updatedAt}`} view={viewMode}
-                                                   title={resource.title} detail={resource.mediaType ?? 'Archivo'}
+                                                   title={resource.title} detail={resource.type === 'note' ? 'Nota' : resource.type === 'link' ? 'Enlace' : resource.mediaType ?? 'Archivo'}
                                                    date={new Date(resource.updatedAt).toLocaleDateString()}
                                                    icon={<ResourceIcon resource={resource} size={18}/>}
-                                                   preview={viewMode === 'grid' ? <FileThumbnail resource={resource}
-                                                                                                 fallback={<ResourceIcon
-                                                                                                     resource={resource}
-                                                                                                     size={40}/>}/> : undefined}
+                                                   preview={viewMode === 'grid' ? resource.type === 'note' ?
+                                                       <div className="flex h-full w-full items-start overflow-hidden px-4 py-3 text-left text-xs leading-relaxed text-on-background/75">
+                                                           <p className="line-clamp-6 whitespace-pre-wrap break-words">{notePreview(resource.content?.trim() || resource.description || 'Nota vacía')}</p>
+                                                       </div> : <FileThumbnail resource={resource}
+                                                                              fallback={<ResourceIcon resource={resource} size={40}/>}/> : undefined}
                                                    onOpen={() => navigate(resourceUrl(resource.id))}
                                                    onDragStart={status === 'active' ? event => {
                                                        event.dataTransfer.setData('application/x-theke-resource', resource.id);
@@ -221,27 +220,24 @@ export function Library() {
             <Button className="mt-5" loading={resources.isFetchingNextPage}
                     onClick={() => resources.fetchNextPage()}>{resources.isFetchingNextPage ? 'Cargando…' : 'Cargar más'}</Button>}
         {resourceId &&
-            <Dialog titleId="library-resource-title" onClose={closeResource} scrollable={detail.data?.type !== 'file'}
-                    shadow={detail.data?.type !== 'file'}
-                    className={detail.data?.type === 'file' ? 'flex h-[min(94dvh,900px)] max-w-[min(96vw,1600px)] flex-col' : 'max-w-5xl'}>
-                {detail.data?.type !== 'file' && <div className="flex justify-end"><h2 id="library-resource-title"
+            <Dialog titleId="library-resource-title" onClose={closeResource} scrollable={detail.data?.type !== 'file' && detail.data?.type !== 'note'}
+                    shadow={detail.data?.type !== 'file' && detail.data?.type !== 'note'}
+                    className={detail.data?.type === 'file' || detail.data?.type === 'note' ? 'flex h-[min(94dvh,900px)] max-w-[min(96vw,1600px)] flex-col' : 'max-w-5xl'}>
+                {detail.data?.type !== 'file' && detail.data?.type !== 'note' && <div className="flex justify-end"><h2 id="library-resource-title"
                                                                                        className="sr-only">{detail.data?.title ?? 'Archivo'}</h2>
                     <Button onClick={closeResource}>Cerrar</Button></div>}
                 {detail.isPending && <div className="mt-5"><InlineLoading label="Abriendo archivo…"/></div>}
                 {detail.isError && <p role="alert" className="mt-5 text-red-600">No se pudo abrir el recurso.</p>}
-                {detail.data?.type === 'note' && <NoteEditor
-                    note={{...detail.data, currentVersion: {id: '', ordinal: 1, content: detail.data.content ?? ''}}}
-                    busy={noteActions.update.isPending} onCancel={closeResource} onSave={async body => {
-                    const saved = await noteActions.update.mutateAsync({id: detail.data!.id, body});
-                    return saved.contentUnchanged;
-                }}/>}
+                {detail.data?.type === 'note' && <NoteResource key={detail.data.id} resource={detail.data}
+                    folderName={folderItems.find(folder => folder.id === detail.data?.libraryFolderId)?.name ?? null}
+                    onClose={closeResource}/>}
                 {detail.data?.type === 'file' && <FileResource key={detail.data.id} resource={detail.data}
                                                                folderName={folderItems.find(folder => folder.id === detail.data?.libraryFolderId)?.name ?? null}
                                                                onClose={closeResource}/>}
                 {detail.data?.type === 'link' && <LinkResource resource={detail.data}/>}
-                {detail.data && detail.data.type !== 'file' &&
+                {detail.data?.type === 'link' &&
                     <ResourceLifecycle resource={detail.data} onArchived={closeResource}/>}
-                {detail.data && detail.data.type !== 'file' &&
+                {detail.data?.type === 'link' &&
                     <ResourceKnowledgePanel key={detail.data.id} resource={detail.data}/>}
             </Dialog>}
         {status === 'active' && uploadOpen &&
@@ -579,20 +575,74 @@ function LinkResource({resource}: { resource: ResourceDetail }) {
             cambios</Button></form>}</article>;
 }
 
-function NoteEditor({note, busy, onCancel, onSave}: {
-    note?: Note;
-    busy: boolean;
-    onCancel: () => void;
-    onSave: (input: NoteInput) => Promise<boolean | undefined>
-}) {
-    const [title, setTitle] = useState(note?.title ?? '');
-    const [description, setDescription] = useState(note?.description ?? '');
-    const [content, setContent] = useState(note?.currentVersion.content ?? '');
-    const [message, setMessage] = useState('');
+function notePreview(value: string): string {
+    return value.replace(/\[\[([^\]]+)\]\]/g, (_, reference: string) => {
+        const label = reference.split('|').at(-1) ?? reference;
+        return label.startsWith('resource:') ? label.slice(9) : label.split('#')[0];
+    });
+}
+
+function noteContent(value: string): ReactNode[] {
+    const parts: ReactNode[] = [];
+    const pattern = /\[\[([^\]]+)\]\]/g;
+    let start = 0;
+    for (const match of value.matchAll(pattern)) {
+        const index = match.index ?? 0;
+        if (index > start) parts.push(value.slice(start, index));
+        const reference = match[1];
+        const linked = /^resource:([0-9a-f-]{36})\|(.+)$/i.exec(reference);
+        parts.push(linked ? <Link key={index} to={`/library/${linked[1]}`} className="rounded-sm text-primary underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-primary">{linked[2]}</Link>
+            : <span key={index} className="underline decoration-dotted underline-offset-2" title="Referencia por título">{notePreview(match[0])}</span>);
+        start = index + match[0].length;
+    }
+    if (start < value.length) parts.push(value.slice(start));
+    return parts;
+}
+
+function NoteResource({resource, folderName, onClose}: {resource: ResourceDetail; folderName: string | null; onClose: () => void}) {
+    const actions = useNoteActions();
+    const impactActions = useImpactActions();
     const toast = useToast();
+    const [editing, setEditing] = useState(false);
+    const [title, setTitle] = useState(resource.title);
+    const [description, setDescription] = useState(resource.description ?? '');
+    const [content, setContent] = useState(resource.content ?? '');
     const [linkQuery, setLinkQuery] = useState('');
+    const [message, setMessage] = useState('');
+    const [infoOpen, setInfoOpen] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [impactRequest, setImpactRequest] = useState<ImpactRequest | null>(null);
+    const menuRef = useRef<HTMLDivElement>(null);
+    const menuButtonRef = useRef<HTMLButtonElement>(null);
     const editor = useRef<HTMLTextAreaElement>(null);
-    const matching = useResources({query: linkQuery.trim() || undefined}, Boolean(linkQuery.trim()));
+    const matching = useResources({query: linkQuery.trim() || undefined}, Boolean(editing && linkQuery.trim()));
+    useEffect(() => {
+        if (!menuOpen) return;
+        const pointer = (event: PointerEvent) => {
+            if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
+        };
+        const key = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                event.stopPropagation();
+                setMenuOpen(false);
+                menuButtonRef.current?.focus();
+            }
+        };
+        document.addEventListener('pointerdown', pointer);
+        document.addEventListener('keydown', key, true);
+        return () => {
+            document.removeEventListener('pointerdown', pointer);
+            document.removeEventListener('keydown', key, true);
+        };
+    }, [menuOpen]);
+    const cancelEdit = () => {
+        setTitle(resource.title);
+        setDescription(resource.description ?? '');
+        setContent(resource.content ?? '');
+        setLinkQuery('');
+        setMessage('');
+        setEditing(false);
+    };
     const insertLink = (id: string, label: string) => {
         const position = editor.current?.selectionStart ?? content.length;
         const link = `[[resource:${id}|${label}]]`;
@@ -603,46 +653,76 @@ function NoteEditor({note, busy, onCancel, onSave}: {
             editor.current?.setSelectionRange(position + link.length, position + link.length);
         });
     };
-    const submit = async (event: FormEvent) => {
+    const save = async (event: FormEvent) => {
         event.preventDefault();
-        if (!title.trim()) {
-            setMessage('El título es obligatorio.');
-            return;
-        }
+        if (!title.trim()) {setMessage('El título es obligatorio.'); return;}
         setMessage('');
         try {
-            const unchanged = await onSave({title, description, content});
-            toast.success(unchanged ? 'El contenido ya estaba actualizado.' : 'Nota guardada.');
+            const saved = await actions.update.mutateAsync({id: resource.id, body: {title: title.trim(), description: description.trim(), content}});
+            toast.success(saved.contentUnchanged ? 'El contenido ya estaba actualizado.' : 'Nota guardada.');
+            setEditing(false);
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : 'No se pudo guardar. Puedes reintentar.');
+            setMessage(error instanceof Error ? error.message : 'No se pudo guardar la nota.');
         }
     };
-    return <form className="mx-auto mt-4 max-w-3xl" onSubmit={submit}><label className="block text-sm font-medium">Título<input
-        className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary text-xl"
-        value={title} maxLength={160} onChange={event => setTitle(event.target.value)}/></label><label
-        className="mt-4 block text-sm font-medium">Descripción<input
-        className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
-        value={description} onChange={event => setDescription(event.target.value)}/></label><label
-        className="mt-4 block text-sm font-medium">Contenido<textarea ref={editor}
-                                                                      className="mt-1 min-h-80 w-full rounded-md border-0 bg-surface-variant p-3 focus-visible:outline-2 focus-visible:outline-primary"
-                                                                      value={content}
-                                                                      onChange={event => setContent(event.target.value)}/></label>
-        <div className="mt-2 rounded-lg bg-surface-variant/55 p-3 text-sm"><label className="block">Insertar enlace a un
-            recurso<input
-                className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
-                value={linkQuery} onChange={event => setLinkQuery(event.target.value)}
-                placeholder="Busca un título o alias"/></label><p className="mt-1 text-xs text-outline">También puedes
-            escribir [[Título]] o [[Título#sección|texto]]. Los enlaces insertados desde el buscador mantienen la
-            identidad aunque cambie el título.</p>{matching.isError &&
-            <p role="alert">No se pudo buscar recursos.</p>}{linkQuery.trim() &&
-            <ul className="mt-2 max-h-36 overflow-auto">{matching.data?.pages.flatMap(page => page.data).filter(item => item.id !== note?.id).map(item =>
-                <li key={item.id}><Button type="button"
-                                          onClick={() => insertLink(item.id, item.title)}>Insertar {item.title}</Button>
-                </li>)}</ul>}</div>
-        {message && <p role="status" className="mt-3 text-sm">{message}</p>}
-        <div className="mt-5 flex gap-2"><Button type="button" onClick={onCancel}>Cancelar</Button><Button type="submit"
-                                                                                                           variant="primary"
-                                                                                                           loading={busy}>{busy ? 'Guardando…' : 'Guardar'}</Button>
+    return <article className="flex h-full min-h-0 w-full flex-col">
+        <header className="relative z-30 flex shrink-0 items-center gap-3 px-4 py-3 sm:px-5">
+            <FileText size={22} className="shrink-0 text-outline" aria-hidden="true"/>
+            <div className="min-w-0 flex-1">{editing ? <>
+                <h2 id="library-resource-title" className="sr-only">Editar {resource.title}</h2>
+                <input form="library-note-form" autoFocus aria-label="Título de la nota" maxLength={160} value={title}
+                       onChange={event => setTitle(event.target.value)}
+                       className="w-full rounded-md bg-surface-variant px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-primary"/>
+            </> : <h2 id="library-resource-title" className="truncate text-base font-semibold" data-tooltip={resource.title}>{resource.title}</h2>}</div>
+            {editing ? <><Button onClick={cancelEdit}>Cancelar</Button><Button type="submit" form="library-note-form" variant="primary" loading={actions.update.isPending}>Guardar</Button></> :
+                <Button size="icon" className="h-10 w-10" icon={Pencil} aria-label="Editar nota" title="Editar nota" onClick={() => setEditing(true)}/>}
+            <div className="relative" ref={menuRef}><Button ref={menuButtonRef} size="icon" className="h-10 w-10" icon={MoreHorizontal}
+                aria-label="Opciones de la nota" aria-haspopup="menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(value => !value)}/>
+                {menuOpen && <div role="menu" aria-label="Opciones de la nota" className="absolute right-0 top-full z-40 mt-1 min-w-40 rounded-lg bg-surface p-1 ring-1 ring-outline/10">
+                    <button type="button" role="menuitem" disabled={impactActions.restoreResource.isPending}
+                            className="flex w-full rounded-md px-3 py-2 text-left text-sm hover:bg-surface-variant focus-visible:bg-surface-variant focus-visible:outline-none disabled:opacity-50"
+                            onClick={() => {setMenuOpen(false); if (resource.status === 'archived') impactActions.restoreResource.mutate(resource.id); else setImpactRequest({entityType: 'resource', id: resource.id, action: 'archive'});}}>
+                        {resource.status === 'archived' ? 'Restaurar' : 'Archivar'}</button>
+                    <button type="button" role="menuitem" className="flex w-full rounded-md px-3 py-2 text-left text-sm text-red-600 hover:bg-surface-variant focus-visible:bg-surface-variant focus-visible:outline-none"
+                            onClick={() => {setMenuOpen(false); setImpactRequest({entityType: 'resource', id: resource.id, action: 'delete'});}}>Eliminar</button>
+                </div>}</div>
+            <Button size="icon" className="h-10 w-10 lg:hidden" icon={Info} aria-label="Mostrar propiedades" aria-expanded={infoOpen} onClick={() => setInfoOpen(value => !value)}/>
+            <Button size="icon" className="h-10 w-10 shrink-0" icon={X} aria-label="Cerrar" onClick={onClose}/>
+        </header>
+        <div className="relative flex min-h-0 flex-1">
+            <section aria-label={editing ? 'Edición de la nota' : 'Contenido de la nota'} className="min-h-0 min-w-0 flex-1 overflow-y-auto bg-surface/70 px-5 py-6 sm:px-10 sm:py-9">
+                {editing ? <form id="library-note-form" onSubmit={event => void save(event)} className="mx-auto flex max-w-3xl flex-col gap-4">
+                    <label className="text-xs font-medium text-outline">Descripción<input value={description} onChange={event => setDescription(event.target.value)}
+                        className="mt-1 block w-full rounded-md bg-background px-3 py-2 text-sm text-on-background focus-visible:outline-2 focus-visible:outline-primary"/></label>
+                    <label className="text-xs font-medium text-outline">Contenido<textarea ref={editor} value={content} onChange={event => setContent(event.target.value)}
+                        className="mt-1 block min-h-[min(48vh,520px)] w-full resize-y rounded-md bg-background p-4 text-base leading-7 text-on-background focus-visible:outline-2 focus-visible:outline-primary"/></label>
+                    <div className="rounded-lg bg-background/70 p-3"><label className="text-xs font-medium text-outline">Insertar enlace a un recurso<input value={linkQuery}
+                        onChange={event => setLinkQuery(event.target.value)} placeholder="Busca un título o alias"
+                        className="mt-1 block w-full rounded-md bg-surface-variant px-3 py-2 text-sm text-on-background focus-visible:outline-2 focus-visible:outline-primary"/></label>
+                        {matching.isError && <p role="alert" className="mt-2 text-sm">No se pudo buscar recursos.</p>}
+                        {linkQuery.trim() && <ul className="mt-2 max-h-36 overflow-y-auto">{matching.data?.pages.flatMap(page => page.data).filter(item => item.id !== resource.id).map(item =>
+                            <li key={item.id}><Button type="button" onClick={() => insertLink(item.id, item.title)}>Insertar {item.title}</Button></li>)}</ul>}
+                    </div>
+                    {message && <p role="alert" className="text-sm text-red-600">{message}</p>}
+                </form> : <div className="mx-auto max-w-3xl">
+                    {resource.description && <p className="mb-6 text-sm leading-6 text-outline">{resource.description}</p>}
+                    <div className="whitespace-pre-wrap break-words text-base leading-7 text-on-background">{resource.content ? noteContent(resource.content) : <span className="text-outline">Esta nota está vacía.</span>}</div>
+                </div>}
+            </section>
+            {infoOpen && <button type="button" className="absolute inset-0 z-10 bg-black/20 lg:hidden" aria-label="Cerrar propiedades" onClick={() => setInfoOpen(false)}/>}
+            <aside aria-label="Propiedades de la nota" className={`${infoOpen ? 'absolute inset-y-0 right-0 z-20 block w-[min(22rem,100%)]' : 'hidden'} min-h-0 overflow-y-auto bg-background p-5 lg:relative lg:block lg:w-[min(22rem,32%)] lg:shrink-0`}>
+                <div className="mb-5 flex items-center justify-between"><h3 className="font-semibold">Propiedades</h3>
+                    <Button size="icon" className="h-9 w-9 lg:hidden" icon={X} aria-label="Cerrar propiedades" onClick={() => setInfoOpen(false)}/></div>
+                <dl className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-3 gap-y-3 text-sm">
+                    <dt className="text-outline">Tipo</dt><dd>Nota</dd>
+                    <dt className="text-outline">Ubicación</dt><dd className="break-words">{folderName ?? 'Biblioteca'}</dd>
+                    <dt className="text-outline">Origen</dt><dd className="break-words">{resource.origin}</dd>
+                    <dt className="text-outline">Modificado</dt><dd>{new Date(resource.updatedAt).toLocaleString()}</dd>
+                    <dt className="text-outline">Estado</dt><dd>{resource.status === 'archived' ? 'Archivado' : 'Activo'}</dd>
+                </dl>
+                <ResourceKnowledgePanel key={resource.id} resource={resource} compact/>
+            </aside>
         </div>
-    </form>;
+        {impactRequest && <ImpactDialog request={impactRequest} onClose={() => setImpactRequest(null)} onDone={() => {setImpactRequest(null); onClose();}}/>}
+    </article>;
 }

@@ -2,8 +2,10 @@ import {useState} from 'react';
 import {Button} from '../../components/ui/Button';
 import {InlineLoading} from '../../components/ui/LoadingState';
 import {useResource, useResourceActions} from '../../data/useResources';
+import {useNoteActions} from '../../data/useNotes';
 import {useCanvasStore} from '../../store/useCanvasStore';
 import {CanvasPresentationInspector} from './CanvasPresentationInspector';
+import {CanvasNoteDialog} from './CanvasNoteDialog';
 
 export function CanvasResourceInspector({nodeId, resourceId, caption = ''}: {
     nodeId: string;
@@ -12,8 +14,10 @@ export function CanvasResourceInspector({nodeId, resourceId, caption = ''}: {
 }) {
     const resource = useResource(resourceId);
     const actions = useResourceActions();
+    const noteActions = useNoteActions();
     const updateNodeData = useCanvasStore(state => state.updateNodeData);
     const [previewUrl, setPreviewUrl] = useState('');
+    const [noteOpen, setNoteOpen] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState<'inline' | 'download' | null>(null);
     const item = resource.data;
@@ -47,7 +51,8 @@ export function CanvasResourceInspector({nodeId, resourceId, caption = ''}: {
                 {item.type === 'file' &&
                     <p className="text-xs text-outline">{item.byteSize == null ? 'Tamaño desconocido' : `${(item.byteSize / 1024 / 1024).toFixed(1)} MiB`}</p>}
                 {item.type === 'note' &&
-                    <p className="max-h-40 overflow-auto whitespace-pre-wrap">{item.content || 'Nota vacía.'}</p>}
+                    <><p className="max-h-40 overflow-auto whitespace-pre-wrap">{item.content || 'Nota vacía.'}</p>
+                        <Button onClick={() => setNoteOpen(true)}>Editar nota</Button></>}
                 {item.type === 'link' && item.url &&
                     <a className="block break-all text-primary underline" href={item.url} target="_blank"
                        rel="noopener noreferrer">Abrir enlace</a>}
@@ -81,5 +86,7 @@ export function CanvasResourceInspector({nodeId, resourceId, caption = ''}: {
             <p className="mt-2 text-xs text-outline">Esta etiqueta no cambia el recurso de la Biblioteca.</p>
         </section>
         <CanvasPresentationInspector nodeId={nodeId}/>
+        {noteOpen && item?.type === 'note' && <CanvasNoteDialog initial={{title: item.title, description: item.description ?? '', content: item.content ?? ''}}
+            onClose={() => setNoteOpen(false)} onSave={async body => {await noteActions.update.mutateAsync({id: resourceId, body}); setNoteOpen(false);}}/>}
     </div>;
 }

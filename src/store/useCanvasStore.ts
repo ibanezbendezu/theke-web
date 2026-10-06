@@ -11,6 +11,7 @@ import {
 } from '@xyflow/react';
 import {initialNodes, initialEdges} from '../mock/initialState';
 import {placeResource} from '../features/canvas/placeResource';
+import {resourceCardSize, type ResourceDisplayMode} from '../features/canvas/resourceCardSizing';
 import type {CanvasBackground} from '../data/useDiagrams';
 
 type CanvasSnapshot = {
@@ -53,6 +54,7 @@ interface CanvasState {
     addAnnotation: (kind: 'text' | 'shape' | 'line', preferred?: { x: number; y: number }) => string;
     duplicateNode: (id: string) => string | null;
     addResourceRepresentation: (resourceId: string, preferred?: { x: number; y: number }) => string;
+    setResourceDisplayMode: (nodeId: string, mode: ResourceDisplayMode) => void;
     addFolderRepresentation: (folderId: string, projectId: string, preferred?: { x: number; y: number }) => string;
     addUploadedResource: (resourceId: string, batchId: string, preferred: {
         x: number;
@@ -241,14 +243,20 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
                 id,
                 type: 'resource',
                 position,
-                width: 288,
-                height: 112,
-                data: {resourceId},
+                ...resourceCardSize.normal,
+                data: {resourceId, displayMode: 'normal'},
                 selected: true
             }]
         }));
         return id;
     },
+    setResourceDisplayMode: (nodeId, mode) => set(state => {
+        const node = state.nodes.find(item => item.id === nodeId);
+        if (!node || node.type !== 'resource' || node.data.displayMode === mode) return state;
+        return {...history(state), nodes: state.nodes.map(item => item.id === nodeId ? {
+            ...item, ...resourceCardSize[mode], data: {...item.data, displayMode: mode}
+        } : item)};
+    }),
     addFolderRepresentation: (folderId, projectId, preferred) => {
         const id = crypto.randomUUID();
         const viewport = get().viewport;

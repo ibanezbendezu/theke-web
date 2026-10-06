@@ -4,7 +4,7 @@ description: Sistema visual sereno y centrado en contenido para construir, explo
 status: draft
 preview-theme: dark
 created: 2026-09-19
-updated: 2026-09-28
+updated: 2026-10-05
 sources:
   - ../../briefs/brief-Theke-2026-09-19/brief.md
   - ../../briefs/brief-Theke-2026-09-19/addendum.md
@@ -253,7 +253,7 @@ Los controles base usan las entradas homónimas de `components`: `Button Primary
 | **Top Bar** | Franja plana y compacta en todas las páginas salvo Canvas/Diagrama. Ruta breve a la izquierda; metadatos y acciones generales a la derecha. No aloja el selector Lista/Galería ni un botón de creación. Canvas usa su propio encabezado de trabajo con `Save Status`. |
 | **Project Card** | Fila plana con separador funcional o bloque de galería con fondo translúcido, título fuerte y metadatos en caption. Hover tonal; foco visible. Evita contornos decorativos. |
 | **Resource Row** | Alternativa de lista del explorador: mínimo 40 px, icono semántico, nombre, tipo y última edición. Acciones disponibles con foco y hover. |
-| **Resource Card** | En Canvas, compacta y reconocible por tipo, título y metadatos. Selección con `{colors.selection}` y anillo; no usa la miniatura grande de Biblioteca. |
+| **Resource Card** | En Canvas tiene dos tamaños fijos: mini (208 × 72) y normal (304 × 224). Mini prioriza icono, título y tipo; normal muestra un extracto de nota, miniatura de imagen/vídeo/PDF o reproductor de audio. Selección con anillo discreto; los puntos de conexión conservan sus identificadores al alternar. |
 | **Resource Browser** | Organización de Recursos inspirada en Drive dentro del marco Notion: grupos sin borde, búsqueda de radio `{rounded.md}` en la misma fila que grupos y vistas, ruta en topbar y selector Lista/Galería compartido. Conserva el fondo oscuro `#191919` del resto de Theke. |
 | **Collection View Switcher** | Lista/Galería dentro de la fila de controles de cada colección, junto a un «+» neutro. Ambos usan botones independientes sin borde permanente, radio `{rounded.md}` y el mismo fondo translúcido de las pestañas al hover o activarse. Mantiene alineación y comportamiento entre Inicio, Proyectos, Proyecto, Biblioteca y Carpetas. |
 | **Resource Preview Card** | Tarjeta de exploración con nombre y tipo arriba, miniatura grande debajo y acciones accesibles por foco, clic y teclado. Fondo translúcido sin contorno, radio `{rounded.md}` del mismo sistema Notion; la cuadrícula adapta columnas sin cortar contenido. |
@@ -295,3 +295,10 @@ Los controles base usan las entradas homónimas de `components`: `Button Primary
 | Transiciones específicas de 120–180 ms con reducción de movimiento. | `transition-all` o animar posiciones del Canvas. |
 | Etiqueta de `Group Frame` fuera del contenido. | Handles dentro de `overflow-hidden`. |
 | Usar este spine para nuevos componentes. | Copiar estilos del prototipo si contradicen tokens. |
+
+## Decisión de recursos en el mapa (2026-10-05)
+
+- La nota es un Recurso canónico de Biblioteca. Se crea y edita desde el mapa sin subir archivo; el texto visual sigue siendo una anotación local.
+- El modo mini/normal pertenece a cada representación del mapa, se guarda con el documento y participa en deshacer/rehacer. Cambiar de modo no cambia el Recurso ni la Relación.
+- Imagen, vídeo, PDF, audio, nota y enlace comparten la estructura de tarjeta y el lenguaje visual de Theke. La vista pública usa esa misma representación; los archivos publicados se leen mediante el acceso del Compartido.
+- Los mapas anteriores se abren en modo mini para conservar su densidad. Los recursos nuevos empiezan en modo normal.

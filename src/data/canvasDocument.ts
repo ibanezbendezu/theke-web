@@ -1,4 +1,5 @@
 import type {DiagramDocument} from './useDiagrams';
+import {resourceCardSize} from '../features/canvas/resourceCardSizing';
 
 export function migrateCanvasDocument(value: unknown): DiagramDocument {
     if (!value || typeof value !== 'object') throw new Error('El documento del diagrama está dañado.');
@@ -9,7 +10,11 @@ export function migrateCanvasDocument(value: unknown): DiagramDocument {
     if (!viewport || ![viewport.x, viewport.y, viewport.zoom].every(value => typeof value === 'number' && Number.isFinite(value)) || viewport.zoom <= 0) throw new Error('La vista del diagrama está dañada.');
     const background = source.background ?? {variant: 'dots', tone: 'default'};
     if (!['plain', 'dots', 'grid'].includes(background.variant) || !['default', 'surface'].includes(background.tone)) throw new Error('El fondo del diagrama está dañado.');
-    const nodes = source.nodes.map(node => node.type === 'resource' || node.type === 'folder' ? {
+    const nodes = source.nodes.map(node => node.type === 'resource' ? {
+        ...node,
+        ...resourceCardSize[node.data?.displayMode === 'normal' ? 'normal' : 'mini'],
+        data: {...node.data, displayMode: node.data?.displayMode === 'normal' ? 'normal' : 'mini'}
+    } : node.type === 'folder' ? {
         ...node,
         width: node.width ?? 288,
         height: node.height ?? 112

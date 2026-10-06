@@ -1,41 +1,35 @@
-import {NodeResizer, type Node, type NodeProps} from '@xyflow/react';
-import {File as FileIcon, FileText, Image, Link as LinkIcon, Music, Video} from 'lucide-react';
+import {type Node, type NodeProps} from '@xyflow/react';
+import {Maximize2, Minimize2} from 'lucide-react';
 import {ResourceConnectionHandles} from '../../../components/ui/ResourceConnectionHandles';
-import {useResource} from '../../../data/useResources';
+import {useResource, useResourceAccess} from '../../../data/useResources';
 import {useCanvasStore} from '../../../store/useCanvasStore';
+import {ResourceCard} from '../ResourceCard';
+import {resourceCardSize, type ResourceDisplayMode} from '../resourceCardSizing';
 
 export type ResourceNodeType = Node<{
     resourceId: string;
     caption?: string;
-    accent?: 'default' | 'primary' | 'muted'
+    accent?: 'default' | 'primary' | 'muted';
+    displayMode?: ResourceDisplayMode
 }, 'resource'>;
 
-export function ResourceNode({id, data, selected, width = 288, height = 112}: NodeProps<ResourceNodeType>) {
+export function ResourceNode({id, data, selected}: NodeProps<ResourceNodeType>) {
     const resource = useResource(data.resourceId);
+    const mode = data.displayMode === 'normal' ? 'normal' : 'mini';
+    const audio = resource.data?.mediaType?.startsWith('audio/');
+    const access = useResourceAccess(data.resourceId, mode === 'normal' && Boolean(audio));
     const openCanvasNode = useCanvasStore(state => state.openCanvasNode);
-    const beginGesture = useCanvasStore(state => state.beginGesture);
-    const endGesture = useCanvasStore(state => state.endGesture);
-    const type = resource.data?.type;
-    const mediaType = resource.data?.mediaType;
-    const Icon = type === 'note' ? FileText : type === 'link' ? LinkIcon : mediaType?.startsWith('image/') ? Image : mediaType?.startsWith('video/') ? Video : mediaType?.startsWith('audio/') ? Music : FileIcon;
-    const kind = type === 'note' ? 'Nota' : type === 'link' ? 'Enlace' : mediaType?.startsWith('image/') ? 'Imagen' : mediaType?.startsWith('video/') ? 'Video' : mediaType?.startsWith('audio/') ? 'Audio' : mediaType === 'application/pdf' ? 'Documento PDF' : 'Archivo';
-    return <div className="relative" style={{width, height}}><NodeResizer isVisible={selected} minWidth={160}
-                                                                          minHeight={80} color="var(--color-primary)"
-                                                                          onResizeStart={beginGesture}
-                                                                          onResizeEnd={endGesture}/>
-        <article
-            className={`flex h-full w-full items-center gap-3 rounded-lg border bg-background p-3 ${selected ? 'ring-1 ring-primary' : ''}`}
-            style={{borderColor: data.accent === 'primary' ? 'var(--color-primary)' : data.accent === 'muted' ? 'var(--color-outline)' : 'var(--color-border)'}}>
-            <Icon size={20} className="shrink-0 text-primary" aria-hidden="true"/>
-            <div className="min-w-0 flex-1"><p
-                className="truncate text-sm font-medium">{resource.data?.title ?? (resource.isError ? 'Recurso no disponible' : 'Cargando recurso…')}</p>
-                <p className="text-xs text-outline">{kind}{data.caption ? ` · ${data.caption}` : ''}</p></div>
-            <button type="button"
-                    className="nodrag nopan rounded border border-border px-2 py-1 text-xs hover:bg-surface-variant"
-                    onClick={() => openCanvasNode(id)}
-                    aria-label={`Abrir detalle de ${resource.data?.title ?? 'recurso'}`}>Abrir
-            </button>
-            <ResourceConnectionHandles editable/>
-        </article>
+    const setMode = useCanvasStore(state => state.setResourceDisplayMode);
+    return <div className="group/resource relative" style={resourceCardSize[mode]}>
+        <ResourceCard resource={resource.data} mode={mode} caption={data.caption} accent={data.accent}
+                      selected={selected} onOpen={() => openCanvasNode(id)}
+                      directUrl={audio ? access.data?.url : undefined}/>
+        {selected && <button type="button" className="nodrag nopan absolute -right-2 -top-2 z-20 grid h-7 w-7 place-items-center rounded-md bg-surface text-on-background ring-1 ring-border hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary"
+                             aria-label={mode === 'normal' ? 'Mostrar recurso en tamaño mini' : 'Mostrar recurso en tamaño normal'}
+                             title={mode === 'normal' ? 'Tamaño mini' : 'Tamaño normal'}
+                             onClick={() => setMode(id, mode === 'normal' ? 'mini' : 'normal')}>
+            {mode === 'normal' ? <Minimize2 size={14}/> : <Maximize2 size={14}/>}
+        </button>}
+        <ResourceConnectionHandles editable/>
     </div>;
 }

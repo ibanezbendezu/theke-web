@@ -110,12 +110,13 @@ export function CanvasResourcePanel({projectId, onAdd, onSelect, onSelectFolder}
     </aside>;
 }
 
-export function CanvasResourcePicker({projectId, usedIds, onClose, onSelect, onFocus}: {
+export function CanvasResourcePicker({projectId, usedIds, onClose, onSelect, onFocus, onCreateNote}: {
     projectId: string;
     usedIds: Set<string>;
     onClose: () => void;
     onSelect: (id: string) => void;
-    onFocus: (id: string) => void
+    onFocus: (id: string) => void;
+    onCreateNote?: () => void
 }) {
     const [scope, setScope] = useState<'project' | 'global'>('project');
     const [search, setSearch] = useState('');
@@ -131,8 +132,11 @@ export function CanvasResourcePicker({projectId, usedIds, onClose, onSelect, onF
     return <CanvasDialog titleId="resource-picker-title" onClose={onClose}
                          className="flex max-h-[80vh] max-w-xl flex-col">
         <div className="flex items-center justify-between"><h2 id="resource-picker-title"
-                                                               className="font-semibold">Añadir recurso al canvas</h2>
+                                                               className="font-semibold">Añadir recurso al mapa</h2>
             <Button onClick={onClose}>Cerrar</Button></div>
+        {onCreateNote && <button type="button" onClick={onCreateNote} className="mt-4 flex min-h-12 items-center gap-3 rounded-lg bg-surface-variant/70 px-3 text-left text-sm hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary">
+            <FileText size={18} aria-hidden="true"/><span className="flex-1">Crear nota de texto</span><Plus size={16} aria-hidden="true"/>
+        </button>}
         <label className="mt-4 text-sm">Buscar recurso<input autoFocus
                                                              className="mt-1 w-full rounded border border-border bg-background p-2"
                                                              value={search}

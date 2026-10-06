@@ -35,8 +35,23 @@ describe('migración de documentos del canvas', () => {
   it('restaura dimensiones de representaciones antiguas para que sigan visibles', () => {
     const node = { id: 'resource-1', type: 'resource', position: { x: 10, y: 20 }, data: { resourceId: 'resource-id' } };
     const migrated = migrateCanvasDocument({ schemaVersion: 1, nodes: [node], edges: [], viewport: { x: 0, y: 0, zoom: 1 } });
-    expect(migrated.nodes[0]).toMatchObject({ width: 288, height: 112 });
+    expect(migrated.nodes[0]).toMatchObject({ width: 208, height: 72, data: {displayMode: 'mini'} });
     expect(node).not.toHaveProperty('width');
+  });
+  it('cambia solo la representación del recurso y conserva relaciones al deshacer', () => {
+    const nodes = [
+      {id: 'a', type: 'resource', position: {x: 0, y: 0}, width: 304, height: 224, data: {resourceId: 'same', displayMode: 'normal'}},
+      {id: 'b', type: 'resource', position: {x: 400, y: 0}, width: 304, height: 224, data: {resourceId: 'same', displayMode: 'normal'}}
+    ];
+    const edge = {id: 'edge', source: 'a', target: 'b', sourceHandle: 'right', targetHandle: 'left'};
+    useCanvasStore.getState().loadDocument(nodes, [edge]);
+    useCanvasStore.getState().setResourceDisplayMode('a', 'mini');
+    expect(useCanvasStore.getState().nodes[0]).toMatchObject({width: 208, height: 72, data: {displayMode: 'mini'}});
+    expect(useCanvasStore.getState().nodes[1]).toEqual(nodes[1]);
+    expect(useCanvasStore.getState().edges).toEqual([edge]);
+    useCanvasStore.getState().undo();
+    expect(useCanvasStore.getState().nodes).toEqual(nodes);
+    expect(useCanvasStore.getState().edges).toEqual([edge]);
   });
   it('conserva la relación al cambiar el punto visual de conexión y permite deshacer', () => {
     const edge = {id: 'edge-1', source: 'a', target: 'b', type: 'editable', data: {relationId: 'relation-1'}};

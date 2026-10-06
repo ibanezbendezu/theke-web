@@ -21,9 +21,11 @@ import type {AiScopePreparation} from '../api/generated/models';
 import {ThemeToggle} from '../components/ui/ThemeToggle';
 import {useDiagram} from '../data/useDiagrams';
 import {useOrganizationActions} from '../data/useOrganization';
+import {useNoteActions} from '../data/useNotes';
 import {DiagramWorkspace} from './DiagramWorkspace';
 import {CanvasEditor} from '../features/canvas/CanvasEditor';
 import {CanvasResourcePanel, CanvasResourcePicker} from '../features/canvas/CanvasResources';
+import {CanvasNoteDialog} from '../features/canvas/CanvasNoteDialog';
 import {useCanvasStore} from '../store/useCanvasStore';
 import {useCanvasUploadBatches} from '../features/canvas/useCanvasUploadBatches';
 import {CanvasUploadTray} from '../features/canvas/CanvasUploadTray';
@@ -58,6 +60,7 @@ function DiagramEditorCore() {
     const selectedCommentId = new URLSearchParams(location.search).get('comment');
     const diagram = useDiagram(diagramId);
     const organization = useOrganizationActions(projectId ?? '');
+    const noteActions = useNoteActions();
     const [leftPanel, setLeftPanel] = useState<'resources' | 'semantic' | 'comments' | null>(selectedCommentId ? 'comments' : null);
     const [visualPanel, setVisualPanel] = useState<{kind: 'text' | 'shape' | 'line'; section: VisualTextPanel | VisualElementPanel} | null>(null);
     const commentPage = useCommentNotifications(1, 'all', diagramId);
@@ -80,6 +83,8 @@ function DiagramEditorCore() {
     const rightOpen = useCanvasStore(state => state.inspectorOpen);
     const setRightOpen = useCanvasStore(state => state.setInspectorOpen);
     const [pickerOpen, setPickerOpen] = useState(false);
+    const [noteDialogOpen, setNoteDialogOpen] = useState(false);
+    const [createdNoteId, setCreatedNoteId] = useState<string | null>(null);
     const [preferred, setPreferred] = useState<{ x: number; y: number } | undefined>();
     const [duplicate, setDuplicate] = useState<{
         resourceId: string;
@@ -333,7 +338,16 @@ function DiagramEditorCore() {
         </aside>}
         {pickerOpen && <CanvasResourcePicker projectId={diagram.data.projectId} usedIds={usedIds}
                                              onClose={() => setPickerOpen(false)} onSelect={id => tryAdd(id, preferred)}
-                                             onFocus={focusExisting}/>}
+                                             onFocus={focusExisting} onCreateNote={() => {setPickerOpen(false); setNoteDialogOpen(true);}}/>}
+        {noteDialogOpen && <CanvasNoteDialog onClose={() => {setNoteDialogOpen(false); setCreatedNoteId(null);}} onSave={async input => {
+            const resourceId = createdNoteId ?? (await noteActions.create.mutateAsync(input)).id;
+            setCreatedNoteId(resourceId);
+            await organization.addResources.mutateAsync([resourceId]);
+            useCanvasStore.getState().addResourceRepresentation(resourceId, preferred);
+            setNoteDialogOpen(false);
+            setCreatedNoteId(null);
+            setResourceError('');
+        }}/>}
         {duplicate &&
             <CanvasDialog titleId="duplicate-resource-title" onClose={() => setDuplicate(null)} className="max-w-md"><h2
                 id="duplicate-resource-title" className="font-semibold">Este recurso ya está en el diagrama</h2><p

@@ -19,6 +19,7 @@ export interface ResourceSummary {
     accessibilityMissing: boolean;
     url?: string | null;
     previewImageUrl?: string | null;
+    content?: string;
     metadataStatus?: 'pending' | 'ready' | 'failed' | null
 }
 

@@ -17,23 +17,21 @@ import {
     type NodeTypes
 } from '@xyflow/react';
 import {
-    File as FileIcon,
     FileText,
     Folder,
     Image,
     Layers,
-    Link as LinkIcon,
     Maximize,
     MessageCircle,
     Music,
     PlaySquare,
-    Video,
     ZoomIn,
     ZoomOut
 } from 'lucide-react';
 import type {PublicLayoutNode, PublicShare, SharePreviewRelation, SharePreviewResource} from '../api/generated/models';
 import {Button} from '../components/ui/Button';
 import {ResourceConnectionHandles} from '../components/ui/ResourceConnectionHandles';
+import {ResourceCard} from '../features/canvas/ResourceCard';
 import {VisualTextContent} from '../features/canvas/VisualTextContent';
 import {visualTextStyle} from '../features/canvas/visualTextStyle';
 import type {AnnotationData} from '../features/canvas/nodes/AnnotationNode';
@@ -44,6 +42,8 @@ export type PublicSelection = { kind: 'resource' | 'relation' | 'folder'; id: st
 type PublicNodeData = {
     item: PublicLayoutNode;
     resource?: SharePreviewResource;
+    token: string;
+    revision: number;
     onSelect: (value: PublicSelection) => void
 };
 type PublicEdgeData = {
@@ -96,24 +96,13 @@ function PublicCanvasNode({data, selected}: NodeProps<Node<PublicNodeData, 'publ
     const width = item.width ?? (item.type === 'container' ? 350 : item.type === 'annotation' ? 240 : 288);
     const height = item.height ?? (item.type === 'container' ? 250 : item.type === 'annotation' ? 100 : 112);
     if (!item.type || item.type === 'resource') {
-        const media = resource?.mediaType;
-        const Icon = resource?.type === 'note' ? FileText : resource?.type === 'link' ? LinkIcon : media?.startsWith('image/') ? Image : media?.startsWith('video/') ? Video : media?.startsWith('audio/') ? Music : FileIcon;
-        const kind = resource?.type === 'note' ? 'Nota' : resource?.type === 'link' ? 'Enlace' : media?.startsWith('image/') ? 'Imagen' : media?.startsWith('video/') ? 'Video' : media?.startsWith('audio/') ? 'Audio' : media === 'application/pdf' ? 'Documento PDF' : 'Archivo';
+        const directUrl = data.token && resource?.type === 'file' ? `${import.meta.env.VITE_API_URL?.replace(/\/+$/, '') ?? ''}/v1/public/shares/${encodeURIComponent(data.token)}/resources/${encodeURIComponent(resource.id)}/content` : undefined;
         return <div className="relative" style={{width, height}}>
-            <article
-                className={`flex h-full w-full items-center gap-3 rounded-lg border bg-background p-3 ${selected ? 'ring-1 ring-primary' : ''}`}
-                style={{borderColor: item.accent === 'primary' ? 'var(--color-primary)' : item.accent === 'muted' ? 'var(--color-outline)' : 'var(--color-border)'}}>
-                <Icon size={20} className="shrink-0 text-primary" aria-hidden="true"/>
-                <div className="min-w-0 flex-1"><p
-                    className="truncate text-sm font-medium">{resource?.title ?? 'Recurso no disponible'}</p><p
-                    className="truncate text-xs text-outline">{kind}{item.caption ? ` · ${item.caption}` : ''}</p></div>
-                <button type="button"
-                        className="nodrag nopan rounded border border-border px-2 py-1 text-xs hover:bg-surface-variant"
-                        onClick={() => item.resourceId && onSelect({kind: 'resource', id: item.resourceId})}
-                        aria-label={`Abrir detalle de ${resource?.title ?? 'recurso'}`}>Abrir
-                </button>
-                <ResourceConnectionHandles/>
-            </article>
+            <ResourceCard resource={resource ? {...resource, content: resource.content ?? undefined, description: resource.description ?? undefined, url: resource.url ?? undefined, updatedAt: String(data.revision)} : undefined}
+                          mode={height < 160 ? 'mini' : 'normal'} caption={item.caption} accent={item.accent}
+                          selected={selected} directUrl={directUrl}
+                          onOpen={() => item.resourceId && onSelect({kind: 'resource', id: item.resourceId})}/>
+            <ResourceConnectionHandles/>
         </div>;
     }
     if (item.type === 'folder') return <div className="relative" style={{width, height}}>
@@ -268,6 +257,7 @@ const edgeTypes = {public: PublicCanvasEdge};
 
 function PublicCanvas({
                           data,
+                          token,
                           selection,
                           onSelect,
                           commentMode,
@@ -277,6 +267,7 @@ function PublicCanvas({
                           onCommentOpen
                       }: {
     data: PublicShare;
+    token: string;
     selection: PublicSelection;
     onSelect: (value: PublicSelection) => void;
     commentMode: boolean;
@@ -294,7 +285,7 @@ function PublicCanvas({
             id: item.id,
             type: 'public' as const,
             position: {x: item.x, y: item.y},
-            data: {item, resource: item.resourceId ? resources.get(item.resourceId) : undefined, onSelect},
+            data: {item, resource: item.resourceId ? resources.get(item.resourceId) : undefined, onSelect, token, revision: data.revision},
             selected: selection?.kind === 'folder' ? item.type === 'folder' && selection.id === item.id : selection?.kind === 'resource' && selection.id === item.resourceId,
             zIndex: item.zIndex ?? (item.type === 'container' ? 0 : 1),
             draggable: false,
@@ -310,7 +301,7 @@ function PublicCanvas({
             connectable: false,
             selectable: false
         }] : []),
-    ], [comments, data.layout.nodes, onCommentOpen, onSelect, resources, selection]);
+    ], [comments, data.layout.nodes, data.revision, onCommentOpen, onSelect, resources, selection, token]);
     const edges = useMemo<Edge<PublicEdgeData, 'public'>[]>(() => data.layout.edges.map(item => {
         const relation = item.relationId ? relations.get(item.relationId) : undefined;
         return {
@@ -416,6 +407,7 @@ function PublicCanvas({
 
 export function PublicDiagramCanvas({
                                         data,
+                                        token = '',
                                         selection,
                                         onSelect,
                                         commentMode = false,
@@ -427,6 +419,7 @@ export function PublicDiagramCanvas({
                                         }
                                     }: {
     data: PublicShare;
+    token?: string;
     selection: PublicSelection;
     onSelect: (value: PublicSelection) => void;
     commentMode?: boolean;
@@ -435,7 +428,7 @@ export function PublicDiagramCanvas({
     onCommentTarget?: (target: CommentTarget) => void;
     onCommentOpen?: (id: string) => void
 }) {
-    return <div className="h-full w-full" aria-label="Diagrama público"><ReactFlowProvider><PublicCanvas data={data}
+    return <div className="h-full w-full" aria-label="Diagrama público"><ReactFlowProvider><PublicCanvas data={data} token={token}
                                                                                                          selection={selection}
                                                                                                          onSelect={onSelect}
                                                                                                          commentMode={commentMode}

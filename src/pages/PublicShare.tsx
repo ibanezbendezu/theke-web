@@ -125,7 +125,7 @@ function PublicShareView({token}: { token: string | undefined }) {
     if (!data) return <WorkspaceLoading fullscreen label="Abriendo mapa compartido…"/>;
     return <main className="public-share relative flex h-dvh min-h-0 bg-background text-on-background">
         <section className="relative min-w-0 flex-1" aria-label="Lienzo compartido">
-            <PublicDiagramCanvas data={data} selection={selection} onSelect={select} commentMode={commentMode}
+            <PublicDiagramCanvas data={data} token={token ?? ''} selection={selection} onSelect={select} commentMode={commentMode}
                                  commentsEnabled={data.commentsEnabled} comments={comments}
                                  onCommentTarget={chooseCommentTarget} onCommentOpen={id => {
                 setSelectedCommentId(id);

@@ -12,7 +12,7 @@ export function ResourceConnectionHandles({editable = false}: {editable?: boolea
         <Handle key={`source-${id}`} id={id} type="source" position={position}
                 isConnectable={editable}
                 className={editable
-                    ? '!h-4 !w-4 !border-2 !border-background !bg-outline !opacity-70 hover:!bg-primary hover:!opacity-100'
+                    ? '!pointer-events-none !h-4 !w-4 !border-2 !border-background !bg-outline !opacity-0 transition-opacity duration-150 group-hover/resource:!pointer-events-auto group-hover/resource:!opacity-100 group-focus-within/resource:!pointer-events-auto group-focus-within/resource:!opacity-100 hover:!bg-primary motion-reduce:transition-none'
                     : '!border-0 !bg-primary !opacity-0'}/>)}
         {!editable && positions.map(({id, position}) =>
             <Handle key={`target-${id}`} id={id} type="target" position={position}
