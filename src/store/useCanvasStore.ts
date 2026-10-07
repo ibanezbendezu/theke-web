@@ -56,6 +56,7 @@ interface CanvasState {
     addResourceRepresentation: (resourceId: string, preferred?: { x: number; y: number }) => string;
     setResourceDisplayMode: (nodeId: string, mode: ResourceDisplayMode) => void;
     addFolderRepresentation: (folderId: string, projectId: string, preferred?: { x: number; y: number }) => string;
+    addLibraryFolderRepresentation: (libraryFolderId: string, preferred?: { x: number; y: number }) => string;
     addUploadedResource: (resourceId: string, batchId: string, preferred: {
         x: number;
         y: number
@@ -81,6 +82,7 @@ interface CanvasState {
     setNodeAbsolutePosition: (nodeId: string, position: {x: number; y: number}) => void;
     alignNodeToViewport: (nodeId: string, axis: 'x' | 'y', placement: 'start' | 'center' | 'end') => void;
     moveNodeLayer: (nodeId: string, direction: 'front' | 'back') => void;
+    reorderNodeLayer: (nodeId: string, targetId: string, placement: 'before' | 'after') => void;
     setLineEndpoints: (nodeId: string, start: { x: number; y: number }, end: { x: number; y: number }) => void;
     updateNodeSize: (nodeId: string, width: number, height: number) => void;
     updateNodePresentation: (nodeId: string, value: {
@@ -279,6 +281,28 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         }));
         return id;
     },
+    addLibraryFolderRepresentation: (libraryFolderId, preferred) => {
+        const id = crypto.randomUUID();
+        const viewport = get().viewport;
+        const origin = preferred ?? {
+            x: (window.innerWidth / 2 - viewport.x) / viewport.zoom,
+            y: (window.innerHeight / 2 - viewport.y) / viewport.zoom
+        };
+        const position = placeResource(get().nodes, origin);
+        set(state => ({
+            ...history(state),
+            nodes: [...state.nodes, {
+                id,
+                type: 'folder',
+                position,
+                width: 208,
+                height: 72,
+                data: {libraryFolderId},
+                selected: true
+            }]
+        }));
+        return id;
+    },
     addUploadedResource: (resourceId, batchId, preferred, total) => {
         void batchId;
         void total;
@@ -299,7 +323,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
             position: {x: left, y: top},
             width: Math.max(350, right - left),
             height: Math.max(250, bottom - top),
-            data: {label: 'Nuevo Grupo', color: 'var(--color-surface-variant)'},
+            data: {label: 'Nuevo grupo', color: 'var(--color-surface-variant)'},
             selected: true
         };
         const chosenIds = new Set(chosen.map(node => node.id));
@@ -311,7 +335,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
             })), group, ...chosen.map(node => ({
                 ...node,
                 parentId: id,
-                expandParent: true,
+                expandParent: false,
                 position: {x: node.position.x - left, y: node.position.y - top},
                 selected: false
             }))]
@@ -332,36 +356,32 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
             edges: state.edges.filter(edge => edge.source !== groupId && edge.target !== groupId)
         };
     }),
-    moveNodeToGroup: (nodeId, groupId) => set(state => {
-        const nodes = state.nodes;
+    moveNodeToGroup: (nodeId, groupId) => {
+        const nodes = get().nodes;
         const node = nodes.find(item => item.id === nodeId);
         const target = groupId ? nodes.find(item => item.id === groupId && item.type === 'container') : undefined;
-        if (!node || (groupId && !target) || node.id === groupId || node.type === 'container') return state;
+        if (!node || (groupId && !target) || node.id === groupId || node.type === 'container' || node.parentId === groupId) return;
         const priorParent = nodes.find(item => item.id === node.parentId);
         const absolute = {
             x: node.position.x + (priorParent?.position.x ?? 0),
             y: node.position.y + (priorParent?.position.y ?? 0)
         };
-        const moved = {
-            ...node,
-            parentId: target?.id,
-            expandParent: target ? true : undefined,
-            position: {x: absolute.x - (target?.position.x ?? 0), y: absolute.y - (target?.position.y ?? 0)}
-        };
-        return {...history(state), nodes: [...nodes.filter(item => item.id !== nodeId), moved]};
-    }),
+        get().setNodeParent(nodeId, groupId, {x: absolute.x - (target?.position.x ?? 0), y: absolute.y - (target?.position.y ?? 0)});
+    },
     removeNodes: ids => set(state => {
         const removing = new Set(ids);
-        for (let changed = true; changed;) {
-            changed = false;
-            for (const node of state.nodes) if (node.parentId && removing.has(node.parentId) && !removing.has(node.id)) {
-                removing.add(node.id);
-                changed = true;
-            }
-        }
+        const groups = new Map(state.nodes.filter(node => node.type === 'container' && removing.has(node.id)).map(node => [node.id, node]));
         return {
             ...history(state),
-            nodes: state.nodes.filter(node => !removing.has(node.id)),
+            nodes: state.nodes.filter(node => !removing.has(node.id)).map(node => {
+                const group = node.parentId ? groups.get(node.parentId) : undefined;
+                return group ? {
+                    ...node,
+                    parentId: undefined,
+                    expandParent: undefined,
+                    position: {x: node.position.x + group.position.x, y: node.position.y + group.position.y}
+                } : node;
+            }),
             edges: state.edges.filter(edge => !removing.has(edge.source) && !removing.has(edge.target))
         };
     }),
@@ -456,6 +476,24 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         const zIndex = direction === 'front' ? Math.max(0, ...levels) + 1 : Math.min(0, ...levels) - 1;
         return {...history(state), nodes: state.nodes.map(item => item.id === nodeId ? {...item, zIndex} : item)};
     }),
+    reorderNodeLayer: (nodeId, targetId, placement) => set(state => {
+        if (nodeId === targetId) return state;
+        const source = state.nodes.find(item => item.id === nodeId);
+        const target = state.nodes.find(item => item.id === targetId);
+        if (!source || !target || source.parentId !== target.parentId) return state;
+        const peers = state.nodes.map((node, index) => ({node, index}))
+            .filter(item => item.node.parentId === source.parentId)
+            .sort((a, b) => (b.node.zIndex ?? 0) - (a.node.zIndex ?? 0) || b.index - a.index)
+            .map(item => item.node.id);
+        const previousOrder = peers.join('\0');
+        const from = peers.indexOf(nodeId);
+        peers.splice(from, 1);
+        const to = peers.indexOf(targetId) + (placement === 'after' ? 1 : 0);
+        peers.splice(to, 0, nodeId);
+        if (peers.join('\0') === previousOrder) return state;
+        const levels = new Map(peers.map((id, index) => [id, peers.length - index]));
+        return {...history(state), nodes: state.nodes.map(node => levels.has(node.id) ? {...node, zIndex: levels.get(node.id)} : node)};
+    }),
     setLineEndpoints: (nodeId, start, end) => set(state => ({
         ...history(state),
         nodes: state.nodes.map(node => {
@@ -499,7 +537,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     })),
 
     loadDocument: (nodes, edges, viewport, background) => set({
-        nodes,
+        nodes: nodes.map(node => node.parentId && node.expandParent ? {...node, expandParent: false} : node),
         edges, ...(viewport ? {viewport} : {}),
         background: background ?? {variant: 'dots', tone: 'default'},
         past: [],
@@ -531,21 +569,25 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         set((state) => {
             const node = state.nodes.find(item => item.id === nodeId);
             if (!node || node.type === 'container' || nodeId === parentId || (parentId && !state.nodes.some(item => item.id === parentId && item.type === 'container'))) return state;
-            // 1. Asignamos el padre y las coordenadas relativas
-            const updatedNodes = state.nodes.map((node) => {
-                if (node.id === nodeId) {
+            const group = state.nodes.find(item => item.id === parentId);
+            const padding = 16;
+            const left = group ? Math.min(0, position.x - padding) : 0;
+            const top = group ? Math.min(0, position.y - padding) : 0;
+            const width = group ? Math.max(group.width ?? 350, position.x + (node.measured?.width ?? node.width ?? 240) + padding) - left : 0;
+            const height = group ? Math.max(group.height ?? 250, position.y + (node.measured?.height ?? node.height ?? 112) + padding) - top : 0;
+            const updatedNodes = state.nodes.map((item) => {
+                if (item.id === nodeId) {
                     return {
-                        ...node,
+                        ...item,
                         parentId,
-                        position,
-                        expandParent: parentId ? true : undefined,
+                        position: {x: position.x - left, y: position.y - top},
+                        expandParent: parentId ? false : undefined,
                     };
                 }
-                return node;
+                if (group && item.id === group.id) return {...item, position: {x: item.position.x + left, y: item.position.y + top}, width, height};
+                if (group && item.parentId === group.id) return {...item, position: {x: item.position.x - left, y: item.position.y - top}};
+                return item;
             });
-
-            // 2. REORDENAMIENTO CRÍTICO: Movemos el hijo al final del arreglo
-            // Esto asegura que React Flow lo procese *después* del padre y no se rompa el drag conjunto
             const childIndex = updatedNodes.findIndex(n => n.id === nodeId);
             if (childIndex !== -1) {
                 const [childNode] = updatedNodes.splice(childIndex, 1);

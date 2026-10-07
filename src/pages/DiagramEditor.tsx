@@ -70,15 +70,28 @@ function DiagramEditorCore() {
     const commentNotifications = [...(commentPage.data?.items ?? [])];
     const linkedComment = selectedCommentPage.data?.items[0];
     if (linkedComment && !commentNotifications.some(item => item.id === linkedComment.id)) commentNotifications.push(linkedComment);
+    const clearSelectedComment = () => {
+        if (!selectedCommentId) return;
+        const params = new URLSearchParams(location.search);
+        params.delete('comment');
+        navigate({pathname: location.pathname, search: params.toString() ? `?${params}` : ''}, {replace: true});
+    };
+    const closeLeftPanel = () => {
+        if (leftPanel === 'comments') clearSelectedComment();
+        setLeftPanel(null);
+    };
     const toggleLeftPanel = (panel: 'resources' | 'semantic' | 'comments') => {
         if (leftPanel !== panel && window.matchMedia('(max-width: 767px)').matches) setVisualPanel(null);
-        setLeftPanel(current => current === panel ? null : panel);
+        if (leftPanel === 'comments') clearSelectedComment();
+        setLeftPanel(leftPanel === panel ? null : panel);
     };
     const openComment = (item: CommentNotification) => {
         if (!item.readAt) readComment.mutate(item.id);
         if (window.matchMedia('(max-width: 767px)').matches) setVisualPanel(null);
         setLeftPanel('comments');
-        navigate(`${location.pathname}?comment=${item.commentId}`, {replace: true});
+        const params = new URLSearchParams(location.search);
+        params.set('comment', item.commentId);
+        navigate({pathname: location.pathname, search: `?${params}`}, {replace: true});
     };
     const rightOpen = useCanvasStore(state => state.inspectorOpen);
     const setRightOpen = useCanvasStore(state => state.setInspectorOpen);
@@ -152,7 +165,7 @@ function DiagramEditorCore() {
     const usedIds = new Set(nodes.map(node => node.data?.resourceId).filter((id): id is string => typeof id === 'string'));
     const selectedRelationEdge = readyDiagramId === diagramId ? edges.find(edge => edge.selected && typeof edge.data?.relationId === 'string') : undefined;
     const selectedResource = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'resource' && typeof node.data?.resourceId === 'string') : undefined;
-    const selectedFolder = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'folder' && typeof node.data?.folderId === 'string') : undefined;
+    const selectedFolder = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'folder' && (typeof node.data?.libraryFolderId === 'string' || typeof node.data?.folderId === 'string')) : undefined;
     const selectedGroup = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'container') : undefined;
     const selectedAnnotation = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'annotation') : undefined;
     const selectedVisualText = selectedAnnotation?.data.kind === 'text' ? selectedAnnotation : undefined;
@@ -161,13 +174,13 @@ function DiagramEditorCore() {
     const activeTextPanel = activeVisualPanel?.kind === 'text' ? activeVisualPanel.section as VisualTextPanel : null;
     const activeElementPanel = activeVisualPanel && activeVisualPanel.kind !== 'text' ? activeVisualPanel.section as VisualElementPanel : null;
     const toggleTextPanel = (section: VisualTextPanel) => {
-        if (!(visualPanel?.kind === 'text' && visualPanel.section === section) && window.matchMedia('(max-width: 767px)').matches) setLeftPanel(null);
+        if (!(visualPanel?.kind === 'text' && visualPanel.section === section) && window.matchMedia('(max-width: 767px)').matches) closeLeftPanel();
         setVisualPanel(current => current?.kind === 'text' && current.section === section ? null : {kind: 'text', section});
     };
     const toggleElementPanel = (section: VisualElementPanel) => {
         const kind = selectedVisualElement?.data.kind;
         if (kind !== 'shape' && kind !== 'line') return;
-        if (!(visualPanel?.kind === kind && visualPanel.section === section) && window.matchMedia('(max-width: 767px)').matches) setLeftPanel(null);
+        if (!(visualPanel?.kind === kind && visualPanel.section === section) && window.matchMedia('(max-width: 767px)').matches) closeLeftPanel();
         setVisualPanel(current => current?.kind === kind && current.section === section ? null : {kind, section});
     };
     const openPicker = (position?: { x: number; y: number }) => {
@@ -192,11 +205,11 @@ function DiagramEditorCore() {
         setPickerOpen(false);
     };
     const addFolder = (folderId: string) => {
-        const existing = useCanvasStore.getState().nodes.find(node => node.type === 'folder' && node.data?.folderId === folderId);
+        const existing = useCanvasStore.getState().nodes.find(node => node.type === 'folder' && node.data?.libraryFolderId === folderId);
         if (existing) {
             useCanvasStore.getState().focusNode(existing.id);
             useCanvasStore.getState().setInspectorOpen(true);
-        } else if (diagram.data) useCanvasStore.getState().addFolderRepresentation(folderId, diagram.data.projectId);
+        } else useCanvasStore.getState().addLibraryFolderRepresentation(folderId);
     };
     if (diagram.isPending || (readyDiagramId !== diagramId && !diagram.isFetchedAfterMount)) return <WorkspaceLoading fullscreen label="Abriendo mapa…"/>;
     if (readyDiagramId !== diagramId && diagram.isRefetchError) return <div role="alert" className="p-6">
@@ -279,7 +292,7 @@ function DiagramEditorCore() {
                 className={`absolute left-3 top-20 z-50 w-[min(19rem,calc(100%-1.5rem))] overflow-hidden rounded-xl bg-surface/95 backdrop-blur-md ${selectedAnnotation ? 'bottom-32 md:bottom-20' : 'bottom-3'}`}
                 aria-label={leftPanel === 'resources' ? 'Panel de recursos' : leftPanel === 'comments' ? 'Panel de comentarios' : 'Panel de vista semántica'}>
                 <Button size="icon" className="absolute right-2 top-2 z-10 h-9 w-9" title="Cerrar panel"
-                        aria-label="Cerrar panel" icon={X} onClick={() => setLeftPanel(null)}/>
+                        aria-label="Cerrar panel" icon={X} onClick={closeLeftPanel}/>
                 {leftPanel === 'comments' ? <CommentNotificationsPanel diagramId={diagram.data.id}
                                                                           selectedId={selectedCommentId} onOpen={openComment}/> : leftPanel === 'resources' ? diagram.data.archivedAt ?
                     <p className="p-4 text-sm text-outline">Los recursos del mapa archivado están disponibles al
@@ -329,11 +342,12 @@ function DiagramEditorCore() {
                                          caption={typeof selectedResource.data.caption === 'string' ? selectedResource.data.caption : ''}/> : selectedFolder ?
                     <CanvasFolderInspector key={selectedFolder.id} nodeId={selectedFolder.id}
                                            projectId={diagram.data.projectId}
-                                           folderId={selectedFolder.data.folderId as string}
+                                           libraryFolderId={selectedFolder.data.libraryFolderId as string | undefined}
+                                           folderId={selectedFolder.data.folderId as string | undefined}
                                            caption={typeof selectedFolder.data.caption === 'string' ? selectedFolder.data.caption : ''}
                                            onAddResource={id => tryAdd(id)}/> : selectedGroup ?
                         <CanvasGroupInspector key={selectedGroup.id} groupId={selectedGroup.id}
-                                              diagramId={diagram.data.id}/> : <><CanvasBackgroundInspector/>
+                                              diagramId={diagram.data.id} projectId={diagram.data.projectId}/> : <><CanvasBackgroundInspector/>
                                 <p className="mt-3 text-xs text-outline">Selecciona un elemento para editarlo.</p></>}
         </aside>}
         {pickerOpen && <CanvasResourcePicker projectId={diagram.data.projectId} usedIds={usedIds}

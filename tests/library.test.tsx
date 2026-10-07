@@ -39,7 +39,7 @@ describe('Biblioteca', () => {
   it('sitúa la búsqueda antes de Activos y Archivados y distingue la búsqueda vacía', () => {
     mount('/library?q=inexistente');
     expect(screen.getByText('No hay resultados.')).toBeInTheDocument();
-    const search = screen.getByRole('searchbox', { name: 'Buscar archivos' });
+    const search = screen.getByRole('searchbox', { name: 'Buscar recursos' });
     const archived = screen.getByRole('button', { name: 'Archivados' });
     expect(search.compareDocumentPosition(archived) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });

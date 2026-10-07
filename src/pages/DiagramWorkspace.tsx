@@ -2,7 +2,7 @@ import {useAuth} from '@clerk/clerk-react';
 import {useQueryClient} from '@tanstack/react-query';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {MarkerType} from '@xyflow/react';
-import {Link2, LoaderCircle, X} from 'lucide-react';
+import {CircleAlert, CloudCheck, CloudUpload, Link2, WifiOff, X} from 'lucide-react';
 import {ApiError} from '../api/httpClient';
 import {Button} from '../components/ui/Button';
 import {deleteCanvasDraft, readCanvasDraft, writeCanvasDraft, type CanvasDraft} from '../data/canvasJournal';
@@ -355,16 +355,21 @@ export function DiagramWorkspace({
         <div className="mt-4 flex gap-2"><Button variant="primary" onClick={restore}>Recuperar cambios</Button><Button
             variant="outline" onClick={() => void discard()}>Descartar borrador</Button></div>
     </div>;
+    const saveLabel = {
+        saved: 'Guardado en servidor',
+        saving: 'Guardando…',
+        offline: 'Sin conexión: cambios pendientes',
+        conflict: 'Conflicto de revisión',
+        'storage-error': 'No se pudo proteger el borrador local'
+    }[status];
     return <div className="relative h-full w-full">
-        <div role="status" aria-live="polite"
-             className="absolute right-3 top-20 z-30 inline-flex items-center gap-2 rounded-md bg-surface/90 px-3 py-2 text-xs backdrop-blur-md">
-            {status === 'saving' && <LoaderCircle size={13} aria-hidden="true" className="motion-safe:animate-spin"/>}{{
-            saved: 'Guardado en servidor',
-            saving: 'Guardando…',
-            offline: 'Sin conexión: cambios pendientes',
-            conflict: 'Conflicto de revisión',
-            'storage-error': 'No se pudo proteger el borrador local'
-        }[status]}</div>
+        <div role="status" aria-live="polite" aria-label={saveLabel} data-tooltip={saveLabel}
+             className={`absolute right-3 top-20 z-30 inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-surface/90 px-2 text-xs backdrop-blur-md ${status === 'saved' ? 'text-outline' : status === 'saving' ? 'text-primary' : 'text-on-background'}`}>
+            {status === 'saved' ? <CloudCheck size={20} aria-hidden="true"/> : status === 'saving' ?
+                <CloudUpload size={20} aria-hidden="true" className="theke-saving-pulse"/> : status === 'offline' ?
+                    <WifiOff size={20} aria-hidden="true"/> : <CircleAlert size={20} aria-hidden="true"/>}
+            {status !== 'saved' && status !== 'saving' && <span>{saveLabel}</span>}
+        </div>
         {suggestions.length > 0 && <div className="absolute left-20 top-20 z-30 w-[min(20rem,calc(100%-6rem))] text-sm">
             {!availableOpen ? <button type="button" aria-expanded={false}
                                       onClick={() => setAvailableOpen(true)}

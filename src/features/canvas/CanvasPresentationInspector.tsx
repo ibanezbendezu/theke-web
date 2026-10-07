@@ -7,13 +7,13 @@ export function CanvasPresentationInspector({nodeId}: { nodeId: string }) {
     const setResourceDisplayMode = useCanvasStore(state => state.setResourceDisplayMode);
     if (!node) return null;
     return <section aria-label="Presentación local" className="space-y-2 rounded-md bg-surface-variant/60 p-3 text-sm">
-        <h3 className="font-medium">Presentación local</h3><p className="text-xs text-outline">Solo cambia esta
-        representación, no el Recurso canónico.</p>
+        <h3 className="font-medium">Presentación local</h3><p className="text-xs text-outline">{node.type === 'folder'
+            ? 'Solo cambia este acceso en el mapa.' : 'Solo cambia esta representación, no el Recurso canónico.'}</p>
         {node.type === 'resource' ? <label className="block">Tamaño<Select label="Tamaño del recurso" className="mt-1"
             value={node.data.displayMode === 'normal' ? 'normal' : 'mini'}
             onValueChange={value => setResourceDisplayMode(nodeId, value as 'mini' | 'normal')}>
             <option value="normal">Normal</option><option value="mini">Mini</option>
-        </Select></label> : <div className="flex gap-2"><label className="min-w-0 flex-1">Ancho<input type="number" min={160} max={2000}
+        </Select></label> : node.type === 'folder' ? null : <div className="flex gap-2"><label className="min-w-0 flex-1">Ancho<input type="number" min={160} max={2000}
                                                                                   className="mt-1 w-full rounded-md border-0 bg-surface-variant p-2 focus-visible:outline-2 focus-visible:outline-primary"
                                                                                   value={Math.round(node.width ?? 288)}
                                                                                   onChange={event => update(nodeId, {width: Number(event.target.value)})}/></label><label

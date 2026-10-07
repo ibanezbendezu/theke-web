@@ -4,7 +4,7 @@ import { CanvasResourcePicker } from '../src/features/canvas/CanvasResources';
 import { placeResource } from '../src/features/canvas/placeResource';
 import { useCanvasStore } from '../src/store/useCanvasStore';
 
-vi.mock('../src/data/useResources', () => ({ useResources: () => ({ data: { pages: [{ data: [{ id: 'resource-1', title: 'Fuente', type: 'note' }] }] }, isPending: false, isError: false, hasNextPage: false }) }));
+vi.mock('../src/data/useResources', () => ({ useResources: () => ({ data: { pages: [{ data: [{ id: 'resource-1', title: 'Fuente', type: 'note' }] }] }, isPending: false, isError: false, hasNextPage: false }), useLinkActions: () => ({ create: { mutateAsync: vi.fn(), isPending: false } }) }));
 afterEach(() => cleanup());
 
 describe('recursos en el canvas', () => {

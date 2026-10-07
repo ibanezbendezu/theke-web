@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { DiagramEditor } from '../src/pages/DiagramEditor';
 
 const state = vi.hoisted(() => ({ prepare: vi.fn(), setInspectorOpen: vi.fn(), focusNode: vi.fn() }));
@@ -9,8 +9,9 @@ vi.mock('../src/data/useCommentNotifications', () => ({
   useCommentNotificationStream: () => undefined,
   useReadCommentNotification: () => ({mutate: vi.fn()}),
 }));
-vi.mock('../src/data/useDiagrams', () => ({ useDiagram: () => ({ data: { id: 'diagram-1', name: 'Mi diagrama', projectId: 'project-1', archivedAt: null, document: { nodes: [] } }, isPending: false, isError: false, refetch: vi.fn() }) }));
+vi.mock('../src/data/useDiagrams', () => ({ useDiagram: () => ({ data: { id: 'diagram-1', name: 'Mi diagrama', projectId: 'project-1', archivedAt: null, document: { nodes: [] } }, isPending: false, isError: false, isFetchedAfterMount: true, refetch: vi.fn() }) }));
 vi.mock('../src/data/useOrganization', () => ({ useOrganizationActions: () => ({ addResources: { mutateAsync: vi.fn() } }) }));
+vi.mock('../src/data/useNotes', () => ({ useNoteActions: () => ({ create: { mutateAsync: vi.fn(), isPending: false } }) }));
 vi.mock('../src/data/useAi', () => ({ usePrepareDiagramReview: () => ({ mutate: state.prepare, isPending: false }) }));
 vi.mock('../src/components/ai/AIGuidanceCard', () => ({ AIGuidanceCard: ({ selectedResourceIds }: { selectedResourceIds: string[] }) => <p>Tarjeta: {selectedResourceIds.join(',')}</p> }));
 vi.mock('../src/store/useCanvasStore', () => ({ useCanvasStore: (selector: (store: object) => unknown) => selector({ nodes: [{ id: 'saved-node', selected: true, type: 'resource', data: { resourceId: 'res-1' } }], edges: [], inspectorOpen: false, setInspectorOpen: state.setInspectorOpen }), }));
@@ -21,6 +22,7 @@ vi.mock('../src/features/canvas/CanvasUploadTray', () => ({ CanvasUploadTray: ()
 vi.mock('../src/components/ui/ThemeToggle', () => ({ ThemeToggle: () => <button type="button">Tema claro</button> }));
 vi.mock('../src/features/canvas/CanvasDialog', () => ({ CanvasDialog: ({ children }: { children: React.ReactNode }) => <div role="dialog">{children}</div> }));
 
+beforeEach(() => { window.matchMedia = vi.fn().mockReturnValue({ matches: false, addListener: vi.fn(), removeListener: vi.fn() }); });
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 
 it('prepara revisión sin hallazgos y permite seguir con el lienzo manual', async () => {

@@ -7,16 +7,16 @@ import {useCanvasStore} from '../../../store/useCanvasStore';
 export type GroupNodeData = {
     label?: string;
     color?: string;
+    dropTarget?: boolean;
 };
 
 export type GroupNodeType = Node<GroupNodeData, 'container'>;
 
 export function GroupNode({id, data, selected, width = 350, height = 250}: NodeProps<GroupNodeType>) {
-    const updateNodeData = useCanvasStore(state => state.updateNodeData);
     const openCanvasNode = useCanvasStore(state => state.openCanvasNode);
     const beginGesture = useCanvasStore(state => state.beginGesture);
     const endGesture = useCanvasStore(state => state.endGesture);
-    const {label = 'Nuevo Grupo', color = 'var(--color-surface-variant)'} = data;
+    const {label = 'Nuevo grupo', color = 'var(--color-surface-variant)', dropTarget = false} = data;
 
     return (
         <div className="relative group" style={{width, height}}>
@@ -31,34 +31,34 @@ export function GroupNode({id, data, selected, width = 350, height = 250}: NodeP
 
             <div
                 className={cn(
-                    "w-full h-full flex flex-col bg-background border rounded-xl overflow-hidden transition-colors",
-                    selected ? "border-primary ring-1 ring-primary" : "border-border hover:border-outline/50"
+                    "w-full h-full overflow-hidden rounded-xl border bg-background/15 transition-colors",
+                    dropTarget ? "border-primary ring-1 ring-primary bg-primary/10" : selected ? "border-primary ring-1 ring-primary" : "border-outline/35 hover:border-outline/70"
                 )}
             >
                 <div
-                    className="absolute top-2 right-2 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    className="absolute right-2 top-2 z-10 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
                     <button type="button" aria-label="Opciones del grupo" onClick={() => openCanvasNode(id)}
-                            className="p-1.5 bg-background/90 backdrop-blur border border-border rounded-md text-on-surface-variant hover:text-on-background nodrag nopan">
+                            className="nodrag nopan rounded-md bg-surface/90 p-1.5 text-on-surface-variant backdrop-blur hover:text-on-background focus-visible:outline-2 focus-visible:outline-primary">
                         <MoreHorizontal size={14}/>
                     </button>
                 </div>
 
                 <div
-                    className="flex-1 w-full h-full"
-                    style={{backgroundColor: color, opacity: 0.3}}
+                    className="pointer-events-none h-full w-full"
+                    style={{backgroundColor: `color-mix(in srgb, ${color} 12%, transparent)`}}
                 />
             </div>
 
-            <div
-                className="absolute top-full left-0 w-full mt-2 px-3 py-2 flex items-center gap-2 border border-border bg-surface/90 backdrop-blur-md rounded-lg z-50">
-                <Layers size={14} className="text-primary flex-shrink-0"/>
-                <input
-                    value={label}
-                    onChange={event => updateNodeData(id, {label: event.target.value})}
-                    className="bg-transparent text-sm font-medium text-on-background outline-none truncate w-full nodrag"
-                    placeholder="Nombre del contenedor..."
-                />
-            </div>
+            {dropTarget && <span className="pointer-events-none absolute left-3 top-3 rounded-md bg-surface/95 px-2 py-1 text-xs font-medium text-primary backdrop-blur-sm">
+                Soltar en grupo
+            </span>}
+
+            <button type="button" onClick={() => openCanvasNode(id)}
+                    aria-label={`Abrir propiedades del grupo ${label}`}
+                    className="nodrag nopan absolute left-0 top-full z-50 mt-1 flex max-w-full items-center gap-1.5 rounded-md bg-surface/90 px-2.5 py-1.5 text-xs font-medium text-on-background backdrop-blur-md hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary">
+                <Layers size={13} className="shrink-0 text-primary" aria-hidden="true"/>
+                <span className="max-w-48 truncate">{label}</span>
+            </button>
 
             <Handle id="left" type="target" position={Position.Left}
                     className="w-3 h-3 bg-surface border-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity z-50"/>

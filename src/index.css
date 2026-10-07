@@ -1,6 +1,37 @@
 @import "tailwindcss";
 @import "@xyflow/react/dist/style.css";
 
+/* The hit target stays broad while the visible connection point stays quiet. */
+.theke-canvas .react-flow__handle {
+  width: 16px !important;
+  height: 16px !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+.theke-canvas .react-flow__handle-left { left: -8px; }
+.theke-canvas .react-flow__handle-right { right: -8px; }
+.theke-canvas .react-flow__handle-top { top: -8px; }
+.theke-canvas .react-flow__handle-bottom { bottom: -8px; }
+.theke-canvas .react-flow__handle::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid var(--color-primary);
+  border-radius: 50%;
+  background: var(--color-background);
+  transform: translate(-50%, -50%);
+}
+.theke-canvas .react-flow__handle:hover::after { background: var(--color-primary); }
+
+@keyframes theke-saving-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.theke-saving-pulse { animation: theke-saving-pulse 750ms ease-in-out infinite; }
+
 .theke-tooltip {
   position: fixed;
   z-index: 1000;

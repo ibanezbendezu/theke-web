@@ -899,15 +899,24 @@ para navegar colecciones grandes sin saturar el Canvas.
 
 **Acceptance Criteria:**
 
-**Given** una Carpeta de Proyecto
+**Given** una Carpeta de Biblioteca
 **When** el autor la añade al Canvas
-**Then** Theke crea una Folder Card con nombre, cantidad y contexto
+**Then** Theke crea un acceso compacto que apunta a esa carpeta y muestra su nombre y contexto
 **And** no crea automáticamente Representaciones para sus Recursos.
 
 **Given** una Folder Card
 **When** el autor la abre
 **Then** un panel o selector lista sus Recursos con búsqueda y carga progresiva
 **And** permite añadir elementos individuales al Canvas.
+
+**Given** un mapa anterior con una Folder Card de Proyecto
+**When** el autor lo abre
+**Then** la tarjeta anterior se conserva y permite cambiar su destino a una Carpeta de Biblioteca.
+
+**Given** un mapa compartido que contiene un acceso a Carpeta de Biblioteca
+**When** un visitante lo abre
+**Then** ve el nombre y la cantidad de recursos de la carpeta
+**And** no obtiene acceso automático al contenido privado de la Biblioteca.
 
 **Given** que cambia el contenido o nombre de la Carpeta
 **When** el Diagrama se actualiza

@@ -19,7 +19,11 @@ export function ResourceCard({resource, mode, caption, selected, accent, onOpen,
     const Icon = resource?.type === 'note' ? FileText : resource?.type === 'link' ? LinkIcon : media?.startsWith('image/') ? Image : media?.startsWith('video/') ? Video : media?.startsWith('audio/') ? Music : FileIcon;
     const kind = resource?.type === 'note' ? 'Nota' : resource?.type === 'link' ? 'Enlace' : media?.startsWith('image/') ? 'Imagen' : media?.startsWith('video/') ? 'Vídeo' : media?.startsWith('audio/') ? 'Audio' : media === 'application/pdf' ? 'Documento PDF' : 'Archivo';
     const previewable = Boolean(resource?.type === 'file' && (media?.startsWith('image/') || media?.startsWith('video/') || media === 'application/pdf'));
-    const excerpt = resource?.type === 'note' ? resource.content?.trim() || 'Nota vacía' : resource?.type === 'link' ? resource.url || resource.description || 'Enlace' : resource?.description;
+    const excerpt = resource?.type === 'note' ? resource.content?.trim() || 'Nota vacía' : resource?.description;
+    const domain = (() => {
+        if (!resource?.url) return 'Enlace web';
+        try { return new URL(resource.url).hostname.replace(/^www\./, ''); } catch { return 'Enlace web'; }
+    })();
     const border = accent === 'primary' ? 'var(--color-primary)' : accent === 'muted' ? 'var(--color-outline)' : 'var(--color-border)';
     return <article className="relative flex h-full w-full flex-col overflow-hidden rounded-lg bg-background"
                     style={{outline: `${selected ? 2 : 1}px solid ${selected ? 'var(--color-primary)' : border}`}} onDoubleClick={onOpen}>
@@ -33,7 +37,16 @@ export function ResourceCard({resource, mode, caption, selected, accent, onOpen,
             </button>
         </div>
         {mode === 'normal' && <div className="min-h-0 flex-1 px-2 pb-2">
-            {previewable && resource ? <div className="h-full overflow-hidden rounded-md bg-surface-variant/50">
+            {resource?.type === 'link' ? <div className="flex h-full flex-col overflow-hidden rounded-md bg-surface-variant/50">
+                {resource.previewImageUrl ? <img className="h-20 w-full shrink-0 object-cover" src={resource.previewImageUrl}
+                                                 alt="" referrerPolicy="no-referrer" loading="lazy"/>
+                    : <div className="flex h-20 shrink-0 items-center gap-2 px-3 text-on-background/70"><LinkIcon size={20} aria-hidden="true"/>
+                        <span className="truncate text-sm font-medium">{domain}</span></div>}
+                <div className="min-h-0 flex-1 px-3 py-2">
+                    {resource.previewImageUrl && <p className="truncate text-xs font-medium">{domain}</p>}
+                    <p className="line-clamp-2 break-words text-xs leading-relaxed text-outline">{resource.description || resource.url || 'Sin descripción.'}</p>
+                </div>
+            </div> : previewable && resource ? <div className="h-full overflow-hidden rounded-md bg-surface-variant/50">
                 <FileThumbnail resource={{id: resource.id, type: resource.type, mediaType: resource.mediaType, previewImageUrl: resource.previewImageUrl, updatedAt: resource.updatedAt ?? 'public'}}
                                directUrl={directUrl} fallback={<Icon size={32} className="text-outline" aria-hidden="true"/>}/>
             </div> : media?.startsWith('audio/') ? <div className="flex h-full flex-col justify-center gap-3 rounded-md bg-surface-variant/50 px-3">

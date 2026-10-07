@@ -5,6 +5,7 @@ import { useCanvasStore } from '../src/store/useCanvasStore';
 
 const mocks = vi.hoisted(() => ({ resource: { current: { id: 'resource-1', title: 'Fuente actualizada', type: 'note', status: 'ready', content: 'Contenido canónico', mediaType: null } as { id: string; title: string; type: string; status: string; content?: string; mediaType: string | null } }, access: vi.fn() }));
 vi.mock('../src/data/useResources', () => ({ useResource: () => ({ data: mocks.resource.current, isPending: false, isError: false }), useResourceActions: () => ({ access: mocks.access }) }));
+vi.mock('../src/data/useNotes', () => ({ useNoteActions: () => ({ update: { mutateAsync: vi.fn(), isPending: false } }) }));
 afterEach(() => cleanup());
 beforeEach(() => { mocks.resource.current = { id: 'resource-1', title: 'Fuente actualizada', type: 'note', status: 'ready', content: 'Contenido canónico', mediaType: null }; mocks.access.mockReset(); });
 

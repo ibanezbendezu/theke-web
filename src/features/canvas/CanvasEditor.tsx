@@ -41,6 +41,7 @@ import {AnnotationNode} from './nodes/AnnotationNode';
 import type {DiagramDocument} from '../../data/useDiagrams';
 import {useToast} from '../../components/ui/useToast';
 import {RelationConnectionLine} from './RelationConnectionLine';
+import {absoluteNodePosition, groupDropTarget} from './groupDropTarget';
 
 const nodeTypes: NodeTypes = {
     media: MediaNode,
@@ -92,12 +93,15 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
     const toast = useToast();
     const canvasRef = useRef<HTMLDivElement>(null);
     const setCanvasSize = useCanvasStore(state => state.setCanvasSize);
-    const {screenToFlowPosition, getIntersectingNodes, setViewport, setCenter} = useReactFlow();
+    const {screenToFlowPosition, setViewport, setCenter, getZoom} = useReactFlow();
+    const [dropGroupId, setDropGroupId] = useState<string | null>(null);
     const saveViewport = useCanvasStore(state => state.setViewport);
     const background = useCanvasStore(state => state.background);
     const focusRequest = useCanvasStore(state => state.focusRequest);
     const focusEdgeRequest = useCanvasStore(state => state.focusEdgeRequest);
     const selectedComment = commentNotifications?.find(item => item.commentId === selectedCommentId);
+    const selectedCommentX = selectedComment?.anchored && typeof selectedComment.anchor.x === 'number' ? selectedComment.anchor.x : null;
+    const selectedCommentY = selectedComment?.anchored && typeof selectedComment.anchor.y === 'number' ? selectedComment.anchor.y : null;
     useEffect(() => {
         if (!canvasRef.current) return;
         const observer = new ResizeObserver(entries => {
@@ -152,11 +156,12 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
         });
     }, [edges, nodes]);
     useEffect(() => {
-        if (!selectedComment?.anchored || typeof selectedComment.anchor.x !== 'number' || typeof selectedComment.anchor.y !== 'number') return;
-        void setCenter(selectedComment.anchor.x, selectedComment.anchor.y, {
+        if (selectedCommentX === null || selectedCommentY === null) return;
+        void setCenter(selectedCommentX, selectedCommentY, {
+            zoom: getZoom(),
             duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 300
         });
-    }, [selectedComment, setCenter]);
+    }, [selectedCommentId, selectedCommentX, selectedCommentY, getZoom, setCenter]);
     useEffect(() => {
         if (viewport) void setViewport(viewport);
     }, [viewport, setViewport]);
@@ -243,28 +248,21 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
         });
     }, [screenToFlowPosition]);
 
+    const onNodeDrag: OnNodeDrag = useCallback((_, node: FlowNode) => {
+        const target = groupDropTarget(node, useCanvasStore.getState().nodes);
+        const nextId = target?.id !== node.parentId ? target?.id ?? null : null;
+        setDropGroupId(current => current === nextId ? current : nextId);
+    }, []);
+
     const onNodeDragStop: OnNodeDrag = useCallback((_, node: FlowNode) => {
-        const intersections = getIntersectingNodes(node);
-
-        // CORRECCIÓN: Buscamos contenedores de tipo 'container'
-        const dropContainer = intersections.find(n => n.type === 'container');
-
-        const getAbs = (n: FlowNode) => {
-            const nx = n as FlowNode & {
-                internals?: { positionAbsolute?: { x: number; y: number } };
-                positionAbsolute?: { x: number; y: number }
-            };
-            return {
-                x: nx.internals?.positionAbsolute?.x ?? nx.positionAbsolute?.x ?? n.position.x,
-                y: nx.internals?.positionAbsolute?.y ?? nx.positionAbsolute?.y ?? n.position.y
-            };
-        };
-
-        const nodeAbs = getAbs(node);
+        const currentNodes = useCanvasStore.getState().nodes;
+        const dropContainer = groupDropTarget(node, currentNodes);
+        const nodeAbs = absoluteNodePosition(node, currentNodes);
+        setDropGroupId(null);
 
         if (dropContainer) {
             if (node.parentId !== dropContainer.id) {
-                const containerAbs = getAbs(dropContainer);
+                const containerAbs = absoluteNodePosition(dropContainer, currentNodes);
                 setNodeParent(node.id, dropContainer.id, {
                     x: nodeAbs.x - containerAbs.x,
                     y: nodeAbs.y - containerAbs.y
@@ -274,7 +272,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
             setNodeParent(node.id, undefined, nodeAbs);
         }
         endGesture();
-    }, [getIntersectingNodes, setNodeParent, endGesture]);
+    }, [setNodeParent, endGesture]);
 
     const onConnectStart: OnConnectStart = useCallback((_, {nodeId}) => {
         connectingNodeId.current = nodeId;
@@ -338,12 +336,9 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                     url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
                 };
                 break;
-            case 'link':
-                newData = {title: 'Nuevo Bookmark', url: 'https://google.com', description: 'Visita este enlace'};
-                break;
             // CORRECCIÓN: Casamos la opción con 'container'
             case 'container':
-                newData = {label: 'Nuevo Grupo', color: 'var(--color-surface-variant)'};
+                newData = {label: 'Nuevo grupo', color: 'var(--color-surface-variant)'};
                 break;
         }
 
@@ -381,7 +376,8 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
             }
         }}>
             <ReactFlow
-                nodes={nodes}
+                nodes={dropGroupId ? nodes.map(node => node.id === dropGroupId ? {...node, data: {...node.data, dropTarget: true}} : node) : nodes}
+                elevateNodesOnSelect={false}
                 edges={visibleEdges}
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
@@ -397,6 +393,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                 }}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
+                onBeforeDelete={({nodes: deleting}) => Promise.resolve(!deleting.some(node => node.type === 'container'))}
                 onEdgesDelete={deleted => {
                     if (deleted.some(edge => typeof edge.data?.relationId === 'string')) {
                         toast.info('Línea quitada. Si era la última, la Relación se eliminará al guardar.');
@@ -440,13 +437,14 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                 onConnectEnd={onConnectEnd}
                 onPaneClick={onPaneClick}
                 onPaneContextMenu={onPaneContextMenu}
-                onNodeDragStart={beginGesture}
+                onNodeDragStart={() => { setDropGroupId(null); beginGesture(); }}
+                onNodeDrag={onNodeDrag}
                 onNodeDragStop={onNodeDragStop}
                 onMoveEnd={(_, next) => saveViewport(next)}
                 proOptions={{hideAttribution: true}}
                 fitView={!viewport}
                 onlyRenderVisibleElements
-                className="bg-background"
+                className="theke-canvas bg-background"
                 style={{backgroundColor: background.tone === 'surface' ? 'var(--color-surface)' : 'var(--color-background)'}}
                 minZoom={0.1}
             >
@@ -455,7 +453,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                         <button key={item.id} type="button" data-tooltip={item.displayName}
                                 aria-label={`Comentario de ${item.displayName}: ${item.content}`}
                                 aria-pressed={item.commentId === selectedCommentId}
-                                className={`nodrag nopan absolute z-10 flex h-8 min-w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-1 rounded-full px-1.5 text-xs font-semibold ring-2 ring-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${item.commentId === selectedCommentId ? 'bg-on-background text-background' : 'bg-primary text-on-primary'}`}
+                                className={`nodrag nopan absolute z-10 flex h-8 min-w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-1 rounded-full px-1.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${item.commentId === selectedCommentId ? 'bg-on-background text-background ring-2 ring-background' : 'bg-surface/90 text-outline ring-1 ring-border hover:bg-surface hover:text-on-background'}`}
                                 style={{left: item.anchor.x, top: item.anchor.y}}
                                 onClick={() => onCommentOpen?.(item)}><MessageCircle size={12}/>{index + 1}</button>
                         : null)}</ViewportPortal>}

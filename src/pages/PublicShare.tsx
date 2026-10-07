@@ -103,6 +103,10 @@ function PublicShareView({token}: { token: string | undefined }) {
         setSelection(null);
         setDetailsOpen(false);
     };
+    const closeComments = () => {
+        setCommentsOpen(false);
+        setSelectedCommentId(null);
+    };
     const closeInspector = () => {
         setSelection(null);
         setDetailsOpen(false);
@@ -126,7 +130,7 @@ function PublicShareView({token}: { token: string | undefined }) {
     return <main className="public-share relative flex h-dvh min-h-0 bg-background text-on-background">
         <section className="relative min-w-0 flex-1" aria-label="Lienzo compartido">
             <PublicDiagramCanvas data={data} token={token ?? ''} selection={selection} onSelect={select} commentMode={commentMode}
-                                 commentsEnabled={data.commentsEnabled} comments={comments}
+                                 commentsEnabled={data.commentsEnabled} comments={comments} selectedCommentId={selectedCommentId}
                                  onCommentTarget={chooseCommentTarget} onCommentOpen={id => {
                 setSelectedCommentId(id);
                 setCommentsOpen(true);
@@ -145,7 +149,7 @@ function PublicShareView({token}: { token: string | undefined }) {
                                                      aria-label="Añadir comentario" aria-pressed={commentMode}
                                                      onClick={() => {
                                                          setCommentMode(value => !value);
-                                                         setCommentsOpen(false);
+                                                         closeComments();
                                                      }}/>}
                     <Button size="icon" className="h-10 w-10" icon={MessageCircle} aria-label="Comentarios"
                             aria-expanded={commentsOpen} onClick={() => {
@@ -153,7 +157,8 @@ function PublicShareView({token}: { token: string | undefined }) {
                             setSelection(null);
                             setDetailsOpen(false);
                         }
-                        setCommentsOpen(value => !value);
+                        if (commentsOpen) closeComments();
+                        else setCommentsOpen(true);
                         setCommentMode(false);
                         setSemanticOpen(false);
                     }}/>
@@ -189,9 +194,9 @@ function PublicShareView({token}: { token: string | undefined }) {
             </aside>}
             {commentsOpen && <button type="button" tabIndex={-1} aria-hidden="true"
                                      className="absolute inset-0 z-[45] cursor-default bg-black/15 sm:bg-transparent"
-                                     onClick={() => setCommentsOpen(false)}/>}
+                                     onClick={closeComments}/>}
             {token && <PublicCommentsPanel key={token} token={token} enabled={data.commentsEnabled} open={commentsOpen}
-                                           onClose={() => setCommentsOpen(false)} target={commentTarget}
+                                           onClose={closeComments} target={commentTarget}
                                            onTargetChange={setCommentTarget}
                                            targetLabel={commentTarget?.type === 'resource' ? data.resources.find(item => item.id === commentTarget.resourceId)?.title ?? 'Recurso' : commentTarget?.type === 'relation' ? publicRelationLabel(data.relations.find(item => item.id === commentTarget.relationId) ?? {label: null}) : commentTarget ? 'Punto del mapa' : 'Mapa completo'}
                                            onCommentsChange={setComments} selectedCommentId={selectedCommentId}/>}
@@ -213,8 +218,7 @@ function PublicShareView({token}: { token: string | undefined }) {
                                       token={token}/>}
             {selectedFolder && <div className="space-y-2"><h3
                 className="text-lg font-semibold">{selectedFolder.folderName ?? 'Carpeta'}</h3><p
-                className="text-sm text-outline">Carpeta representada en el mapa
-                · {selectedFolder.folderCount ?? 0} recursos</p>{selectedFolder.caption &&
+                className="text-sm text-outline">Acceso a carpeta · {selectedFolder.folderCount ?? 0} recursos. Su contenido no se comparte automáticamente.</p>{selectedFolder.caption &&
                 <p>{selectedFolder.caption}</p>}</div>}
             {selectedRelation && <div className="space-y-3"><h3
                 className="text-lg font-semibold">{publicRelationLabel(selectedRelation)}</h3><p

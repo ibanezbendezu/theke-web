@@ -17,6 +17,7 @@ import {
     type NodeTypes
 } from '@xyflow/react';
 import {
+    ArrowUpRight,
     FileText,
     Folder,
     Image,
@@ -54,12 +55,13 @@ type PublicEdgeData = {
     relationId?: string;
     onSelect: (value: PublicSelection) => void
 };
-type PublicMarkerData = { number: number; commentId: string; author: string; onOpen: (id: string) => void };
+type PublicMarkerData = { number: number; commentId: string; author: string; active: boolean; onOpen: (id: string) => void };
 
 function PublicCommentMarker({data}: NodeProps<Node<PublicMarkerData, 'comment'>>) {
     return <button type="button"
-                   className="nodrag nopan group relative flex h-8 min-w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-semibold text-on-primary ring-2 ring-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                   className={`nodrag nopan group relative flex h-8 min-w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full px-1.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${data.active ? 'bg-on-background text-background ring-2 ring-background' : 'bg-surface/90 text-outline ring-1 ring-border hover:bg-surface hover:text-on-background'}`}
                    aria-label={`Abrir comentario ${data.number} de ${data.author}`}
+                   aria-pressed={data.active}
                    onClick={() => data.onOpen(data.commentId)}><MessageCircle size={13} aria-hidden="true"/><span
         className="ml-0.5">{data.number}</span><span aria-hidden="true"
                                                      className="pointer-events-none absolute bottom-full left-1/2 mb-2 hidden max-w-48 -translate-x-1/2 whitespace-nowrap rounded-md bg-on-background px-2.5 py-1.5 text-xs font-medium text-background group-hover:block group-focus-visible:block">{data.author}</span>
@@ -93,8 +95,8 @@ function PublicCanvasNode({data, selected}: NodeProps<Node<PublicNodeData, 'publ
     const {item, resource, onSelect} = data;
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewFailed, setPreviewFailed] = useState(false);
-    const width = item.width ?? (item.type === 'container' ? 350 : item.type === 'annotation' ? 240 : 288);
-    const height = item.height ?? (item.type === 'container' ? 250 : item.type === 'annotation' ? 100 : 112);
+    const width = item.width ?? (item.type === 'container' ? 350 : item.type === 'folder' ? 208 : item.type === 'annotation' ? 240 : 288);
+    const height = item.height ?? (item.type === 'container' ? 250 : item.type === 'folder' ? 72 : item.type === 'annotation' ? 100 : 112);
     if (!item.type || item.type === 'resource') {
         const directUrl = data.token && resource?.type === 'file' ? `${import.meta.env.VITE_API_URL?.replace(/\/+$/, '') ?? ''}/v1/public/shares/${encodeURIComponent(data.token)}/resources/${encodeURIComponent(resource.id)}/content` : undefined;
         return <div className="relative" style={{width, height}}>
@@ -105,30 +107,28 @@ function PublicCanvasNode({data, selected}: NodeProps<Node<PublicNodeData, 'publ
             <ResourceConnectionHandles/>
         </div>;
     }
-    if (item.type === 'folder') return <div className="relative" style={{width, height}}>
-        <article
-            className={`flex h-full w-full items-center gap-3 rounded-lg border bg-background p-3 ${selected ? 'ring-1 ring-primary' : ''}`}
-            style={{borderColor: item.accent === 'primary' ? 'var(--color-primary)' : item.accent === 'muted' ? 'var(--color-outline)' : 'var(--color-border)'}}>
-            <Folder size={20} className="shrink-0 text-primary"/>
-            <div className="min-w-0 flex-1"><p
-                className="truncate text-sm font-medium">{item.folderName ?? 'Carpeta'}</p><p
-                className="truncate text-xs text-outline">Carpeta
-                · {item.folderCount ?? 0} recursos{item.caption ? ` · ${item.caption}` : ''}</p></div>
-            <button type="button"
-                    className="nodrag nopan rounded border border-border px-2 py-1 text-xs hover:bg-surface-variant"
-                    onClick={() => onSelect({kind: 'folder', id: item.id})}>Abrir
-            </button>
-            <NodeHandles/></article>
-    </div>;
+    if (item.type === 'folder') return <article className="relative flex items-center gap-3 rounded-lg bg-background px-3"
+        style={{width, height, outline: `${selected ? 2 : 1}px solid ${selected ? 'var(--color-primary)' : 'var(--color-border)'}`}}
+        onDoubleClick={() => onSelect({kind: 'folder', id: item.id})}>
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-surface-variant text-on-background">
+            <Folder size={18} aria-hidden="true"/>
+        </span>
+        <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{item.folderName ?? 'Carpeta'}</p>
+            <p className="truncate text-xs text-outline">Carpeta{item.caption ? ` · ${item.caption}` : ''}</p></div>
+        <button type="button" className="nodrag nopan grid h-7 w-7 shrink-0 place-items-center rounded-md text-outline hover:bg-surface-variant hover:text-on-background focus-visible:outline-2 focus-visible:outline-primary"
+            aria-label={`Ver carpeta ${item.folderName ?? ''}`} onClick={() => onSelect({kind: 'folder', id: item.id})}>
+            <ArrowUpRight size={15} aria-hidden="true"/>
+        </button>
+        <NodeHandles/>
+    </article>;
     if (item.type === 'container') return <div className="relative" style={{width, height}}>
-        <div className="h-full w-full overflow-hidden rounded-xl border border-border bg-background">
-            <div className="h-full w-full"
-                 style={{backgroundColor: item.color ?? 'var(--color-surface-variant)', opacity: 0.3}}/>
+        <div className="h-full w-full overflow-hidden rounded-xl border border-outline/35 bg-background/15">
+            <div className="h-full w-full" style={{backgroundColor: `color-mix(in srgb, ${item.color ?? 'var(--color-surface-variant)'} 12%, transparent)`}}/>
         </div>
         <div
-            className="absolute left-0 top-full z-50 mt-2 flex w-full items-center gap-2 rounded-lg border border-border bg-surface/90 px-3 py-2 backdrop-blur-md">
-            <Layers size={14} className="shrink-0 text-primary"/><span
-            className="truncate text-sm font-medium">{item.label ?? 'Grupo'}</span></div>
+            className="absolute left-0 top-full z-50 mt-1 flex max-w-full items-center gap-1.5 rounded-md bg-surface/90 px-2.5 py-1.5 text-xs font-medium text-on-background backdrop-blur-md">
+            <Layers size={13} className="shrink-0 text-primary" aria-hidden="true"/><span
+            className="max-w-48 truncate">{item.label ?? 'Grupo visual'}</span></div>
         <NodeHandles group/></div>;
     if (item.type === 'annotation') {
         const color = item.color === 'primary' ? 'var(--color-primary)' : item.color === 'muted' ? 'var(--color-outline)' : 'var(--color-on-background)';
@@ -263,6 +263,7 @@ function PublicCanvas({
                           commentMode,
                           commentsEnabled,
                           comments,
+                          selectedCommentId,
                           onCommentTarget,
                           onCommentOpen
                       }: {
@@ -273,6 +274,7 @@ function PublicCanvas({
     commentMode: boolean;
     commentsEnabled: boolean;
     comments: PublicComment[];
+    selectedCommentId: string | null;
     onCommentTarget: (target: CommentTarget) => void;
     onCommentOpen: (id: string) => void
 }) {
@@ -295,13 +297,13 @@ function PublicCanvas({
             id: `comment:${comment.id}`,
             type: 'comment' as const,
             position: {x: comment.anchor.x, y: comment.anchor.y},
-            data: {number: index + 1, commentId: comment.id, author: comment.displayName, onOpen: onCommentOpen},
+            data: {number: index + 1, commentId: comment.id, author: comment.displayName, active: comment.id === selectedCommentId, onOpen: onCommentOpen},
             zIndex: 10,
             draggable: false,
             connectable: false,
             selectable: false
         }] : []),
-    ], [comments, data.layout.nodes, data.revision, onCommentOpen, onSelect, resources, selection, token]);
+    ], [comments, data.layout.nodes, data.revision, onCommentOpen, onSelect, resources, selectedCommentId, selection, token]);
     const edges = useMemo<Edge<PublicEdgeData, 'public'>[]>(() => data.layout.edges.map(item => {
         const relation = item.relationId ? relations.get(item.relationId) : undefined;
         return {
@@ -413,6 +415,7 @@ export function PublicDiagramCanvas({
                                         commentMode = false,
                                         commentsEnabled = false,
                                         comments = [],
+                                        selectedCommentId = null,
                                         onCommentTarget = () => {
                                         },
                                         onCommentOpen = () => {
@@ -425,6 +428,7 @@ export function PublicDiagramCanvas({
     commentMode?: boolean;
     commentsEnabled?: boolean;
     comments?: PublicComment[];
+    selectedCommentId?: string | null;
     onCommentTarget?: (target: CommentTarget) => void;
     onCommentOpen?: (id: string) => void
 }) {
@@ -434,6 +438,7 @@ export function PublicDiagramCanvas({
                                                                                                          commentMode={commentMode}
                                                                                                          commentsEnabled={commentsEnabled}
                                                                                                          comments={comments}
+                                                                                                         selectedCommentId={selectedCommentId}
                                                                                                          onCommentTarget={onCommentTarget}
                                                                                                          onCommentOpen={onCommentOpen}/></ReactFlowProvider>
     </div>;
