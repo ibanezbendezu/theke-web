@@ -42,6 +42,7 @@ import type {DiagramDocument} from '../../data/useDiagrams';
 import {useToast} from '../../components/ui/useToast';
 import {RelationConnectionLine} from './RelationConnectionLine';
 import {absoluteNodePosition, groupDropTarget} from './groupDropTarget';
+import {CanvasNodeContextMenu, type CanvasNodeMenuTarget} from './CanvasNodeContextMenu';
 
 const nodeTypes: NodeTypes = {
     media: MediaNode,
@@ -228,10 +229,13 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
         y: number;
         flowPosition: { x: number; y: number };
     } | null>(null);
+    const [nodeMenu, setNodeMenu] = useState<CanvasNodeMenuTarget | null>(null);
+    const closeNodeMenu = useCallback(() => setNodeMenu(null), []);
 
     const onPaneClick = useCallback((event: React.MouseEvent) => {
         setMenu((m) => ({...m, isOpen: false}));
         setContextMenu(null);
+        setNodeMenu(null);
         if (event.detail === 2) {
             addAnnotation('text', screenToFlowPosition({x: event.clientX, y: event.clientY}));
         }
@@ -239,6 +243,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
 
     const onPaneContextMenu = useCallback((event: React.MouseEvent | MouseEvent) => {
         event.preventDefault();
+        setNodeMenu(null);
         const e = event as MouseEvent;
         setContextMenu({
             isOpen: true,
@@ -247,6 +252,18 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
             flowPosition: screenToFlowPosition({x: e.clientX, y: e.clientY})
         });
     }, [screenToFlowPosition]);
+
+    const onNodeContextMenu = useCallback((event: React.MouseEvent, node: FlowNode) => {
+        if ((event.target as Element).closest('input, textarea, select, [contenteditable="true"], audio, video')) return;
+        event.preventDefault();
+        event.stopPropagation();
+        setContextMenu(null);
+        setMenu(current => ({...current, isOpen: false}));
+        const state = useCanvasStore.getState();
+        state.onNodesChange(state.nodes.map(item => ({id: item.id, type: 'select' as const, selected: item.id === node.id})));
+        state.onEdgesChange(state.edges.filter(item => item.selected).map(item => ({id: item.id, type: 'select' as const, selected: false})));
+        setNodeMenu({id: node.id, x: event.clientX, y: event.clientY});
+    }, []);
 
     const onNodeDrag: OnNodeDrag = useCallback((_, node: FlowNode) => {
         const target = groupDropTarget(node, useCanvasStore.getState().nodes);
@@ -437,6 +454,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                 onConnectEnd={onConnectEnd}
                 onPaneClick={onPaneClick}
                 onPaneContextMenu={onPaneContextMenu}
+                onNodeContextMenu={onNodeContextMenu}
                 onNodeDragStart={() => { setDropGroupId(null); beginGesture(); }}
                 onNodeDrag={onNodeDrag}
                 onNodeDragStop={onNodeDragStop}
@@ -525,6 +543,8 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
 
                 </div>
             )}
+
+            {nodeMenu && <CanvasNodeContextMenu target={nodeMenu} onClose={closeNodeMenu}/>}
 
         </div>
     );
