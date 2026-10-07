@@ -2,7 +2,7 @@ import {BaseEdge, EdgeLabelRenderer, type EdgeProps, useReactFlow} from '@xyflow
 import {useCanvasStore} from '../../../store/useCanvasStore';
 import {GripHorizontal} from 'lucide-react';
 import {useRelation} from '../../../data/useRelations';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 
 export function EditableEdge({
                                  id,
@@ -18,6 +18,7 @@ export function EditableEdge({
                                  selected
                              }: EdgeProps) {
     const [hovered, setHovered] = useState(false);
+    const suppressClick = useRef(false);
     const updateEdgeData = useCanvasStore(state => state.updateEdgeData);
     const beginGesture = useCanvasStore(state => state.beginGesture);
     const endGesture = useCanvasStore(state => state.endGesture);
@@ -51,13 +52,22 @@ export function EditableEdge({
     // 5. Dibujo de la curva Bézier Cuadrática
     const edgePath = `M ${sourceX} ${sourceY} Q ${cx} ${cy} ${targetX} ${targetY}`;
 
-    const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const handlePointerDown = (e: React.PointerEvent<HTMLElement>, requireMovement = false) => {
         e.stopPropagation();
-        beginGesture();
-        const target = e.target as HTMLElement;
+        suppressClick.current = false;
+        const target = e.currentTarget;
+        const origin = {x: e.clientX, y: e.clientY};
+        let dragging = !requireMovement;
+        if (dragging) beginGesture();
         target.setPointerCapture(e.pointerId);
 
         const onPointerMove = (moveEvent: PointerEvent) => {
+            if (!dragging) {
+                if (Math.hypot(moveEvent.clientX - origin.x, moveEvent.clientY - origin.y) < 5) return;
+                dragging = true;
+                suppressClick.current = true;
+                beginGesture();
+            }
             const position = screenToFlowPosition({x: moveEvent.clientX, y: moveEvent.clientY});
 
             // Al arrastrar, calculamos la nueva "distancia" (offset) relativa al centro actual.
@@ -68,11 +78,11 @@ export function EditableEdge({
         };
 
         const onPointerUp = (upEvent: PointerEvent) => {
-            target.releasePointerCapture(upEvent.pointerId);
+            if (target.hasPointerCapture(upEvent.pointerId)) target.releasePointerCapture(upEvent.pointerId);
             target.removeEventListener('pointermove', onPointerMove);
             target.removeEventListener('pointerup', onPointerUp);
             target.removeEventListener('pointercancel', onPointerUp);
-            endGesture();
+            if (dragging) endGesture();
         };
 
         target.addEventListener('pointermove', onPointerMove);
@@ -98,6 +108,15 @@ export function EditableEdge({
                   className="react-flow__edge-interaction cursor-pointer" onMouseEnter={() => setHovered(true)}
                   onMouseLeave={() => setHovered(false)}/>
 
+            {relationId && <>
+                <circle cx={labelX} cy={labelY} r={8} fill="var(--color-background)"
+                        pointerEvents="none" aria-hidden="true"/>
+                <circle cx={labelX} cy={labelY} r={4.5}
+                        fill={selected || hovered ? 'var(--color-primary)' : 'var(--color-background)'}
+                        stroke={selected || hovered ? 'var(--color-primary)' : 'var(--color-outline)'}
+                        strokeWidth={1.5} pointerEvents="none" aria-hidden="true"/>
+            </>}
+
             {(selected || hovered) && <>
                 <circle cx={sourceX} cy={sourceY} r={8} fill="var(--color-background)"
                         stroke="var(--color-primary)" strokeWidth={2} pointerEvents="none" aria-hidden="true"/>
@@ -117,16 +136,26 @@ export function EditableEdge({
                     }}
                     className="nodrag nopan relative flex items-center justify-center"
                 >
-                    {/* Caja de Texto (El centro de este input cruzará la línea milimétricamente) */}
                     {relationId ? <button type="button"
-                                          className={`flex max-w-48 items-center gap-1 rounded border bg-background px-2 py-1 text-xs font-medium text-on-background focus-visible:outline-2 focus-visible:outline-primary ${selected || hovered ? 'border-primary ring-1 ring-primary' : 'border-border'}`}
-                                          aria-label={`Editar Relación ${sourceTitle} ${relationDirection === 'directed' ? 'hacia' : 'con'} ${targetTitle}, ${relationLabel}, ${relationDirection === 'directed' ? 'dirigida' : 'no dirigida'}, ${relationEvidence}`}
-                                          data-tooltip={relationLabel} onFocus={() => setHovered(true)}
+                                          className="relative flex h-8 w-8 cursor-grab items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:cursor-grabbing"
+                                          aria-label={`Editar Relación ${sourceTitle} ${relationDirection === 'directed' ? 'hacia' : 'con'} ${targetTitle}, ${relationLabel}, ${relationDirection === 'directed' ? 'dirigida' : 'no dirigida'}, ${relationEvidence}. Arrastra el punto para curvar la línea.`}
+                                          onPointerDown={event => handlePointerDown(event, true)}
+                                          onFocus={() => setHovered(true)}
                                           onBlur={() => setHovered(false)} onMouseEnter={() => setHovered(true)}
                                           onMouseLeave={() => setHovered(false)}
-                                          onClick={() => requestEditRelation(relationId)}>
-                        <span className="min-w-0 truncate">{relationLabel}</span><span aria-hidden="true"
-                                                                                       className="shrink-0">{relationDirection === 'directed' ? '→' : '↔'}</span>
+                                          onClick={event => {
+                                              if (suppressClick.current) {
+                                                  suppressClick.current = false;
+                                                  event.preventDefault();
+                                                  event.stopPropagation();
+                                                  return;
+                                              }
+                                              requestEditRelation(relationId);
+                                          }}>
+                        <span aria-hidden="true"
+                              className={`pointer-events-none absolute bottom-full left-1/2 mb-1 max-w-52 -translate-x-1/2 truncate whitespace-nowrap rounded-md bg-background/90 px-1.5 py-0.5 text-xs font-medium text-on-background backdrop-blur-sm ${selected || hovered ? 'block' : 'hidden'}`}>
+                            {relationLabel}
+                        </span>
                     </button> : <input
                         value={(data?.label as string) || ''}
                         onChange={(e) => updateEdgeData(id, {label: e.target.value})}
@@ -137,13 +166,12 @@ export function EditableEdge({
                         style={{width: Math.max(100, ((data?.label as string)?.length || 0) * 8 + 30)}}
                     />}
 
-                    {/* Tirador para deformar (Flota absolutamente por debajo del input para no afectar el centro) */}
-                    <div
+                    {!relationId && <div
                         onPointerDown={handlePointerDown}
-                        className={`absolute top-full mt-1 cursor-grab active:cursor-grabbing p-1 bg-surface border border-border rounded text-outline hover:text-primary transition-opacity z-10 ${selected ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}
+                        className={`absolute top-full mt-1 cursor-grab rounded-md bg-surface/90 p-1 text-outline transition-opacity hover:text-primary active:cursor-grabbing ${selected ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}
                     >
                         <GripHorizontal size={14}/>
-                    </div>
+                    </div>}
                 </div>
             </EdgeLabelRenderer>
         </>

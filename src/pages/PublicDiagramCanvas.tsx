@@ -228,6 +228,7 @@ function PublicCanvasEdge({
                               data,
                               selected
                           }: EdgeProps<Edge<PublicEdgeData, 'public'>>) {
+    const [hovered, setHovered] = useState(false);
     const midX = (sourceX + targetX) / 2;
     const midY = (sourceY + targetY) / 2;
     const offsetX = data?.offsetX ?? 0;
@@ -239,15 +240,32 @@ function PublicCanvasEdge({
         stroke: selected ? 'var(--color-primary)' : 'var(--color-outline)',
         strokeWidth: selected ? 3 : 2
     }}/>
+        <path d={path} fill="none" strokeOpacity={0} strokeWidth={25} className="cursor-pointer"
+              onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}/>
+        {data?.label && <>
+            <circle cx={labelX} cy={labelY} r={8} fill="var(--color-background)"
+                    pointerEvents="none" aria-hidden="true"/>
+            <circle cx={labelX} cy={labelY} r={4.5}
+                    fill={selected || hovered ? 'var(--color-primary)' : 'var(--color-background)'}
+                    stroke={selected || hovered ? 'var(--color-primary)' : 'var(--color-outline)'}
+                    strokeWidth={1.5} pointerEvents="none" aria-hidden="true"/>
+        </>}
         {data?.label && <EdgeLabelRenderer>
             <button type="button"
-                    className="nodrag nopan absolute flex max-w-48 items-center gap-1 rounded border border-border bg-background px-2 py-1 text-xs font-medium focus-visible:outline-2 focus-visible:outline-primary"
+                    className="nodrag nopan absolute flex h-8 w-8 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                     style={{left: labelX, top: labelY, transform: 'translate(-50%, -50%)', pointerEvents: 'all'}}
+                    aria-label={`Ver relación ${data.label}`}
+                    onFocus={() => setHovered(true)} onBlur={() => setHovered(false)}
+                    onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
                     onClick={() => data.relationId && data.onSelect({
                         kind: 'relation',
                         id: data.relationId
-                    })}>{data.label}{data.relationId &&
-                <span aria-hidden="true">{data.direction === 'directed' ? '→' : '↔'}</span>}</button>
+                    })}>
+                <span aria-hidden="true"
+                      className={`pointer-events-none absolute bottom-full left-1/2 mb-1 max-w-52 -translate-x-1/2 truncate whitespace-nowrap rounded-md bg-background/90 px-1.5 py-0.5 text-xs font-medium text-on-background backdrop-blur-sm ${selected || hovered ? 'block' : 'hidden'}`}>
+                    {data.label}
+                </span>
+            </button>
         </EdgeLabelRenderer>}
     </>;
 }

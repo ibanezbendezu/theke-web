@@ -249,7 +249,7 @@
 }
 
 .react-flow__edgelabel-renderer {
-  z-index: 2;
+  z-index: 5;
 }
 
 .theke-progress { appearance: none; height: 4px; overflow: hidden; border-radius: 999px; background: var(--surface-variant); }
