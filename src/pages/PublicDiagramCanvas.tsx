@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import type {PublicLayoutNode, PublicShare, SharePreviewRelation, SharePreviewResource} from '../api/generated/models';
 import {Button} from '../components/ui/Button';
+import {contextMenuItemClass, contextMenuSurfaceClass} from '../components/ui/contextMenuStyles';
 import {ResourceConnectionHandles} from '../components/ui/ResourceConnectionHandles';
 import {ResourceCard} from '../features/canvas/ResourceCard';
 import {CanvasBackgroundPattern} from '../features/canvas/CanvasBackgroundPattern';
@@ -410,10 +411,10 @@ function PublicCanvas({
                         }}>
         <CanvasBackgroundPattern variant={background.variant}/>
     </ReactFlow><CanvasButtons/>{menu &&
-        <div className="fixed z-[60] rounded-lg bg-surface p-1 text-sm text-on-background ring-1 ring-outline/25"
+        <div className={`fixed z-[60] min-w-40 ${contextMenuSurfaceClass}`}
              style={{left: menu.x, top: menu.y}} role="menu">
             <button type="button" role="menuitem"
-                    className="min-h-11 rounded-md px-3 text-left hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary"
+                    className={contextMenuItemClass}
                     onClick={() => {
                         onCommentTarget(menu.target);
                         setMenu(null);

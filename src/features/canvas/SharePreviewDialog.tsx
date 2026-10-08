@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {Copy, ExternalLink, Link2, MoreHorizontal, X} from 'lucide-react';
 import {Button} from '../../components/ui/Button';
+import {contextMenuDestructiveItemClass, contextMenuSurfaceClass} from '../../components/ui/contextMenuStyles';
 import {InlineLoading} from '../../components/ui/LoadingState';
 import {useSharePreview} from '../../data/useSharePreview';
 import {usePublishShare} from '../../data/usePublishShare';
@@ -127,8 +128,8 @@ export function SharePreviewDialog({diagramId, canPreview, onClose}: {
                 <div className="relative">
                     <Button size="icon" icon={MoreHorizontal} title="Opciones del enlace"
                             aria-expanded={menuOpen} onClick={() => {setMenuOpen(value => !value); setConfirmRevoke(false);}}/>
-                    {menuOpen && <div className="absolute bottom-full right-0 z-10 mb-1 min-w-48 rounded-lg bg-surface-variant p-1">
-                        {!confirmRevoke ? <Button className="w-full justify-start" onClick={() => setConfirmRevoke(true)}>Dejar de compartir</Button>
+                    {menuOpen && <div className={`absolute bottom-full right-0 z-10 mb-1 min-w-48 ${contextMenuSurfaceClass}`}>
+                        {!confirmRevoke ? <button type="button" className={contextMenuDestructiveItemClass} onClick={() => setConfirmRevoke(true)}>Dejar de compartir</button>
                             : <div className="space-y-2 p-2 text-sm">
                                 <p>El enlace dejará de funcionar. Si vuelves a compartir, se creará otro.</p>
                                 <div className="flex gap-1">

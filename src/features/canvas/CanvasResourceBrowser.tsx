@@ -2,6 +2,7 @@ import {useEffect, useMemo, useState, type ReactNode} from 'react';
 import {createPortal} from 'react-dom';
 import {Check, ChevronRight, File, FileText, Folder, Grid2X2, Image, Link2, List, MoreHorizontal, Music2, Search, Video} from 'lucide-react';
 import {Button} from '../../components/ui/Button';
+import {contextMenuItemClass, contextMenuSurfaceClass} from '../../components/ui/contextMenuStyles';
 import {LoadingLine} from '../../components/ui/LoadingState';
 import {Select} from '../../components/ui/Select';
 import {useCollectionView} from '../../components/ui/useCollectionView';
@@ -133,7 +134,7 @@ export function CanvasResourcePanel({projectId, initialSection = 'map', onAdd, o
         if (entry.representationIds?.length) onFocus(entry.id);
         else onAdd(entry.id);
     };
-    const actionClass = 'flex min-h-9 w-full items-center gap-2 rounded-md px-2 text-left text-xs hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary';
+    const actionClass = contextMenuItemClass;
 
     return <aside className="flex h-full min-h-0 w-full flex-col p-3 text-on-background" aria-label="Recursos">
         <h2 className="px-1 pb-3 pr-10 text-sm font-semibold">Recursos</h2>
@@ -185,7 +186,7 @@ export function CanvasResourcePanel({projectId, initialSection = 'map', onAdd, o
                             className={`${view === 'grid' ? 'absolute right-1 top-1' : 'mr-0.5'} h-8 w-8 shrink-0`}
                             onClick={event => {if (menu?.id === entry.id) setMenu(null); else {const rect = event.currentTarget.getBoundingClientRect(); openMenu(entry.id, rect.right - 184, rect.bottom + 4);}}}/>
                         {menu?.id === entry.id && createPortal(<><button type="button" className="fixed inset-0 z-[89] cursor-default" aria-label="Cerrar opciones" onClick={() => setMenu(null)}/>
-                            <div role="menu" aria-label={`Opciones de ${entry.title}`} className="fixed z-[90] max-h-[min(60dvh,240px)] min-w-44 overflow-y-auto rounded-md bg-surface p-1 ring-1 ring-border" style={{left: menu.x, top: menu.y}}>
+                            <div role="menu" aria-label={`Opciones de ${entry.title}`} className={`fixed z-[90] max-h-[min(60dvh,240px)] min-w-44 overflow-y-auto ${contextMenuSurfaceClass}`} style={{left: menu.x, top: menu.y}}>
                             {entry.folder ? <><button type="button" role="menuitem" className={actionClass} onClick={() => openEntry(entry)}>Abrir carpeta</button>
                                 <button type="button" role="menuitem" className={actionClass} onClick={() => {setMenu(null); onSelectFolder(entry.id);}}>Añadir acceso al mapa</button></> : <>
                                 {entry.representationIds?.length ? <>

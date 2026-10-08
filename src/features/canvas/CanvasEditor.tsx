@@ -1,4 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {createPortal} from 'react-dom';
 import {
     ReactFlow,
     ConnectionMode,
@@ -39,6 +40,7 @@ import {FolderNode} from './nodes/FolderNode';
 import {AnnotationNode} from './nodes/AnnotationNode';
 import type {DiagramDocument} from '../../data/useDiagrams';
 import {useToast} from '../../components/ui/useToast';
+import {contextMenuDividerClass, contextMenuItemClass, contextMenuSurfaceClass} from '../../components/ui/contextMenuStyles';
 import {RelationConnectionLine} from './RelationConnectionLine';
 import {absoluteNodePosition, groupDropTarget} from './groupDropTarget';
 import {CanvasNodeContextMenu, type CanvasNodeMenuTarget} from './CanvasNodeContextMenu';
@@ -251,8 +253,8 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
         const e = event as MouseEvent;
         setContextMenu({
             isOpen: true,
-            x: e.clientX,
-            y: e.clientY,
+            x: Math.max(8, Math.min(e.clientX, window.innerWidth - 216)),
+            y: Math.max(8, Math.min(e.clientY, window.innerHeight - 272)),
             flowPosition: screenToFlowPosition({x: e.clientX, y: e.clientY})
         });
     }, [screenToFlowPosition]);
@@ -483,7 +485,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
             </ReactFlow>
 
             {menu.isOpen && (
-                <div className="fixed z-50 w-48 overflow-hidden rounded-lg bg-surface p-1"
+                <div className={`fixed z-50 w-48 overflow-hidden ${contextMenuSurfaceClass}`}
                      style={{top: menu.y, left: menu.x}}>
                     <span className="text-[10px] font-bold text-outline px-2 py-2 uppercase tracking-wider">Conectar a...</span>
                     <button onClick={() => handleCreateNode('text')}
@@ -497,60 +499,60 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                 </div>
             )}
 
-            {contextMenu && (
-                <div className="fixed z-[100] flex w-46 flex-col overflow-hidden rounded-lg bg-surface"
+            {contextMenu && createPortal(
+                <div role="menu" aria-label="Opciones del lienzo" className={`fixed z-[100] flex w-52 flex-col overflow-hidden ${contextMenuSurfaceClass}`}
                      style={{top: contextMenu.y, left: contextMenu.x}}>
                     {canPasteVisual && <button onClick={() => {
                         useCanvasStore.getState().pasteVisualNodes(contextMenu.flowPosition);
                         setContextMenu(null);
                         canvasRef.current?.closest<HTMLElement>('[role="region"]')?.focus();
-                    }} className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-on-background hover:bg-surface-variant">
+                    }} role="menuitem" className={contextMenuItemClass}>
                         <ClipboardPaste size={16}/> Pegar elemento visual
                     </button>}
                     {onPickFiles && <button onClick={() => {
                         onPickFiles(contextMenu.flowPosition);
                         setContextMenu(null);
                     }}
-                                            className="flex items-center gap-3 px-3 py-2.5 text-sm text-on-background font-medium hover:bg-surface-variant rounded-md transition-colors">
-                        <div className="p-1.5 bg-primary/10 rounded-md text-primary"><UploadCloud size={16}/></div>
+                                            role="menuitem" className={contextMenuItemClass}>
+                        <UploadCloud size={16} aria-hidden="true"/>
                         Subir archivo...
                     </button>}
                     {onAddResource && <button onClick={() => {
                         onAddResource(contextMenu.flowPosition);
                         setContextMenu(null);
                     }}
-                                              className="flex items-center gap-2 px-3 py-2 text-sm text-on-background hover:bg-surface-variant rounded-md">
+                                              role="menuitem" className={contextMenuItemClass}>
                         <FileText size={16}/> Añadir recurso</button>}
-                    <div className="h-px bg-border my-1.5 mx-2"/>
+                    <div className={contextMenuDividerClass}/>
                     <button onClick={() => {
                         addAnnotation('text', contextMenu.flowPosition);
                         setContextMenu(null);
                     }}
-                            className="flex items-center gap-2 px-3 py-2 text-sm text-on-background hover:bg-surface-variant rounded-md transition-colors">
+                            role="menuitem" className={contextMenuItemClass}>
                         <Type size={16} className="text-outline"/> Texto visual
                     </button>
                     <button onClick={() => {
                         addAnnotation('shape', contextMenu.flowPosition);
                         setContextMenu(null);
                     }}
-                            className="flex items-center gap-2 px-3 py-2 text-sm text-on-background hover:bg-surface-variant rounded-md transition-colors">
+                            role="menuitem" className={contextMenuItemClass}>
                         <Square size={16} className="text-outline"/> Forma visual
                     </button>
                     <button onClick={() => {
                         addAnnotation('line', contextMenu.flowPosition);
                         setContextMenu(null);
                     }}
-                            className="flex items-center gap-2 px-3 py-2 text-sm text-on-background hover:bg-surface-variant rounded-md transition-colors">
+                            role="menuitem" className={contextMenuItemClass}>
                         <Minus size={16} className="text-outline"/> Línea visual
                     </button>
 
                     {/* CORRECCIÓN: El botón dispara la orden 'container' */}
                     <button onClick={() => handleCreateNode('container', contextMenu.flowPosition)}
-                            className="flex items-center gap-2 px-3 py-2 text-sm text-on-background hover:bg-surface-variant rounded-md transition-colors">
+                            role="menuitem" className={contextMenuItemClass}>
                         <Layers size={16} className="text-outline"/> Contenedor / Grupo
                     </button>
 
-                </div>
+                </div>, document.body
             )}
 
             {nodeMenu && <CanvasNodeContextMenu target={nodeMenu} onClose={closeNodeMenu}/>}

@@ -1,6 +1,7 @@
 import {useEffect, useRef} from 'react';
 import {ClipboardPaste, Copy, EyeOff, FolderOpen, Link2, Maximize2, Minimize2, Scissors, Settings2, Trash2, Ungroup} from 'lucide-react';
 import {useCanvasStore} from '../../store/useCanvasStore';
+import {contextMenuDestructiveItemClass, contextMenuDividerClass, contextMenuItemClass, contextMenuSurfaceClass} from '../../components/ui/contextMenuStyles';
 
 export type CanvasNodeMenuTarget = {id: string; x: number; y: number};
 type VisualKind = 'text' | 'shape' | 'line';
@@ -36,7 +37,7 @@ export function CanvasNodeContextMenu({target, onClose}: {
     const store = useCanvasStore.getState();
     const action = (label: string, Icon: typeof Copy, run: () => void, destructive = false) =>
         <button key={label} type="button" role="menuitem" onClick={() => {run(); onClose(true);}}
-                className={`flex min-h-9 w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left text-sm hover:bg-surface-variant/60 focus-visible:outline-2 focus-visible:outline-primary ${destructive ? 'text-red-500' : 'text-on-background'}`}>
+                className={destructive ? contextMenuDestructiveItemClass : contextMenuItemClass}>
             <Icon size={16} className="shrink-0" aria-hidden="true"/>{label}
         </button>;
     const removeLabel = kind ? 'Eliminar elemento' : 'Quitar del mapa';
@@ -44,26 +45,26 @@ export function CanvasNodeContextMenu({target, onClose}: {
     const top = Math.max(8, Math.min(target.y, window.innerHeight - (kind ? canPaste ? 288 : 252 : 232)));
 
     return <div ref={menuRef} role="menu" aria-label={kind ? `Opciones de ${kind === 'text' ? 'texto' : kind === 'shape' ? 'forma' : 'línea'} visual` : `Opciones de ${node.type === 'resource' ? 'recurso' : node.type === 'folder' ? 'carpeta' : 'grupo'}`}
-                className="fixed z-[100] w-52 max-h-[calc(100dvh-1rem)] overflow-y-auto rounded-lg bg-surface/95 p-1.5 text-on-background ring-1 ring-outline/15 backdrop-blur-xl"
+                className={`fixed z-[100] w-52 max-h-[calc(100dvh-1rem)] overflow-y-auto ${contextMenuSurfaceClass}`}
                 style={{left, top}} onContextMenu={event => event.preventDefault()}>
         {kind ? <>
             {action('Copiar', Copy, () => store.copyVisualNodes([node.id]))}
             {action('Cortar', Scissors, () => store.cutVisualNodes([node.id]))}
             {canPaste && action('Pegar', ClipboardPaste, () => store.pasteVisualNodes())}
-            <div className="mx-2 my-1 h-px bg-outline/15"/>
+            <div className={contextMenuDividerClass}/>
             {action('Duplicar', Copy, () => store.duplicateNode(node.id))}
             {action('Ocultar', EyeOff, () => {
                 store.updateNodePresentation(node.id, {hidden: true});
                 store.onNodesChange([{id: node.id, type: 'select', selected: false}]);
             })}
-            <div className="mx-2 my-1 h-px bg-outline/15"/>
+            <div className={contextMenuDividerClass}/>
             {action(removeLabel, Trash2, () => store.removeNodes([node.id]), true)}
         </> : node.type === 'resource' ? <>
             {action('Abrir detalle', FolderOpen, () => store.openCanvasNode(node.id))}
             {action(mode === 'normal' ? 'Tamaño mini' : 'Tamaño normal', mode === 'normal' ? Minimize2 : Maximize2,
                 () => store.setResourceDisplayMode(node.id, mode === 'normal' ? 'mini' : 'normal'))}
             {action('Crear relación', Link2, () => store.requestRelation(node.id))}
-            <div className="mx-2 my-1 h-px bg-outline/15"/>
+            <div className={contextMenuDividerClass}/>
             {action(removeLabel, Trash2, () => store.removeNodes([node.id]), true)}
         </> : node.type === 'folder' ? <>
             {action('Explorar carpeta', FolderOpen, () => store.openCanvasNode(node.id))}

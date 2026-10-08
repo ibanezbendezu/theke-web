@@ -6,6 +6,7 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {Button} from '../components/ui/Button';
 import {CollectionLoading} from '../components/ui/LoadingState';
 import {CollectionItem} from '../components/ui/CollectionItem';
+import {contextMenuItemClass, contextMenuSurfaceClass} from '../components/ui/contextMenuStyles';
 import {Dialog} from '../components/ui/Dialog';
 import {ConfirmDialog, NameDialog} from '../components/ui/NameDialog';
 import {Input} from '../components/ui/Input';
@@ -118,11 +119,11 @@ export function Projects() {
         {collectionMenu && createPortal(<>
             <button type="button" className="fixed inset-0 z-[89] cursor-default" aria-label="Cerrar menÃº"
                     onClick={() => setCollectionMenu(null)}/>
-            <div role="menu" className="fixed z-[90] rounded-md bg-background p-1 shadow-xl" style={{
+            <div role="menu" className={`fixed z-[90] min-w-44 ${contextMenuSurfaceClass}`} style={{
                 left: Math.min(collectionMenu.x, window.innerWidth - 190),
                 top: Math.min(collectionMenu.y, window.innerHeight - 50)
             }}>
-                <button type="button" role="menuitem" className="rounded-md px-3 py-2 text-sm hover:bg-surface-variant"
+                <button type="button" role="menuitem" className={contextMenuItemClass}
                         onClick={() => {
                             setCollectionMenu(null);
                             setFolderDialog('new');

@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {Blend, Circle, ClipboardPaste, Copy, Eye, EyeOff, Layers, MoreHorizontal, Scissors, Square, Trash2} from 'lucide-react';
 import {useCanvasStore} from '../../store/useCanvasStore';
+import {contextMenuDestructiveItemClass, contextMenuDividerClass, contextMenuItemClass, contextMenuSurfaceClass} from '../../components/ui/contextMenuStyles';
 import {visualTextPalette} from './visualTextStyle';
 import type {AnnotationData} from './nodes/AnnotationNode';
 import {TransparentSwatch} from './TransparentSwatch';
@@ -108,21 +109,21 @@ export function CanvasVisualElementToolbar({nodeId, activePanel, onPanelToggle}:
         <span aria-hidden="true" className="mx-1 h-5 w-px shrink-0 bg-outline/20"/>
         <div className="relative shrink-0"><Tool label={shape ? 'Más opciones de la forma' : 'Más opciones de la línea'} active={popover === 'more'} onClick={() => toggle('more')}><MoreHorizontal size={18}/></Tool>
             {popover === 'more' && <div role="menu" aria-label="Opciones del elemento visual"
-                className="absolute bottom-full right-0 z-50 mb-2 min-w-44 rounded-lg bg-surface/95 p-1 text-sm backdrop-blur-xl">
+                className={`absolute bottom-full right-0 z-50 mb-2 min-w-44 ${contextMenuSurfaceClass}`}>
                 <button role="menuitem" type="button" onClick={() => {copyVisualNodes([nodeId]); finishClipboardAction();}}
-                    className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left hover:bg-surface-variant/55"><Copy size={16}/>Copiar</button>
+                    className={contextMenuItemClass}><Copy size={16}/>Copiar</button>
                 <button role="menuitem" type="button" onClick={() => {cutVisualNodes([nodeId]); finishClipboardAction();}}
-                    className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left hover:bg-surface-variant/55"><Scissors size={16}/>Cortar</button>
+                    className={contextMenuItemClass}><Scissors size={16}/>Cortar</button>
                 {canPaste && <button role="menuitem" type="button" onClick={() => {pasteVisualNodes(); finishClipboardAction();}}
-                    className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left hover:bg-surface-variant/55"><ClipboardPaste size={16}/>Pegar</button>}
-                <div className="mx-2 my-1 h-px bg-outline/15"/>
+                    className={contextMenuItemClass}><ClipboardPaste size={16}/>Pegar</button>}
+                <div className={contextMenuDividerClass}/>
                 <button role="menuitem" type="button" onClick={() => {duplicateNode(nodeId); setPopover(null);}}
-                    className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left hover:bg-surface-variant/55"><Copy size={16}/>Duplicar</button>
+                    className={contextMenuItemClass}><Copy size={16}/>Duplicar</button>
                 <button role="menuitem" type="button" onClick={() => {updateNodePresentation(nodeId, {hidden: !node.hidden}); setPopover(null);}}
-                    className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left hover:bg-surface-variant/55">
+                    className={contextMenuItemClass}>
                     {node.hidden ? <Eye size={16}/> : <EyeOff size={16}/>}{node.hidden ? 'Mostrar' : 'Ocultar'}</button>
                 <button role="menuitem" type="button" onClick={() => {removeNodes([nodeId]); setPopover(null);}}
-                    className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left hover:bg-surface-variant/55"><Trash2 size={16}/>Eliminar</button>
+                    className={contextMenuDestructiveItemClass}><Trash2 size={16}/>Eliminar</button>
             </div>}
         </div>
     </div>;

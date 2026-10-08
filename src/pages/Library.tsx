@@ -24,6 +24,7 @@ import {PdfDocumentViewer} from '../components/resources/PdfDocumentViewer';
 import {Button} from '../components/ui/Button';
 import {CollectionLoading, InlineLoading} from '../components/ui/LoadingState';
 import {CollectionItem} from '../components/ui/CollectionItem';
+import {contextMenuDestructiveItemClass, contextMenuItemClass, contextMenuSurfaceClass} from '../components/ui/contextMenuStyles';
 import {Dialog} from '../components/ui/Dialog';
 import {MoveCollectionDialog} from '../components/ui/MoveCollectionDialog';
 import {ConfirmDialog, NameDialog} from '../components/ui/NameDialog';
@@ -139,11 +140,11 @@ export function Library() {
         {collectionMenu && createPortal(<>
             <button type="button" className="fixed inset-0 z-[89] cursor-default" aria-label="Cerrar menú"
                     onClick={() => setCollectionMenu(null)}/>
-            <div role="menu" className="fixed z-[90] rounded-md bg-background p-1 shadow-xl" style={{
+            <div role="menu" className={`fixed z-[90] min-w-44 ${contextMenuSurfaceClass}`} style={{
                 left: Math.max(8, Math.min(collectionMenu.x, window.innerWidth - 190)),
                 top: Math.max(8, Math.min(collectionMenu.y, window.innerHeight - 50))
             }}>
-                <button type="button" role="menuitem" className="rounded-md px-3 py-2 text-sm hover:bg-surface-variant"
+                <button type="button" role="menuitem" className={contextMenuItemClass}
                         onClick={() => {
                             setCollectionMenu(null);
                             setFolderDialog({name: ''});
@@ -430,9 +431,9 @@ function FileResource({resource, folderName, onClose}: {
                                                                 aria-haspopup="menu" aria-expanded={menuOpen}
                                                                 onClick={() => setMenuOpen(value => !value)}/>{menuOpen &&
                     <div role="menu" aria-label="Opciones del archivo"
-                         className="absolute right-0 top-full z-40 mt-1 min-w-40 rounded-lg bg-surface p-1 ring-1 ring-outline/10">
+                         className={`absolute right-0 top-full z-40 mt-1 min-w-40 ${contextMenuSurfaceClass}`}>
                         <button type="button" role="menuitem"
-                                className="flex w-full rounded-md px-3 py-2 text-left text-sm hover:bg-surface-variant focus-visible:bg-surface-variant focus-visible:outline-none disabled:opacity-50"
+                                className={contextMenuItemClass}
                                 disabled={impactActions.restoreResource.isPending} onClick={() => {
                             setMenuOpen(false);
                             if (resource.status === 'archived') impactActions.restoreResource.mutate(resource.id); else setImpactRequest({
@@ -442,7 +443,7 @@ function FileResource({resource, folderName, onClose}: {
                             });
                         }}>{resource.status === 'archived' ? 'Restaurar' : 'Archivar'}</button>
                         <button type="button" role="menuitem"
-                                className="flex w-full rounded-md px-3 py-2 text-left text-sm text-red-600 hover:bg-surface-variant focus-visible:bg-surface-variant focus-visible:outline-none"
+                                className={contextMenuDestructiveItemClass}
                                 onClick={() => {
                                     setMenuOpen(false);
                                     setImpactRequest({entityType: 'resource', id: resource.id, action: 'delete'});
@@ -678,12 +679,12 @@ function NoteResource({resource, folderName, onClose}: {resource: ResourceDetail
                 <Button size="icon" className="h-10 w-10" icon={Pencil} aria-label="Editar nota" title="Editar nota" onClick={() => setEditing(true)}/>}
             <div className="relative" ref={menuRef}><Button ref={menuButtonRef} size="icon" className="h-10 w-10" icon={MoreHorizontal}
                 aria-label="Opciones de la nota" aria-haspopup="menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(value => !value)}/>
-                {menuOpen && <div role="menu" aria-label="Opciones de la nota" className="absolute right-0 top-full z-40 mt-1 min-w-40 rounded-lg bg-surface p-1 ring-1 ring-outline/10">
+                {menuOpen && <div role="menu" aria-label="Opciones de la nota" className={`absolute right-0 top-full z-40 mt-1 min-w-40 ${contextMenuSurfaceClass}`}>
                     <button type="button" role="menuitem" disabled={impactActions.restoreResource.isPending}
-                            className="flex w-full rounded-md px-3 py-2 text-left text-sm hover:bg-surface-variant focus-visible:bg-surface-variant focus-visible:outline-none disabled:opacity-50"
+                            className={contextMenuItemClass}
                             onClick={() => {setMenuOpen(false); if (resource.status === 'archived') impactActions.restoreResource.mutate(resource.id); else setImpactRequest({entityType: 'resource', id: resource.id, action: 'archive'});}}>
                         {resource.status === 'archived' ? 'Restaurar' : 'Archivar'}</button>
-                    <button type="button" role="menuitem" className="flex w-full rounded-md px-3 py-2 text-left text-sm text-red-600 hover:bg-surface-variant focus-visible:bg-surface-variant focus-visible:outline-none"
+                    <button type="button" role="menuitem" className={contextMenuDestructiveItemClass}
                             onClick={() => {setMenuOpen(false); setImpactRequest({entityType: 'resource', id: resource.id, action: 'delete'});}}>Eliminar</button>
                 </div>}</div>
             <Button size="icon" className="h-10 w-10 lg:hidden" icon={Info} aria-label="Mostrar propiedades" aria-expanded={infoOpen} onClick={() => setInfoOpen(value => !value)}/>

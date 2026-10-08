@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from 'react';
 import type {DragEvent, ReactNode} from 'react';
 import {MoreHorizontal} from 'lucide-react';
 import {createPortal} from 'react-dom';
+import {contextMenuDestructiveItemClass, contextMenuItemClass, contextMenuSurfaceClass} from './contextMenuStyles';
 
 export interface CollectionAction {
     label: string;
@@ -100,10 +101,10 @@ export function CollectionItem({
             <time
                 className="hidden w-28 text-right text-xs text-outline sm:block">{date}</time>}{actions.length > 0 && menuButton}</>}
         {menu && createPortal(<div ref={menuRef} role="menu" aria-label={`Opciones de ${title}`}
-                                   className="fixed z-[90] max-h-[70vh] min-w-48 overflow-auto rounded-lg bg-background p-1 shadow-xl ring-1 ring-black/5 dark:ring-white/10"
+                                   className={`fixed z-[90] max-h-[70vh] min-w-48 overflow-auto ${contextMenuSurfaceClass}`}
                                    style={{left: Math.max(8, menu.x), top: Math.max(8, menu.y)}}>{actions.map(action =>
             <button key={action.label} type="button" role="menuitem"
-                    className={`block w-full rounded-md px-3 py-2 text-left text-sm hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary ${action.destructive ? 'text-red-600' : ''}`}
+                    className={action.destructive ? contextMenuDestructiveItemClass : contextMenuItemClass}
                     onClick={() => {
                         setMenu(null);
                         action.onSelect();
