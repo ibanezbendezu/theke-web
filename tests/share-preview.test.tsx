@@ -1,89 +1,84 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { useState } from 'react';
-import { afterEach, expect, it, vi } from 'vitest';
-import { SharePreviewDialog } from '../src/features/canvas/SharePreviewDialog';
+import {act, cleanup, fireEvent, render, screen, waitFor} from '@testing-library/react';
+import {useCallback, useState} from 'react';
+import {afterEach, expect, it, vi} from 'vitest';
+import {SharePreviewDialog} from '../src/features/canvas/SharePreviewDialog';
 
-vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
+const state = vi.hoisted(() => ({
+    requested: vi.fn(), published: vi.fn(), comments: vi.fn(), updated: vi.fn(), revoked: vi.fn(),
+    ready: true, activeShare: null as null | {active: true; url: string; fingerprint: string; revision: number; commentsEnabled: boolean}
+}));
+vi.mock('../src/features/canvas/CanvasDialog', () => ({
+    CanvasDialog: ({children}: {children: React.ReactNode}) => <div role="dialog">{children}</div>
+}));
+vi.mock('../src/data/useShareManagement', () => ({
+    useShareManagement: () => ({
+        active: {data: state.activeShare, isPending: false, isError: false},
+        comments: {isPending: false, isError: false, mutate: state.comments},
+        update: {isPending: false, isError: false, mutate: state.updated},
+        revoke: {isPending: false, isError: false, mutate: state.revoked},
+        refresh: vi.fn()
+    })
+}));
+vi.mock('../src/data/usePublishShare', () => ({
+    usePublishShare: () => {
+        const [data, setData] = useState<unknown>();
+        return {data, isError: false, isPending: false, reset: () => setData(undefined),
+            mutate: (body: unknown) => {
+                state.published(body);
+                setData({url: `/share/${'a'.repeat(43)}`});
+            }};
+    }
+}));
+vi.mock('../src/data/useSharePreview', () => ({
+    useSharePreview: () => {
+        const [data, setData] = useState<unknown>();
+        const mutate = useCallback(() => {
+            state.requested();
+            setData({fingerprint: 'current-digest', ready: state.ready,
+                resources: [{id: 'resource', title: 'Archivo de prueba'}],
+                warnings: state.ready ? [] : [{resourceId: 'resource', field: 'accessibilityText', message: 'Falta descripción.'}]});
+        }, []);
+        return {data, isPending: false, isError: false, mutate};
+    }
+}));
 
-const state = vi.hoisted(() => ({ requested: vi.fn(), published: vi.fn(), comments: vi.fn(), updated: vi.fn(), revoked: vi.fn(), changed: false, ready: false,
-  activeShare: null as null | { active: true; url: string; fingerprint: string; revision: number; commentsEnabled: boolean } }));
-vi.mock('../src/features/canvas/CanvasDialog', () => ({ CanvasDialog: ({ children }: { children: React.ReactNode }) => <div role="dialog">{children}</div> }));
-vi.mock('../src/data/useShareManagement', () => ({ useShareManagement: () => ({ active: { data: state.activeShare, isPending: false, isError: false },
-  comments: { isPending: false, isError: false, mutate: state.comments }, update: { isPending: false, isError: false, mutate: state.updated },
-  revoke: { isPending: false, isError: false, mutate: state.revoked }, refresh: vi.fn() }) }));
-vi.mock('../src/data/usePublishShare', () => ({ usePublishShare: () => {
-  const [data, setData] = useState<unknown>();
-  return { data, isError: false, isPending: false, reset: () => setData(undefined), mutate: (body: unknown) => { state.published(body); setData({ token: 'a'.repeat(43), url: `/share/${'a'.repeat(43)}` }); } };
-} }));
-vi.mock('../src/data/useSharePreview', () => ({ useSharePreview: () => {
-  const [data, setData] = useState<unknown>();
-  return { data, isPending: false, isError: false, reset: () => setData(undefined), mutate: () => { state.requested(); setData({
-    diagramName: 'Mapa', revision: 4, fingerprint: 'reviewed-digest',
-    layout: { nodes: [{ id: 'r0', resourceId: 'one', x: 10, y: 20 }, { id: 'r1', resourceId: 'two', x: 240, y: 20 }], edges: [{ id: 'e0', relationId: 'rel', source: 'r0', target: 'r1' }] },
-    resources: [{ id: 'one', title: 'Nota visible', type: 'note', description: 'Resumen', content: state.changed ? 'Texto corregido' : 'Texto publicado', url: null, mediaType: null, accessibilityText: null }, { id: 'two', title: 'Audio', type: 'file', description: null, content: null, url: null, mediaType: 'audio/mpeg', accessibilityText: null }],
-    relations: [{ id: 'rel', sourceResourceId: 'one', targetResourceId: 'two', direction: 'directed', typeKey: 'supports', label: 'Sustenta', explanation: 'Referencia visible' }],
-    warnings: state.ready ? [] : [{ resourceId: 'two', field: 'accessibilityText', message: 'Falta descripción.' }], ready: state.ready,
-  }); } };
-} }));
+afterEach(() => {cleanup(); vi.useRealTimers(); vi.clearAllMocks(); state.ready = true; state.activeShare = null;});
 
-afterEach(() => { cleanup(); vi.clearAllMocks(); state.changed = false; state.ready = false; state.activeShare = null; });
-
-it('muestra solo el inventario guardado y bloqueos sin activar un enlace público', () => {
-  const onClose = vi.fn();
-  render(<SharePreviewDialog diagramId="diagram-1" canPreview onClose={onClose} />);
-  expect(screen.queryByText('Texto publicado')).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: 'Calcular inventario guardado' }));
-  expect(state.requested).toHaveBeenCalledOnce();
-  expect(screen.getByText(/Mapa · revisión guardada 4/)).toHaveTextContent('publicación estaría bloqueada');
-  expect(screen.getByText('Texto publicado')).toBeInTheDocument();
-  expect(screen.getByText(/Audio · accessibilityText: Falta descripción/)).toBeInTheDocument();
-  expect(screen.getByText(/Sustenta/)).toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: /Publicar/ })).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: 'Volver al editor' }));
-  expect(onClose).toHaveBeenCalledOnce();
+it('explica el alcance del enlace y permite crearlo desde la revisión guardada', async () => {
+    render(<SharePreviewDialog diagramId="diagram-1" canPreview onClose={vi.fn()}/>);
+    await waitFor(() => expect(state.requested).toHaveBeenCalledOnce());
+    expect(screen.getByText(/los cambios que guardes/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', {name: 'Crear enlace'}));
+    expect(state.published).toHaveBeenCalledWith({fingerprint: 'current-digest', idempotencyKey: expect.any(String)});
+    expect(screen.getByRole('textbox', {name: 'Enlace para compartir'}))
+        .toHaveValue(`${window.location.origin}/share/${'a'.repeat(43)}`);
 });
 
-it('espera a que el diagrama esté guardado y compara cada nuevo inventario', () => {
-  const { rerender } = render(<SharePreviewDialog diagramId="diagram-1" canPreview={false} onClose={vi.fn()} />);
-  expect(screen.getByRole('button', { name: 'Calcular inventario guardado' })).toBeDisabled();
-  rerender(<SharePreviewDialog diagramId="diagram-1" canPreview onClose={vi.fn()} />);
-  fireEvent.click(screen.getByRole('button', { name: 'Calcular inventario guardado' }));
-  state.changed = true;
-  fireEvent.click(screen.getByRole('button', { name: 'Recalcular inventario' }));
-  expect(screen.getByRole('region', { name: 'Cambios desde la última revisión' })).toHaveTextContent('Recurso modificado: Nota visible');
-  rerender(<SharePreviewDialog diagramId="diagram-1" canPreview={false} onClose={vi.fn()} />);
-  expect(screen.queryByText('Texto corregido')).not.toBeInTheDocument();
+it('espera el guardado y muestra las advertencias que bloquean el enlace', async () => {
+    state.ready = false;
+    const {rerender} = render(<SharePreviewDialog diagramId="diagram-1" canPreview={false} onClose={vi.fn()}/>);
+    expect(screen.getByRole('button', {name: 'Crear enlace'})).toBeDisabled();
+    rerender(<SharePreviewDialog diagramId="diagram-1" canPreview onClose={vi.fn()}/>);
+    await waitFor(() => expect(screen.getByText(/Archivo de prueba: Falta descripción/)).toBeInTheDocument());
+    expect(screen.getByRole('button', {name: 'Crear enlace'})).toBeDisabled();
 });
 
-it('exige revisión explícita y no publica una vista obsoleta', () => {
-  state.ready = true;
-  const { rerender } = render(<SharePreviewDialog diagramId="diagram-1" canPreview onClose={vi.fn()} />);
-  fireEvent.click(screen.getByRole('button', { name: 'Calcular inventario guardado' }));
-  expect(screen.getByRole('button', { name: 'Publicar enlace no listado' })).toBeDisabled();
-  fireEvent.click(screen.getByRole('checkbox', { name: /He revisado/ }));
-  rerender(<SharePreviewDialog diagramId="diagram-1" canPreview={false} onClose={vi.fn()} />);
-  expect(screen.queryByRole('button', { name: 'Publicar enlace no listado' })).not.toBeInTheDocument();
-  rerender(<SharePreviewDialog diagramId="diagram-1" canPreview onClose={vi.fn()} />);
-  fireEvent.click(screen.getByRole('button', { name: 'Publicar enlace no listado' }));
-  expect(state.published).toHaveBeenCalledWith({ fingerprint: 'reviewed-digest', idempotencyKey: expect.any(String) });
-  expect(screen.getByRole('textbox', { name: 'Enlace para compartir' })).toHaveValue(`${window.location.origin}/share/${'a'.repeat(43)}`);
-  fireEvent.click(screen.getByRole('button', { name: 'Recalcular inventario' }));
-  expect(screen.queryByRole('textbox', { name: 'Enlace para compartir' })).not.toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Publicar enlace no listado' })).toBeDisabled();
-});
-
-it('administra comentarios, actualización y revocación con confirmación', () => {
-  state.ready = true;
-  state.activeShare = { active: true, url: `/share/${'a'.repeat(43)}`, fingerprint: 'old-digest', revision: 3, commentsEnabled: true };
-  render(<SharePreviewDialog diagramId="diagram-1" canPreview onClose={vi.fn()} />);
-  expect(screen.getByRole('textbox', { name: 'Enlace para compartir' })).toHaveValue(`${window.location.origin}/share/${'a'.repeat(43)}`);
-  fireEvent.click(screen.getByRole('checkbox', { name: 'Permitir nuevos comentarios en este enlace' }));
-  expect(state.comments).toHaveBeenCalledWith({ enabled: false });
-  fireEvent.click(screen.getByRole('button', { name: 'Calcular inventario guardado' }));
-  fireEvent.click(screen.getByRole('button', { name: 'Actualizar revisión pública' }));
-  expect(state.updated).toHaveBeenCalledWith({ fingerprint: 'reviewed-digest', expectedPublishedFingerprint: 'old-digest' });
-  expect(screen.getByRole('button', { name: 'Revocar enlace' })).toBeDisabled();
-  fireEvent.change(screen.getByRole('textbox', { name: 'Confirmar revocación' }), { target: { value: 'REVOCAR' } });
-  fireEvent.click(screen.getByRole('button', { name: 'Revocar enlace' }));
-  expect(state.revoked).toHaveBeenCalledWith({ expectedPublishedFingerprint: 'old-digest', confirmation: 'REVOCAR' }, expect.any(Object));
+it('mantiene el enlace, permite reintentar una proyección pendiente y confirmar la revocación', async () => {
+    vi.useFakeTimers();
+    state.activeShare = {active: true, url: `/share/${'a'.repeat(43)}`, fingerprint: 'previous-digest', revision: 3, commentsEnabled: true};
+    render(<SharePreviewDialog diagramId="diagram-1" canPreview onClose={vi.fn()}/>);
+    await act(async () => {});
+    expect(state.requested).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('button', {name: 'Reintentar actualización'})).not.toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(15_000));
+    vi.useRealTimers();
+    expect(screen.getByRole('button', {name: 'Reintentar actualización'})).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', {name: 'Reintentar actualización'}));
+    expect(state.updated).toHaveBeenCalledWith({fingerprint: 'current-digest', expectedPublishedFingerprint: 'previous-digest'});
+    fireEvent.click(screen.getByRole('checkbox', {name: 'Permitir comentarios'}));
+    expect(state.comments).toHaveBeenCalledWith({enabled: false});
+    fireEvent.click(screen.getByRole('button', {name: 'Opciones del enlace'}));
+    fireEvent.click(screen.getByRole('button', {name: 'Dejar de compartir'}));
+    fireEvent.click(screen.getByRole('button', {name: 'Confirmar'}));
+    expect(state.revoked).toHaveBeenCalledWith({expectedPublishedFingerprint: 'previous-digest', confirmation: 'REVOCAR'}, expect.any(Object));
 });

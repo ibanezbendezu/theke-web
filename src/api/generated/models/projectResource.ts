@@ -15,6 +15,8 @@ export interface ProjectResource {
   description?: string | null;
   type?: string;
   /** @nullable */
+  mediaType?: string | null;
+  /** @nullable */
   archivedAt: string | null;
   updatedAt?: string;
 }

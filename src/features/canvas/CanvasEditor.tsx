@@ -1,8 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
     ReactFlow,
-    Background,
-    BackgroundVariant,
     ConnectionMode,
     type NodeTypes,
     ReactFlowProvider,
@@ -21,6 +19,7 @@ import {
     FileText,
     Minus,
     UploadCloud,
+    ClipboardPaste,
     Layers
 } from 'lucide-react';
 import {MessageCircle} from 'lucide-react';
@@ -43,6 +42,7 @@ import {useToast} from '../../components/ui/useToast';
 import {RelationConnectionLine} from './RelationConnectionLine';
 import {absoluteNodePosition, groupDropTarget} from './groupDropTarget';
 import {CanvasNodeContextMenu, type CanvasNodeMenuTarget} from './CanvasNodeContextMenu';
+import {CanvasBackgroundPattern} from './CanvasBackgroundPattern';
 
 const nodeTypes: NodeTypes = {
     media: MediaNode,
@@ -230,7 +230,11 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
         flowPosition: { x: number; y: number };
     } | null>(null);
     const [nodeMenu, setNodeMenu] = useState<CanvasNodeMenuTarget | null>(null);
-    const closeNodeMenu = useCallback(() => setNodeMenu(null), []);
+    const closeNodeMenu = useCallback((restoreFocus = false) => {
+        setNodeMenu(null);
+        if (restoreFocus) canvasRef.current?.closest<HTMLElement>('[role="region"]')?.focus();
+    }, []);
+    const canPasteVisual = useCanvasStore(state => Boolean(state.visualClipboard?.nodes.length));
 
     const onPaneClick = useCallback((event: React.MouseEvent) => {
         setMenu((m) => ({...m, isOpen: false}));
@@ -475,9 +479,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                                 style={{left: item.anchor.x, top: item.anchor.y}}
                                 onClick={() => onCommentOpen?.(item)}><MessageCircle size={12}/>{index + 1}</button>
                         : null)}</ViewportPortal>}
-                {background.variant !== 'plain' && <Background
-                    variant={background.variant === 'grid' ? BackgroundVariant.Lines : BackgroundVariant.Dots}
-                    color="var(--color-outline)" gap={24} size={background.variant === 'dots' ? 2 : undefined}/>}
+                <CanvasBackgroundPattern variant={background.variant}/>
             </ReactFlow>
 
             {menu.isOpen && (
@@ -498,6 +500,13 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
             {contextMenu && (
                 <div className="fixed z-[100] flex w-46 flex-col overflow-hidden rounded-lg bg-surface"
                      style={{top: contextMenu.y, left: contextMenu.x}}>
+                    {canPasteVisual && <button onClick={() => {
+                        useCanvasStore.getState().pasteVisualNodes(contextMenu.flowPosition);
+                        setContextMenu(null);
+                        canvasRef.current?.closest<HTMLElement>('[role="region"]')?.focus();
+                    }} className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-on-background hover:bg-surface-variant">
+                        <ClipboardPaste size={16}/> Pegar elemento visual
+                    </button>}
                     {onPickFiles && <button onClick={() => {
                         onPickFiles(contextMenu.flowPosition);
                         setContextMenu(null);
@@ -609,6 +618,26 @@ export function CanvasEditor({
         if (modifier && key === 'y') {
             event.preventDefault();
             store.redo();
+            return;
+        }
+        if (modifier && (key === 'c' || key === 'x')) {
+            const selected = store.nodes.filter(node => node.selected && node.type === 'annotation');
+            if (selected.length) {
+                const copied = key === 'x'
+                    ? store.cutVisualNodes(selected.map(node => node.id))
+                    : store.copyVisualNodes(selected.map(node => node.id));
+                if (copied) {
+                    event.preventDefault();
+                    if (key === 'x' && event.currentTarget instanceof HTMLElement) event.currentTarget.focus();
+                }
+            }
+            return;
+        }
+        if (modifier && key === 'v') {
+            if (store.visualClipboard?.nodes.length) {
+                event.preventDefault();
+                store.pasteVisualNodes();
+            }
             return;
         }
         if (modifier && key === 'd') {

@@ -26,3 +26,7 @@ Publicación, enlace público, instantánea transaccional/versionada del inventa
 
 - API: build, lint, contrato sincronizado y 53 pruebas aprobadas; 13 dependientes de infraestructura local omitidas por su configuración existente.
 - Web: build, contrato sincronizado y 53 pruebas aprobadas, incluidas previsualización y comparación de inventarios. La lint global mantiene tres errores previos en componentes de IA ajenos a esta historia.
+
+## Ajuste de producto (2026-10-07)
+
+Se conserva la proyección privada y su validación de campos permitidos. La interfaz de Compartir ya no exige revisar un inventario extenso: informa una sola vez que los cambios guardados se harán públicos, bloquea la creación si la proyección no está lista y verifica la huella al crear el enlace. El inventario anterior describe la implementación histórica de esta historia.

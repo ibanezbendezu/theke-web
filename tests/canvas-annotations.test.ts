@@ -32,4 +32,38 @@ describe('anotaciones locales', () => {
     expect(useCanvasStore.getState().past).toHaveLength(count + 1);
     store.undo(); expect(useCanvasStore.getState().nodes.find(node => node.id === id)?.position).toEqual({ x: 10, y: 10 });
   });
+  it('copia y corta elementos visuales sin mezclar recursos, y permite deshacer el pegado', () => {
+    useCanvasStore.setState({ nodes: [], edges: [], past: [], future: [], gestureSnapshot: null, visualClipboard: null });
+    const store = useCanvasStore.getState();
+    const text = store.addAnnotation('text', { x: 20, y: 30 });
+    const shape = store.addAnnotation('shape', { x: 100, y: 80 });
+    expect(store.copyVisualNodes([text, shape])).toBe(true);
+    const copies = store.pasteVisualNodes();
+    expect(copies).toHaveLength(2);
+    expect(useCanvasStore.getState().nodes.find(node => node.id === copies[0])?.position).toEqual({ x: 44, y: 54 });
+    expect(useCanvasStore.getState().nodes.find(node => node.id === copies[1])?.position).toEqual({ x: 124, y: 104 });
+    store.undo();
+    expect(useCanvasStore.getState().nodes).toHaveLength(2);
+    expect(store.cutVisualNodes([shape])).toBe(true);
+    expect(useCanvasStore.getState().nodes).toHaveLength(1);
+    const [pasted] = store.pasteVisualNodes({ x: 300, y: 400 });
+    expect(useCanvasStore.getState().nodes.find(node => node.id === pasted)?.position).toEqual({ x: 300, y: 400 });
+    store.undo();
+    expect(useCanvasStore.getState().nodes).toHaveLength(1);
+    store.undo();
+    expect(useCanvasStore.getState().nodes).toHaveLength(2);
+  });
+  it('conserva la posición de texto y línea al cortar y pegar repetidamente', () => {
+    useCanvasStore.setState({ nodes: [], edges: [], past: [], future: [], gestureSnapshot: null, visualClipboard: null });
+    const store = useCanvasStore.getState();
+    const positions = [{ x: 35, y: 70 }, { x: 210, y: 145 }];
+    let ids = [store.addAnnotation('text', positions[0]), store.addAnnotation('line', positions[1])];
+    for (let cycle = 0; cycle < 3; cycle++) {
+      expect(store.cutVisualNodes(ids)).toBe(true);
+      ids = store.pasteVisualNodes();
+      expect(ids.map(id => useCanvasStore.getState().nodes.find(node => node.id === id)?.position)).toEqual(positions);
+    }
+    const repeated = store.pasteVisualNodes();
+    expect(repeated.map(id => useCanvasStore.getState().nodes.find(node => node.id === id)?.position)).toEqual(positions);
+  });
 });

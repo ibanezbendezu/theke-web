@@ -52,7 +52,7 @@ Este documento descompone los requisitos de Theke en epics e historias implement
 - **FR-29 — Decisión humana:** cada sugerencia muestra la acción propuesta, el fundamento, los Recursos utilizados y los límites. El autor puede editarla, aceptarla o descartarla; ninguna sugerencia modifica conocimiento sin confirmación.
 - **FR-30 — Procedencia:** las Relaciones o contenidos aceptados a partir de una sugerencia conservan su origen, evidencia, fecha y distinción respecto del contenido creado manualmente. El autor puede consultar esa procedencia después de aceptar la sugerencia.
 - **FR-31 — Retroalimentación:** el autor puede informar de una sugerencia incorrecta. Theke no presenta inferencias sin evidencia como hechos ni inventa citas cuando falta sustento.
-- **FR-32 — Previsualización:** antes de publicar, el autor puede revisar la experiencia del visitante y la lista exacta de Recursos expuestos.
+- **FR-32 — Proyección segura:** antes de crear el enlace, Theke valida la versión guardada y muestra los problemas que impiden compartirla; la proyección pública incluye solo Recursos representados y campos permitidos.
 - **FR-33 — Enlace compartido:** el autor puede generar un enlace no listado, vivo y revocable para un Diagrama. En el MVP existe un Compartido activo por Diagrama; republicar después de revocarlo crea un enlace y un hilo de comentarios nuevos, conservando el historial anterior solo para el autor.
 - **FR-34 — Controles de publicación:** el autor puede permitir o impedir nuevos comentarios sin cambiar el enlace y puede revocar el acceso sin eliminar contenido interno.
 - **FR-35 — Exploración pública:** el visitante puede usar zoom y paneo, abrir el detalle de cada Recurso y, cuando su tipo lo admite, previsualizarlo o reproducirlo; también puede explorar Relaciones sin editar composición ni contenido. Los controles no disponibles se deshabilitan o sustituyen por abrir o descargar sin bloquear el resto del Compartido.
@@ -1446,29 +1446,29 @@ para detectar información privada o problemas antes de compartir el Diagrama.
 **Acceptance Criteria:**
 
 **Given** un Diagrama privado
-**When** el autor inicia Share Wizard
-**Then** Theke genera una previsualización de visitante sin activar acceso público
-**And** muestra una lista exacta de Recursos, Relaciones y campos que quedarían expuestos.
+**When** el autor abre Compartir
+**Then** Theke valida la proyección desde la versión guardada sin activar acceso público
+**And** explica que los futuros cambios guardados actualizarán el mismo enlace.
 
 **Given** un Recurso canónico usado en otros contextos pero no representado en el Diagrama
-**When** se calcula el inventario
-**Then** no aparece ni se serializa en la previsualización
+**When** se calcula la proyección
+**Then** no aparece ni se serializa en la proyección pública
 **And** tampoco se revelan nombres de Carpetas, Proyectos o referencias privadas no incluidas.
 
 **Given** una nota o Recurso que el autor no desea publicar
-**When** lo identifica en el inventario
-**Then** puede volver al editor, ocultar o retirar su Representación y recalcular la previsualización
-**And** Share Wizard conserva las opciones ya elegidas cuando siguen siendo válidas.
+**When** lo identifica antes de crear el enlace
+**Then** puede volver al editor, ocultar o retirar su Representación y guardar
+**And** el siguiente intento valida la versión guardada.
 
 **Given** un Recurso multimedia sin los datos mínimos de accesibilidad definidos
 **When** el autor intenta avanzar
 **Then** Theke identifica el Recurso y el dato faltante y ofrece corregirlo
 **And** bloquea o advierte la publicación según la severidad configurada de la política.
 
-**Given** que el inventario cambia mientras la previsualización está abierta
-**When** el autor intenta publicar una revisión anterior
-**Then** Theke exige recalcular y revisar las diferencias
-**And** nunca publica contenido añadido después sin que aparezca en la confirmación.
+**Given** que el mapa cambia mientras Compartir está abierto
+**When** el autor intenta crear un enlace con una huella anterior
+**Then** Theke rechaza esa huella y recalcula la versión guardada
+**And** solo crea el enlace tras la aceptación explícita de que los futuros guardados serán públicos.
 
 ### Story 5.2: Publicar mediante un enlace no listado
 
@@ -1480,8 +1480,8 @@ para compartir una experiencia interactiva sin abrir mi espacio privado.
 
 **Acceptance Criteria:**
 
-**Given** una previsualización vigente y aprobada
-**When** el autor confirma Publicar
+**Given** una proyección vigente y válida
+**When** el autor crea el enlace tras leer que los futuros guardados serán públicos
 **Then** la API crea atómicamente un Compartido, un token no enumerable y una proyección pública allowlist
 **And** devuelve un enlace que el autor puede copiar.
 
@@ -1524,6 +1524,11 @@ para mantener el enlace útil sin perder control del acceso.
 **When** se confirma una nueva revisión del Diagrama
 **Then** Theke reconstruye y sustituye atómicamente la proyección pública viva
 **And** un visitante nunca recibe una mezcla parcial entre revisiones.
+
+**Given** una proyección pública activa
+**When** el guardado privado se confirma y la actualización pública falla
+**Then** el guardado privado permanece confirmado y el enlace conserva la última proyección pública válida
+**And** el indicador del editor confirma solo el guardado privado; Compartir indica una discrepancia persistente y ofrece reintentar.
 
 **Given** que el autor solicita revocar
 **When** confirma la consecuencia en Share Wizard

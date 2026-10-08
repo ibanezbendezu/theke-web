@@ -24,6 +24,12 @@ Una prueba de integración con PostgreSQL cubre actualización íntegra, rechazo
 
 El 2026-10-03 se comprobó en navegador que desactivar nuevos comentarios conserva los anteriores y que el servidor rechaza un POST con 409; la opción quedó reactivada. La integración de actualización y revocación pasó con PostgreSQL real. Pendiente antes de `done`: revisión de código y flujo de actualización y revocación en una publicación de prueba aislada, además del control de despliegue de 5.2. La interfaz pública interactiva del Canvas corresponde a 5.4.
 
+## Ajuste de producto (2026-10-07)
+
+El mismo enlace se actualiza automáticamente tras cada guardado confirmado del mapa. El guardado privado encola la reconstrucción pública y responde sin esperar ese trabajo; el worker sustituye juntos la proyección permitida y el manifiesto de archivos. Si falla, conserva la última versión pública válida y reintenta sin revertir el guardado privado. El editor solo indica el estado del guardado privado; el diálogo de compartir muestra una discrepancia persistente y ofrece reintentar. La actualización manual queda como operación de recuperación, no como paso normal del autor.
+
+La falta de descripción accesible en un archivo se informa como advertencia y no detiene la actualización pública. Un archivo ausente o un formato no compatible siguen bloqueándola.
+
 ## Referencias
 
 - `_bmad-output/planning-artifacts/epics.md`, Story 5.3.

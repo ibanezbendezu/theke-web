@@ -17,7 +17,7 @@ vi.mock('../src/components/ai/AIGuidanceCard', () => ({ AIGuidanceCard: ({ selec
 vi.mock('../src/store/useCanvasStore', () => ({ useCanvasStore: (selector: (store: object) => unknown) => selector({ nodes: [{ id: 'saved-node', selected: true, type: 'resource', data: { resourceId: 'res-1' } }], edges: [], inspectorOpen: false, setInspectorOpen: state.setInspectorOpen }), }));
 vi.mock('../src/features/canvas/useCanvasUploadBatches', () => ({ useCanvasUploadBatches: () => ({ batches: [], addFiles: vi.fn() }) }));
 vi.mock('../src/pages/DiagramWorkspace', () => ({ DiagramWorkspace: () => <div>Lienzo manual</div> }));
-vi.mock('../src/features/canvas/CanvasResources', () => ({ CanvasResourcePanel: () => <p>Panel de recursos</p>, CanvasResourcePicker: () => null }));
+vi.mock('../src/features/canvas/CanvasResourceBrowser', () => ({ CanvasResourcePanel: () => <p>Panel de recursos</p> }));
 vi.mock('../src/features/canvas/CanvasUploadTray', () => ({ CanvasUploadTray: () => null }));
 vi.mock('../src/components/ui/ThemeToggle', () => ({ ThemeToggle: () => <button type="button">Tema claro</button> }));
 vi.mock('../src/features/canvas/CanvasDialog', () => ({ CanvasDialog: ({ children }: { children: React.ReactNode }) => <div role="dialog">{children}</div> }));

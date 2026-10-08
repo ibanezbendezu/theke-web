@@ -21,11 +21,9 @@ import type {AiScopePreparation} from '../api/generated/models';
 import {ThemeToggle} from '../components/ui/ThemeToggle';
 import {useDiagram} from '../data/useDiagrams';
 import {useOrganizationActions} from '../data/useOrganization';
-import {useNoteActions} from '../data/useNotes';
 import {DiagramWorkspace} from './DiagramWorkspace';
 import {CanvasEditor} from '../features/canvas/CanvasEditor';
-import {CanvasResourcePanel, CanvasResourcePicker} from '../features/canvas/CanvasResources';
-import {CanvasNoteDialog} from '../features/canvas/CanvasNoteDialog';
+import {CanvasResourcePanel} from '../features/canvas/CanvasResourceBrowser';
 import {useCanvasStore} from '../store/useCanvasStore';
 import {useCanvasUploadBatches} from '../features/canvas/useCanvasUploadBatches';
 import {CanvasUploadTray} from '../features/canvas/CanvasUploadTray';
@@ -60,7 +58,6 @@ function DiagramEditorCore() {
     const selectedCommentId = new URLSearchParams(location.search).get('comment');
     const diagram = useDiagram(diagramId);
     const organization = useOrganizationActions(projectId ?? '');
-    const noteActions = useNoteActions();
     const [leftPanel, setLeftPanel] = useState<'resources' | 'semantic' | 'comments' | null>(selectedCommentId ? 'comments' : null);
     const [visualPanel, setVisualPanel] = useState<{kind: 'text' | 'shape' | 'line'; section: VisualTextPanel | VisualElementPanel} | null>(null);
     const commentPage = useCommentNotifications(1, 'all', diagramId);
@@ -95,9 +92,8 @@ function DiagramEditorCore() {
     };
     const rightOpen = useCanvasStore(state => state.inspectorOpen);
     const setRightOpen = useCanvasStore(state => state.setInspectorOpen);
-    const [pickerOpen, setPickerOpen] = useState(false);
-    const [noteDialogOpen, setNoteDialogOpen] = useState(false);
-    const [createdNoteId, setCreatedNoteId] = useState<string | null>(null);
+    const [resourcePanelVersion, setResourcePanelVersion] = useState(0);
+    const [resourcePanelSection, setResourcePanelSection] = useState<'map' | 'library'>('map');
     const [preferred, setPreferred] = useState<{ x: number; y: number } | undefined>();
     const [duplicate, setDuplicate] = useState<{
         resourceId: string;
@@ -185,14 +181,17 @@ function DiagramEditorCore() {
     };
     const openPicker = (position?: { x: number; y: number }) => {
         setPreferred(position);
-        setPickerOpen(true);
+        setResourcePanelSection('library');
+        setResourcePanelVersion(version => version + 1);
+        if (window.matchMedia('(max-width: 767px)').matches) setVisualPanel(null);
+        setLeftPanel('resources');
     };
     const addDirect = (resourceId: string, position?: { x: number; y: number }) => {
         void organization.addResources.mutateAsync([resourceId]).then(() => {
             useCanvasStore.getState().addResourceRepresentation(resourceId, position);
             setResourceError('');
             setDuplicate(null);
-            setPickerOpen(false);
+            setPreferred(undefined);
         }).catch(() => setResourceError('No se pudo añadir el recurso al mapa.'));
     };
     const tryAdd = (resourceId: string, position?: { x: number; y: number }) => {
@@ -202,7 +201,7 @@ function DiagramEditorCore() {
         const existing = useCanvasStore.getState().nodes.find(node => node.data?.resourceId === resourceId);
         if (existing) useCanvasStore.getState().focusNode(existing.id);
         setDuplicate(null);
-        setPickerOpen(false);
+        setPreferred(undefined);
     };
     const addFolder = (folderId: string) => {
         const existing = useCanvasStore.getState().nodes.find(node => node.type === 'folder' && node.data?.libraryFolderId === folderId);
@@ -244,7 +243,7 @@ function DiagramEditorCore() {
                                 title={leftPanel === 'resources' ? 'Ocultar recursos' : 'Mostrar recursos'}
                                 aria-label={leftPanel === 'resources' ? 'Ocultar recursos' : 'Mostrar recursos'}
                                 aria-expanded={leftPanel === 'resources'} icon={FolderOpen}
-                                onClick={() => toggleLeftPanel('resources')}/>
+                                onClick={() => {setPreferred(undefined); setResourcePanelSection('map'); toggleLeftPanel('resources');}}/>
                         <Button size="icon" className="h-10 w-10 shrink-0"
                                 title={leftPanel === 'semantic' ? 'Ocultar vista semántica' : 'Mostrar vista semántica'}
                                 aria-label={leftPanel === 'semantic' ? 'Ocultar vista semántica' : 'Mostrar vista semántica'}
@@ -264,8 +263,8 @@ function DiagramEditorCore() {
                             setReviewError('');
                         }}/>
                         {!diagram.data.archivedAt && <Button size="icon" className="h-10 w-10 shrink-0"
-                                                             title="Previsualizar contenido compartible"
-                                                             aria-label="Previsualizar contenido compartible"
+                                                             title="Compartir mapa"
+                                                             aria-label="Compartir mapa"
                                                              icon={Share2} onClick={() => setSharePreviewOpen(true)}/>}
                         {!diagram.data.archivedAt &&
                             <Button size="icon" className="h-10 w-10 shrink-0" title="Cargar archivos en el canvas"
@@ -297,8 +296,12 @@ function DiagramEditorCore() {
                                                                           selectedId={selectedCommentId} onOpen={openComment}/> : leftPanel === 'resources' ? diagram.data.archivedAt ?
                     <p className="p-4 text-sm text-outline">Los recursos del mapa archivado están disponibles al
                         restaurarlo.</p> : readyDiagramId === diagram.data.id ?
-                        <CanvasResourcePanel projectId={diagram.data.projectId} onAdd={() => openPicker()}
-                                             onSelect={id => tryAdd(id)} onSelectFolder={addFolder}/> :
+                        <CanvasResourcePanel key={resourcePanelVersion} projectId={diagram.data.projectId}
+                                             initialSection={resourcePanelSection}
+                                             onAdd={id => tryAdd(id, preferred)}
+                                             onAddAnother={id => addDirect(id, preferred)} onFocus={focusExisting}
+                                             onFocusNode={id => useCanvasStore.getState().focusNode(id)}
+                                             onSelectFolder={addFolder}/> :
                         <div className="p-4"><InlineLoading label="Cargando recursos del mapa…"/></div> : readyDiagramId === diagram.data.id ?
                     <CanvasSemanticView projectId={diagram.data.projectId}/> :
                     <div className="p-4"><InlineLoading label="Cargando vista semántica…"/></div>}
@@ -350,18 +353,6 @@ function DiagramEditorCore() {
                                               diagramId={diagram.data.id} projectId={diagram.data.projectId}/> : <><CanvasBackgroundInspector/>
                                 <p className="mt-3 text-xs text-outline">Selecciona un elemento para editarlo.</p></>}
         </aside>}
-        {pickerOpen && <CanvasResourcePicker projectId={diagram.data.projectId} usedIds={usedIds}
-                                             onClose={() => setPickerOpen(false)} onSelect={id => tryAdd(id, preferred)}
-                                             onFocus={focusExisting} onCreateNote={() => {setPickerOpen(false); setNoteDialogOpen(true);}}/>}
-        {noteDialogOpen && <CanvasNoteDialog onClose={() => {setNoteDialogOpen(false); setCreatedNoteId(null);}} onSave={async input => {
-            const resourceId = createdNoteId ?? (await noteActions.create.mutateAsync(input)).id;
-            setCreatedNoteId(resourceId);
-            await organization.addResources.mutateAsync([resourceId]);
-            useCanvasStore.getState().addResourceRepresentation(resourceId, preferred);
-            setNoteDialogOpen(false);
-            setCreatedNoteId(null);
-            setResourceError('');
-        }}/>}
         {duplicate &&
             <CanvasDialog titleId="duplicate-resource-title" onClose={() => setDuplicate(null)} className="max-w-md"><h2
                 id="duplicate-resource-title" className="font-semibold">Este recurso ya está en el diagrama</h2><p

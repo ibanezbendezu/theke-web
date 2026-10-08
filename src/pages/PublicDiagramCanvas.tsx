@@ -1,7 +1,5 @@
 import {useMemo, useState} from 'react';
 import {
-    Background,
-    BackgroundVariant,
     BaseEdge,
     EdgeLabelRenderer,
     Handle,
@@ -33,6 +31,7 @@ import type {PublicLayoutNode, PublicShare, SharePreviewRelation, SharePreviewRe
 import {Button} from '../components/ui/Button';
 import {ResourceConnectionHandles} from '../components/ui/ResourceConnectionHandles';
 import {ResourceCard} from '../features/canvas/ResourceCard';
+import {CanvasBackgroundPattern} from '../features/canvas/CanvasBackgroundPattern';
 import {VisualTextContent} from '../features/canvas/VisualTextContent';
 import {visualTextStyle} from '../features/canvas/visualTextStyle';
 import type {AnnotationData} from '../features/canvas/nodes/AnnotationNode';
@@ -409,9 +408,7 @@ function PublicCanvas({
                                 }); else onSelect({kind: 'relation', id: edge.data.relationId});
                             }
                         }}>
-        {background.variant !== 'plain' &&
-            <Background variant={background.variant === 'grid' ? BackgroundVariant.Lines : BackgroundVariant.Dots}
-                        color="var(--color-outline)" gap={24} size={background.variant === 'dots' ? 2 : undefined}/>}
+        <CanvasBackgroundPattern variant={background.variant}/>
     </ReactFlow><CanvasButtons/>{menu &&
         <div className="fixed z-[60] rounded-lg bg-surface p-1 text-sm text-on-background ring-1 ring-outline/25"
              style={{left: menu.x, top: menu.y}} role="menu">

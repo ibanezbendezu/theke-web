@@ -25,7 +25,7 @@ export function useShareManagement(diagramId: string) {
         return response.data.data;
     };
     const active = useQuery({
-        queryKey: key, enabled: Boolean(userId), queryFn: async () => {
+        queryKey: key, enabled: Boolean(userId), refetchInterval: query => query.state.data?.active ? 3_000 : false, queryFn: async () => {
             const response = await thekeFetch<{
                 data: ActiveShareResponse
             }>(`/v1/diagrams/${diagramId}/shares/active`, {

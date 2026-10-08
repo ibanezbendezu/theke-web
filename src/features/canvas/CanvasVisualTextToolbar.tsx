@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState, type ReactNode} from 'react';
-import {AlignLeft, Bold, Copy, Eye, EyeOff, Italic, Layers, MoreHorizontal, Palette, SlidersHorizontal, Strikethrough, Trash2, Underline} from 'lucide-react';
+import {AlignLeft, Bold, ClipboardPaste, Copy, Eye, EyeOff, Italic, Layers, MoreHorizontal, Palette, Scissors, SlidersHorizontal, Strikethrough, Trash2, Underline} from 'lucide-react';
 import {useCanvasStore} from '../../store/useCanvasStore';
 import {Select} from '../../components/ui/Select';
 import {visualFonts, visualTextPalette} from './visualTextStyle';
@@ -16,9 +16,17 @@ export function CanvasVisualTextToolbar({nodeId, activePanel, onPanelToggle}: {
     const updateNodeData = useCanvasStore(state => state.updateNodeData);
     const updateNodePresentation = useCanvasStore(state => state.updateNodePresentation);
     const duplicateNode = useCanvasStore(state => state.duplicateNode);
+    const copyVisualNodes = useCanvasStore(state => state.copyVisualNodes);
+    const cutVisualNodes = useCanvasStore(state => state.cutVisualNodes);
+    const pasteVisualNodes = useCanvasStore(state => state.pasteVisualNodes);
+    const canPaste = useCanvasStore(state => Boolean(state.visualClipboard?.nodes.length));
     const removeNodes = useCanvasStore(state => state.removeNodes);
     const [popover, setPopover] = useState<'color' | 'more' | null>(null);
     const toolbarRef = useRef<HTMLDivElement>(null);
+    const finishClipboardAction = () => {
+        setPopover(null);
+        document.querySelector<HTMLElement>('[role="region"][aria-label^="Lienzo interactivo"]')?.focus();
+    };
     useEffect(() => {
         if (!popover) return;
         const close = (event: PointerEvent) => {if (!toolbarRef.current?.contains(event.target as Node)) setPopover(null);};
@@ -87,6 +95,13 @@ export function CanvasVisualTextToolbar({nodeId, activePanel, onPanelToggle}: {
             <Tool label="Más opciones del texto" active={popover === 'more'} onClick={() => setPopover(value => value === 'more' ? null : 'more')}><MoreHorizontal size={18}/></Tool>
             {popover === 'more' && <div role="menu" aria-label="Opciones del texto visual"
                 className="absolute bottom-full right-0 z-50 mb-2 min-w-44 rounded-lg bg-surface/95 p-1 text-sm backdrop-blur-xl">
+                <button role="menuitem" type="button" onClick={() => {copyVisualNodes([nodeId]); finishClipboardAction();}}
+                    className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left hover:bg-surface-variant/55"><Copy size={16}/>Copiar</button>
+                <button role="menuitem" type="button" onClick={() => {cutVisualNodes([nodeId]); finishClipboardAction();}}
+                    className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left hover:bg-surface-variant/55"><Scissors size={16}/>Cortar</button>
+                {canPaste && <button role="menuitem" type="button" onClick={() => {pasteVisualNodes(); finishClipboardAction();}}
+                    className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left hover:bg-surface-variant/55"><ClipboardPaste size={16}/>Pegar</button>}
+                <div className="mx-2 my-1 h-px bg-outline/15"/>
                 <button role="menuitem" type="button" onClick={() => {duplicateNode(nodeId); setPopover(null);}}
                     className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left hover:bg-surface-variant/55"><Copy size={16}/>Duplicar</button>
                 <button role="menuitem" type="button" onClick={() => {updateNodePresentation(nodeId, {hidden: !node.hidden}); setPopover(null);}}

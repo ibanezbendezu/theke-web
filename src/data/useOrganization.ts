@@ -16,6 +16,7 @@ export interface ProjectResource {
     title: string;
     description: string | null;
     type: 'note' | 'file' | 'link';
+    mediaType: string | null;
     archivedAt: string | null;
     updatedAt: string
 }

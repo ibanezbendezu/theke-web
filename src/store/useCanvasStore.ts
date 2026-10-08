@@ -11,6 +11,7 @@ import {
 } from '@xyflow/react';
 import {initialNodes, initialEdges} from '../mock/initialState';
 import {placeResource} from '../features/canvas/placeResource';
+import {absoluteNodePosition} from '../features/canvas/groupDropTarget';
 import {resourceCardSize, type ResourceDisplayMode} from '../features/canvas/resourceCardSizing';
 import type {CanvasBackground} from '../data/useDiagrams';
 
@@ -19,6 +20,18 @@ type CanvasSnapshot = {
     edges: Edge[];
     viewport: { x: number; y: number; zoom: number };
     background: CanvasBackground
+};
+type VisualClipboard = {nodes: FlowNode[]; positions: {x: number; y: number}[]; cut: boolean; pasteCount: number};
+const visualNode = (node: FlowNode) => node.type === 'annotation' &&
+    ['text', 'shape', 'line'].includes(String(node.data.kind));
+const captureVisualNodes = (nodes: FlowNode[], ids: string[]): VisualClipboard | null => {
+    const chosen = nodes.filter(node => ids.includes(node.id) && visualNode(node));
+    return chosen.length ? {
+        nodes: structuredClone(chosen),
+        positions: chosen.map(node => absoluteNodePosition(node, nodes)),
+        cut: false,
+        pasteCount: 0
+    } : null;
 };
 const snapshot = (state: CanvasState): CanvasSnapshot => structuredClone({
     nodes: state.nodes,
@@ -53,6 +66,10 @@ interface CanvasState {
     addNode: (node: FlowNode) => void;
     addAnnotation: (kind: 'text' | 'shape' | 'line', preferred?: { x: number; y: number }) => string;
     duplicateNode: (id: string) => string | null;
+    visualClipboard: VisualClipboard | null;
+    copyVisualNodes: (ids: string[]) => boolean;
+    cutVisualNodes: (ids: string[]) => boolean;
+    pasteVisualNodes: (position?: {x: number; y: number}) => string[];
     addResourceRepresentation: (resourceId: string, preferred?: { x: number; y: number }) => string;
     setResourceDisplayMode: (nodeId: string, mode: ResourceDisplayMode) => void;
     addFolderRepresentation: (folderId: string, projectId: string, preferred?: { x: number; y: number }) => string;
@@ -111,6 +128,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     edges: initialEdges,
     viewport: {x: 0, y: 0, zoom: 1},
     background: {variant: 'dots', tone: 'default'},
+    visualClipboard: null,
     canvasSize: {width: 0, height: 0},
     setCanvasSize: (width, height) => set(state => state.canvasSize.width === width && state.canvasSize.height === height ? state : {canvasSize: {width, height}}),
     setBackground: background => set(state => ({...history(state), background})),
@@ -230,6 +248,46 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         };
         set(state => ({...history(state), nodes: [...state.nodes.map(item => ({...item, selected: false})), copy]}));
         return copyId;
+    },
+    copyVisualNodes: ids => {
+        const clipboard = captureVisualNodes(get().nodes, ids);
+        if (!clipboard) return false;
+        set({visualClipboard: clipboard});
+        return true;
+    },
+    cutVisualNodes: ids => {
+        const clipboard = captureVisualNodes(get().nodes, ids);
+        if (!clipboard) return false;
+        set({visualClipboard: {...clipboard, cut: true}});
+        get().removeNodes(clipboard.nodes.map(node => node.id));
+        return true;
+    },
+    pasteVisualNodes: preferred => {
+        const clipboard = get().visualClipboard;
+        if (!clipboard?.nodes.length) return [];
+        const firstX = Math.min(...clipboard.positions.map(position => position.x));
+        const firstY = Math.min(...clipboard.positions.map(position => position.y));
+        const distance = clipboard.cut ? 0 : (clipboard.pasteCount + 1) * 24;
+        const ids: string[] = [];
+        set(state => {
+            const copies = clipboard.nodes.map((source, index) => {
+                const id = crypto.randomUUID();
+                ids.push(id);
+                const position = clipboard.positions[index];
+                const absolute = preferred
+                    ? {x: preferred.x + position.x - firstX, y: preferred.y + position.y - firstY}
+                    : {x: position.x + distance, y: position.y + distance};
+                const parent = state.nodes.find(node => node.id === source.parentId && node.type === 'container');
+                const parentPosition = parent ? absoluteNodePosition(parent, state.nodes) : {x: 0, y: 0};
+                return {...structuredClone(source), id, parentId: parent?.id,
+                    position: {x: absolute.x - parentPosition.x, y: absolute.y - parentPosition.y}, selected: true};
+            });
+            return {...history(state),
+                visualClipboard: {...clipboard, pasteCount: clipboard.pasteCount + 1},
+                nodes: [...state.nodes.map(node => ({...node, selected: false})), ...copies],
+                edges: state.edges.map(edge => ({...edge, selected: false}))};
+        });
+        return ids;
     },
     addResourceRepresentation: (resourceId, preferred) => {
         const id = crypto.randomUUID();

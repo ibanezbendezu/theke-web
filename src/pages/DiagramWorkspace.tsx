@@ -5,7 +5,8 @@ import {MarkerType} from '@xyflow/react';
 import {CircleAlert, CloudCheck, CloudUpload, Link2, WifiOff, X} from 'lucide-react';
 import {ApiError} from '../api/httpClient';
 import {Button} from '../components/ui/Button';
-import {deleteCanvasDraft, readCanvasDraft, writeCanvasDraft, type CanvasDraft} from '../data/canvasJournal';
+import {deleteCanvasDraft, deleteCanvasDraftIfMatches, readCanvasDraft, writeCanvasDraft, type CanvasDraft} from '../data/canvasJournal';
+import {createCanvasJournalQueue} from '../data/canvasJournalQueue';
 import {migrateCanvasDocument} from '../data/canvasDocument';
 import {type Diagram, type DiagramDocument, useSaveDiagramDocument} from '../data/useDiagrams';
 import {CanvasEditor, type RelationEdgeGeometry} from '../features/canvas/CanvasEditor';
@@ -112,14 +113,15 @@ export function DiagramWorkspace({
     const savingRef = useRef(false);
     const blockedRef = useRef(false);
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const journalQueue = useRef<Promise<unknown>>(Promise.resolve());
+    const journalQueue = useRef(createCanvasJournalQueue(writeCanvasDraft,
+        (key, operationId) => operationId ? deleteCanvasDraftIfMatches(key, operationId) : deleteCanvasDraft(key),
+        () => setStatus('storage-error')));
     const pumpRef = useRef<() => Promise<void>>(async () => {
     });
     const queueWrite = useCallback((draft: CanvasDraft) => {
-        journalQueue.current = journalQueue.current.catch(() => {
-        }).then(() => writeCanvasDraft(draft)).catch(() => setStatus('storage-error'));
+        journalQueue.current.queue(draft);
     }, []);
-    const schedule = useCallback((delay = 700) => {
+    const schedule = useCallback((delay = 350) => {
         if (timerRef.current) clearTimeout(timerRef.current);
         timerRef.current = setTimeout(() => void pumpRef.current(), delay);
     }, []);
@@ -147,7 +149,7 @@ export function DiagramWorkspace({
         savingRef.current = true;
         setStatus('saving');
         try {
-            await journalQueue.current;
+            await journalQueue.current.flush();
             const saved = await saveRef.current(draft.document, draft.baseRevision, draft.operationId);
             revisionRef.current = saved.revision;
             confirmedRef.current = fingerprint(saved.document);
@@ -161,10 +163,15 @@ export function DiagramWorkspace({
             void client.invalidateQueries({queryKey: ['private', 'available-relations', userId, diagram.id]});
             if (latestRef.current?.operationId === draft.operationId) {
                 latestRef.current = null;
-                journalQueue.current = journalQueue.current.catch(() => {
-                }).then(() => deleteCanvasDraft(draftKey));
-                await journalQueue.current;
-                setStatus('saved');
+                await journalQueue.current.clear(draftKey, draft.operationId);
+                const pending = latestRef.current as CanvasDraft | null;
+                if (pending) {
+                    latestRef.current = {...pending, baseRevision: saved.revision};
+                    queueWrite(latestRef.current);
+                    schedule(0);
+                } else {
+                    setStatus('saved');
+                }
             } else if (latestRef.current) {
                 latestRef.current = {...latestRef.current, baseRevision: saved.revision};
                 queueWrite(latestRef.current);
@@ -172,7 +179,9 @@ export function DiagramWorkspace({
             }
         } catch (error) {
             retryRef.current = draft;
-            if (error instanceof ApiError && error.status === 409) {
+            if (journalQueue.current.failed) {
+                setStatus('storage-error');
+            } else if (error instanceof ApiError && error.status === 409) {
                 blockedRef.current = true;
                 setConflict(true);
                 setStatus('conflict');
@@ -247,8 +256,7 @@ export function DiagramWorkspace({
         onCanvasReady?.();
     }, [markChanged, onCanvasReady]);
     const discard = async () => {
-        await journalQueue.current;
-        await deleteCanvasDraft(draftKey);
+        await journalQueue.current.clear(draftKey);
         latestRef.current = null;
         retryRef.current = null;
         blockedRef.current = false;
@@ -286,8 +294,7 @@ export function DiagramWorkspace({
         if (!result.data) return;
         const migrated = migrateCanvasDocument(result.data.document);
         blockedRef.current = true;
-        await journalQueue.current;
-        await deleteCanvasDraft(draftKey);
+        await journalQueue.current.clear(draftKey);
         latestRef.current = null;
         retryRef.current = null;
         revisionRef.current = result.data.revision;
