@@ -227,7 +227,9 @@ function DiagramEditorCore() {
             <DiagramWorkspace diagram={diagram.data} refetch={diagram.refetch} onAddResource={openPicker}
                               onDropResource={tryAdd} onDropFiles={uploadAt} onPickFiles={pickFiles}
                               commentNotifications={commentNotifications} selectedCommentId={selectedCommentId} onCommentOpen={openComment}
-                              onCanvasReady={canvasReady} onSaveStateChange={onSaveStateChange}/>}
+                              onCanvasReady={canvasReady} onSaveStateChange={onSaveStateChange}
+                              uploadTray={<CanvasUploadTray batches={uploads.batches} retry={uploads.retry} undo={uploads.undo}
+                                                            createGroup={uploads.createGroup}/>}/>}
             <div className="pointer-events-none absolute inset-x-3 top-3 z-40 flex items-start justify-between gap-3">
                 <div
                     className="pointer-events-auto flex min-w-0 max-w-[45%] items-center gap-1 rounded-lg bg-surface/90 p-1 backdrop-blur-md">
@@ -422,7 +424,5 @@ function DiagramEditorCore() {
                    }
                    event.target.value = '';
                }}/>
-        <CanvasUploadTray batches={uploads.batches} retry={uploads.retry} undo={uploads.undo}
-                          createGroup={uploads.createGroup}/>
     </main>;
 }

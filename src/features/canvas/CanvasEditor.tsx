@@ -95,6 +95,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
     } = useCanvasStore();
     const toast = useToast();
     const canvasRef = useRef<HTMLDivElement>(null);
+    const [fileDragActive, setFileDragActive] = useState(false);
     const setCanvasSize = useCanvasStore(state => state.setCanvasSize);
     const {screenToFlowPosition, setViewport, setCenter, getZoom} = useReactFlow();
     const [dropGroupId, setDropGroupId] = useState<string | null>(null);
@@ -385,9 +386,14 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
     };
 
     return (
-        <div ref={canvasRef} className="w-full h-full" onDragOver={event => {
+        <div ref={canvasRef} className="relative h-full w-full" onDragEnter={event => {
+            if (event.dataTransfer.types.includes('Files')) setFileDragActive(true);
+        }} onDragLeave={event => {
+            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFileDragActive(false);
+        }} onDragOver={event => {
             if (event.dataTransfer.types.includes('application/x-theke-resource') || event.dataTransfer.types.includes('Files')) event.preventDefault();
         }} onDrop={event => {
+            setFileDragActive(false);
             const id = event.dataTransfer.getData('application/x-theke-resource');
             const position = screenToFlowPosition({x: event.clientX, y: event.clientY});
             if (id && onDropResource) {
@@ -483,6 +489,9 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                         : null)}</ViewportPortal>}
                 <CanvasBackgroundPattern variant={background.variant}/>
             </ReactFlow>
+            {fileDragActive && <div aria-hidden="true" className="pointer-events-none absolute inset-3 z-40 grid place-items-center rounded-xl border-2 border-dashed border-primary/60 bg-surface/35 backdrop-blur-[2px]">
+                <span className="rounded-lg bg-surface/95 px-4 py-2 text-sm font-medium text-on-background ring-1 ring-outline/15 backdrop-blur-xl">Suelta para añadir al mapa</span>
+            </div>}
 
             {menu.isOpen && (
                 <div className={`fixed z-50 w-48 overflow-hidden ${contextMenuSurfaceClass}`}
@@ -571,7 +580,8 @@ export function CanvasEditor({
                                  onCreateRelation,
                                  commentNotifications,
                                  selectedCommentId,
-                                 onCommentOpen
+                                 onCommentOpen,
+                                 uploadTray
                              }: {
     document?: DiagramDocument;
     onReady?: () => void;
@@ -583,6 +593,7 @@ export function CanvasEditor({
     commentNotifications?: CommentNotification[];
     selectedCommentId?: string | null;
     onCommentOpen?: (item: CommentNotification) => void;
+    uploadTray?: React.ReactNode;
 }) {
     const loadDocument = useCanvasStore(state => state.loadDocument);
     useEffect(() => {
@@ -681,6 +692,7 @@ export function CanvasEditor({
                             commentNotifications={commentNotifications} selectedCommentId={selectedCommentId} onCommentOpen={onCommentOpen}/>
                 <CanvasToolbar onAddResource={onAddResource}
                                onCreateRelation={onCreateRelation ? () => onCreateRelation() : undefined}/>
+                {uploadTray}
             </ReactFlowProvider>
         </div>
     );

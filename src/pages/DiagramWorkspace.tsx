@@ -24,8 +24,9 @@ import type {CommentNotification} from '../data/useCommentNotifications';
 
 function snapshot(): DiagramDocument {
     const state = useCanvasStore.getState();
-    const nodes = JSON.parse(JSON.stringify(state.nodes)) as DiagramDocument['nodes'];
-    const edges = JSON.parse(JSON.stringify(state.edges)) as DiagramDocument['edges'];
+    const transientNodeIds = new Set(state.nodes.filter(node => typeof node.data?.uploadStatus === 'string').map(node => node.id));
+    const nodes = JSON.parse(JSON.stringify(state.nodes.filter(node => !transientNodeIds.has(node.id)))) as DiagramDocument['nodes'];
+    const edges = JSON.parse(JSON.stringify(state.edges.filter(edge => !transientNodeIds.has(edge.source) && !transientNodeIds.has(edge.target)))) as DiagramDocument['edges'];
     for (const node of nodes) {
         const transient = node as unknown as Record<string, unknown>;
         delete transient.selected;
@@ -51,7 +52,8 @@ export function DiagramWorkspace({
                                      onSaveStateChange,
                                      commentNotifications,
                                      selectedCommentId,
-                                     onCommentOpen
+                                     onCommentOpen,
+                                     uploadTray
                                  }: {
     diagram: Diagram;
     refetch: () => Promise<{ data?: Diagram }>;
@@ -64,6 +66,7 @@ export function DiagramWorkspace({
     commentNotifications?: CommentNotification[];
     selectedCommentId?: string | null;
     onCommentOpen?: (item: CommentNotification) => void;
+    uploadTray?: React.ReactNode;
 }) {
     const {userId} = useAuth();
     const client = useQueryClient();
@@ -398,6 +401,7 @@ export function DiagramWorkspace({
         {document && <CanvasEditor document={document} onReady={ready} onAddResource={onAddResource}
                                    onDropResource={onDropResource} onDropFiles={onDropFiles} onPickFiles={onPickFiles}
                                    commentNotifications={commentNotifications} selectedCommentId={selectedCommentId} onCommentOpen={onCommentOpen}
+                                   uploadTray={uploadTray}
                                    onCreateRelation={(source, target, replaceEdgeId, geometry) => setRelationInitial({source, target, replaceEdgeId, geometry})}/>}
         {activeRelation && <RelationCreateDialog projectId={diagram.projectId} nodes={useCanvasStore.getState().nodes}
                                                  availableRelations={available.data ?? []}

@@ -13,7 +13,7 @@ import {useCanvasStore} from '../../store/useCanvasStore';
 
 type Section = 'map' | 'library';
 type Sort = 'name' | 'recent' | 'type';
-type Entry = {id: string; title: string; type: string; updatedAt: string; icon: ReactNode; folder?: boolean; representationIds?: string[]};
+type Entry = {id: string; title: string; type: string; updatedAt: string; icon: ReactNode; folder?: boolean; representationIds?: string[]; pendingLabel?: string};
 
 function resourceIcon(item: Pick<ResourceSummary, 'type' | 'mediaType'> | ProjectResource) {
     if (item.type === 'note') return <FileText size={19}/>;
@@ -103,7 +103,14 @@ export function CanvasResourcePanel({projectId, initialSection = 'map', onAdd, o
         return byResource;
     }, [nodes]);
     const mapEntries: Entry[] = (organization.data?.resources ?? []).filter(item => !item.archivedAt && item.title.toLocaleLowerCase().includes(mapSearch.toLocaleLowerCase().trim()))
-        .map(item => ({id: item.resourceId, title: item.title, type: resourceType(item), updatedAt: item.updatedAt, icon: resourceIcon(item), representationIds: representations.get(item.resourceId) ?? []}));
+        .map(item => {
+            const representationIds = representations.get(item.resourceId) ?? [];
+            const uploadNode = nodes.find(node => representationIds.includes(node.id) && typeof node.data?.uploadStatus === 'string');
+            const uploadStatus = String(uploadNode?.data?.uploadStatus ?? '');
+            const pendingLabel = uploadStatus ? `${uploadStatus === 'failed' ? 'Carga fallida' : ['scanning', 'uploaded', 'finalizing'].includes(uploadStatus) ? 'Analizando' : 'Subiendo'}${typeof uploadNode?.data?.uploadProgress === 'number' ? ` · ${Math.round(uploadNode.data.uploadProgress)}%` : ''}` : undefined;
+            return {id: item.resourceId, title: item.title, type: resourceType(item), updatedAt: item.updatedAt,
+                icon: resourceIcon(item), representationIds, pendingLabel};
+        });
     const allFolders = folders.data ?? [];
     const currentFolder = allFolders.find(folder => folder.id === folderId);
     const folderPath = [];
@@ -179,7 +186,7 @@ export function CanvasResourcePanel({projectId, initialSection = 'map', onAdd, o
                         <button type="button" onClick={() => openEntry(entry)} className={`min-w-0 text-left focus-visible:outline-2 focus-visible:outline-primary ${view === 'grid' ? 'block w-full pb-2 pr-4' : 'flex min-h-12 flex-1 items-center gap-2 px-2 py-1'}`}>
                             <span className={`grid shrink-0 place-items-center rounded-md bg-background/75 text-outline ${view === 'grid' ? 'mb-2 h-9 w-9' : 'h-8 w-8'}`}>{entry.icon}</span>
                             <span className="min-w-0"><span className="block truncate text-xs font-medium" title={entry.title}>{entry.title}</span>
-                                <span className="block truncate text-[11px] text-outline">{entry.type}{section === 'map' ? entry.representationIds?.length ? ` · ${entry.representationIds.length} ${entry.representationIds.length === 1 ? 'ubicación' : 'ubicaciones'}` : ' · Sin colocar' : entry.representationIds?.length ? ' · En el mapa' : ''}</span></span>
+                                <span className="block truncate text-[11px] text-outline">{entry.pendingLabel ?? `${entry.type}${section === 'map' ? entry.representationIds?.length ? ` · ${entry.representationIds.length} ${entry.representationIds.length === 1 ? 'ubicación' : 'ubicaciones'}` : ' · Sin colocar' : entry.representationIds?.length ? ' · En el mapa' : ''}`}</span></span>
                         </button>
                         {section === 'library' && !entry.folder && Boolean(entry.representationIds?.length) && <Check size={12} className="pointer-events-none absolute right-8 top-3 text-outline" aria-hidden="true"/>}
                         <Button size="icon" icon={MoreHorizontal} title={`Opciones de ${entry.title}`} aria-expanded={menu?.id === entry.id}
