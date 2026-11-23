@@ -1,5 +1,6 @@
 import {ArrowUpRight, File as FileIcon, FileText, Image, Link as LinkIcon, Music, Video} from 'lucide-react';
 import {FileThumbnail} from '../../components/resources/FileThumbnail';
+import {LoadingLine} from '../../components/ui/LoadingState';
 import type {ResourceDetail} from '../../data/useResources';
 
 import type {ResourceDisplayMode} from './resourceCardSizing';
@@ -25,8 +26,23 @@ export function ResourceCard({resource, mode, caption, selected, accent, onOpen,
         try { return new URL(resource.url).hostname.replace(/^www\./, ''); } catch { return 'Enlace web'; }
     })();
     const border = accent === 'primary' ? 'var(--color-primary)' : accent === 'muted' ? 'var(--color-outline)' : 'var(--color-border)';
+    if (!resource) return <article aria-busy="true" aria-label="Cargando recurso"
+                                  className="relative flex h-full w-full flex-col overflow-hidden rounded-lg bg-background"
+                                  style={{outline: `1px solid ${border}`}}>
+        <div className="flex min-h-[72px] items-center gap-3 px-3">
+            <LoadingLine className="h-9 w-9 shrink-0"/>
+            <div className="min-w-0 flex-1 space-y-2">
+                <LoadingLine className="h-3.5 w-3/5"/>
+                <LoadingLine className="h-2.5 w-2/5"/>
+            </div>
+        </div>
+        {mode === 'normal' && <div className="min-h-0 flex-1 px-2 pb-2">
+            <LoadingLine className="h-full w-full"/>
+        </div>}
+    </article>;
     return <article className="relative flex h-full w-full flex-col overflow-hidden rounded-lg bg-background"
                     style={{outline: `${selected ? 2 : 1}px solid ${selected ? 'var(--color-primary)' : border}`}} onDoubleClick={onOpen}>
+        <div key={resource?.id ?? 'loading'} className={`${resource ? 'theke-resource-content-arrive ' : ''}flex h-full min-h-0 w-full flex-col`}>
         <div className="flex min-h-[72px] items-center gap-3 px-3">
             <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-surface-variant text-on-background"><Icon size={18} aria-hidden="true"/></span>
             <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{resource?.title ?? 'Cargando recurso…'}</p>
@@ -56,5 +72,6 @@ export function ResourceCard({resource, mode, caption, selected, accent, onOpen,
                 <p className="line-clamp-6 whitespace-pre-wrap break-words">{excerpt || (resource?.type === 'note' ? 'Nota vacía' : 'Abre el recurso para ver su contenido.')}</p>
             </div>}
         </div>}
+        </div>
     </article>;
 }

@@ -15,6 +15,7 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {Button} from '../components/ui/Button';
 import {InlineLoading, WorkspaceLoading} from '../components/ui/LoadingState';
+import {CeratiumMark} from '../components/ui/CeratiumMark';
 import {AIGuidanceCard} from '../components/ai/AIGuidanceCard';
 import {usePrepareDiagramReview} from '../data/useAi';
 import type {AiScopePreparation} from '../api/generated/models';
@@ -100,6 +101,7 @@ function DiagramEditorCore() {
         position?: { x: number; y: number }
     } | null>(null);
     const [readyDiagramId, setReadyDiagramId] = useState<string | null>(null);
+    const [openingIssueDiagramId, setOpeningIssueDiagramId] = useState<string | null>(null);
     const [reviewOpen, setReviewOpen] = useState(false);
     const [sharePreviewOpen, setSharePreviewOpen] = useState(false);
     const [optionsOpen, setOptionsOpen] = useState(false);
@@ -139,6 +141,9 @@ function DiagramEditorCore() {
     const [uploadPickerOpen, setUploadPickerOpen] = useState(false);
     const [uploadPosition, setUploadPosition] = useState({x: 0, y: 0});
     const canvasReady = useCallback(() => setReadyDiagramId(diagramId ?? null), [diagramId]);
+    const openingIssueChanged = useCallback((visible: boolean) => {
+        setOpeningIssueDiagramId(visible ? diagramId ?? null : null);
+    }, [diagramId]);
     const uploads = useCanvasUploadBatches(projectId ?? '');
     const fileInput = useRef<HTMLInputElement>(null);
     const pickFiles = (position?: { x: number; y: number }) => {
@@ -217,17 +222,20 @@ function DiagramEditorCore() {
     </div>;
     if (diagram.isError || !diagram.data) return <div role="alert" className="p-6"><p>No se pudo abrir el diagrama.</p>
         <Button className="mt-3" onClick={() => diagram.refetch()}>Reintentar</Button></div>;
-    return <main className="relative flex h-dvh min-h-0 bg-background text-on-background">
+    const openingIssueVisible = openingIssueDiagramId === diagramId;
+    const mapReady = readyDiagramId === diagramId || openingIssueVisible;
+    return <main className={`theke-map-stage relative flex h-dvh min-h-0 bg-background text-on-background ${mapReady ? 'is-ready' : ''}`}>
         <section className="relative min-w-0 flex-1" aria-label="Lienzo">{diagram.data.archivedAt ?
             <div className="relative h-full">
-                <div className="pointer-events-none h-full"><CanvasEditor document={diagram.data.document}/></div>
+                <div className="pointer-events-none h-full"><CanvasEditor document={diagram.data.document} onReady={canvasReady}/></div>
                 <p role="status"
                    className="absolute right-3 top-20 rounded-lg bg-surface/90 px-3 py-2 text-sm backdrop-blur-md">Diagrama
                     archivado. Restáuralo desde proyectos para editar.</p></div> :
             <DiagramWorkspace diagram={diagram.data} refetch={diagram.refetch} onAddResource={openPicker}
                               onDropResource={tryAdd} onDropFiles={uploadAt} onPickFiles={pickFiles}
                               commentNotifications={commentNotifications} selectedCommentId={selectedCommentId} onCommentOpen={openComment}
-                              onCanvasReady={canvasReady} onSaveStateChange={onSaveStateChange}
+                              onCanvasReady={canvasReady} onOpeningIssueChange={openingIssueChanged}
+                              onSaveStateChange={onSaveStateChange}
                               uploadTray={<CanvasUploadTray batches={uploads.batches} retry={uploads.retry} undo={uploads.undo}
                                                             createGroup={uploads.createGroup}/>}/>}
             <div className="pointer-events-none absolute inset-x-3 top-3 z-40 flex items-start justify-between gap-3">
@@ -239,7 +247,7 @@ function DiagramEditorCore() {
                         data-tooltip={diagram.data.name}>{diagram.data.name}</h1>
                 </div>
                 <nav aria-label="Acciones del mapa"
-                     className="pointer-events-auto flex min-w-0 max-w-[55%] shrink-0 items-center gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md">
+                     className={`pointer-events-auto min-w-0 max-w-[55%] shrink-0 items-center gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md ${openingIssueVisible ? 'hidden' : 'flex'}`}>
                     <div className="flex min-w-0 gap-0.5 overflow-x-auto">
                         <Button size="icon" className="h-10 w-10 shrink-0"
                                 title={leftPanel === 'resources' ? 'Ocultar recursos' : 'Mostrar recursos'}
@@ -280,16 +288,16 @@ function DiagramEditorCore() {
                             aria-label="Opciones del mapa" aria-expanded={optionsOpen} aria-controls="map-options"
                             icon={MoreHorizontal} onClick={() => setOptionsOpen(value => !value)}/>
                 </nav>
-                {optionsOpen && <div id="map-options" ref={optionsPanel} role="dialog" aria-label="Opciones del mapa"
+                {!openingIssueVisible && optionsOpen && <div id="map-options" ref={optionsPanel} role="dialog" aria-label="Opciones del mapa"
                                      className="pointer-events-auto absolute right-0 top-14 w-48 rounded-lg bg-surface p-3"
                                      onClick={() => {
                                          setOptionsOpen(false);
                                          optionsButton.current?.focus();
                                      }}><p className="mb-2 text-sm font-medium">Apariencia</p><ThemeToggle/></div>}
             </div>
-            {resourceError && <p role="alert"
+            {!openingIssueVisible && resourceError && <p role="alert"
                                  className="absolute left-3 top-20 z-50 rounded-md bg-surface/95 px-3 py-2 text-xs text-red-600">{resourceError}</p>}
-            {leftPanel && <div
+            {leftPanel && !openingIssueVisible && <div
                 className={`absolute left-3 top-20 z-50 w-[min(19rem,calc(100%-1.5rem))] overflow-hidden rounded-xl bg-surface/95 backdrop-blur-md ${selectedAnnotation ? 'bottom-32 md:bottom-20' : 'bottom-3'}`}
                 aria-label={leftPanel === 'resources' ? 'Panel de recursos' : leftPanel === 'comments' ? 'Panel de comentarios' : 'Panel de vista semántica'}>
                 <Button size="icon" className="absolute right-2 top-2 z-10 h-9 w-9" title="Cerrar panel"
@@ -308,7 +316,7 @@ function DiagramEditorCore() {
                     <CanvasSemanticView projectId={diagram.data.projectId}/> :
                     <div className="p-4"><InlineLoading label="Cargando vista semántica…"/></div>}
             </div>}
-            {activeVisualPanel && selectedAnnotation && <div
+            {activeVisualPanel && selectedAnnotation && !openingIssueVisible && <div
                 className="absolute right-3 top-20 z-50 max-h-[calc(100dvh-11rem)] w-[min(19rem,calc(100%-1.5rem))] overflow-hidden rounded-lg bg-surface/80 backdrop-blur-xl"
                 aria-label={activeTextPanel ? `Panel de texto visual: ${textPanelLabels[activeTextPanel]}` : `Panel de ${selectedVisualElement?.data.kind === 'line' ? 'línea' : 'forma'} visual: ${activeElementPanel === 'appearance' ? 'Apariencia' : 'Posición'}`}>
                 <Button size="icon" className="absolute right-2 top-2 z-10 h-9 w-9" title="Cerrar panel"
@@ -318,7 +326,7 @@ function DiagramEditorCore() {
                         activeElementPanel && selectedVisualElement ? <CanvasVisualElementInspector nodeId={selectedVisualElement.id} section={activeElementPanel}/> : null}
                 </div>
             </div>}
-            {selectedAnnotation && !diagram.data.archivedAt && <div
+            {selectedAnnotation && !diagram.data.archivedAt && !openingIssueVisible && <div
                 className="pointer-events-none absolute bottom-20 left-3 right-3 z-40 flex justify-center md:bottom-3 md:left-28 md:right-40">
                 <div className="pointer-events-auto flex min-w-0 max-w-full justify-center">
                     {selectedVisualText ? <CanvasVisualTextToolbar key={selectedVisualText.id} nodeId={selectedVisualText.id}
@@ -328,7 +336,7 @@ function DiagramEditorCore() {
                 </div>
             </div>}
         </section>
-        {rightOpen && !selectedAnnotation && <aside
+        {rightOpen && !selectedAnnotation && !openingIssueVisible && <aside
             className={`absolute inset-y-0 right-0 z-50 w-[min(304px,100vw)] overflow-auto bg-surface/95 p-4 backdrop-blur-md lg:relative lg:z-0 lg:shrink-0 lg:bg-surface-variant/35 ${leftPanel ? 'hidden lg:block' : ''}`}
             aria-label="Propiedades">
             <div className="mb-3 flex items-center justify-between"><h2
@@ -424,5 +432,12 @@ function DiagramEditorCore() {
                    }
                    event.target.value = '';
                }}/>
+        <div className="theke-map-loading absolute inset-0 z-[200] grid place-items-center bg-background px-6 text-on-background"
+             role="status" aria-label="Abriendo mapa">
+            <div className="flex flex-col items-center gap-3 text-center">
+                <CeratiumMark className="theke-loading-mark h-10 w-12 text-outline"/>
+                <span className="text-sm text-outline">Abriendo mapa…</span>
+            </div>
+        </div>
     </main>;
 }

@@ -32,6 +32,42 @@
 }
 .theke-saving-pulse { animation: theke-saving-pulse 750ms ease-in-out infinite; }
 
+/* Keep the loading state until React Flow has painted, then reveal the editor as one composition. */
+.theke-map-stage > :not(.theke-map-loading) {
+  opacity: 0;
+  transition: opacity 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.theke-map-stage.is-ready > :not(.theke-map-loading) { opacity: 1; }
+.theke-map-stage:not(.is-ready) > :not(.theke-map-loading) { pointer-events: none; }
+.theke-map-loading {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 220ms ease, visibility 0s linear 220ms;
+}
+.theke-map-stage.is-ready > .theke-map-loading {
+  opacity: 0;
+  visibility: hidden;
+}
+
+@keyframes theke-resource-content-arrive {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.theke-resource-content-arrive { animation: theke-resource-content-arrive 180ms ease-out both; }
+
+.theke-thumbnail-image {
+  opacity: 0;
+  transition: opacity 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.theke-thumbnail-image.is-ready { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .theke-resource-content-arrive { animation: none; }
+  .theke-map-stage > :not(.theke-map-loading),
+  .theke-map-loading,
+  .theke-thumbnail-image { transition: none; }
+}
+
 .theke-tooltip {
   position: fixed;
   z-index: 1000;

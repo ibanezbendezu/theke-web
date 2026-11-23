@@ -94,14 +94,15 @@ export function FileThumbnail({resource, fallback, directUrl}: { resource: Pick<
         }
     };
 
-    const loadingPreview = previewable && visible && !failed && !thumbnail && !imageLoaded;
+    const loadingPreview = previewable && visible && !failed && !imageLoaded;
+    const thumbnailClass = `theke-thumbnail-image ${imageLoaded ? 'is-ready ' : ''}`;
     return <div ref={ref} className={`relative flex h-full w-full items-center justify-center overflow-hidden ${loadingPreview ? 'theke-loading-block' : ''}`}>
         {thumbnail ? <img src={thumbnail} alt=""
-                          className={pdf ? 'absolute left-0 top-0 h-auto w-full' : 'h-full w-full object-cover'}/> : resource.previewImageUrl && !failed ?
-            <img src={resource.previewImageUrl} alt="" className="h-full w-full object-cover" loading="lazy"
+                          className={`${thumbnailClass}${pdf ? 'absolute left-0 top-0 h-auto w-full' : 'h-full w-full object-cover'}`} onLoad={() => setImageLoaded(true)}/> : resource.previewImageUrl && !failed ?
+            <img src={resource.previewImageUrl} alt="" className={`${thumbnailClass}h-full w-full object-cover`} loading="lazy"
                  onLoad={() => setImageLoaded(true)}
                  onError={() => setFailed(true)}/> : image && url && !failed ?
-                <img src={url} alt="" className="h-full w-full object-cover" loading="lazy"
+                <img src={url} alt="" className={`${thumbnailClass}h-full w-full object-cover`} loading="lazy"
                      onLoad={() => setImageLoaded(true)}
                      onError={() => setFailed(true)}/> : fallback}
         {video && url && !thumbnail && !failed &&

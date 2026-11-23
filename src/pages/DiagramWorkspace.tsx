@@ -2,7 +2,7 @@ import {useAuth} from '@clerk/clerk-react';
 import {useQueryClient} from '@tanstack/react-query';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {MarkerType} from '@xyflow/react';
-import {CircleAlert, CloudCheck, CloudUpload, Link2, WifiOff, X} from 'lucide-react';
+import {CircleAlert, CloudCheck, CloudUpload, History, Link2, WifiOff, X} from 'lucide-react';
 import {ApiError} from '../api/httpClient';
 import {Button} from '../components/ui/Button';
 import {deleteCanvasDraft, deleteCanvasDraftIfMatches, readCanvasDraft, writeCanvasDraft, type CanvasDraft} from '../data/canvasJournal';
@@ -49,6 +49,7 @@ export function DiagramWorkspace({
                                      onDropFiles,
                                      onPickFiles,
                                      onCanvasReady,
+                                     onOpeningIssueChange,
                                      onSaveStateChange,
                                      commentNotifications,
                                      selectedCommentId,
@@ -62,6 +63,7 @@ export function DiagramWorkspace({
     onDropFiles?: (files: File[], position: { x: number; y: number }) => void;
     onPickFiles?: (position?: { x: number; y: number }) => void;
     onCanvasReady?: () => void;
+    onOpeningIssueChange?: (visible: boolean) => void;
     onSaveStateChange?: (saved: boolean) => void;
     commentNotifications?: CommentNotification[];
     selectedCommentId?: string | null;
@@ -102,9 +104,15 @@ export function DiagramWorkspace({
     const initialRemote = useRef(remote);
     const initialRevision = useRef(diagram.revision);
     const [choice, setChoice] = useState<'checking' | 'draft' | 'ready'>('checking');
+    const [confirmDiscard, setConfirmDiscard] = useState(false);
+    const [discarding, setDiscarding] = useState(false);
     const [document, setDocument] = useState<DiagramDocument | null>(null);
     const [status, setStatus] = useState<SaveStatus>('saved');
     const [conflict, setConflict] = useState(false);
+    useEffect(() => {
+        onOpeningIssueChange?.(Boolean(remote.error) || choice === 'draft');
+        return () => onOpeningIssueChange?.(false);
+    }, [choice, onOpeningIssueChange, remote.error]);
     useEffect(() => {
         onSaveStateChange?.(choice === 'ready' && status === 'saved');
         return () => onSaveStateChange?.(false);
@@ -359,11 +367,45 @@ export function DiagramWorkspace({
     };
     if (remote.error) return <p role="alert" className="p-6 text-red-600">{remote.error}</p>;
     if (choice === 'checking') return <p role="status" className="p-6">Buscando cambios pendientes…</p>;
-    if (choice === 'draft') return <div className="m-6 max-w-xl rounded-lg border border-border bg-background p-5"><h2
-        className="font-semibold">Hay cambios sin confirmar</h2><p className="mt-2 text-sm text-outline">Encontramos un
-        borrador local. Puedes recuperarlo sobre la revisión remota {diagram.revision} o descartarlo.</p>
-        <div className="mt-4 flex gap-2"><Button variant="primary" onClick={restore}>Recuperar cambios</Button><Button
-            variant="outline" onClick={() => void discard()}>Descartar borrador</Button></div>
+    if (choice === 'draft') return <div
+        className="absolute inset-0 z-30 grid place-items-center bg-background/75 px-4 pb-4 pt-20 backdrop-blur-sm">
+        <section role="dialog" aria-labelledby="draft-recovery-title"
+                 className="w-full max-w-md rounded-xl bg-surface/95 p-5 backdrop-blur-xl">
+            <div className="flex items-start gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-surface-variant text-on-background">
+                    <History size={19} aria-hidden="true"/>
+                </span>
+                <div className="min-w-0">
+                    <h2 id="draft-recovery-title" className="text-base font-semibold">
+                        {confirmDiscard ? '¿Usar la versión guardada?' : 'Cambios locales pendientes'}
+                    </h2>
+                    <p className="mt-1.5 text-sm leading-relaxed text-outline">
+                        {confirmDiscard
+                            ? 'El borrador local se eliminará y abrirás la última versión guardada en el servidor.'
+                            : 'Encontramos una versión local distinta de la guardada en el servidor. Elige cuál quieres abrir.'}
+                    </p>
+                </div>
+            </div>
+            {confirmDiscard ? <div className="mt-5 flex flex-wrap justify-end gap-2">
+                <Button variant="ghost" onClick={() => setConfirmDiscard(false)}>Volver</Button>
+                <Button variant="ghost" className="text-red-600 hover:bg-red-500/10 hover:text-red-600"
+                        loading={discarding} onClick={() => {
+                    setDiscarding(true);
+                    void discard().finally(() => setDiscarding(false));
+                }}>Eliminar borrador y continuar</Button>
+            </div> : <>
+                <div className="mt-5 flex flex-wrap justify-end gap-2">
+                    <Button variant="secondary" onClick={() => setConfirmDiscard(true)}>Usar versión guardada</Button>
+                    <Button variant="primary" autoFocus onClick={restore}>Recuperar cambios</Button>
+                </div>
+                <details className="mt-4 text-xs text-outline">
+                    <summary className="w-fit cursor-pointer rounded-md py-1 focus-visible:outline-2 focus-visible:outline-primary">
+                        Detalles
+                    </summary>
+                    <p className="mt-1">Versión guardada en el servidor: revisión {diagram.revision}.</p>
+                </details>
+            </>}
+        </section>
     </div>;
     const saveLabel = {
         saved: 'Guardado en servidor',

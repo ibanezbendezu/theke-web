@@ -7,6 +7,7 @@ import {
     ReactFlowProvider,
     ViewportPortal,
     useReactFlow,
+    useNodesInitialized,
     type Node as FlowNode,
     type Edge as FlowEdge,
     type OnConnectStart,
@@ -69,7 +70,7 @@ export type RelationEdgeGeometry = {
     offset?: { x: number; y: number };
 };
 
-function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPickFiles, onCreateRelation, commentNotifications, selectedCommentId, onCommentOpen}: {
+function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPickFiles, onCreateRelation, commentNotifications, selectedCommentId, onCommentOpen, onInitialized}: {
     viewport?: DiagramDocument['viewport'];
     onAddResource?: (position?: { x: number; y: number }) => void;
     onDropResource?: (resourceId: string, position: { x: number; y: number }) => void;
@@ -79,6 +80,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
     commentNotifications?: CommentNotification[];
     selectedCommentId?: string | null;
     onCommentOpen?: (item: CommentNotification) => void;
+    onInitialized?: () => void;
 }) {
     const {
         nodes,
@@ -477,6 +479,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                 className="theke-canvas bg-background"
                 style={{backgroundColor: background.tone === 'surface' ? 'var(--color-surface)' : 'var(--color-background)'}}
                 minZoom={0.1}
+                onInit={onInitialized}
             >
                 {commentNotifications && <ViewportPortal>{commentNotifications.map((item, index) =>
                     item.anchored && typeof item.anchor.x === 'number' && typeof item.anchor.y === 'number' ?
@@ -570,6 +573,31 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
     );
 }
 
+function CanvasPaintObserver({active, onReady}: {active: boolean; onReady?: () => void}) {
+    const nodesInitialized = useNodesInitialized({includeHiddenNodes: true});
+    const nodeCount = useCanvasStore(state => state.nodes.length);
+    const announced = useRef(false);
+
+    useEffect(() => {
+        if (!active || announced.current || (nodeCount > 0 && !nodesInitialized)) return;
+
+        let secondFrame = 0;
+        const firstFrame = window.requestAnimationFrame(() => {
+            secondFrame = window.requestAnimationFrame(() => {
+                announced.current = true;
+                onReady?.();
+            });
+        });
+
+        return () => {
+            window.cancelAnimationFrame(firstFrame);
+            if (secondFrame) window.cancelAnimationFrame(secondFrame);
+        };
+    }, [active, nodeCount, nodesInitialized, onReady]);
+
+    return null;
+}
+
 export function CanvasEditor({
                                  document,
                                  onReady,
@@ -596,12 +624,10 @@ export function CanvasEditor({
     uploadTray?: React.ReactNode;
 }) {
     const loadDocument = useCanvasStore(state => state.loadDocument);
+    const [flowInitialized, setFlowInitialized] = useState(false);
     useEffect(() => {
-        if (document) {
-            loadDocument(document.nodes, document.edges, document.viewport, document.background);
-            onReady?.();
-        }
-    }, [document, loadDocument, onReady]);
+        if (document) loadDocument(document.nodes, document.edges, document.viewport, document.background);
+    }, [document, loadDocument]);
     const onShortcut = (event: React.KeyboardEvent) => {
         if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement || event.target instanceof HTMLSelectElement || (event.target as HTMLElement).isContentEditable) return;
         const store = useCanvasStore.getState();
@@ -689,7 +715,9 @@ export function CanvasEditor({
             <ReactFlowProvider>
                 <CanvasCore viewport={document?.viewport} onAddResource={onAddResource} onDropResource={onDropResource}
                             onDropFiles={onDropFiles} onPickFiles={onPickFiles} onCreateRelation={onCreateRelation}
-                            commentNotifications={commentNotifications} selectedCommentId={selectedCommentId} onCommentOpen={onCommentOpen}/>
+                            commentNotifications={commentNotifications} selectedCommentId={selectedCommentId} onCommentOpen={onCommentOpen}
+                            onInitialized={() => setFlowInitialized(true)}/>
+                <CanvasPaintObserver active={Boolean(document) && flowInitialized} onReady={onReady}/>
                 <CanvasToolbar onAddResource={onAddResource}
                                onCreateRelation={onCreateRelation ? () => onCreateRelation() : undefined}/>
                 {uploadTray}
