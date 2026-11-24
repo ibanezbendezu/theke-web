@@ -16,6 +16,11 @@ export function GroupNode({id, data, selected, width = 350, height = 250}: NodeP
     const openCanvasNode = useCanvasStore(state => state.openCanvasNode);
     const beginGesture = useCanvasStore(state => state.beginGesture);
     const endGesture = useCanvasStore(state => state.endGesture);
+    const nodes = useCanvasStore(state => state.nodes);
+    const members = nodes.filter(node => node.parentId === id);
+    const padding = 16;
+    const minWidth = Math.max(250, ...members.map(node => node.position.x + (node.measured?.width ?? node.width ?? 0) + padding));
+    const minHeight = Math.max(150, ...members.map(node => node.position.y + (node.measured?.height ?? node.height ?? 0) + padding));
     const {label = 'Nuevo grupo', color = 'var(--color-surface-variant)', dropTarget = false} = data;
 
     return (
@@ -23,8 +28,8 @@ export function GroupNode({id, data, selected, width = 350, height = 250}: NodeP
             <NodeResizer
                 color="var(--color-primary)"
                 isVisible={selected}
-                minWidth={250}
-                minHeight={150}
+                minWidth={minWidth}
+                minHeight={minHeight}
                 onResizeStart={beginGesture}
                 onResizeEnd={endGesture}
             />

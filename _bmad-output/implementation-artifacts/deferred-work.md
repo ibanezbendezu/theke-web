@@ -1,3 +1,6 @@
+- source_spec: `_bmad-output/implementation-artifacts/spec-2-7-agrupar-representaciones-visualmente.md`
+  summary: Refinar la interacción y apariencia de los grupos visuales: señal de pertenencia durante arrastre, criterio de incorporación parcial, grupos anidados, redimensionamiento y comportamiento de miembros superpuestos o cercanos.
+  evidence: El 2026-11-24 se decidió aplazar la revisión integral. La implementación actual impide reducir el grupo por debajo de los límites de sus miembros y conserva sus posiciones, orden de capas y posibles superposiciones sin redistribución automática; falta validar visualmente estos criterios y definir los casos de anidación y pertenencia ambigua.
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-1-acceder-al-espacio-privado.md`
   summary: Evitar que breadcrumbs con percent-encoding malformado rompan el shell.
   evidence: `decodeURIComponent` puede lanzar; el comportamiento ya existía antes de la historia 1.1.

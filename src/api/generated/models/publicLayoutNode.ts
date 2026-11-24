@@ -4,12 +4,15 @@
  * Theke API
  * OpenAPI spec version: 1.0.0
  */
+import type { PublicLayoutNodeDisplayMode } from './publicLayoutNodeDisplayMode';
 import type { PublicLayoutNodeType } from './publicLayoutNodeType';
 
 export interface PublicLayoutNode {
   id: string;
   type?: PublicLayoutNodeType;
   resourceId?: string;
+  resourceIds?: string[];
+  displayMode?: PublicLayoutNodeDisplayMode;
   x: number;
   y: number;
   width?: number;

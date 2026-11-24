@@ -13,6 +13,7 @@ import {initialNodes, initialEdges} from '../mock/initialState';
 import {placeResource} from '../features/canvas/placeResource';
 import {absoluteNodePosition} from '../features/canvas/groupDropTarget';
 import {resourceCardSize, type ResourceDisplayMode} from '../features/canvas/resourceCardSizing';
+import {collectionSize, type CollectionDisplayMode} from '../features/canvas/collectionTypes';
 import type {CanvasBackground} from '../data/useDiagrams';
 
 type CanvasSnapshot = {
@@ -78,6 +79,9 @@ interface CanvasState {
         x: number;
         y: number
     }, total: number) => string[];
+    createCollectionFromNodes: (ids: string[], projectId: string, preferred?: {x: number; y: number}) => string | null;
+    setCollectionDisplayMode: (nodeId: string, mode: CollectionDisplayMode) => void;
+    splitCollection: (nodeId: string) => void;
     groupNodes: (ids: string[]) => string | null;
     ungroupNode: (groupId: string) => void;
     moveNodeToGroup: (nodeId: string, groupId?: string) => void;
@@ -166,7 +170,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     requestRelation: (source, target) => set({relationRequest: {source, target, nonce: crypto.randomUUID()}}),
     editRelationRequest: null,
     requestEditRelation: id => set({editRelationRequest: {id, nonce: crypto.randomUUID()}}),
-    inspectorOpen: true,
+    inspectorOpen: false,
 
     onNodesChange: changes => set(state => ({
         ...(changes.some(change => change.type !== 'select' && change.type !== 'dimensions') ? history(state) : {}),
@@ -366,6 +370,49 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         void total;
         return [get().addResourceRepresentation(resourceId, preferred)];
     },
+    createCollectionFromNodes: (ids, projectId, preferred) => {
+        const state = get();
+        const selected = state.nodes.filter(node => ids.includes(node.id) && node.type === 'resource' && typeof node.data.resourceId === 'string');
+        const resourceIds = [...new Set(selected.map(node => node.data.resourceId as string))];
+        if (resourceIds.length < 2) return null;
+        const selectedIds = new Set(selected.map(node => node.id));
+        const id = crypto.randomUUID();
+        const origin = preferred ?? {
+            x: Math.min(...selected.map(node => absoluteNodePosition(node, state.nodes).x)),
+            y: Math.min(...selected.map(node => absoluteNodePosition(node, state.nodes).y))
+        };
+        const position = placeResource(state.nodes.filter(node => !selectedIds.has(node.id)), origin);
+        set(current => ({
+            ...history(current),
+            nodes: [...current.nodes.filter(node => !selectedIds.has(node.id)).map(node => ({...node, selected: false})), {
+                id, type: 'collection', position, ...collectionSize.stack,
+                data: {label: 'Colección', resourceIds, projectId, displayMode: 'stack'}, selected: true
+            }],
+            edges: current.edges.filter(edge => !selectedIds.has(edge.source) && !selectedIds.has(edge.target))
+        }));
+        return id;
+    },
+    setCollectionDisplayMode: (nodeId, mode) => set(state => {
+        const node = state.nodes.find(item => item.id === nodeId);
+        if (!node || node.type !== 'collection' || node.data.displayMode === mode) return state;
+        return {...history(state), nodes: state.nodes.map(item => item.id === nodeId ? {
+            ...item, ...collectionSize[mode], data: {...item.data, displayMode: mode}
+        } : item)};
+    }),
+    splitCollection: nodeId => set(state => {
+        const collection = state.nodes.find(node => node.id === nodeId && node.type === 'collection');
+        const resourceIds = Array.isArray(collection?.data.resourceIds)
+            ? collection.data.resourceIds.filter((id): id is string => typeof id === 'string') : [];
+        if (!collection || !resourceIds.length) return state;
+        const absolute = absoluteNodePosition(collection, state.nodes);
+        const resources: FlowNode[] = resourceIds.map((resourceId, index) => ({
+            id: crypto.randomUUID(), type: 'resource',
+            position: {x: absolute.x + (index % 3) * (resourceCardSize.mini.width + 20), y: absolute.y + Math.floor(index / 3) * (resourceCardSize.mini.height + 20)},
+            ...resourceCardSize.mini, data: {resourceId, displayMode: 'mini'}, selected: false
+        }));
+        return {...history(state), nodes: [...state.nodes.filter(node => node.id !== nodeId), ...resources],
+            edges: state.edges.filter(edge => edge.source !== nodeId && edge.target !== nodeId)};
+    }),
     groupNodes: ids => {
         const current = get().nodes;
         const chosen = current.filter(node => ids.includes(node.id) && !node.parentId && node.type !== 'container');

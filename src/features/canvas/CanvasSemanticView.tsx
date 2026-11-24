@@ -80,9 +80,9 @@ export function CanvasSemanticView({projectId}: { projectId: string }) {
         if (node.type === 'folder') return typeof node.data.libraryFolderId === 'string'
             ? libraryFolders.data?.find(item => item.id === node.data.libraryFolderId)?.name ?? 'Carpeta de Biblioteca'
             : organization.data?.folders.find(item => item.id === node.data.folderId)?.name ?? 'Carpeta de proyecto';
-        return node.type === 'container' ? 'Grupo visual' : node.type === 'annotation' ? 'Anotación visual' : 'Elemento visual';
+        return node.type === 'container' ? 'Grupo visual' : node.type === 'collection' ? 'Colección' : node.type === 'annotation' ? 'Anotación visual' : 'Elemento visual';
     };
-    const type = (node: typeof nodes[number]) => node.type === 'resource' ? 'Recurso' : node.type === 'folder' ? 'Carpeta' : node.type === 'container' ? 'Grupo' : node.type === 'annotation' ? 'Anotación' : 'Elemento';
+    const type = (node: typeof nodes[number]) => node.type === 'resource' ? 'Recurso' : node.type === 'folder' ? 'Carpeta' : node.type === 'container' ? 'Grupo' : node.type === 'collection' ? 'Colección' : node.type === 'annotation' ? 'Anotación' : 'Elemento';
     const relationEdges = menuNode?.type === 'resource' ? edges.filter(edge => typeof edge.data?.relationId === 'string' && (edge.source === menuNode.id || edge.target === menuNode.id)) : [];
     const relationSections = [
         {

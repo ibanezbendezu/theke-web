@@ -16,11 +16,10 @@ const labels: Record<string, string> = {
     cancelled: 'Cancelado'
 };
 
-export function CanvasUploadTray({batches, retry, undo, createGroup}: {
+export function CanvasUploadTray({batches, retry, undo}: {
     batches: CanvasUploadBatch[];
     retry: (batchId: string, entryId: string) => void;
-    undo: (batchId: string) => void;
-    createGroup: (batchId: string) => void
+    undo: (batchId: string) => void
 }) {
     const [collapsed, setCollapsed] = useState(false);
     const seenBatches = useRef(new Set<string>());
@@ -44,11 +43,9 @@ export function CanvasUploadTray({batches, retry, undo, createGroup}: {
         </header>
         {batches.map(batch => <section key={batch.id} className="mt-3 border-t border-border pt-2">
             <div className="flex items-center justify-between gap-2"><span
-                className="text-xs text-outline">Lote de {batch.entries.length} archivo(s)</span>{!batch.undone && batch.nodeIds.length > 0 &&
+                className="text-xs text-outline">Lote de {batch.entries.length} archivo(s)</span>{!batch.undone && (batch.nodeIds.length > 0 || batch.collectionId) &&
                 <Button size="sm" onClick={() => undo(batch.id)}>Deshacer incorporación</Button>}</div>
-            {!batch.undone && batch.nodeIds.length >= 2 && !batch.groupId &&
-                <Button className="mt-2" size="sm" onClick={() => createGroup(batch.id)}>Crear grupo visual</Button>}
-            {batch.groupId && <p className="text-xs text-outline">Grupo visual creado.</p>}
+            {batch.collectionId && <p className="text-xs text-outline">Colección creada en el mapa.</p>}
             {batch.undone &&
                 <p className="text-xs text-outline">Representaciones retiradas. Los Recursos permanecen en la
                     Biblioteca.</p>}

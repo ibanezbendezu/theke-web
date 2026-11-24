@@ -1,5 +1,6 @@
 import type {DiagramDocument} from './useDiagrams';
 import {resourceCardSize} from '../features/canvas/resourceCardSizing';
+import {collectionSize} from '../features/canvas/collectionTypes';
 
 export function migrateCanvasDocument(value: unknown): DiagramDocument {
     if (!value || typeof value !== 'object') throw new Error('El documento del diagrama está dañado.');
@@ -14,7 +15,11 @@ export function migrateCanvasDocument(value: unknown): DiagramDocument {
         ...node,
         ...resourceCardSize[node.data?.displayMode === 'normal' ? 'normal' : 'mini'],
         data: {...node.data, displayMode: node.data?.displayMode === 'normal' ? 'normal' : 'mini'}
-    } : node.type === 'folder' ? {
+    } : node.type === 'collection' ? (() => {
+        const displayMode = node.data?.displayMode === 'gallery' || node.data?.displayMode === 'list' ? node.data.displayMode : 'stack';
+        return {...node, ...collectionSize[displayMode], data: {...node.data, displayMode,
+            resourceIds: Array.isArray(node.data?.resourceIds) ? node.data.resourceIds.filter(id => typeof id === 'string') : []}};
+    })() : node.type === 'folder' ? {
         ...node,
         width: node.width ?? 288,
         height: node.height ?? 112

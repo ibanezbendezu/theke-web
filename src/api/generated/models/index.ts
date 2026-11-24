@@ -151,6 +151,7 @@ export * from './publicLayoutBackgroundTone';
 export * from './publicLayoutBackgroundVariant';
 export * from './publicLayoutEdge';
 export * from './publicLayoutNode';
+export * from './publicLayoutNodeDisplayMode';
 export * from './publicLayoutNodeType';
 export * from './publicRelationEvidence';
 export * from './publicShare';

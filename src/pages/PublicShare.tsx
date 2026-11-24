@@ -177,7 +177,7 @@ function PublicShareView({token}: { token: string | undefined }) {
                                      onClick={() => {
                                          setOptionsOpen(false);
                                          optionsButton.current?.focus();
-                                     }}><p className="mb-2 text-sm font-medium">Apariencia</p><ThemeToggle/></div>}
+                                     }}><p className="mb-2 text-sm font-medium">Apariencia</p><ThemeToggle variant="menu"/></div>}
             </div>
             {commentMode &&
                 <p role="status" className="absolute left-3 top-20 z-40 rounded-lg bg-surface px-3 py-2 text-xs">Elige

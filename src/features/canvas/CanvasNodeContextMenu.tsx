@@ -44,7 +44,7 @@ export function CanvasNodeContextMenu({target, onClose}: {
     const left = Math.max(8, Math.min(target.x, window.innerWidth - 216));
     const top = Math.max(8, Math.min(target.y, window.innerHeight - (kind ? canPaste ? 288 : 252 : 232)));
 
-    return <div ref={menuRef} role="menu" aria-label={kind ? `Opciones de ${kind === 'text' ? 'texto' : kind === 'shape' ? 'forma' : 'línea'} visual` : `Opciones de ${node.type === 'resource' ? 'recurso' : node.type === 'folder' ? 'carpeta' : 'grupo'}`}
+    return <div ref={menuRef} role="menu" aria-label={kind ? `Opciones de ${kind === 'text' ? 'texto' : kind === 'shape' ? 'forma' : 'línea'} visual` : `Opciones de ${node.type === 'resource' ? 'recurso' : node.type === 'folder' ? 'carpeta' : node.type === 'collection' ? 'colección' : 'grupo'}`}
                 className={`fixed z-[100] w-52 max-h-[calc(100dvh-1rem)] overflow-y-auto ${contextMenuSurfaceClass}`}
                 style={{left, top}} onContextMenu={event => event.preventDefault()}>
         {kind ? <>
@@ -72,6 +72,11 @@ export function CanvasNodeContextMenu({target, onClose}: {
         </> : node.type === 'container' ? <>
             {action('Abrir propiedades', Settings2, () => store.openCanvasNode(node.id))}
             {action('Quitar grupo', Ungroup, () => store.ungroupNode(node.id))}
+        </> : node.type === 'collection' ? <>
+            {action('Abrir propiedades', Settings2, () => store.openCanvasNode(node.id))}
+            {action('Separar en nodos', Ungroup, () => store.splitCollection(node.id))}
+            <div className={contextMenuDividerClass}/>
+            {action('Quitar del mapa', Trash2, () => store.removeNodes([node.id]), true)}
         </> : action('Abrir detalle', Settings2, () => store.openCanvasNode(node.id))}
     </div>;
 }

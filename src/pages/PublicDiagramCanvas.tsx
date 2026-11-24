@@ -43,6 +43,7 @@ export type PublicSelection = { kind: 'resource' | 'relation' | 'folder'; id: st
 type PublicNodeData = {
     item: PublicLayoutNode;
     resource?: SharePreviewResource;
+    resources?: SharePreviewResource[];
     token: string;
     revision: number;
     onSelect: (value: PublicSelection) => void
@@ -106,6 +107,33 @@ function PublicCanvasNode({data, selected}: NodeProps<Node<PublicNodeData, 'publ
                           onOpen={() => item.resourceId && onSelect({kind: 'resource', id: item.resourceId})}/>
             <ResourceConnectionHandles/>
         </div>;
+    }
+    if (item.type === 'collection') {
+        const collectionResources = data.resources ?? [];
+        const mode = item.displayMode === 'gallery' || item.displayMode === 'list' ? item.displayMode : 'stack';
+        const resourceIcon = (resource?: SharePreviewResource) => resource?.type === 'note' ? FileText
+            : resource?.type === 'link' ? ArrowUpRight : resource?.mediaType?.startsWith('image/') ? Image
+                : resource?.mediaType?.startsWith('video/') ? PlaySquare : resource?.mediaType?.startsWith('audio/') ? Music : FileText;
+        const row = (resource: SharePreviewResource, index: number) => {
+            const Icon = resourceIcon(resource);
+            return <div key={`${resource.id}-${index}`} className="flex min-w-0 items-center gap-2 rounded-md bg-surface-variant/55 px-2 py-2">
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-background text-outline"><Icon size={14} aria-hidden="true"/></span>
+                <span className="min-w-0 flex-1 truncate text-xs font-medium">{resource.title}</span>
+            </div>;
+        };
+        return <article className="relative h-full w-full overflow-hidden rounded-lg bg-background" style={{width, height, outline: '1px solid var(--color-border)'}}>
+            <header className="flex h-12 items-center gap-2 px-3"><Layers size={16} className="text-outline" aria-hidden="true"/>
+                <p className="min-w-0 flex-1 truncate text-sm font-medium">{item.label || 'Colección'}</p>
+                <span className="rounded-md bg-surface-variant px-1.5 py-0.5 text-[10px] text-outline">{collectionResources.length}</span></header>
+            {mode === 'stack' ? <div className="relative mx-3 h-[68px]">{collectionResources.slice(0, 3).map((resource, index) => {
+                const Icon = resourceIcon(resource);
+                return <div key={resource.id} className="absolute flex h-12 w-[calc(100%-1rem)] items-center gap-2 rounded-md bg-surface-variant px-3"
+                    style={{left: index * 8, top: index * 7, zIndex: 3 - index, outline: '1px solid var(--color-border)'}}>
+                    <Icon size={15} className="text-outline" aria-hidden="true"/><span className="truncate text-xs">{resource.title}</span>
+                </div>;
+            })}</div> : mode === 'gallery' ? <div className="grid grid-cols-2 gap-2 px-3 pb-3">{collectionResources.slice(0, 6).map(row)}</div>
+                : <div className="space-y-1.5 px-3 pb-3">{collectionResources.slice(0, 5).map(row)}</div>}
+        </article>;
     }
     if (item.type === 'folder') return <article className="relative flex items-center gap-3 rounded-lg bg-background px-3"
         style={{width, height, outline: `${selected ? 2 : 1}px solid ${selected ? 'var(--color-primary)' : 'var(--color-border)'}`}}
@@ -305,7 +333,9 @@ function PublicCanvas({
             id: item.id,
             type: 'public' as const,
             position: {x: item.x, y: item.y},
-            data: {item, resource: item.resourceId ? resources.get(item.resourceId) : undefined, onSelect, token, revision: data.revision},
+            data: {item, resource: item.resourceId ? resources.get(item.resourceId) : undefined,
+                resources: item.resourceIds?.map(id => resources.get(id)).filter((resource): resource is SharePreviewResource => Boolean(resource)),
+                onSelect, token, revision: data.revision},
             selected: selection?.kind === 'folder' ? item.type === 'folder' && selection.id === item.id : selection?.kind === 'resource' && selection.id === item.resourceId,
             zIndex: item.zIndex ?? (item.type === 'container' ? 0 : 1),
             draggable: false,

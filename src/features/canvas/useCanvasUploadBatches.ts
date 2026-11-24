@@ -20,7 +20,7 @@ export interface CanvasUploadBatch {
     position: { x: number; y: number };
     entries: Entry[];
     nodeIds: string[];
-    groupId?: string;
+    collectionId?: string;
     undone: boolean
 }
 
@@ -142,26 +142,34 @@ export function useCanvasUploadBatches(projectId: string) {
         }, 0);
         return () => clearTimeout(timer);
     }, [api.uploads.data, batches]);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            for (const batch of batches) {
+                if (batch.undone || batch.collectionId || batch.entries.length < 2 || batch.nodeIds.length < 2) continue;
+                const settledOnCanvas = batch.entries.every(entry => Boolean(entry.nodeId) || finished.has(entry.status));
+                if (!settledOnCanvas) continue;
+                const collectionId = useCanvasStore.getState().createCollectionFromNodes(batch.nodeIds, projectId, batch.position);
+                if (collectionId) setBatches(current => current.map(item => item.id === batch.id ? {
+                    ...item, collectionId, nodeIds: []
+                } : item));
+            }
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [batches, projectId]);
     const undo = (batchId: string) => {
         const batch = batches.find(item => item.id === batchId);
         if (!batch) return;
-        useCanvasStore.getState().removeNodes([...batch.nodeIds, ...(batch.groupId ? [batch.groupId] : [])]);
+        useCanvasStore.getState().removeNodes([...batch.nodeIds, ...(batch.collectionId ? [batch.collectionId] : [])]);
         setBatches(current => current.map(item => item.id === batchId ? {
             ...item,
             undone: true,
             nodeIds: [],
-            groupId: undefined
+            collectionId: undefined
         } : item));
-    };
-    const createGroup = (batchId: string) => {
-        const batch = batches.find(item => item.id === batchId);
-        if (!batch || batch.undone || batch.groupId) return;
-        const groupId = useCanvasStore.getState().groupNodes(batch.nodeIds);
-        if (groupId) setBatches(current => current.map(item => item.id === batchId ? {...item, groupId} : item));
     };
     const retry = (batchId: string, entryId: string) => {
         const entry = batches.find(item => item.id === batchId)?.entries.find(item => item.id === entryId);
         if (entry) void start(batchId, entry, batches.find(batch => batch.id === batchId)?.position);
     };
-    return {batches, addFiles, retry, undo, createGroup, policy: api.policy};
+    return {batches, addFiles, retry, undo, policy: api.policy};
 }

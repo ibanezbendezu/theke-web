@@ -12,6 +12,7 @@ export const PublicLayoutNodeType = {
   resource: 'resource',
   folder: 'folder',
   container: 'container',
+  collection: 'collection',
   annotation: 'annotation',
   text: 'text',
   shape: 'shape',

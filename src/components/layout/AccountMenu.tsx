@@ -87,7 +87,7 @@ export function AccountMenu() {
                     de IA
                 </button>
                 <div className="mx-2 my-1 border-t border-border/50"/>
-                <div className="px-3 py-2"><p className="mb-2 text-xs text-outline">Apariencia</p><ThemeToggle/></div>
+                <div className="px-3 py-2"><p className="mb-2 text-xs text-outline">Apariencia</p><ThemeToggle variant="menu"/></div>
                 <div className="mx-2 my-1 border-t border-border/50"/>
                 <button type="button" className={action} onClick={() => showPanel('about')}><CircleHelp size={16}
                                                                                                         className="text-outline"/>Acerca

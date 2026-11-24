@@ -39,6 +39,7 @@ import {GroupNode} from './nodes/GroupNode';
 import {ResourceNode} from './nodes/ResourceNode';
 import {FolderNode} from './nodes/FolderNode';
 import {AnnotationNode} from './nodes/AnnotationNode';
+import {CollectionNode} from './nodes/CollectionNode';
 import type {DiagramDocument} from '../../data/useDiagrams';
 import {useToast} from '../../components/ui/useToast';
 import {contextMenuDividerClass, contextMenuItemClass, contextMenuSurfaceClass} from '../../components/ui/contextMenuStyles';
@@ -58,6 +59,7 @@ const nodeTypes: NodeTypes = {
     resource: ResourceNode,
     folder: FolderNode,
     annotation: AnnotationNode,
+    collection: CollectionNode,
 };
 
 const edgeTypes = {
@@ -105,6 +107,8 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
     const background = useCanvasStore(state => state.background);
     const focusRequest = useCanvasStore(state => state.focusRequest);
     const focusEdgeRequest = useCanvasStore(state => state.focusEdgeRequest);
+    const initialFocusRequest = useRef(focusRequest?.nonce ?? null);
+    const initialFocusEdgeRequest = useRef(focusEdgeRequest?.nonce ?? null);
     const selectedComment = commentNotifications?.find(item => item.commentId === selectedCommentId);
     const selectedCommentX = selectedComment?.anchored && typeof selectedComment.anchor.x === 'number' ? selectedComment.anchor.x : null;
     const selectedCommentY = selectedComment?.anchored && typeof selectedComment.anchor.y === 'number' ? selectedComment.anchor.y : null;
@@ -172,7 +176,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
         if (viewport) void setViewport(viewport);
     }, [viewport, setViewport]);
     useEffect(() => {
-        if (!focusRequest) return;
+        if (!focusRequest || focusRequest.nonce === initialFocusRequest.current) return;
         const nodes = useCanvasStore.getState().nodes;
         const node = nodes.find(item => item.id === focusRequest.id);
         if (!node) return;
@@ -192,7 +196,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
         });
     }, [focusRequest, setCenter]);
     useEffect(() => {
-        if (!focusEdgeRequest) return;
+        if (!focusEdgeRequest || focusEdgeRequest.nonce === initialFocusEdgeRequest.current) return;
         const state = useCanvasStore.getState();
         const edge = state.edges.find(item => item.id === focusEdgeRequest.id);
         if (!edge) return;

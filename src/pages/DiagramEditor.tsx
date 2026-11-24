@@ -32,6 +32,7 @@ import {CanvasDialog} from '../features/canvas/CanvasDialog';
 import {CanvasResourceInspector} from '../features/canvas/CanvasResourceInspector';
 import {CanvasFolderInspector} from '../features/canvas/CanvasFolderInspector';
 import {CanvasGroupInspector} from '../features/canvas/CanvasGroupInspector';
+import {CanvasCollectionInspector} from '../features/canvas/CanvasCollectionInspector';
 import {CanvasVisualTextInspector, type VisualTextPanel} from '../features/canvas/CanvasVisualTextInspector';
 import {CanvasVisualTextToolbar} from '../features/canvas/CanvasVisualTextToolbar';
 import {CanvasVisualElementToolbar, type VisualElementPanel} from '../features/canvas/CanvasVisualElementToolbar';
@@ -93,6 +94,9 @@ function DiagramEditorCore() {
     };
     const rightOpen = useCanvasStore(state => state.inspectorOpen);
     const setRightOpen = useCanvasStore(state => state.setInspectorOpen);
+    useEffect(() => {
+        setRightOpen(false);
+    }, [diagramId, setRightOpen]);
     const [resourcePanelVersion, setResourcePanelVersion] = useState(0);
     const [resourcePanelSection, setResourcePanelSection] = useState<'map' | 'library'>('map');
     const [preferred, setPreferred] = useState<{ x: number; y: number } | undefined>();
@@ -163,11 +167,13 @@ function DiagramEditorCore() {
     };
     const nodes = useCanvasStore(state => state.nodes);
     const edges = useCanvasStore(state => state.edges);
-    const usedIds = new Set(nodes.map(node => node.data?.resourceId).filter((id): id is string => typeof id === 'string'));
+    const usedIds = new Set(nodes.flatMap(node => [node.data?.resourceId,
+        ...(Array.isArray(node.data?.resourceIds) ? node.data.resourceIds : [])]).filter((id): id is string => typeof id === 'string'));
     const selectedRelationEdge = readyDiagramId === diagramId ? edges.find(edge => edge.selected && typeof edge.data?.relationId === 'string') : undefined;
     const selectedResource = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'resource' && typeof node.data?.resourceId === 'string') : undefined;
     const selectedFolder = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'folder' && (typeof node.data?.libraryFolderId === 'string' || typeof node.data?.folderId === 'string')) : undefined;
     const selectedGroup = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'container') : undefined;
+    const selectedCollection = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'collection') : undefined;
     const selectedAnnotation = readyDiagramId === diagramId ? nodes.find(node => node.selected && node.type === 'annotation') : undefined;
     const selectedVisualText = selectedAnnotation?.data.kind === 'text' ? selectedAnnotation : undefined;
     const selectedVisualElement = selectedAnnotation?.data.kind === 'shape' || selectedAnnotation?.data.kind === 'line' ? selectedAnnotation : undefined;
@@ -236,8 +242,7 @@ function DiagramEditorCore() {
                               commentNotifications={commentNotifications} selectedCommentId={selectedCommentId} onCommentOpen={openComment}
                               onCanvasReady={canvasReady} onOpeningIssueChange={openingIssueChanged}
                               onSaveStateChange={onSaveStateChange}
-                              uploadTray={<CanvasUploadTray batches={uploads.batches} retry={uploads.retry} undo={uploads.undo}
-                                                            createGroup={uploads.createGroup}/>}/>}
+                              uploadTray={<CanvasUploadTray batches={uploads.batches} retry={uploads.retry} undo={uploads.undo}/>}/>}
             <div className="pointer-events-none absolute inset-x-3 top-3 z-40 flex items-start justify-between gap-3">
                 <div
                     className="pointer-events-auto flex min-w-0 max-w-[45%] items-center gap-1 rounded-lg bg-surface/90 p-1 backdrop-blur-md">
@@ -293,7 +298,7 @@ function DiagramEditorCore() {
                                      onClick={() => {
                                          setOptionsOpen(false);
                                          optionsButton.current?.focus();
-                                     }}><p className="mb-2 text-sm font-medium">Apariencia</p><ThemeToggle/></div>}
+                                     }}><p className="mb-2 text-sm font-medium">Apariencia</p><ThemeToggle variant="menu"/></div>}
             </div>
             {!openingIssueVisible && resourceError && <p role="alert"
                                  className="absolute left-3 top-20 z-50 rounded-md bg-surface/95 px-3 py-2 text-xs text-red-600">{resourceError}</p>}
@@ -360,7 +365,9 @@ function DiagramEditorCore() {
                                            caption={typeof selectedFolder.data.caption === 'string' ? selectedFolder.data.caption : ''}
                                            onAddResource={id => tryAdd(id)}/> : selectedGroup ?
                         <CanvasGroupInspector key={selectedGroup.id} groupId={selectedGroup.id}
-                                              diagramId={diagram.data.id} projectId={diagram.data.projectId}/> : <><CanvasBackgroundInspector/>
+                                              diagramId={diagram.data.id} projectId={diagram.data.projectId}/> : selectedCollection ?
+                            <CanvasCollectionInspector key={selectedCollection.id} nodeId={selectedCollection.id}
+                                                       projectId={diagram.data.projectId}/> : <><CanvasBackgroundInspector/>
                                 <p className="mt-3 text-xs text-outline">Selecciona un elemento para editarlo.</p></>}
         </aside>}
         {duplicate &&
