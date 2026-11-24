@@ -2227,6 +2227,11 @@ export type listPublicShareCommentsResponse200 = {
   status: 200
 }
 
+export type listPublicShareCommentsResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
 export type listPublicShareCommentsResponse404 = {
   data: NotFoundResponse
   status: 404
@@ -2235,7 +2240,7 @@ export type listPublicShareCommentsResponse404 = {
 export type listPublicShareCommentsResponseSuccess = (listPublicShareCommentsResponse200) & {
   headers: Headers;
 };
-export type listPublicShareCommentsResponseError = (listPublicShareCommentsResponse404) & {
+export type listPublicShareCommentsResponseError = (listPublicShareCommentsResponse401 | listPublicShareCommentsResponse404) & {
   headers: Headers;
 };
 
@@ -2284,6 +2289,11 @@ export type createPublicShareCommentResponse400 = {
   status: 400
 }
 
+export type createPublicShareCommentResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
 export type createPublicShareCommentResponse403 = {
   data: ApiErrorResponse
   status: 403
@@ -2312,7 +2322,7 @@ export type createPublicShareCommentResponse429 = {
 export type createPublicShareCommentResponseSuccess = (createPublicShareCommentResponse201) & {
   headers: Headers;
 };
-export type createPublicShareCommentResponseError = (createPublicShareCommentResponse400 | createPublicShareCommentResponse403 | createPublicShareCommentResponse404 | createPublicShareCommentResponse409 | createPublicShareCommentResponse415 | createPublicShareCommentResponse429) & {
+export type createPublicShareCommentResponseError = (createPublicShareCommentResponse400 | createPublicShareCommentResponse401 | createPublicShareCommentResponse403 | createPublicShareCommentResponse404 | createPublicShareCommentResponse409 | createPublicShareCommentResponse415 | createPublicShareCommentResponse429) & {
   headers: Headers;
 };
 
@@ -2367,6 +2377,11 @@ export type editPublicShareCommentResponse400 = {
   status: 400
 }
 
+export type editPublicShareCommentResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
 export type editPublicShareCommentResponse403 = {
   data: ApiErrorResponse
   status: 403
@@ -2395,7 +2410,7 @@ export type editPublicShareCommentResponse429 = {
 export type editPublicShareCommentResponseSuccess = (editPublicShareCommentResponse200) & {
   headers: Headers;
 };
-export type editPublicShareCommentResponseError = (editPublicShareCommentResponse400 | editPublicShareCommentResponse403 | editPublicShareCommentResponse404 | editPublicShareCommentResponse409 | editPublicShareCommentResponse415 | editPublicShareCommentResponse429) & {
+export type editPublicShareCommentResponseError = (editPublicShareCommentResponse400 | editPublicShareCommentResponse401 | editPublicShareCommentResponse403 | editPublicShareCommentResponse404 | editPublicShareCommentResponse409 | editPublicShareCommentResponse415 | editPublicShareCommentResponse429) & {
   headers: Headers;
 };
 
@@ -2735,6 +2750,11 @@ export type claimPublicShareCommentsResponse200 = {
   status: 200
 }
 
+export type claimPublicShareCommentsResponse400 = {
+  data: BadRequestResponse
+  status: 400
+}
+
 export type claimPublicShareCommentsResponse401 = {
   data: UnauthorizedResponse
   status: 401
@@ -2750,10 +2770,15 @@ export type claimPublicShareCommentsResponse404 = {
   status: 404
 }
 
+export type claimPublicShareCommentsResponse415 = {
+  data: ApiErrorResponse
+  status: 415
+}
+
 export type claimPublicShareCommentsResponseSuccess = (claimPublicShareCommentsResponse200) & {
   headers: Headers;
 };
-export type claimPublicShareCommentsResponseError = (claimPublicShareCommentsResponse401 | claimPublicShareCommentsResponse403 | claimPublicShareCommentsResponse404) & {
+export type claimPublicShareCommentsResponseError = (claimPublicShareCommentsResponse400 | claimPublicShareCommentsResponse401 | claimPublicShareCommentsResponse403 | claimPublicShareCommentsResponse404 | claimPublicShareCommentsResponse415) & {
   headers: Headers;
 };
 

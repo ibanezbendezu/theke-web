@@ -37,3 +37,15 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-5-5-abrir-recursos-publicos-en-cualquier-dispositivo.md`
   summary: Probar archivos y multimedia en una publicación real y decidir cómo representar subtítulos sincronizados para video.
   evidence: El 2026-10-03 se revisó una nota pública en escritorio, tablet y 320 px, incluido el foco de la hoja inferior móvil. El Compartido de prueba no contiene archivos; las pruebas de API con PostgreSQL cubren apertura y revocación de medios. El modelo publicado solo contiene alternativa textual para video, mientras UX exige subtítulos sincronizados.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-1-adoptar-una-identidad-anonima-para-comentar.md`
+  summary: Definir proxies confiables antes de usar la IP del cliente para limitar comentarios.
+  evidence: La API usa `request.ip`, pero activar `trustProxy` sin conocer la topología permitiría falsificar cabeceras o agrupar visitantes bajo la IP del proxy.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-1-adoptar-una-identidad-anonima-para-comentar.md`
+  summary: Endurecer de forma conjunta el esquema Drizzle y las garantías SQL manuales de comentarios.
+  evidence: El índice parcial de autor y el `check` de acciones existen en SQL, pero no están representados por completo en el esquema Drizzle.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-1-adoptar-una-identidad-anonima-para-comentar.md`
+  summary: Sustituir los sentinelas parciales por un registro transaccional de migraciones y probar el arranque desde una base vacía.
+  evidence: Una migración multi-sentencia parcialmente aplicada puede dejar su primer sentinel presente y ser omitida en el siguiente arranque.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-1-adoptar-una-identidad-anonima-para-comentar.md`
+  summary: Aplicar validación runtime coherente con `additionalProperties: false` a los cuerpos del API.
+  evidence: Crear y editar comentarios ignoran propiedades extra; la solución correcta es transversal mediante DTO o una política global, no un guard aislado.
