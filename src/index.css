@@ -313,7 +313,39 @@
   }
 }
 
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .public-share-surface {
+    background-color: var(--surface) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .public-share-surface {
+    background-color: var(--surface) !important;
+    border: 1px solid var(--on-background);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
 @media (forced-colors: active) {
+  .public-share-surface,
+  .public-share [role='dialog'],
+  .public-share [role='status'] {
+    background: Canvas !important;
+    color: CanvasText !important;
+    border: 1px solid CanvasText !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .public-share button:focus-visible,
+  .public-share a:focus-visible,
+  .public-share [tabindex]:focus-visible {
+    outline: 3px solid Highlight !important;
+    outline-offset: 3px !important;
+  }
   .public-share .react-flow__node {
     background: Canvas !important;
     color: CanvasText !important;

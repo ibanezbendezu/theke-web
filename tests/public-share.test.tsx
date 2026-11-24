@@ -1,4 +1,7 @@
+/// <reference types="node" />
+
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { readFileSync } from 'node:fs';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { PublicShare } from '../src/pages/PublicShare';
@@ -45,6 +48,7 @@ it('abre el compositor desde el menú contextual y localiza comentarios sobre el
   const pane = screen.getByLabelText('Diagrama público').querySelector('.react-flow__pane');
   expect(pane).not.toBeNull();
   fireEvent.contextMenu(pane!, { clientX: 90, clientY: 90 });
+  expect(await screen.findByRole('menu')).toHaveClass('public-share-surface');
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Comentar aquí' }));
   expect(await screen.findByText('Sobre: Punto del mapa')).toBeInTheDocument();
   await screen.findByText('Revisar esta fuente');
@@ -177,9 +181,21 @@ it('monta el Canvas público con controles de zoom cuando hay posiciones publica
     resources: [{ id: 'one', type: 'note', title: 'Tarjeta visible', content: 'Detalle', description: null, url: null, mediaType: null, accessibilityText: null }], relations: [] } }) });
   page();
   expect(await screen.findByRole('heading', { name: 'Mapa visual' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Mapa visual' }).parentElement).toHaveClass('public-share-surface');
   expect(screen.getByLabelText('Diagrama público')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Acercar' })).toBeInTheDocument();
+  expect(screen.getByRole('navigation', { name: 'Controles del diagrama' })).toHaveClass('public-share-surface');
   expect(screen.getByRole('button', { name: 'Ajustar vista' })).toBeInTheDocument();
   expect(screen.getByLabelText('Diagrama público').querySelector('.react-flow__viewport')).not.toBeNull();
+  expect(screen.getByText('Grupo visible').parentElement).toHaveClass('public-share-surface');
+  fireEvent.click(screen.getByLabelText('Mostrar vista semántica'));
+  expect(screen.getByLabelText('Panel de vista semántica')).toHaveClass('public-share-surface');
   expect(screen.queryByRole('textbox', { name: 'Texto de anotación' })).not.toBeInTheDocument();
+});
+
+it('mantiene opacas y enfocables las superficies públicas en modos de contraste', () => {
+  const publicStyles = readFileSync('src/index.css', 'utf8');
+  expect(publicStyles).toContain('@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)))');
+  expect(publicStyles).toMatch(/@media \(prefers-contrast: more\)[\s\S]*?\.public-share-surface[\s\S]*?background-color: var\(--surface\) !important;[\s\S]*?backdrop-filter: none !important;/);
+  expect(publicStyles).toMatch(/@media \(forced-colors: active\)[\s\S]*?\.public-share-surface[\s\S]*?background: Canvas !important;[\s\S]*?outline: 3px solid Highlight !important;/);
 });

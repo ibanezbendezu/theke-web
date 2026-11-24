@@ -140,11 +140,11 @@ function PublicShareView({token}: { token: string | undefined }) {
             }}/>
             <div className="pointer-events-none absolute inset-x-3 top-3 z-40 flex items-start justify-between gap-3">
                 <div
-                    className="pointer-events-auto flex min-w-0 max-w-[55%] items-center rounded-lg bg-surface/90 px-4 py-3 backdrop-blur-md">
+                    className="public-share-surface pointer-events-auto flex min-w-0 max-w-[55%] items-center rounded-lg bg-surface/90 px-4 py-3 backdrop-blur-md">
                     <h1 className="truncate text-sm font-semibold" data-tooltip={data.diagramName}>{data.diagramName}</h1>
                 </div>
                 <nav aria-label="Opciones del mapa compartido"
-                     className="pointer-events-auto flex shrink-0 gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md">
+                     className="public-share-surface pointer-events-auto flex shrink-0 gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md">
                     {data.commentsEnabled && <Button size="icon" className="h-10 w-10" icon={MessageSquarePlus}
                                                      aria-label="Añadir comentario" aria-pressed={commentMode}
                                                      onClick={() => {
@@ -183,7 +183,7 @@ function PublicShareView({token}: { token: string | undefined }) {
                 <p role="status" className="absolute left-3 top-20 z-40 rounded-lg bg-surface px-3 py-2 text-xs">Elige
                     un punto, recurso o relación para comentar.</p>}
             {showSemantic && <aside
-                className="absolute bottom-3 left-3 top-20 z-40 w-[min(22rem,calc(100%-1.5rem))] overflow-auto rounded-xl bg-surface/95 p-3 backdrop-blur-md"
+                className="public-share-surface absolute bottom-3 left-3 top-20 z-40 w-[min(22rem,calc(100%-1.5rem))] overflow-auto rounded-xl bg-surface/95 p-3 backdrop-blur-md"
                 aria-label="Panel de vista semántica">
                 <div className="mb-2 flex justify-end">{data.layout.nodes.length > 0 &&
                     <Button size="icon" className="h-9 w-9" icon={X} aria-label="Cerrar vista semántica"

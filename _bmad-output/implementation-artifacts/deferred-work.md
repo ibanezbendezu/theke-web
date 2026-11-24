@@ -1,3 +1,9 @@
+- source_spec: `_bmad-output/planning-artifacts/epics.md`, historias 6.1–6.5
+  summary: Retomar el cierre BMAD de la épica 6 de identidad, comentarios contextuales y moderación después de completar la épica 5.
+  evidence: El usuario eligió dividir el trabajo y abordar primero la épica 5; las historias 6.1–6.5 permanecen en revisión sin cambios de alcance.
+- source_spec: `_bmad-output/implementation-artifacts/spec-5-4-explorar-un-diagrama-publico-sin-editarlo.md`
+  summary: Confirmar en un entorno desplegado que el contenido útil de un mapa público aparece en menos de tres segundos con un perfil de banda ancha definido.
+  evidence: La medición local del 2026-11-24 fue de 1.796 ms desde navegación hasta controles visibles, pero no reproduce latencia de red, caché fría ni transferencia remota; la comprobación requiere el despliegue pendiente.
 - source_spec: `_bmad-output/implementation-artifacts/spec-2-7-agrupar-representaciones-visualmente.md`
   summary: Refinar la interacción y apariencia de los grupos visuales: señal de pertenencia durante arrastre, criterio de incorporación parcial, grupos anidados, redimensionamiento y comportamiento de miembros superpuestos o cercanos.
   evidence: El 2026-11-24 se decidió aplazar la revisión integral. La implementación actual impide reducir el grupo por debajo de los límites de sus miembros y conserva sus posiciones, orden de capas y posibles superposiciones sin redistribución automática; falta validar visualmente estos criterios y definir los casos de anidación y pertenencia ambigua.

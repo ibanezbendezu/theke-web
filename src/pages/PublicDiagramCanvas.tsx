@@ -71,7 +71,7 @@ function PublicCommentMarker({data}: NodeProps<Node<PublicMarkerData, 'comment'>
 
 function CanvasButtons() {
     const {zoomIn, zoomOut, fitView} = useReactFlow();
-    return <nav className="absolute bottom-3 right-3 z-30 flex gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md"
+    return <nav className="public-share-surface absolute bottom-3 right-3 z-30 flex gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md"
                 aria-label="Controles del diagrama">
         <Button size="icon" className="h-11 w-11" icon={ZoomOut} aria-label="Alejar"
                 onClick={() => void zoomOut({duration: 0})}/>
@@ -154,7 +154,7 @@ function PublicCanvasNode({data, selected}: NodeProps<Node<PublicNodeData, 'publ
             <div className="h-full w-full" style={{backgroundColor: `color-mix(in srgb, ${item.color ?? 'var(--color-surface-variant)'} 12%, transparent)`}}/>
         </div>
         <div
-            className="absolute left-0 top-full z-50 mt-1 flex max-w-full items-center gap-1.5 rounded-md bg-surface/90 px-2.5 py-1.5 text-xs font-medium text-on-background backdrop-blur-md">
+            className="public-share-surface absolute left-0 top-full z-50 mt-1 flex max-w-full items-center gap-1.5 rounded-md bg-surface/90 px-2.5 py-1.5 text-xs font-medium text-on-background backdrop-blur-md">
             <Layers size={13} className="shrink-0 text-primary" aria-hidden="true"/><span
             className="max-w-48 truncate">{item.label ?? 'Grupo visual'}</span></div>
         <NodeHandles group/></div>;
@@ -290,7 +290,7 @@ function PublicCanvasEdge({
                         id: data.relationId
                     })}>
                 <span aria-hidden="true"
-                      className={`pointer-events-none absolute bottom-full left-1/2 mb-1 max-w-52 -translate-x-1/2 truncate whitespace-nowrap rounded-md bg-background/90 px-1.5 py-0.5 text-xs font-medium text-on-background backdrop-blur-sm ${selected || hovered ? 'block' : 'hidden'}`}>
+                      className={`public-share-surface pointer-events-none absolute bottom-full left-1/2 mb-1 max-w-52 -translate-x-1/2 truncate whitespace-nowrap rounded-md bg-background/90 px-1.5 py-0.5 text-xs font-medium text-on-background backdrop-blur-sm ${selected || hovered ? 'block' : 'hidden'}`}>
                     {data.label}
                 </span>
             </button>
@@ -441,7 +441,7 @@ function PublicCanvas({
                         }}>
         <CanvasBackgroundPattern variant={background.variant}/>
     </ReactFlow><CanvasButtons/>{menu &&
-        <div className={`fixed z-[60] min-w-40 ${contextMenuSurfaceClass}`}
+        <div className={`public-share-surface fixed z-[60] min-w-40 ${contextMenuSurfaceClass}`}
              style={{left: menu.x, top: menu.y}} role="menu">
             <button type="button" role="menuitem"
                     className={contextMenuItemClass}
