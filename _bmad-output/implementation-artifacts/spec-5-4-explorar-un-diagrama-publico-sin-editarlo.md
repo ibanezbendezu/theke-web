@@ -30,6 +30,8 @@ Las pruebas focalizadas de proyección pública y vista compartida, lint y build
 
 El 2026-11-24 se midió una publicación real desde la navegación del producto: el Canvas y sus controles estuvieron disponibles en 1.796 ms en el entorno local. Esta medición valida la ruta y el presupuesto de carga local, pero no sustituye la comprobación con latencia y transferencia de banda ancha en el despliegue pendiente. Se comprobó la inspección de una Relación, la navegación de sus extremos, la vista semántica y la ausencia de herramientas de edición. La carga de medios pesados continúa siendo bajo demanda y está cubierta por las pruebas focalizadas. Las superficies translúcidas públicas ahora se vuelven opacas cuando el navegador no soporta desenfoque, cuando se solicita mayor contraste o cuando está activo el modo de colores forzados; este último también conserva un foco visible con el color del sistema. El movimiento reducido elimina animaciones y transiciones no esenciales. `eslint`, el build de producción y las 15 pruebas de `tests/public-share.test.tsx` pasan.
 
+Ajuste posterior del 2026-11-24: la vista semántica pasó a una lista plana y compacta coherente con el Design Spine, con tipos localizados, iconos, contadores y selección tonal sin tarjetas anidadas. Los grupos visuales públicos quedaron como capas de fondo no interactivas para que nunca intercepten el clic de sus Recursos; se comprobó en navegador la selección de un Recurso situado dentro de un grupo.
+
 ## Review Triage Log
 
 | Capa | Hallazgo | Veredicto | Evidencia y ruta |

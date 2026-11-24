@@ -22,14 +22,44 @@ const page = () => render(<MemoryRouter initialEntries={['/share/example-token']
 it('permite comentar Recursos y Relaciones desde la vista semántica con teclado', () => {
   const onCommentTarget = vi.fn();
   render(<PublicSemanticList resources={[{ id: 'resource-1', title: 'Fuente', type: 'note', description: null, content: 'Texto', url: null, accessibilityText: null, mediaType: null }]} relations={[{ id: 'relation-1', sourceResourceId: 'resource-1', targetResourceId: 'resource-1', direction: 'directed', typeKey: 'supports', label: 'Sustenta', explanation: null, evidence: [] }]} selection={null} onSelect={() => {}} commentsEnabled onCommentTarget={onCommentTarget}/>);
-  fireEvent.click(screen.getByRole('button', { name: 'Comentar Fuente' }));
-  fireEvent.click(screen.getByRole('button', { name: 'Comentar relación Sustenta' }));
+  const resourceComment = screen.getByRole('button', { name: 'Comentar Fuente' });
+  const relationComment = screen.getByRole('button', { name: 'Comentar relación Sustenta' });
+  expect(resourceComment).toHaveClass('h-11', 'w-11');
+  expect(relationComment).toHaveClass('h-11', 'w-11');
+  fireEvent.click(resourceComment);
+  fireEvent.click(relationComment);
   expect(onCommentTarget.mock.calls.map(call => call[0])).toEqual([{ type: 'resource', resourceId: 'resource-1' }, { type: 'relation', relationId: 'relation-1' }]);
+});
+
+it('enumera todos los elementos visuales con nombres localizados y conserva la selección de carpeta', () => {
+  render(<PublicSemanticList
+    resources={[{id: 'image', title: 'Portada', type: 'file', description: null, content: null, url: null, accessibilityText: 'Portada', mediaType: 'IMAGE/PNG'}]}
+    relations={[]}
+    visualNodes={[
+      {id: 'folder', type: 'folder', x: 0, y: 0, folderName: 'Carpeta Uno'},
+      {id: 'container', type: 'container', x: 0, y: 0, label: 'Grupo'},
+      {id: 'collection', type: 'collection', x: 0, y: 0, label: 'Colección curada'},
+      {id: 'annotation', type: 'annotation', x: 0, y: 0, annotationKind: 'desconocida', text: 'Texto alternativo'},
+      {id: 'text', type: 'text', x: 0, y: 0, text: 'Texto libre'},
+      {id: 'shape', type: 'shape', x: 0, y: 0, shapeType: 'rectangle'},
+      {id: 'link', type: 'link', x: 0, y: 0, title: 'Fuente visual'},
+      {id: 'media', type: 'media', x: 0, y: 0, mediaType: 'IMAGE', label: 'Portada visual'},
+      {id: 'document', type: 'document', x: 0, y: 0, filename: 'Informe.pdf'},
+      {id: 'audio', type: 'audio', x: 0, y: 0, title: 'Narración'},
+    ]}
+    selection={{kind: 'folder', id: 'folder'}} onSelect={() => {}}/>);
+  expect(screen.getByRole('button', {name: 'Portada · Imagen'})).toBeInTheDocument();
+  expect(screen.getByRole('heading', {name: 'Elementos visuales'}).parentElement).toHaveTextContent('10');
+  expect(screen.getByRole('button', {name: 'Carpeta Uno · Carpeta'})).toHaveAttribute('aria-pressed', 'true');
+  expect(screen.getByRole('button', {name: 'Carpeta Uno · Carpeta'})).toHaveClass('bg-surface-variant');
+  for (const name of ['Grupo · Grupo', 'Colección curada · Colección', 'Texto alternativo · Texto', 'Texto libre · Texto',
+    'Forma visual · Forma', 'Fuente visual · Enlace', 'Portada visual · Imagen', 'Informe.pdf · Documento', 'Narración · Audio'])
+    expect(screen.getByLabelText(name)).toBeInTheDocument();
 });
 
 it('muestra el nombre público del tipo personalizado en lugar de su clave interna', () => {
   render(<PublicSemanticList resources={[]} relations={[{ id: 'relation-1', sourceResourceId: 'one', targetResourceId: 'two', direction: 'directed', typeKey: 'custom:44444444-4444-4444-8444-444444444444', typeLabel: 'Contextualiza smoke', label: null, explanation: null }]} selection={null} onSelect={() => {}} commentsEnabled onCommentTarget={() => {}}/>);
-  expect(screen.getByRole('button', { name: /→.*· Contextualiza smoke/ })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Recurso no disponible hacia Recurso no disponible · Contextualiza smoke' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Comentar relación Contextualiza smoke' })).toBeInTheDocument();
   expect(screen.queryByText(/custom:44444444/)).not.toBeInTheDocument();
 });
@@ -99,7 +129,7 @@ it('solicita imágenes visuales externas solo tras una acción explícita', asyn
 it('consulta sin credenciales y muestra solo la proyección pública', async () => {
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa visible', revision: 1, commentsEnabled: true, layout: { nodes: [], edges: [] }, resources: [{ id: 'one', title: 'Nota', type: 'note', content: 'Texto público', description: null, url: null, mediaType: null, accessibilityText: null }], relations: [] } }) });
   page();
-  fireEvent.click(await screen.findByRole('button', { name: 'Nota · note' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Nota · Nota' }));
   expect(await screen.findByText('Texto público')).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Añadir recurso' })).not.toBeInTheDocument();
   expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/\/v1\/public\/shares\/example-token$/), expect.objectContaining({ cache: 'no-store' }));
@@ -109,7 +139,7 @@ it('consulta sin credenciales y muestra solo la proyección pública', async () 
 it('cierra el detalle superpuesto y devuelve el foco al recurso', async () => {
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: 'one', title: 'Nota', type: 'note', content: 'Texto público', description: null, url: null, mediaType: null, accessibilityText: null }], relations: [] } }) });
   page();
-  const resource = await screen.findByRole('button', { name: 'Nota · note' });
+  const resource = await screen.findByRole('button', { name: 'Nota · Nota' });
   resource.focus();
   fireEvent.click(resource);
   expect(screen.getByRole('button', { name: 'Cerrar detalle' })).toBeInTheDocument();
@@ -127,18 +157,28 @@ it('da el mismo mensaje neutro para cualquier fallo público', async () => {
 it('no permite abrir esquemas peligrosos aunque aparezcan en una proyección', async () => {
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: 'link', type: 'link', title: 'Enlace', url: 'javascript:alert(1)', content: null, description: null, mediaType: null, accessibilityText: null }], relations: [] } }) });
   page();
-  fireEvent.click(await screen.findByRole('button', { name: 'Enlace · link' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Enlace · Enlace' }));
   expect(await screen.findByRole('heading', { name: 'Enlace' })).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: 'Abrir enlace' })).not.toBeInTheDocument();
+});
+
+it('abre enlaces HTTP(S) en otra pestaña con un control tonal de al menos 44 px', async () => {
+  fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: 'link', type: 'link', title: 'Fuente', url: 'https://example.org/consulta', content: null, description: null, mediaType: null, accessibilityText: null }], relations: [] } }) });
+  page();
+  fireEvent.click(await screen.findByRole('button', { name: 'Fuente · Enlace' }));
+  const link = screen.getByRole('link', { name: 'Abrir enlace' });
+  expect(link).toHaveAttribute('href', 'https://example.org/consulta');
+  expect(link).toHaveAttribute('target', '_blank');
+  expect(link).toHaveClass('min-h-11', 'bg-surface-variant');
 });
 
 it('muestra archivos mediante la API pública sin recibir claves de almacenamiento', async () => {
   vi.stubEnv('VITE_API_URL', 'http://localhost:3000');
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: '11111111-1111-4111-8111-111111111111', type: 'file', title: 'Imagen', url: null, content: null, description: null, mediaType: 'image/png', accessibilityText: 'Descripción de la imagen' }], relations: [] } }) });
   page();
-  await screen.findByRole('button', { name: 'Imagen · file' });
+  await screen.findByRole('button', { name: 'Imagen · Imagen' });
   expect(screen.queryByRole('img', { name: 'Descripción de la imagen' })).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: 'Imagen · file' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Imagen · Imagen' }));
   const image = await screen.findByRole('img', { name: 'Descripción de la imagen' });
   expect(image.getAttribute('src')).toBe('http://localhost:3000/v1/public/shares/example-token/resources/11111111-1111-4111-8111-111111111111/content');
   fireEvent.error(image);
@@ -153,10 +193,36 @@ it('muestra archivos mediante la API pública sin recibir claves de almacenamien
 it('ofrece abrir y descargar cuando el formato no admite vista previa', async () => {
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: 'two', type: 'file', title: 'Archivo', url: null, content: null, description: null, mediaType: 'application/zip', accessibilityText: 'Archivo comprimido' }], relations: [] } }) });
   page();
-  fireEvent.click(await screen.findByRole('button', { name: 'Archivo · file' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Archivo · Archivo' }));
   expect(screen.getByText('Este formato no tiene vista previa en el navegador.')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Abrir archivo' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Descargar archivo' })).toBeInTheDocument();
+});
+
+it.each([
+  ['audio/mpeg', 'Audio', 'Audio', 'Reproducir Audio'],
+  ['video/mp4', 'Video', 'Vídeo', 'Reproducir Video'],
+])('ofrece vista previa diferida y recuperable para %s', async (mediaType, title, semanticType, accessibleName) => {
+  fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: '11111111-1111-4111-8111-111111111111', type: 'file', title, url: null, content: null, description: null, mediaType, accessibilityText: `Alternativa para ${title}` }], relations: [] } }) });
+  page();
+  fireEvent.click(await screen.findByRole('button', { name: `${title} · ${semanticType}` }));
+  const media = screen.getByLabelText(accessibleName);
+  expect(media).toHaveAttribute('preload', 'none');
+  fireEvent.error(media);
+  expect(screen.getByRole('alert')).toHaveTextContent('No se pudo cargar la vista previa');
+  fireEvent.click(screen.getByRole('button', { name: 'Reintentar vista previa' }));
+  expect(screen.getByLabelText(accessibleName)).toHaveAttribute('src', expect.stringContaining('?retry=1'));
+});
+
+it.each([
+  ['application/pdf', 'Documento'],
+  ['text/plain', 'Archivo'],
+])('abre %s en otra pestaña sin incrustarlo', async (mediaType, semanticType) => {
+  fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: '11111111-1111-4111-8111-111111111111', type: 'file', title: 'Documento', url: null, content: null, description: null, mediaType, accessibilityText: 'Documento accesible' }], relations: [] } }) });
+  page();
+  fireEvent.click(await screen.findByRole('button', { name: `Documento · ${semanticType}` }));
+  expect(screen.getByRole('link', { name: 'Abrir archivo' })).toHaveAttribute('target', '_blank');
+  expect(screen.queryByText('Este formato no tiene vista previa en el navegador.')).not.toBeInTheDocument();
 });
 
 it('permite inspeccionar relaciones y navegar a sus extremos desde la vista semántica', async () => {
@@ -167,7 +233,7 @@ it('permite inspeccionar relaciones y navegar a sus extremos desde la vista sem�
       { id: 'two', type: 'note', title: 'Destino', content: 'Texto de destino', description: null, url: null, mediaType: null, accessibilityText: null },
     ], relations: [{ id: 'relation', sourceResourceId: 'one', targetResourceId: 'two', direction: 'directed', typeKey: 'supports', label: 'Sustenta', explanation: 'Explicación pública', evidence: [{ resourceId: 'one', excerpt: 'Cita visible', note: null, pageNumber: 2 }] }] } }) });
   page();
-  fireEvent.click(await screen.findByRole('button', { name: /Origen → Destino · Sustenta/ }));
+  fireEvent.click(await screen.findByRole('button', { name: /Origen hacia Destino · Sustenta/ }));
   expect(screen.getByText('Cita visible')).toBeInTheDocument();
   expect(screen.getByText('Explicación pública')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Ir a Destino' }));
@@ -177,7 +243,7 @@ it('permite inspeccionar relaciones y navegar a sus extremos desde la vista sem�
 it('monta el Canvas público con controles de zoom cuando hay posiciones publicadas', async () => {
   vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa visual', revision: 1, commentsEnabled: false,
-    layout: { background: { variant: 'grid', tone: 'surface' }, nodes: [{ id: 'r0', type: 'resource', resourceId: 'one', x: 40, y: 80, width: 320, height: 140, caption: 'Lectura' }, { id: 'g0', type: 'container', x: 20, y: 30, width: 400, height: 260, label: 'Grupo visible' }, { id: 'a0', type: 'annotation', x: 100, y: 240, width: 220, height: 80, annotationKind: 'text', text: 'Texto visual' }], edges: [] },
+    layout: { background: { variant: 'grid', tone: 'surface' }, nodes: [{ id: 'r0', type: 'resource', resourceId: 'one', x: 40, y: 80, width: 320, height: 140, zIndex: -5, caption: 'Lectura' }, { id: 'g0', type: 'container', x: 20, y: 30, width: 400, height: 260, zIndex: 99, label: 'Grupo visible' }, { id: 'a0', type: 'annotation', x: 100, y: 240, width: 220, height: 80, zIndex: 3, annotationKind: 'text', text: 'Texto visual' }], edges: [] },
     resources: [{ id: 'one', type: 'note', title: 'Tarjeta visible', content: 'Detalle', description: null, url: null, mediaType: null, accessibilityText: null }], relations: [] } }) });
   page();
   expect(await screen.findByRole('heading', { name: 'Mapa visual' })).toBeInTheDocument();
@@ -187,7 +253,17 @@ it('monta el Canvas público con controles de zoom cuando hay posiciones publica
   expect(screen.getByRole('navigation', { name: 'Controles del diagrama' })).toHaveClass('public-share-surface');
   expect(screen.getByRole('button', { name: 'Ajustar vista' })).toBeInTheDocument();
   expect(screen.getByLabelText('Diagrama público').querySelector('.react-flow__viewport')).not.toBeNull();
+  const diagram = screen.getByLabelText('Diagrama público');
+  expect(diagram.querySelector<HTMLElement>('[data-id="g0"]')?.style.pointerEvents).toBe('none');
+  expect(diagram.querySelector<HTMLElement>('[data-id="g0"]')?.style.zIndex).toBe('0');
+  expect(diagram.querySelector<HTMLElement>('[data-id="r0"]')?.style.zIndex).toBe('1');
+  expect(diagram.querySelector<HTMLElement>('[data-id="a0"]')?.style.zIndex).toBe('9');
   expect(screen.getByText('Grupo visible').parentElement).toHaveClass('public-share-surface');
+  expect(screen.queryByLabelText('Detalles del mapa')).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('Mostrar detalles')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByLabelText('Abrir detalle de Tarjeta visible'));
+  expect(await screen.findByRole('heading', {name: 'Tarjeta visible'})).toBeInTheDocument();
+  expect(screen.getByRole('button', {name: 'Cerrar detalle'})).toHaveClass('h-11', 'w-11');
   fireEvent.click(screen.getByLabelText('Mostrar vista semántica'));
   expect(screen.getByLabelText('Panel de vista semántica')).toHaveClass('public-share-surface');
   expect(screen.queryByRole('textbox', { name: 'Texto de anotación' })).not.toBeInTheDocument();

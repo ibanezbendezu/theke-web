@@ -15,15 +15,22 @@ import {
     type NodeTypes
 } from '@xyflow/react';
 import {
+    ArrowLeftRight,
+    ArrowRight,
     ArrowUpRight,
+    File,
     FileText,
     Folder,
     Image,
     Layers,
+    Link2,
     Maximize,
     MessageCircle,
+    Minus,
     Music,
     PlaySquare,
+    Shapes,
+    Type,
     ZoomIn,
     ZoomOut
 } from 'lucide-react';
@@ -56,6 +63,43 @@ type PublicEdgeData = {
     relationId?: string;
     onSelect: (value: PublicSelection) => void
 };
+
+function publicResourceMeta(resource: SharePreviewResource) {
+    const mediaType = resource.mediaType?.toLowerCase();
+    if (resource.type === 'note') return {label: 'Nota', Icon: FileText};
+    if (resource.type === 'link') return {label: 'Enlace', Icon: Link2};
+    if (mediaType?.startsWith('image/')) return {label: 'Imagen', Icon: Image};
+    if (mediaType?.startsWith('video/')) return {label: 'Vídeo', Icon: PlaySquare};
+    if (mediaType?.startsWith('audio/')) return {label: 'Audio', Icon: Music};
+    if (mediaType === 'application/pdf') return {label: 'Documento', Icon: FileText};
+    return {label: 'Archivo', Icon: File};
+}
+
+function publicVisualMeta(item: PublicLayoutNode) {
+    if (item.type === 'folder') return {label: 'Carpeta', Icon: Folder, title: item.folderName ?? 'Carpeta'};
+    if (item.type === 'container') return {label: 'Grupo', Icon: Layers, title: item.label ?? 'Grupo visual'};
+    if (item.type === 'collection') return {label: 'Colección', Icon: Layers, title: item.label ?? 'Colección'};
+    if (item.type === 'annotation') {
+        if (item.annotationKind === 'shape') return {label: 'Forma', Icon: Shapes, title: item.label ?? 'Forma visual'};
+        if (item.annotationKind === 'line') return {label: 'Línea', Icon: Minus, title: item.label ?? 'Línea visual'};
+        return {label: 'Texto', Icon: Type, title: item.text ?? item.label ?? 'Texto visual'};
+    }
+    if (item.type === 'text') return {label: 'Texto', Icon: Type, title: item.text ?? 'Texto visual'};
+    if (item.type === 'shape') return item.shapeType === 'line'
+        ? {label: 'Línea', Icon: Minus, title: item.label ?? 'Línea visual'}
+        : {label: 'Forma', Icon: Shapes, title: item.label ?? 'Forma visual'};
+    if (item.type === 'link') return {label: 'Enlace', Icon: Link2, title: item.title ?? item.label ?? 'Enlace visual'};
+    if (item.type === 'document') return {label: 'Documento', Icon: FileText, title: item.filename ?? item.label ?? 'Documento'};
+    if (item.type === 'audio') return {label: 'Audio', Icon: Music, title: item.title ?? item.label ?? 'Audio'};
+    if (item.type === 'media') {
+        const mediaType = item.mediaType?.toLowerCase();
+        if (mediaType === 'image') return {label: 'Imagen', Icon: Image, title: item.label ?? 'Imagen visual'};
+        if (mediaType === 'audio') return {label: 'Audio', Icon: Music, title: item.label ?? 'Audio visual'};
+        if (mediaType === 'video') return {label: 'Vídeo', Icon: PlaySquare, title: item.label ?? 'Vídeo visual'};
+        return {label: 'Multimedia', Icon: PlaySquare, title: item.label ?? 'Elemento multimedia'};
+    }
+    return {label: 'Elemento visual', Icon: Shapes, title: item.label ?? 'Elemento visual'};
+}
 type PublicMarkerData = { number: number; commentId: string; author: string; active: boolean; onOpen: (id: string) => void };
 
 function PublicCommentMarker({data}: NodeProps<Node<PublicMarkerData, 'comment'>>) {
@@ -111,9 +155,12 @@ function PublicCanvasNode({data, selected}: NodeProps<Node<PublicNodeData, 'publ
     if (item.type === 'collection') {
         const collectionResources = data.resources ?? [];
         const mode = item.displayMode === 'gallery' || item.displayMode === 'list' ? item.displayMode : 'stack';
-        const resourceIcon = (resource?: SharePreviewResource) => resource?.type === 'note' ? FileText
-            : resource?.type === 'link' ? ArrowUpRight : resource?.mediaType?.startsWith('image/') ? Image
-                : resource?.mediaType?.startsWith('video/') ? PlaySquare : resource?.mediaType?.startsWith('audio/') ? Music : FileText;
+        const resourceIcon = (resource?: SharePreviewResource) => {
+            const mediaType = resource?.mediaType?.toLowerCase();
+            return resource?.type === 'note' ? FileText
+                : resource?.type === 'link' ? ArrowUpRight : mediaType?.startsWith('image/') ? Image
+                    : mediaType?.startsWith('video/') ? PlaySquare : mediaType?.startsWith('audio/') ? Music : FileText;
+        };
         const row = (resource: SharePreviewResource, index: number) => {
             const Icon = resourceIcon(resource);
             return <div key={`${resource.id}-${index}`} className="flex min-w-0 items-center gap-2 rounded-md bg-surface-variant/55 px-2 py-2">
@@ -328,7 +375,10 @@ function PublicCanvas({
     const [menu, setMenu] = useState<{ x: number; y: number; target: CommentTarget } | null>(null);
     const resources = useMemo(() => new Map(data.resources.map(resource => [resource.id, resource])), [data.resources]);
     const relations = useMemo(() => new Map(data.relations.map(relation => [relation.id, relation])), [data.relations]);
-    const nodes = useMemo<(Node<PublicNodeData, 'public'> | Node<PublicMarkerData, 'comment'>)[]>(() => [
+    const nodes = useMemo<(Node<PublicNodeData, 'public'> | Node<PublicMarkerData, 'comment'>)[]>(() => {
+        const publicZIndexes = data.layout.nodes.filter(item => item.type !== 'container').map(item => item.zIndex ?? 1);
+        const publicLayerFloor = publicZIndexes.length ? Math.min(...publicZIndexes) : 0;
+        return [
         ...data.layout.nodes.map(item => ({
             id: item.id,
             type: 'public' as const,
@@ -337,9 +387,11 @@ function PublicCanvas({
                 resources: item.resourceIds?.map(id => resources.get(id)).filter((resource): resource is SharePreviewResource => Boolean(resource)),
                 onSelect, token, revision: data.revision},
             selected: selection?.kind === 'folder' ? item.type === 'folder' && selection.id === item.id : selection?.kind === 'resource' && selection.id === item.resourceId,
-            zIndex: item.zIndex ?? (item.type === 'container' ? 0 : 1),
+            zIndex: item.type === 'container' ? 0 : (item.zIndex ?? 1) - publicLayerFloor + 1,
             draggable: false,
-            connectable: false
+            connectable: false,
+            selectable: item.type !== 'container',
+            style: item.type === 'container' ? {pointerEvents: 'none' as const} : undefined
         })),
         ...comments.flatMap((comment, index) => comment.anchored && typeof comment.anchor.x === 'number' && typeof comment.anchor.y === 'number' ? [{
             id: `comment:${comment.id}`,
@@ -351,7 +403,8 @@ function PublicCanvas({
             connectable: false,
             selectable: false
         }] : []),
-    ], [comments, data.layout.nodes, data.revision, onCommentOpen, onSelect, resources, selectedCommentId, selection, token]);
+    ];
+    }, [comments, data.layout.nodes, data.revision, onCommentOpen, onSelect, resources, selectedCommentId, selection, token]);
     const edges = useMemo<Edge<PublicEdgeData, 'public'>[]>(() => data.layout.edges.map(item => {
         const relation = item.relationId ? relations.get(item.relationId) : undefined;
         return {
@@ -509,41 +562,85 @@ export function PublicSemanticList({
     onCommentTarget?: (target: CommentTarget) => void
 }) {
     const titles = new Map(resources.map(item => [item.id, item.title]));
-    const readableVisuals = visualNodes.filter(item => item.type === 'folder' || item.type === 'container' || item.type === 'annotation' || item.type === 'text');
-    return <section aria-label="Vista semántica"
-                    className="min-w-0 space-y-3 rounded-lg bg-surface-variant/55 p-4 [overflow-wrap:anywhere]">
-        <h2 className="font-semibold">Vista semántica</h2><h3 className="text-sm font-semibold">Recursos</h3>
-        {resources.length === 0 && <p>Sin recursos publicados.</p>}
-        <ul className="space-y-1">{resources.map(item => <li key={item.id} className="flex gap-1">
-            <button
-                className="min-h-11 min-w-0 flex-1 break-words rounded-md bg-background/60 px-3 py-2 text-left hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary"
-                aria-pressed={selection?.kind === 'resource' && selection.id === item.id}
-                onClick={() => onSelect({kind: 'resource', id: item.id})}>{item.title} · {item.type}</button>
-            {commentsEnabled && <button type="button"
-                                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary"
-                                        aria-label={`Comentar ${item.title}`}
-                                        onClick={() => onCommentTarget({type: 'resource', resourceId: item.id})}>
-                <MessageCircle size={17}/></button>}</li>)}</ul>
-        <h3 className="text-sm font-semibold">Relaciones</h3>{relations.length === 0 &&
-        <p>Sin relaciones publicadas.</p>}
-        <ul className="space-y-1">{relations.map(item => <li key={item.id} className="flex gap-1">
-            <button
-                className="min-h-11 min-w-0 flex-1 break-words rounded-md bg-background/60 px-3 py-2 text-left hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary"
-                aria-pressed={selection?.kind === 'relation' && selection.id === item.id} onClick={() => onSelect({
-                kind: 'relation',
-                id: item.id
-            })}>{titles.get(item.sourceResourceId)} {item.direction === 'directed' ? '→' : '↔'} {titles.get(item.targetResourceId)} · {publicRelationLabel(item)}</button>
-            {commentsEnabled && <button type="button"
-                                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary"
-                                        aria-label={`Comentar relación ${publicRelationLabel(item)}`}
-                                        onClick={() => onCommentTarget({type: 'relation', relationId: item.id})}>
-                <MessageCircle size={17}/></button>}</li>)}</ul>
-        {readableVisuals.length > 0 && <><h3 className="text-sm font-semibold">Elementos visuales</h3>
-            <ul className="space-y-1">{readableVisuals.map(item => <li key={item.id}
-                                                                       className="rounded-md bg-background/60 px-3 py-2 text-sm">{item.type === 'folder' ?
-                <button className="w-full text-left focus-visible:outline-2 focus-visible:outline-primary"
-                        onClick={() => onSelect({kind: 'folder', id: item.id})}>{item.folderName ?? 'Carpeta'} ·
-                    Carpeta</button> : item.label ?? item.text ?? (item.annotationKind === 'shape' ? 'Forma visual' : item.annotationKind === 'line' ? 'Línea visual' : 'Anotación visual')}</li>)}</ul>
-        </>}
+    const readableVisuals = visualNodes.filter(item => item.type && item.type !== 'resource');
+    return <section aria-label="Vista semántica" className="min-w-0 [overflow-wrap:anywhere]">
+        <header className="px-1 pb-4 pr-10">
+            <h2 className="text-sm font-semibold">Vista semántica</h2>
+            <p className="mt-1 text-xs text-outline">Recorre el contenido sin depender de su posición.</p>
+        </header>
+        <div className="space-y-5">
+            <section aria-labelledby="public-semantic-resources">
+                <div className="flex items-center justify-between px-2">
+                    <h3 id="public-semantic-resources" className="text-xs font-medium text-outline">Recursos</h3>
+                    <span className="text-xs tabular-nums text-outline">{resources.length}</span>
+                </div>
+                {resources.length === 0 && <p className="px-2 py-3 text-sm text-outline">No hay recursos publicados.</p>}
+                <ul className="mt-1 space-y-0.5">{resources.map(item => {
+                    const {label, Icon} = publicResourceMeta(item);
+                    const active = selection?.kind === 'resource' && selection.id === item.id;
+                    return <li key={item.id} className={`group flex min-w-0 items-center rounded-md ${active ? 'bg-surface-variant' : 'hover:bg-surface-variant/65'}`}>
+                        <button className="flex min-h-11 min-w-0 flex-1 items-center gap-2.5 rounded-md px-2.5 py-2 text-left focus-visible:outline-2 focus-visible:outline-primary"
+                                aria-label={`${item.title} · ${label}`} aria-pressed={active}
+                                onClick={() => onSelect({kind: 'resource', id: item.id})}>
+                            <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-md ${active ? 'bg-background text-on-background' : 'bg-surface-variant/70 text-outline'}`}>
+                                <Icon size={14} aria-hidden="true"/>
+                            </span>
+                            <span className="min-w-0 flex-1 truncate text-sm font-medium">{item.title}</span>
+                            <span className="shrink-0 text-xs text-outline">{label}</span>
+                        </button>
+                        {commentsEnabled && <Button size="icon" className="mr-1 h-11 w-11 shrink-0" icon={MessageCircle}
+                                                    aria-label={`Comentar ${item.title}`}
+                                                    onClick={() => onCommentTarget({type: 'resource', resourceId: item.id})}/>}
+                    </li>;
+                })}</ul>
+            </section>
+            <section aria-labelledby="public-semantic-relations">
+                <div className="flex items-center justify-between px-2">
+                    <h3 id="public-semantic-relations" className="text-xs font-medium text-outline">Relaciones</h3>
+                    <span className="text-xs tabular-nums text-outline">{relations.length}</span>
+                </div>
+                {relations.length === 0 && <p className="px-2 py-3 text-sm text-outline">No hay relaciones publicadas.</p>}
+                <ul className="mt-1 space-y-0.5">{relations.map(item => {
+                    const source = titles.get(item.sourceResourceId) ?? 'Recurso no disponible';
+                    const target = titles.get(item.targetResourceId) ?? 'Recurso no disponible';
+                    const label = publicRelationLabel(item);
+                    const active = selection?.kind === 'relation' && selection.id === item.id;
+                    const DirectionIcon = item.direction === 'directed' ? ArrowRight : ArrowLeftRight;
+                    return <li key={item.id} className={`group flex min-w-0 items-center rounded-md ${active ? 'bg-surface-variant' : 'hover:bg-surface-variant/65'}`}>
+                        <button className="flex min-h-12 min-w-0 flex-1 items-center gap-2.5 rounded-md px-2.5 py-2 text-left focus-visible:outline-2 focus-visible:outline-primary"
+                                aria-label={`${source} ${item.direction === 'directed' ? 'hacia' : 'con'} ${target} · ${label}`}
+                                aria-pressed={active} onClick={() => onSelect({kind: 'relation', id: item.id})}>
+                            <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-md ${active ? 'bg-background text-on-background' : 'bg-surface-variant/70 text-outline'}`}>
+                                <DirectionIcon size={14} aria-hidden="true"/>
+                            </span>
+                            <span className="min-w-0 flex-1">
+                                <span className="block truncate text-sm font-medium">{source} {item.direction === 'directed' ? '→' : '↔'} {target}</span>
+                                <span className="block truncate text-xs text-outline">{label}</span>
+                            </span>
+                        </button>
+                        {commentsEnabled && <Button size="icon" className="mr-1 h-11 w-11 shrink-0" icon={MessageCircle}
+                                                    aria-label={`Comentar relación ${label}`}
+                                                    onClick={() => onCommentTarget({type: 'relation', relationId: item.id})}/>}
+                    </li>;
+                })}</ul>
+            </section>
+            {readableVisuals.length > 0 && <section aria-labelledby="public-semantic-visuals">
+                <div className="flex items-center justify-between px-2">
+                    <h3 id="public-semantic-visuals" className="text-xs font-medium text-outline">Elementos visuales</h3>
+                    <span className="text-xs tabular-nums text-outline">{readableVisuals.length}</span>
+                </div>
+                <ul className="mt-1 space-y-0.5">{readableVisuals.map(item => {
+                    const {label, Icon, title} = publicVisualMeta(item);
+                    const content = <><span className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-surface-variant/70 text-outline"><Icon size={14} aria-hidden="true"/></span>
+                        <span className="min-w-0 flex-1 truncate text-sm">{title}</span><span className="shrink-0 text-xs text-outline">{label}</span></>;
+                    const active = item.type === 'folder' && selection?.kind === 'folder' && selection.id === item.id;
+                    return <li key={item.id}>{item.type === 'folder' ?
+                        <button className={`flex min-h-11 w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left focus-visible:outline-2 focus-visible:outline-primary ${active ? 'bg-surface-variant' : 'hover:bg-surface-variant/65'}`}
+                                aria-label={`${title} · ${label}`} aria-pressed={active}
+                                onClick={() => onSelect({kind: 'folder', id: item.id})}>{content}</button> :
+                        <div aria-label={`${title} · ${label}`} className="flex min-h-11 items-center gap-2.5 px-2.5 py-2">{content}</div>}</li>;
+                })}</ul>
+            </section>}
+        </div>
     </section>;
 }

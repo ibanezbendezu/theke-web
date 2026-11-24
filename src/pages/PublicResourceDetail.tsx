@@ -31,7 +31,7 @@ export function PublicResourceDetail({resource, token}: { resource: SharePreview
         {resource.content && <p className="whitespace-pre-wrap">{resource.content}</p>}
         {resource.type === 'link' && (externalUrl
             ? <a href={externalUrl} target="_blank" rel="noopener noreferrer"
-                 className="underline focus-visible:outline-2 focus-visible:outline-primary">Abrir enlace</a>
+                 className="inline-flex min-h-11 items-center rounded-md bg-surface-variant px-3 py-2 underline focus-visible:outline-2 focus-visible:outline-primary">Abrir enlace</a>
             : <p>Este enlace no tiene una dirección web compatible.</p>)}
         {resource.mediaType && <p>Formato: {resource.mediaType}</p>}
         {resource.accessibilityText && <p className="whitespace-pre-wrap">{resource.accessibilityText}</p>}

@@ -34,7 +34,7 @@ function PublicShareView({token}: { token: string | undefined }) {
     } | null>(null);
     const [selection, setSelection] = useState<PublicSelection>(null);
     const [semanticOpen, setSemanticOpen] = useState(false);
-    const [detailsOpen, setDetailsOpen] = useState(true);
+    const [detailsOpen, setDetailsOpen] = useState(false);
     const [optionsOpen, setOptionsOpen] = useState(false);
     const [commentsOpen, setCommentsOpen] = useState(() => searchParams.get('comments') === '1');
     const [commentMode, setCommentMode] = useState(false);
@@ -165,8 +165,8 @@ function PublicShareView({token}: { token: string | undefined }) {
                     <Button ref={semanticButton} size="icon" className="h-10 w-10" icon={ListTree}
                             aria-label={showSemantic ? 'Ocultar vista semántica' : 'Mostrar vista semántica'}
                             aria-expanded={showSemantic} onClick={() => setSemanticOpen(value => !value)}/>
-                    {!detailsOpen &&
-                        <Button size="icon" className="h-10 w-10" icon={PanelRightOpen} aria-label="Mostrar detalles"
+                    {selection && !detailsOpen &&
+                        <Button size="icon" className="h-11 w-11" icon={PanelRightOpen} aria-label="Mostrar detalles"
                                 onClick={() => setDetailsOpen(true)}/>}
                     <Button ref={optionsButton} size="icon" className="h-10 w-10" icon={MoreHorizontal}
                             aria-label="Opciones del mapa" aria-expanded={optionsOpen}
@@ -183,11 +183,11 @@ function PublicShareView({token}: { token: string | undefined }) {
                 <p role="status" className="absolute left-3 top-20 z-40 rounded-lg bg-surface px-3 py-2 text-xs">Elige
                     un punto, recurso o relación para comentar.</p>}
             {showSemantic && <aside
-                className="public-share-surface absolute bottom-3 left-3 top-20 z-40 w-[min(22rem,calc(100%-1.5rem))] overflow-auto rounded-xl bg-surface/95 p-3 backdrop-blur-md"
+                className="public-share-surface absolute bottom-3 left-3 top-20 z-40 w-[min(20rem,calc(100%-1.5rem))] overflow-auto rounded-xl bg-surface/95 p-3 backdrop-blur-md"
                 aria-label="Panel de vista semántica">
-                <div className="mb-2 flex justify-end">{data.layout.nodes.length > 0 &&
-                    <Button size="icon" className="h-9 w-9" icon={X} aria-label="Cerrar vista semántica"
-                            onClick={() => setSemanticOpen(false)}/>}</div>
+                {data.layout.nodes.length > 0 &&
+                    <Button size="icon" className="absolute right-3 top-3 z-10 h-9 w-9" icon={X} aria-label="Cerrar vista semántica"
+                            onClick={() => setSemanticOpen(false)}/>}
                 <PublicSemanticList resources={data.resources} relations={data.relations}
                                     visualNodes={data.layout.nodes} selection={selection} onSelect={select}
                                     commentsEnabled={data.commentsEnabled} onCommentTarget={chooseCommentTarget}/>
@@ -209,7 +209,7 @@ function PublicShareView({token}: { token: string | undefined }) {
                                aria-label="Detalles del mapa"
                                className={`${selection ? 'fixed inset-x-0 bottom-0 z-[80] max-h-[82dvh] overflow-y-auto rounded-t-xl bg-background p-4 md:inset-y-0 md:left-auto md:w-[min(24rem,100vw)] md:max-h-none md:rounded-none' : 'hidden'} min-w-0 space-y-3 outline-offset-2 focus-visible:outline-2 focus-visible:outline-primary lg:relative lg:inset-auto lg:z-0 lg:block lg:h-full lg:w-[304px] lg:shrink-0 lg:overflow-y-auto lg:rounded-none lg:bg-surface-variant/35 lg:p-4 [overflow-wrap:anywhere]`}>
             <div className="flex items-center justify-between"><h2 className="text-sm font-semibold">Detalles</h2>
-                <Button size="icon" className="h-9 w-9" icon={PanelRightClose}
+                <Button size="icon" className="h-11 w-11" icon={PanelRightClose}
                         aria-label={selection ? 'Cerrar detalle' : 'Ocultar detalles'} onClick={closeInspector}/></div>
             {!selectedResource && !selectedRelation && !selectedFolder &&
                 <p className="text-sm text-outline">Selecciona un recurso o una relación para ver sus detalles.</p>}
