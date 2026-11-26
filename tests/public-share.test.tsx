@@ -67,7 +67,8 @@ it('muestra el nombre público del tipo personalizado en lugar de su clave inter
 it('abre el compositor desde el menú contextual y localiza comentarios sobre el Canvas', async () => {
   vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
   const comment = { id: 'comment-1', displayName: 'Ana', content: 'Revisar esta fuente', createdAt: new Date().toISOString(), editable: false, anchored: true, anchor: { type: 'resource', resourceId: 'one', label: 'Fuente', x: 40, y: 50 } };
-  commentsFetchMock.mockResolvedValue({ok: true, status: 200, text: async () => JSON.stringify({data: {identity: null, csrfToken: null, comments: [comment]}})});
+  const second = {...comment, id: 'comment-2', displayName: 'Luis', content: 'Otra observación'};
+  commentsFetchMock.mockResolvedValue({ok: true, status: 200, text: async () => JSON.stringify({data: {identity: null, csrfToken: null, comments: [comment, second]}})});
   fetchMock.mockImplementation(async () => ({ ok: true, status: 200, text: async () => JSON.stringify({ data: {
     diagramName: 'Mapa con comentarios', revision: 1, commentsEnabled: true, layout: { nodes: [{ id: 'node-one', type: 'resource', resourceId: 'one', x: 0, y: 0, width: 200, height: 100 }], edges: [] },
     resources: [{ id: 'one', title: 'Fuente', type: 'note', content: 'Texto', description: null, url: null, mediaType: null, accessibilityText: null }], relations: [],
@@ -87,8 +88,20 @@ it('abre el compositor desde el menú contextual y localiza comentarios sobre el
   expect(marker).not.toBeNull();
   expect(marker).toHaveAttribute('aria-label', 'Abrir comentario 1 de Ana');
   expect(marker?.textContent).toContain('Ana');
+  fireEvent.click(screen.getByRole('button', {name: 'Cerrar comentarios'}));
+  expect(screen.queryByRole('dialog', {name: 'Comentarios del mapa'})).not.toBeInTheDocument();
   fireEvent.click(marker!);
-  expect(screen.getByText('Revisar esta fuente')).toBeInTheDocument();
+  expect(screen.getByRole('dialog', {name: 'Comentarios del mapa'})).toBeInTheDocument();
+  const otherMarker = screen.getByLabelText('Diagrama público').querySelector('[data-id="comment:comment-2"] button');
+  expect(marker).toHaveAttribute('aria-pressed', 'true');
+  expect(otherMarker).toHaveAttribute('aria-pressed', 'false');
+  expect(otherMarker?.closest<HTMLElement>('.react-flow__node')?.style.transform)
+    .not.toBe(marker?.closest<HTMLElement>('.react-flow__node')?.style.transform);
+  expect(screen.getByText('Revisar esta fuente').closest('li')).toHaveClass('ring-primary');
+  fireEvent.click(screen.getByRole('button', {name: 'Cerrar comentarios'}));
+  fireEvent.click(screen.getByRole('button', {name: 'Añadir comentario'}));
+  fireEvent.click(screen.getByRole('button', {name: 'Comentar el centro de la vista'}));
+  expect(screen.getByRole('dialog', {name: 'Comentarios del mapa'})).toHaveTextContent('Sobre: Punto del mapa');
 });
 
 it('carga marcadores públicos aunque Clerk aún no haya resuelto la sesión', async () => {

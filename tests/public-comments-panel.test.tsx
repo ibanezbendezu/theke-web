@@ -70,6 +70,44 @@ it('publica con anclaje de Recurso y recupera un borrador local tras cerrar', as
   expect(JSON.parse(fetchMock.mock.calls.find(([, options]) => options?.method === 'POST')?.[1]?.body as string).anchor).toEqual(target);
 });
 
+it('conserva el texto y el anclaje tras un límite de frecuencia y los reenvía al reintentar', async () => {
+  const target = {type: 'relation' as const, relationId: 'relation-1'};
+  const payload = {content: 'Una observación sobre el vínculo', anchor: target};
+  const created = {id: 'new-1', displayName: 'Lynx lynx', content: payload.content, anchor: target};
+  fetchMock.mockResolvedValueOnce(reply({identity: null, csrfToken: null, comments: []}))
+    .mockResolvedValueOnce({ok: false, status: 429, statusText: 'Too Many Requests', headers: {get: () => null},
+      text: async () => JSON.stringify({error: {code: 'TOO_MANY_REQUESTS', message: 'Límite'}})})
+    .mockResolvedValueOnce(reply(created))
+    .mockResolvedValueOnce(reply({identity: {displayName: 'Lynx lynx'}, csrfToken: 'csrf', comments: [created]}));
+  const onTargetChange = vi.fn();
+  render(<PublicCommentsPanel token="retry-map" enabled open onClose={() => {}} target={target} targetLabel="Sustenta" onTargetChange={onTargetChange}/>);
+  await screen.findByText('Todavía no hay comentarios.');
+  const field = screen.getByRole('textbox', {name: 'Comentario'});
+  fireEvent.change(field, {target: {value: payload.content}});
+  fireEvent.click(screen.getByRole('button', {name: 'Publicar comentario'}));
+  expect(await screen.findByRole('alert')).toHaveTextContent('Se alcanzó el límite');
+  expect(field).toHaveValue(payload.content);
+  expect(screen.getByText('Sobre: Sustenta')).toBeInTheDocument();
+  expect(onTargetChange).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button', {name: 'Publicar comentario'}));
+  await waitFor(() => expect(onTargetChange).toHaveBeenCalledWith(null));
+  const posts = fetchMock.mock.calls.filter(([, options]) => options?.method === 'POST');
+  expect(posts.map(([, options]) => JSON.parse(options.body))).toEqual([payload, payload]);
+});
+
+it('no recupera un borrador que el visitante dejó vacío', async () => {
+  fetchMock.mockResolvedValue(reply({identity: null, csrfToken: null, comments: []}));
+  const panel = <PublicCommentsPanel token="clear-map" enabled open onClose={() => {}}/>;
+  const view = render(panel);
+  await screen.findByText('Todavía no hay comentarios.');
+  const field = screen.getByRole('textbox', {name: 'Comentario'});
+  fireEvent.change(field, {target: {value: 'Borrador'}});
+  fireEvent.change(field, {target: {value: ''}});
+  view.unmount();
+  render(panel);
+  expect(screen.queryByText('Hay un borrador sin publicar.')).not.toBeInTheDocument();
+});
+
 it('edita solo un comentario propio sin cambiar el anclaje ni crear otro', async () => {
   const own = { id: 'own-1', displayName: 'Ana', content: 'Texto inicial', createdAt: new Date().toISOString(), editedAt: null, revision: 1, editable: true, anchor: { type: 'resource', resourceId: 'resource-1', label: 'Fuente', x: 10, y: 20 } };
   const other = { ...own, id: 'other-1', displayName: 'Luis', content: 'Comentario ajeno', editable: false };

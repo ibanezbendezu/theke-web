@@ -49,3 +49,15 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-6-1-adoptar-una-identidad-anonima-para-comentar.md`
   summary: Aplicar validación runtime coherente con `additionalProperties: false` a los cuerpos del API.
   evidence: Crear y editar comentarios ignoran propiedades extra; la solución correcta es transversal mediante DTO o una política global, no un guard aislado.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-2-anadir-un-comentario-contextual.md`
+  summary: Revisar la reubicación y recuperación de anclajes al republicar un mapa en la historia 6.5.
+  evidence: Una republicación puede mover un destino sin actualizar sus coordenadas o volver a incluirlo sin reactivar un marcador huérfano.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-2-anadir-un-comentario-contextual.md`
+  summary: Conservar continuidad de paginación si se retira el comentario que sirve de cursor en la historia 6.5.
+  evidence: El cursor público referencia una fila visible. Si se retira antes de pedir la página siguiente, la subconsulta queda sin fila y no devuelve los comentarios anteriores.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-2-anadir-un-comentario-contextual.md`
+  summary: Definir cómo tratar un borrador al seleccionar otro destino de comentario.
+  evidence: El destino actual se muestra en el compositor. El texto anterior permanece en el campo tras cambiar de destino, por lo que hay que decidir si confirmar la reasignación o almacenar borradores por destino.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-2-anadir-un-comentario-contextual.md`
+  summary: Validar en escritorio y móvil el comentario sobre una Relación y su marcador en un Compartido real.
+  evidence: PostgreSQL comprueba los anclajes y la geometría publicada. Las pruebas web focalizadas no miden la arista renderizada ni ejercitan el clic sobre su botón.

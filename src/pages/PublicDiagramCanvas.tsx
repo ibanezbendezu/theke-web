@@ -1,4 +1,4 @@
-import {useMemo, useState} from 'react';
+import {useCallback, useMemo, useRef, useState} from 'react';
 import {
     BaseEdge,
     EdgeLabelRenderer,
@@ -61,8 +61,11 @@ type PublicEdgeData = {
     offsetX?: number;
     offsetY?: number;
     relationId?: string;
+    commenting: boolean;
+    onContextMenu: (event: CommentMenuEvent) => void;
     onSelect: (value: PublicSelection) => void
 };
+type CommentMenuEvent = {preventDefault(): void; clientX: number; clientY: number};
 
 function publicResourceMeta(resource: SharePreviewResource) {
     const mediaType = resource.mediaType?.toLowerCase();
@@ -113,10 +116,12 @@ function PublicCommentMarker({data}: NodeProps<Node<PublicMarkerData, 'comment'>
     </button>;
 }
 
-function CanvasButtons() {
+function CanvasButtons({onCommentCenter}: { onCommentCenter?: () => void }) {
     const {zoomIn, zoomOut, fitView} = useReactFlow();
     return <nav className="public-share-surface absolute bottom-3 right-3 z-30 flex gap-0.5 rounded-lg bg-surface/90 p-1 backdrop-blur-md"
                 aria-label="Controles del diagrama">
+        {onCommentCenter && <Button size="icon" className="h-11 w-11" icon={MessageCircle}
+                                    aria-label="Comentar el centro de la vista" onClick={onCommentCenter}/>}
         <Button size="icon" className="h-11 w-11" icon={ZoomOut} aria-label="Alejar"
                 onClick={() => void zoomOut({duration: 0})}/>
         <Button size="icon" className="h-11 w-11" icon={ZoomIn} aria-label="Acercar"
@@ -329,7 +334,8 @@ function PublicCanvasEdge({
             <button type="button"
                     className="nodrag nopan absolute flex h-8 w-8 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                     style={{left: labelX, top: labelY, transform: 'translate(-50%, -50%)', pointerEvents: 'all'}}
-                    aria-label={`Ver relación ${data.label}`}
+                    aria-label={`${data.commenting ? 'Comentar relación' : 'Ver relación'} ${data.label}`}
+                    onContextMenu={data.onContextMenu}
                     onFocus={() => setHovered(true)} onBlur={() => setHovered(false)}
                     onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
                     onClick={() => data.relationId && data.onSelect({
@@ -372,12 +378,34 @@ function PublicCanvas({
     onCommentOpen: (id: string) => void
 }) {
     const {screenToFlowPosition} = useReactFlow();
-    const [menu, setMenu] = useState<{ x: number; y: number; target: CommentTarget } | null>(null);
+    const canvasRef = useRef<HTMLDivElement>(null);
+    const [menu, setMenu] = useState<{ x: number; y: number; target: CommentTarget; trigger: HTMLElement | null } | null>(null);
     const resources = useMemo(() => new Map(data.resources.map(resource => [resource.id, resource])), [data.resources]);
     const relations = useMemo(() => new Map(data.relations.map(relation => [relation.id, relation])), [data.relations]);
+    const commenting = commentMode && commentsEnabled;
+    const selectOnCanvas = useCallback((value: PublicSelection) => {
+        if (commenting && value?.kind === 'relation') onCommentTarget({type: 'relation', relationId: value.id});
+        else if (commenting && value?.kind === 'resource') onCommentTarget({type: 'resource', resourceId: value.id});
+        else onSelect(value);
+    }, [commenting, onCommentTarget, onSelect]);
+    const pointAt = useCallback((clientX: number, clientY: number): CommentTarget => ({
+        type: 'diagram', ...screenToFlowPosition({x: clientX, y: clientY})
+    }), [screenToFlowPosition]);
+    const showMenu = useCallback((event: CommentMenuEvent, target: CommentTarget) => {
+        if (!commentsEnabled) return;
+        event.preventDefault();
+        setMenu({
+            x: Math.max(8, Math.min(event.clientX, window.innerWidth - 180)),
+            y: Math.max(8, Math.min(event.clientY, window.innerHeight - 56)),
+            target,
+            trigger: document.activeElement instanceof HTMLElement ? document.activeElement : null
+        });
+    }, [commentsEnabled]);
     const nodes = useMemo<(Node<PublicNodeData, 'public'> | Node<PublicMarkerData, 'comment'>)[]>(() => {
         const publicZIndexes = data.layout.nodes.filter(item => item.type !== 'container').map(item => item.zIndex ?? 1);
         const publicLayerFloor = publicZIndexes.length ? Math.min(...publicZIndexes) : 0;
+        const markerLayer = publicZIndexes.length ? Math.max(...publicZIndexes) - publicLayerFloor + 2 : 1;
+        const markersByPoint = new Map<string, number>();
         return [
         ...data.layout.nodes.map(item => ({
             id: item.id,
@@ -385,7 +413,7 @@ function PublicCanvas({
             position: {x: item.x, y: item.y},
             data: {item, resource: item.resourceId ? resources.get(item.resourceId) : undefined,
                 resources: item.resourceIds?.map(id => resources.get(id)).filter((resource): resource is SharePreviewResource => Boolean(resource)),
-                onSelect, token, revision: data.revision},
+                onSelect: selectOnCanvas, token, revision: data.revision},
             selected: selection?.kind === 'folder' ? item.type === 'folder' && selection.id === item.id : selection?.kind === 'resource' && selection.id === item.resourceId,
             zIndex: item.type === 'container' ? 0 : (item.zIndex ?? 1) - publicLayerFloor + 1,
             draggable: false,
@@ -393,18 +421,25 @@ function PublicCanvas({
             selectable: item.type !== 'container',
             style: item.type === 'container' ? {pointerEvents: 'none' as const} : undefined
         })),
-        ...comments.flatMap((comment, index) => comment.anchored && typeof comment.anchor.x === 'number' && typeof comment.anchor.y === 'number' ? [{
+        ...comments.flatMap((comment, index) => {
+            const {x, y} = comment.anchor;
+            if (!comment.anchored || typeof x !== 'number' || typeof y !== 'number') return [];
+            const point = `${x}:${y}`;
+            const offset = markersByPoint.get(point) ?? 0;
+            markersByPoint.set(point, offset + 1);
+            return [{
             id: `comment:${comment.id}`,
             type: 'comment' as const,
-            position: {x: comment.anchor.x, y: comment.anchor.y},
+            position: {x, y: y + offset * 36},
             data: {number: index + 1, commentId: comment.id, author: comment.displayName, active: comment.id === selectedCommentId, onOpen: onCommentOpen},
-            zIndex: 10,
+            zIndex: markerLayer,
             draggable: false,
             connectable: false,
             selectable: false
-        }] : []),
+            }];
+        }),
     ];
-    }, [comments, data.layout.nodes, data.revision, onCommentOpen, onSelect, resources, selectedCommentId, selection, token]);
+    }, [comments, data.layout.nodes, data.revision, onCommentOpen, selectOnCanvas, resources, selectedCommentId, selection, token]);
     const edges = useMemo<Edge<PublicEdgeData, 'public'>[]>(() => data.layout.edges.map(item => {
         const relation = item.relationId ? relations.get(item.relationId) : undefined;
         return {
@@ -420,7 +455,11 @@ function PublicCanvas({
                 offsetX: item.offsetX,
                 offsetY: item.offsetY,
                 relationId: item.relationId,
-                onSelect
+                commenting,
+                onContextMenu: event => showMenu(event, item.relationId
+                    ? {type: 'relation', relationId: item.relationId}
+                    : pointAt(event.clientX, event.clientY)),
+                onSelect: selectOnCanvas
             },
             selected: selection?.kind === 'relation' && selection.id === item.relationId,
             markerEnd: relation?.direction === 'directed' ? {
@@ -428,26 +467,12 @@ function PublicCanvas({
                 color: 'var(--color-outline)'
             } : undefined
         };
-    }), [data.layout.edges, onSelect, relations, selection]);
+    }), [commenting, data.layout.edges, pointAt, relations, selection, selectOnCanvas, showMenu]);
     const background = data.layout.background ?? {variant: 'dots', tone: 'default'};
     if (data.layout.nodes.length === 0) return <div
         className="flex h-full items-center justify-center text-sm text-outline">Esta publicación no incluye elementos
         visuales. Usa la vista semántica para recorrer el contenido.</div>;
-    const pointAt = (clientX: number, clientY: number): CommentTarget => ({
-        type: 'diagram', ...screenToFlowPosition({
-            x: clientX,
-            y: clientY
-        })
-    });
-    const showMenu = (event: { preventDefault(): void; clientX: number; clientY: number }, target: CommentTarget) => {
-        event.preventDefault();
-        if (commentsEnabled) setMenu({
-            x: Math.max(8, Math.min(event.clientX, window.innerWidth - 180)),
-            y: Math.max(8, Math.min(event.clientY, window.innerHeight - 56)),
-            target
-        });
-    };
-    return <><ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes} fitView
+    return <><ReactFlow ref={canvasRef} nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes} fitView
                         fitViewOptions={{padding: 0.2}} minZoom={0.1} maxZoom={2} proOptions={{hideAttribution: true}}
                         nodesDraggable={false} nodesConnectable={false} selectionOnDrag={false} deleteKeyCode={null}
                         onlyRenderVisibleElements className="bg-background"
@@ -469,14 +494,14 @@ function PublicCanvas({
                             type: 'relation',
                             relationId: edge.data.relationId
                         } : pointAt(event.clientX, event.clientY))}
-                        onNodeClick={(_, node) => {
+                        onNodeClick={(event, node) => {
                             if (node.type === 'comment') return;
                             const item = node.data.item;
                             if (commentMode && commentsEnabled) {
                                 onCommentTarget(item.resourceId ? {
                                     type: 'resource',
                                     resourceId: item.resourceId
-                                } : {type: 'diagram', x: item.x, y: item.y});
+                                } : pointAt(event.clientX, event.clientY));
                                 return;
                             }
                             if (item.resourceId) onSelect({
@@ -493,10 +518,18 @@ function PublicCanvas({
                             }
                         }}>
         <CanvasBackgroundPattern variant={background.variant}/>
-    </ReactFlow><CanvasButtons/>{menu &&
+    </ReactFlow><CanvasButtons onCommentCenter={commenting ? () => {
+        const bounds = canvasRef.current?.getBoundingClientRect();
+        if (bounds) onCommentTarget(pointAt(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2));
+    } : undefined}/>{menu &&
         <div className={`public-share-surface fixed z-[60] min-w-40 ${contextMenuSurfaceClass}`}
-             style={{left: menu.x, top: menu.y}} role="menu">
-            <button type="button" role="menuitem"
+             style={{left: menu.x, top: menu.y}} role="menu" onKeyDown={event => {
+                if (event.key !== 'Escape') return;
+                event.stopPropagation();
+                setMenu(null);
+                menu.trigger?.focus();
+            }}>
+            <button type="button" role="menuitem" autoFocus
                     className={contextMenuItemClass}
                     onClick={() => {
                         onCommentTarget(menu.target);

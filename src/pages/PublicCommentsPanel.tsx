@@ -63,9 +63,9 @@ export function PublicCommentsPanel({
     const draftKey = `theke:comment-draft:${token}`;
 
     const saveDraft = (value: Draft) => {
-        if (!value.content.trim()) return;
         try {
-            sessionStorage.setItem(draftKey, JSON.stringify(value));
+            if (value.content.trim()) sessionStorage.setItem(draftKey, JSON.stringify(value));
+            else sessionStorage.removeItem(draftKey);
         } catch { /* The in-memory text remains available. */
         }
     };
@@ -82,10 +82,17 @@ export function PublicCommentsPanel({
         }
         if (open && !wasOpen.current) {
             returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-            requestAnimationFrame(() => textareaRef.current?.focus());
         }
         wasOpen.current = open;
     }, [open, content, target, draftKey, editing]);
+    useEffect(() => {
+        if (!open) return;
+        const frame = requestAnimationFrame(() => {
+            const selected = selectedCommentId && document.getElementById(`public-comment-${selectedCommentId}`);
+            (selected || textareaRef.current || panelRef.current)?.focus();
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [open, selectedCommentId]);
     useEffect(() => {
         if (!token) return;
         const controller = new AbortController();
@@ -131,7 +138,6 @@ export function PublicCommentsPanel({
             }
             if (!controller.signal.aborted) {
                 setData({...firstPage, comments, nextCursor});
-                onCommentsChange(comments);
                 setLoadError(false);
             }
         };
@@ -139,7 +145,11 @@ export function PublicCommentsPanel({
             if (!controller.signal.aborted) setLoadError(true);
         });
         return () => controller.abort();
-    }, [token, retry, pageCount, onCommentsChange, authLoaded, isSignedIn, getToken]);
+    }, [token, retry, pageCount, authLoaded, isSignedIn, getToken]);
+    const loadedComments = data?.comments;
+    useEffect(() => {
+        if (loadedComments) onCommentsChange(loadedComments);
+    }, [loadedComments, onCommentsChange]);
     useEffect(() => {
         const timer = window.setInterval(() => setRetry(value => value + 1), 20_000);
         return () => window.clearInterval(timer);
@@ -151,12 +161,11 @@ export function PublicCommentsPanel({
     const recoverDraft = () => {
         try {
             const saved = JSON.parse(sessionStorage.getItem(draftKey) ?? 'null') as Draft | null;
-            if (saved && typeof saved.content === 'string' && saved.content.length <= 5000) {
+            if (saved && typeof saved.content === 'string' && [...saved.content].length <= 5000) {
                 setContent(saved.content);
                 onTargetChange(saved.target);
                 textareaRef.current?.focus();
             }
-            sessionStorage.removeItem(draftKey);
         } catch { /* Keep the current composer usable. */
         }
         setDraftAvailable(false);
@@ -201,7 +210,7 @@ export function PublicCommentsPanel({
         event.preventDefault();
         if (!data || busy || loadError || (!isSignedIn && (data.identity || editing) && !data.csrfToken)) return;
         const nextContent = content.trim();
-        const invalidContent = !nextContent || nextContent.length > 5000;
+        const invalidContent = !nextContent || [...nextContent].length > 5000;
         setContentError(invalidContent ? 'Escribe un comentario de hasta 5.000 caracteres.' : '');
         if (invalidContent) return;
         setBusy(true);
@@ -221,9 +230,9 @@ export function PublicCommentsPanel({
                     headers,
                     body: JSON.stringify({content: nextContent, expectedRevision: editing.revision}),
                 });
-                const next = data.comments.map(comment => comment.id === editing.id ? result.data.data : comment);
-                setData(current => current ? {...current, comments: next} : current);
-                onCommentsChange(next);
+                setData(current => current ? {...current, comments: current.comments.map(comment =>
+                    comment.id === editing.id && comment.revision < result.data.data.revision ? result.data.data : comment
+                )} : current);
                 setAnnouncement('Comentario actualizado.');
                 setEditing(null);
                 setConflict(null);
@@ -239,30 +248,16 @@ export function PublicCommentsPanel({
                 headers,
                 body: JSON.stringify({content: nextContent, ...(target ? {anchor: target} : {})}),
             });
-            const next = [result.data.data, ...data.comments];
-            setPageCount(1);
             setContent('');
-            onCommentsChange(next);
+            onTargetChange(null);
             setAnnouncement('Comentario publicado.');
             discardDraft();
             setData(current => current ? {
                 ...current,
                 identity: {displayName: result.data.data.displayName},
-                comments: next
+                comments: [result.data.data, ...current.comments.filter(comment => comment.id !== result.data.data.id)]
             } : current);
-            try {
-                const refreshed = await thekeFetch<{
-                    data: { data: CommentsData }
-                }>(`/v1/public/shares/${encodeURIComponent(token)}/comments`, {
-                    credentials: 'include',
-                    headers: bearer ? {Authorization: `Bearer ${bearer}`} : undefined,
-                    cache: 'no-store'
-                });
-                setData(refreshed.data.data);
-                onCommentsChange(refreshed.data.data.comments);
-            } catch {
-                setLoadError(true);
-            }
+            setRetry(value => value + 1);
         } catch (error) {
             const current = editing && error instanceof ApiError && error.status === 409 ? conflictFrom(error.payload.error.details) : null;
             if (current) {
@@ -283,9 +278,9 @@ export function PublicCommentsPanel({
             return;
         }
         if (event.key !== 'Tab') return;
-        const items = [...(panelRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),textarea:not(:disabled),[tabindex="0"]') ?? [])].filter(item => item.offsetParent !== null);
+        const items = [...(panelRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),[tabindex="0"]') ?? [])].filter(item => item.offsetParent !== null);
         if (!items.length) return;
-        if (event.shiftKey && document.activeElement === items[0]) {
+        if (event.shiftKey && (document.activeElement === items[0] || document.activeElement === panelRef.current)) {
             event.preventDefault();
             items.at(-1)?.focus();
         }
@@ -295,7 +290,8 @@ export function PublicCommentsPanel({
         }
     };
 
-    return <aside ref={panelRef} role="dialog" aria-modal={open} aria-label="Comentarios del mapa" onKeyDown={onKeyDown}
+    return <aside ref={panelRef} tabIndex={-1} role="dialog" aria-modal={open} aria-hidden={!open}
+                  aria-label="Comentarios del mapa" onKeyDown={onKeyDown}
                   className={`${open ? 'flex' : 'hidden'} absolute inset-x-0 bottom-0 top-[16dvh] z-50 min-w-0 flex-col overflow-hidden rounded-t-xl bg-surface/95 text-on-background sm:inset-x-3 sm:bottom-3 sm:top-20 sm:left-auto sm:w-[min(23rem,calc(100%-1.5rem))] sm:rounded-xl`}>
         <div className="flex items-center justify-between px-4 py-3"><h2
             className="text-sm font-semibold">Comentarios</h2><Button size="icon" icon={X}
@@ -317,7 +313,7 @@ export function PublicCommentsPanel({
                         firmar mis comentarios</a>}</div>
                 {!data.comments.length && <p className="text-outline">Todavía no hay comentarios.</p>}
                 <ol className="space-y-3">{data.comments.map((comment, index) => <li id={`public-comment-${comment.id}`}
-                                                                                     key={comment.id}
+                                                                                     key={comment.id} tabIndex={-1}
                                                                                      className={`rounded-lg bg-surface-variant/60 p-3 ${selectedCommentId === comment.id ? 'ring-2 ring-primary' : ''}`}>
                     <div className="flex items-center justify-between gap-2"><strong
                         className="truncate text-xs font-medium">{comment.displayName}</strong><span
@@ -344,9 +340,13 @@ export function PublicCommentsPanel({
                 <p className="text-xs font-medium">{editing ? 'Editando · ' : 'Sobre: '}{editing ? anchorLabel(editing.anchor) : targetLabel ?? anchorLabel(target)}</p>
                 <div><label htmlFor="comment-text" className="text-xs font-medium">Comentario</label><textarea
                     ref={textareaRef} id="comment-text" value={content} onChange={event => {
-                    setContent(event.target.value);
-                    if (!editing) saveDraft({name: '', content: event.target.value, target});
-                }} maxLength={5001} rows={3} aria-invalid={Boolean(contentError)}
+                    const value = event.target.value;
+                    setContent(value);
+                    if (!editing) {
+                        saveDraft({name: '', content: value, target});
+                        setDraftAvailable(false);
+                    }
+                }} maxLength={10002} readOnly={busy} rows={3} aria-invalid={Boolean(contentError)}
                     aria-describedby={contentError ? 'comment-text-error' : undefined}
                     className="mt-1.5 w-full resize-y rounded-md border-0 bg-surface-variant px-3 py-2 text-sm outline-none focus-visible:outline-2 focus-visible:outline-primary"
                     placeholder="Escribe tu comentario…"/>{contentError && <p id="comment-text-error"
