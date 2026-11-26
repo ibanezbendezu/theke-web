@@ -481,11 +481,13 @@ function PublicCanvas({
     return <><ReactFlow ref={canvasRef} nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes} fitView
                         fitViewOptions={{padding: 0.2}} minZoom={0.1} maxZoom={2} proOptions={{hideAttribution: true}}
                         nodesDraggable={false} nodesConnectable={false} selectionOnDrag={false} deleteKeyCode={null}
+                        zoomOnDoubleClick={false}
                         onlyRenderVisibleElements className="bg-background"
                         style={{backgroundColor: background.tone === 'surface' ? 'var(--color-surface)' : 'var(--color-background)'}}
                         onPaneClick={event => {
                             setMenu(null);
                             if (commentMode && commentsEnabled) onCommentTarget(pointAt(event.clientX, event.clientY));
+                            else onSelect(null);
                         }}
                         onPaneContextMenu={event => showMenu(event, pointAt(event.clientX, event.clientY))}
                         onNodeContextMenu={(event, node) => {

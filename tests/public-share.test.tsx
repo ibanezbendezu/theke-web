@@ -283,6 +283,15 @@ it('monta el Canvas público con controles de zoom cuando hay posiciones publica
   fireEvent.click(diagram.querySelector('[data-id="r0"]')!);
   fireEvent.click(screen.getByRole('button', {name: 'Ver contexto'}));
   expect(screen.getByLabelText('Detalles del mapa')).toHaveTextContent('Lectura');
+  fireEvent.click(diagram.querySelector('.react-flow__pane')!);
+  expect(screen.queryByLabelText('Detalles del mapa')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', {name: 'Ver contexto'})).not.toBeInTheDocument();
+  fireEvent.click(diagram.querySelector('[data-id="r0"]')!);
+  fireEvent.doubleClick(screen.getByText('Tarjeta visible'));
+  expect(screen.getByRole('button', {name: 'Cerrar visor'})).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', {name: 'Cerrar visor'}));
+  expect(screen.queryByRole('button', {name: 'Ver contexto'})).not.toBeInTheDocument();
+  expect(diagram.querySelector('[data-id="r0"]')).not.toHaveClass('selected');
   fireEvent.click(screen.getByLabelText('Mostrar vista semántica'));
   expect(screen.getByLabelText('Panel de vista semántica')).toHaveClass('public-share-surface');
   expect(screen.queryByRole('textbox', { name: 'Texto de anotación' })).not.toBeInTheDocument();

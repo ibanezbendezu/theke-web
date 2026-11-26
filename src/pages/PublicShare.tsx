@@ -93,7 +93,7 @@ function PublicShareView({token}: { token: string | undefined }) {
     }, [selection, detailsOpen, viewerResourceId]);
     const select = (value: PublicSelection) => {
         if (value && !inspector.current?.contains(document.activeElement)) returnFocus.current = document.activeElement instanceof HTMLElement && document.activeElement !== document.body ? document.activeElement : null;
-        if (value) setDetailsOpen(value.kind !== 'resource');
+        setDetailsOpen(Boolean(value && value.kind !== 'resource'));
         setSelection(value);
     };
     const openResource = (id: string) => {
@@ -268,6 +268,10 @@ function PublicShareView({token}: { token: string | undefined }) {
         {viewerResource && <ResourceViewerDialog key={`${token}:${viewerResource.id}:${viewerRequest}`}
             resource={viewerResource} url={viewerRequest ? `${viewerUrl}?retry=${viewerRequest}` : viewerUrl}
             downloadUrl={viewerUrl ? `${viewerUrl}?download=1` : undefined}
-            onRetry={() => setViewerRequest(value => value + 1)} onClose={() => setViewerResourceId(null)}/>}
+            onRetry={() => setViewerRequest(value => value + 1)} onClose={() => {
+                setViewerResourceId(null);
+                setSelection(null);
+                setDetailsOpen(false);
+            }}/>}
     </main>;
 }
