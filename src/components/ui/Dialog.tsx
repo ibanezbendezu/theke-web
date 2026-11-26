@@ -16,7 +16,8 @@ export function Dialog({titleId, onClose, children, className = '', shadow = tru
     useEffect(() => {
         const previous = document.activeElement as HTMLElement | null;
         const root = dialog.current;
-        const focusable = () => [...(root?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),textarea:not(:disabled),select:not(:disabled),[tabindex="0"]') ?? [])];
+        const focusable = () => [...(root?.querySelectorAll<HTMLElement>('button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),select:not(:disabled),[tabindex="0"]') ?? [])]
+            .filter(item => getComputedStyle(item).display !== 'none' && getComputedStyle(item).visibility !== 'hidden');
         (root?.querySelector('[autofocus]') as HTMLElement | null ?? focusable()[0])?.focus();
         const key = (event: KeyboardEvent) => {
             const dialogs = document.querySelectorAll('[role="dialog"]');

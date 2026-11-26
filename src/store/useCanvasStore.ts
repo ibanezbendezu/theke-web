@@ -95,6 +95,8 @@ interface CanvasState {
     editRelationRequest: { id: string; nonce: string } | null;
     requestEditRelation: (id: string) => void;
     inspectorOpen: boolean;
+    resourceViewerId: string | null;
+    closeResourceViewer: () => void;
     setInspectorOpen: (open: boolean) => void;
     openCanvasNode: (id: string) => void;
     updateNodeData: (nodeId: string, data: Record<string, unknown>) => void;
@@ -171,6 +173,8 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     editRelationRequest: null,
     requestEditRelation: id => set({editRelationRequest: {id, nonce: crypto.randomUUID()}}),
     inspectorOpen: false,
+    resourceViewerId: null,
+    closeResourceViewer: () => set({resourceViewerId: null}),
 
     onNodesChange: changes => set(state => ({
         ...(changes.some(change => change.type !== 'select' && change.type !== 'dimensions') ? history(state) : {}),
@@ -502,11 +506,16 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         edges: state.edges.map(edge => ({...edge, selected: edge.id === id}))
     })),
     setInspectorOpen: inspectorOpen => set({inspectorOpen}),
-    openCanvasNode: id => set(state => ({
-        inspectorOpen: true,
-        nodes: state.nodes.map(node => ({...node, selected: node.id === id})),
-        edges: state.edges.map(edge => ({...edge, selected: false}))
-    })),
+    openCanvasNode: id => set(state => {
+        const node = state.nodes.find(item => item.id === id);
+        if (!node) return state;
+        return {
+            inspectorOpen: node.type === 'resource' ? state.inspectorOpen : true,
+            resourceViewerId: node.type === 'resource' && typeof node.data.resourceId === 'string' ? node.data.resourceId : null,
+            nodes: state.nodes.map(item => ({...item, selected: item.id === id})),
+            edges: state.edges.map(edge => ({...edge, selected: false}))
+        };
+    }),
     updateNodeData: (nodeId, data) => set(state => ({
         ...history(state),
         nodes: state.nodes.map(node => node.id === nodeId ? {...node, data: {...node.data, ...data}} : node)
@@ -642,6 +651,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     })),
 
     loadDocument: (nodes, edges, viewport, background) => set({
+        resourceViewerId: null,
         nodes: nodes.map(node => node.parentId && node.expandParent ? {...node, expandParent: false} : node),
         edges, ...(viewport ? {viewport} : {}),
         background: background ?? {variant: 'dots', tone: 'default'},

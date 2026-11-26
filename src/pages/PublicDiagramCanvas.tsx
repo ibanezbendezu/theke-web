@@ -53,6 +53,7 @@ type PublicNodeData = {
     resources?: SharePreviewResource[];
     token: string;
     revision: number;
+    onOpenResource: (id: string) => void;
     onSelect: (value: PublicSelection) => void
 };
 type PublicEdgeData = {
@@ -153,7 +154,7 @@ function PublicCanvasNode({data, selected}: NodeProps<Node<PublicNodeData, 'publ
             <ResourceCard resource={resource ? {...resource, content: resource.content ?? undefined, description: resource.description ?? undefined, url: resource.url ?? undefined, updatedAt: String(data.revision)} : undefined}
                           mode={height < 160 ? 'mini' : 'normal'} caption={item.caption} accent={item.accent}
                           selected={selected} directUrl={directUrl}
-                          onOpen={() => item.resourceId && onSelect({kind: 'resource', id: item.resourceId})}/>
+                          onOpen={() => item.resourceId && data.onOpenResource(item.resourceId)}/>
             <ResourceConnectionHandles/>
         </div>;
     }
@@ -359,6 +360,7 @@ function PublicCanvas({
                           token,
                           selection,
                           onSelect,
+                          onOpenResource,
                           commentMode,
                           commentsEnabled,
                           comments,
@@ -370,6 +372,7 @@ function PublicCanvas({
     token: string;
     selection: PublicSelection;
     onSelect: (value: PublicSelection) => void;
+    onOpenResource: (id: string) => void;
     commentMode: boolean;
     commentsEnabled: boolean;
     comments: PublicComment[];
@@ -413,7 +416,10 @@ function PublicCanvas({
             position: {x: item.x, y: item.y},
             data: {item, resource: item.resourceId ? resources.get(item.resourceId) : undefined,
                 resources: item.resourceIds?.map(id => resources.get(id)).filter((resource): resource is SharePreviewResource => Boolean(resource)),
-                onSelect: selectOnCanvas, token, revision: data.revision},
+                onSelect: selectOnCanvas, onOpenResource: (id: string) => {
+                    if (commenting) onCommentTarget({type: 'resource', resourceId: id});
+                    else onOpenResource(id);
+                }, token, revision: data.revision},
             selected: selection?.kind === 'folder' ? item.type === 'folder' && selection.id === item.id : selection?.kind === 'resource' && selection.id === item.resourceId,
             zIndex: item.type === 'container' ? 0 : (item.zIndex ?? 1) - publicLayerFloor + 1,
             draggable: false,
@@ -439,7 +445,7 @@ function PublicCanvas({
             }];
         }),
     ];
-    }, [comments, data.layout.nodes, data.revision, onCommentOpen, selectOnCanvas, resources, selectedCommentId, selection, token]);
+    }, [comments, data.layout.nodes, data.revision, onCommentOpen, selectOnCanvas, onOpenResource, commenting, onCommentTarget, resources, selectedCommentId, selection, token]);
     const edges = useMemo<Edge<PublicEdgeData, 'public'>[]>(() => data.layout.edges.map(item => {
         const relation = item.relationId ? relations.get(item.relationId) : undefined;
         return {
@@ -544,6 +550,7 @@ export function PublicDiagramCanvas({
                                         token = '',
                                         selection,
                                         onSelect,
+                                        onOpenResource = () => {},
                                         commentMode = false,
                                         commentsEnabled = false,
                                         comments = [],
@@ -557,6 +564,7 @@ export function PublicDiagramCanvas({
     token?: string;
     selection: PublicSelection;
     onSelect: (value: PublicSelection) => void;
+    onOpenResource?: (id: string) => void;
     commentMode?: boolean;
     commentsEnabled?: boolean;
     comments?: PublicComment[];
@@ -567,6 +575,7 @@ export function PublicDiagramCanvas({
     return <div className="h-full w-full" aria-label="Diagrama público"><ReactFlowProvider><PublicCanvas data={data} token={token}
                                                                                                          selection={selection}
                                                                                                          onSelect={onSelect}
+                                                                                                         onOpenResource={onOpenResource}
                                                                                                          commentMode={commentMode}
                                                                                                          commentsEnabled={commentsEnabled}
                                                                                                          comments={comments}

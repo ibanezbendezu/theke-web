@@ -4,8 +4,7 @@ import {
     ListTree,
     MoreHorizontal,
     MessageCircle,
-    PanelRightClose,
-    PanelRightOpen,
+    SlidersHorizontal,
     ScanSearch,
     Share2,
     Upload,
@@ -285,9 +284,9 @@ function DiagramEditorCore() {
                             <Button size="icon" className="h-10 w-10 shrink-0" title="Cargar archivos en el canvas"
                                     aria-label="Cargar archivos en el canvas" icon={Upload}
                                     onClick={() => pickFiles()}/>}
-                        {!rightOpen && !selectedAnnotation && <Button size="icon" className="h-10 w-10 shrink-0" title="Mostrar propiedades"
-                                               aria-label="Mostrar propiedades" icon={PanelRightOpen}
-                                               onClick={() => setRightOpen(true)}/>}
+                        {!selectedAnnotation && <Button size="icon" className="h-10 w-10 shrink-0" title={rightOpen ? 'Ocultar propiedades' : 'Mostrar propiedades'}
+                                               aria-label={rightOpen ? 'Ocultar propiedades' : 'Mostrar propiedades'} aria-expanded={rightOpen} icon={SlidersHorizontal}
+                                               onClick={() => setRightOpen(!rightOpen)}/>}
                     </div>
                     <Button ref={optionsButton} size="icon" className="h-10 w-10 shrink-0" title="Opciones del mapa"
                             aria-label="Opciones del mapa" aria-expanded={optionsOpen} aria-controls="map-options"
@@ -344,13 +343,13 @@ function DiagramEditorCore() {
             </div>}
         </section>
         {rightOpen && !selectedAnnotation && !openingIssueVisible && <aside
-            className={`absolute inset-y-0 right-0 z-50 w-[min(304px,100vw)] overflow-auto bg-surface/95 p-4 backdrop-blur-md lg:relative lg:z-0 lg:shrink-0 lg:bg-surface-variant/35 ${leftPanel ? 'hidden lg:block' : ''}`}
+            className={`absolute bottom-20 right-3 top-20 z-50 w-[min(19rem,calc(100%-1.5rem))] overflow-auto rounded-xl bg-surface/95 p-4 backdrop-blur-md ${leftPanel ? 'hidden lg:block' : ''}`}
             aria-label="Propiedades">
             <div className="mb-3 flex items-center justify-between"><h2
                 className="text-sm font-semibold">Propiedades</h2><Button size="icon" className="h-9 w-9"
-                                                                          title="Ocultar propiedades"
-                                                                          aria-label="Ocultar propiedades"
-                                                                          icon={PanelRightClose}
+                                                                          title="Cerrar propiedades"
+                                                                          aria-label="Cerrar propiedades"
+                                                                          icon={X}
                                                                           onClick={() => setRightOpen(false)}/></div>
             {selectedRelationEdge ? <CanvasRelationInspector key={selectedRelationEdge.id}
                                                              relationId={selectedRelationEdge.data!.relationId as string}

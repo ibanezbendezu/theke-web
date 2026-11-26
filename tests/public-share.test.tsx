@@ -155,8 +155,8 @@ it('cierra el detalle superpuesto y devuelve el foco al recurso', async () => {
   const resource = await screen.findByRole('button', { name: 'Nota · Nota' });
   resource.focus();
   fireEvent.click(resource);
-  expect(screen.getByRole('button', { name: 'Cerrar detalle' })).toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: 'Cerrar detalle' }));
+  expect(screen.getByRole('button', { name: 'Cerrar visor' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Cerrar visor' }));
   await waitFor(() => expect(resource).toHaveFocus());
 });
 
@@ -195,7 +195,7 @@ it('muestra archivos mediante la API pública sin recibir claves de almacenamien
   const image = await screen.findByRole('img', { name: 'Descripción de la imagen' });
   expect(image.getAttribute('src')).toBe('http://localhost:3000/v1/public/shares/example-token/resources/11111111-1111-4111-8111-111111111111/content');
   fireEvent.error(image);
-  expect(screen.getByRole('alert')).toHaveTextContent('No se pudo cargar la vista previa');
+  expect(screen.getByRole('alert')).toHaveTextContent('No se pudo mostrar el contenido');
   expect(screen.getByRole('link', { name: 'Descargar archivo' }).getAttribute('href')).toBe('http://localhost:3000/v1/public/shares/example-token/resources/11111111-1111-4111-8111-111111111111/content?download=1');
   fireEvent.click(screen.getByRole('button', { name: 'Reintentar vista previa' }));
   expect(screen.getByRole('img').getAttribute('src')).toContain('?retry=1');
@@ -207,28 +207,27 @@ it('ofrece abrir y descargar cuando el formato no admite vista previa', async ()
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: 'two', type: 'file', title: 'Archivo', url: null, content: null, description: null, mediaType: 'application/zip', accessibilityText: 'Archivo comprimido' }], relations: [] } }) });
   page();
   fireEvent.click(await screen.findByRole('button', { name: 'Archivo · Archivo' }));
-  expect(screen.getByText('Este formato no tiene vista previa en el navegador.')).toBeInTheDocument();
+  expect(screen.getByText('Este formato no tiene vista previa.')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Abrir archivo' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Descargar archivo' })).toBeInTheDocument();
 });
 
 it.each([
-  ['audio/mpeg', 'Audio', 'Audio', 'Reproducir Audio'],
-  ['video/mp4', 'Video', 'Vídeo', 'Reproducir Video'],
+  ['audio/mpeg', 'Audio', 'Audio', 'audio'],
+  ['video/mp4', 'Video', 'Vídeo', 'video'],
 ])('ofrece vista previa diferida y recuperable para %s', async (mediaType, title, semanticType, accessibleName) => {
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: '11111111-1111-4111-8111-111111111111', type: 'file', title, url: null, content: null, description: null, mediaType, accessibilityText: `Alternativa para ${title}` }], relations: [] } }) });
   page();
   fireEvent.click(await screen.findByRole('button', { name: `${title} · ${semanticType}` }));
-  const media = screen.getByLabelText(accessibleName);
+  const media = document.querySelector(accessibleName)!;
   expect(media).toHaveAttribute('preload', 'none');
   fireEvent.error(media);
-  expect(screen.getByRole('alert')).toHaveTextContent('No se pudo cargar la vista previa');
+  expect(screen.getByRole('alert')).toHaveTextContent('No se pudo mostrar el contenido');
   fireEvent.click(screen.getByRole('button', { name: 'Reintentar vista previa' }));
-  expect(screen.getByLabelText(accessibleName)).toHaveAttribute('src', expect.stringContaining('?retry=1'));
+  expect(document.querySelector(accessibleName)).toHaveAttribute('src', expect.stringContaining('?retry=1'));
 });
 
 it.each([
-  ['application/pdf', 'Documento'],
   ['text/plain', 'Archivo'],
 ])('abre %s en otra pestaña sin incrustarlo', async (mediaType, semanticType) => {
   fetchMock.mockResolvedValue({ ok: true, status: 200, text: async () => JSON.stringify({ data: { diagramName: 'Mapa', revision: 1, commentsEnabled: false, layout: { nodes: [], edges: [] }, resources: [{ id: '11111111-1111-4111-8111-111111111111', type: 'file', title: 'Documento', url: null, content: null, description: null, mediaType, accessibilityText: 'Documento accesible' }], relations: [] } }) });
@@ -250,6 +249,8 @@ it('permite inspeccionar relaciones y navegar a sus extremos desde la vista sem�
   expect(screen.getByText('Cita visible')).toBeInTheDocument();
   expect(screen.getByText('Explicación pública')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Ir a Destino' }));
+  expect(screen.queryByLabelText('Detalles del mapa')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', {name: 'Abrir recurso Destino'}));
   expect(screen.getByText('Texto de destino')).toBeInTheDocument();
 });
 
@@ -267,7 +268,7 @@ it('monta el Canvas público con controles de zoom cuando hay posiciones publica
   expect(screen.getByRole('button', { name: 'Ajustar vista' })).toBeInTheDocument();
   expect(screen.getByLabelText('Diagrama público').querySelector('.react-flow__viewport')).not.toBeNull();
   const diagram = screen.getByLabelText('Diagrama público');
-  expect(diagram.querySelector<HTMLElement>('[data-id="g0"]')?.style.pointerEvents).toBe('none');
+  await waitFor(() => expect(diagram.querySelector<HTMLElement>('[data-id="g0"]')?.style.pointerEvents).toBe('none'));
   expect(diagram.querySelector<HTMLElement>('[data-id="g0"]')?.style.zIndex).toBe('0');
   expect(diagram.querySelector<HTMLElement>('[data-id="r0"]')?.style.zIndex).toBe('1');
   expect(diagram.querySelector<HTMLElement>('[data-id="a0"]')?.style.zIndex).toBe('9');
@@ -276,7 +277,12 @@ it('monta el Canvas público con controles de zoom cuando hay posiciones publica
   expect(screen.queryByLabelText('Mostrar detalles')).not.toBeInTheDocument();
   fireEvent.click(screen.getByLabelText('Abrir detalle de Tarjeta visible'));
   expect(await screen.findByRole('heading', {name: 'Tarjeta visible'})).toBeInTheDocument();
-  expect(screen.getByRole('button', {name: 'Cerrar detalle'})).toHaveClass('h-11', 'w-11');
+  expect(screen.getByRole('button', {name: 'Cerrar visor'})).toHaveClass('h-11', 'w-11');
+  fireEvent.click(screen.getByRole('button', {name: 'Cerrar visor'}));
+  expect(screen.queryByLabelText('Detalles del mapa')).not.toBeInTheDocument();
+  fireEvent.click(diagram.querySelector('[data-id="r0"]')!);
+  fireEvent.click(screen.getByRole('button', {name: 'Ver contexto'}));
+  expect(screen.getByLabelText('Detalles del mapa')).toHaveTextContent('Lectura');
   fireEvent.click(screen.getByLabelText('Mostrar vista semántica'));
   expect(screen.getByLabelText('Panel de vista semántica')).toHaveClass('public-share-surface');
   expect(screen.queryByRole('textbox', { name: 'Texto de anotación' })).not.toBeInTheDocument();

@@ -214,7 +214,7 @@ export function CanvasSemanticView({projectId}: { projectId: string }) {
         style={{left: menu.left, ...(menu.top === undefined ? {bottom: menu.bottom} : {top: menu.top})}}>
         <p className="truncate px-2 py-1.5 font-medium">{title(menuNode)}</p>
         <button ref={firstMenuAction} type="button" className="w-full rounded-md px-2 py-2 text-left hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary"
-                onClick={() => {useCanvasStore.getState().openCanvasNode(menuNode.id); useCanvasStore.getState().setInspectorOpen(true); closeMenu();}}>Abrir detalle</button>
+                onClick={() => {useCanvasStore.getState().openCanvasNode(menuNode.id); closeMenu();}}>Abrir detalle</button>
         <button type="button" className="w-full rounded-md px-2 py-2 text-left hover:bg-surface-variant focus-visible:outline-2 focus-visible:outline-primary"
                 onClick={() => {useCanvasStore.getState().requestRelation(menuNode.id); closeMenu();}}>{menuNode.type === 'resource' ? 'Conectar con otro recurso' : 'Conectar elemento…'}</button>
         {menuNode.type === 'resource' && <details className="rounded-md px-2 py-2">

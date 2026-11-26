@@ -25,6 +25,7 @@ import {
     Layers
 } from 'lucide-react';
 import {MessageCircle} from 'lucide-react';
+import {PrivateResourceViewerDialog} from '../../components/resources/PrivateResourceViewerDialog';
 import type {CommentNotification} from '../../data/useCommentNotifications';
 import {useCanvasStore} from '../../store/useCanvasStore';
 import {MediaNode} from './nodes/MediaNode';
@@ -632,11 +633,14 @@ export function CanvasEditor({
     uploadTray?: React.ReactNode;
 }) {
     const loadDocument = useCanvasStore(state => state.loadDocument);
+    const resourceViewerId = useCanvasStore(state => state.resourceViewerId);
+    const closeResourceViewer = useCanvasStore(state => state.closeResourceViewer);
     const [flowInitialized, setFlowInitialized] = useState(false);
     useEffect(() => {
         if (document) loadDocument(document.nodes, document.edges, document.viewport, document.background);
     }, [document, loadDocument]);
     const onShortcut = (event: React.KeyboardEvent) => {
+        if ((event.target as HTMLElement).closest('[role="dialog"]')) return;
         if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement || event.target instanceof HTMLSelectElement || (event.target as HTMLElement).isContentEditable) return;
         const store = useCanvasStore.getState();
         const key = event.key.toLowerCase();
@@ -653,7 +657,6 @@ export function CanvasEditor({
             if (selected) {
                 event.preventDefault();
                 store.openCanvasNode(selected.id);
-                store.setInspectorOpen(true);
             }
             return;
         }
@@ -729,6 +732,7 @@ export function CanvasEditor({
                 <CanvasToolbar onAddResource={onAddResource}
                                onCreateRelation={onCreateRelation ? () => onCreateRelation() : undefined}/>
                 {uploadTray}
+                {resourceViewerId && <PrivateResourceViewerDialog key={resourceViewerId} resourceId={resourceViewerId} onClose={closeResourceViewer}/>}
             </ReactFlowProvider>
         </div>
     );

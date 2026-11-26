@@ -60,7 +60,11 @@ export function CanvasNodeContextMenu({target, onClose}: {
             <div className={contextMenuDividerClass}/>
             {action(removeLabel, Trash2, () => store.removeNodes([node.id]), true)}
         </> : node.type === 'resource' ? <>
-            {action('Abrir detalle', FolderOpen, () => store.openCanvasNode(node.id))}
+            {action('Abrir recurso', FolderOpen, () => store.openCanvasNode(node.id))}
+            {action('Propiedades del nodo', Settings2, () => {
+                store.onNodesChange([{id: node.id, type: 'select', selected: true}]);
+                store.setInspectorOpen(true);
+            })}
             {action(mode === 'normal' ? 'Tamaño mini' : 'Tamaño normal', mode === 'normal' ? Minimize2 : Maximize2,
                 () => store.setResourceDisplayMode(node.id, mode === 'normal' ? 'mini' : 'normal'))}
             {action('Crear relación', Link2, () => store.requestRelation(node.id))}

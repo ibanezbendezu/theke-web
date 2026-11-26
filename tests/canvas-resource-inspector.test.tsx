@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CanvasResourceInspector } from '../src/features/canvas/CanvasResourceInspector';
 import { useCanvasStore } from '../src/store/useCanvasStore';
@@ -13,22 +13,21 @@ describe('detalle de recursos en el canvas', () => {
   it('separa contenido canónico de la etiqueta local y abre el panel al solicitarlo', () => {
     useCanvasStore.setState({ nodes: [{ id: 'node-1', type: 'resource', position: { x: 5, y: 9 }, data: { resourceId: 'resource-1' } }], inspectorOpen: false });
     useCanvasStore.getState().openCanvasNode('node-1');
-    expect(useCanvasStore.getState().inspectorOpen).toBe(true);
+    expect(useCanvasStore.getState().inspectorOpen).toBe(false);
+    expect(useCanvasStore.getState().resourceViewerId).toBe('resource-1');
     expect(useCanvasStore.getState().nodes[0].selected).toBe(true);
     render(<CanvasResourceInspector nodeId="node-1" resourceId="resource-1" />);
     expect(screen.getByRole('region', { name: 'Datos del recurso' })).toHaveTextContent('Fuente actualizada');
-    expect(screen.getByText('Contenido canónico')).toBeInTheDocument();
+    expect(screen.queryByText('Contenido canónico')).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Etiqueta local'), { target: { value: 'Mi etiqueta' } });
     expect(useCanvasStore.getState().nodes[0].data).toEqual({ resourceId: 'resource-1', caption: 'Mi etiqueta' });
     expect(useCanvasStore.getState().nodes[0].position).toEqual({ x: 5, y: 9 });
   });
-  it('conserva acceso al original y a la Biblioteca si falla la vista previa', async () => {
+  it('abre el visor desde propiedades y ofrece el original en Biblioteca', () => {
     mocks.resource.current = { id: 'resource-1', title: 'Imagen', type: 'file', status: 'ready', mediaType: 'image/png' };
-    mocks.access.mockRejectedValueOnce(new Error('sin conexión'));
     render(<CanvasResourceInspector nodeId="node-1" resourceId="resource-1" />);
-    fireEvent.click(screen.getByRole('button', { name: 'Vista previa' }));
-    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('No se pudo abrir el archivo'));
-    expect(screen.getByRole('button', { name: 'Descargar original' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir recurso' }));
+    expect(useCanvasStore.getState().resourceViewerId).toBe('resource-1');
     expect(screen.getByRole('link', { name: 'Abrir en Biblioteca' })).toHaveAttribute('href', '/library/resource-1');
   });
 });

@@ -5,8 +5,8 @@ import {
     MessageCircle,
     MessageSquarePlus,
     MoreHorizontal,
-    PanelRightClose,
-    PanelRightOpen,
+    Info,
+    Maximize2,
     X
 } from 'lucide-react';
 import type {PublicShare as PublicProjection, PublicShareResponse} from '../api/generated/models';
@@ -15,7 +15,7 @@ import {Button} from '../components/ui/Button';
 import {WorkspaceLoading} from '../components/ui/LoadingState';
 import {ThemeToggle} from '../components/ui/ThemeToggle';
 import {PublicDiagramCanvas, PublicSemanticList, type PublicSelection} from './PublicDiagramCanvas';
-import {PublicResourceDetail} from './PublicResourceDetail';
+import {ResourceViewerDialog} from '../components/resources/ResourceViewerDialog';
 import {PublicCommentsPanel} from './PublicCommentsPanel';
 import {publicRelationLabel} from './publicRelationLabel';
 import type {CommentTarget, PublicComment} from './publicCommentTypes';
@@ -35,6 +35,8 @@ function PublicShareView({token}: { token: string | undefined }) {
     const [selection, setSelection] = useState<PublicSelection>(null);
     const [semanticOpen, setSemanticOpen] = useState(false);
     const [detailsOpen, setDetailsOpen] = useState(false);
+    const [viewerResourceId, setViewerResourceId] = useState<string | null>(null);
+    const [viewerRequest, setViewerRequest] = useState(0);
     const [optionsOpen, setOptionsOpen] = useState(false);
     const [commentsOpen, setCommentsOpen] = useState(() => searchParams.get('comments') === '1');
     const [commentMode, setCommentMode] = useState(false);
@@ -67,7 +69,7 @@ function PublicShareView({token}: { token: string | undefined }) {
         if (selection && detailsOpen) inspector.current?.focus();
     }, [selection, detailsOpen]);
     useEffect(() => {
-        if (!selection || !detailsOpen) return;
+        if (!selection || !detailsOpen || viewerResourceId) return;
         const onKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Tab' && window.matchMedia?.('(max-width: 1023px)').matches) {
                 const items = [...(inspector.current?.querySelectorAll<HTMLElement>('button:not(:disabled),a[href],input:not(:disabled),[tabindex="0"]') ?? [])];
@@ -88,11 +90,15 @@ function PublicShareView({token}: { token: string | undefined }) {
         };
         document.addEventListener('keydown', onKeyDown);
         return () => document.removeEventListener('keydown', onKeyDown);
-    }, [selection, detailsOpen]);
+    }, [selection, detailsOpen, viewerResourceId]);
     const select = (value: PublicSelection) => {
         if (value && !inspector.current?.contains(document.activeElement)) returnFocus.current = document.activeElement instanceof HTMLElement && document.activeElement !== document.body ? document.activeElement : null;
-        if (value) setDetailsOpen(true);
+        if (value) setDetailsOpen(value.kind !== 'resource');
         setSelection(value);
+    };
+    const openResource = (id: string) => {
+        setViewerRequest(0);
+        setViewerResourceId(id);
     };
     const chooseCommentTarget = (target: CommentTarget) => {
         setCommentTarget(target);
@@ -115,6 +121,10 @@ function PublicShareView({token}: { token: string | undefined }) {
     const data = view && view.token === token ? view.data : null;
     const unavailable = !token || (view?.token === token && view?.unavailable === true);
     const selectedResource = selection?.kind === 'resource' ? data?.resources.find(item => item.id === selection.id) : null;
+    const viewerResource = data?.resources.find(item => item.id === viewerResourceId);
+    const viewerUrl = token && viewerResource
+        ? `${import.meta.env.VITE_API_URL?.replace(/\/+$/, '') ?? ''}/v1/public/shares/${encodeURIComponent(token)}/resources/${encodeURIComponent(viewerResource.id)}/content`
+        : undefined;
     const selectedRelation = selection?.kind === 'relation' ? data?.relations.find(item => item.id === selection.id) : null;
     const selectedFolder = selection?.kind === 'folder' ? data?.layout.nodes.find(item => item.id === selection.id && item.type === 'folder') : null;
     const titles = new Map(data?.resources.map(item => [item.id, item.title]));
@@ -129,7 +139,7 @@ function PublicShareView({token}: { token: string | undefined }) {
     if (!data) return <WorkspaceLoading fullscreen label="Abriendo mapa compartido…"/>;
     return <main className="public-share relative flex h-dvh min-h-0 bg-background text-on-background">
         <section className="relative min-w-0 flex-1" aria-label="Lienzo compartido">
-            <PublicDiagramCanvas data={data} token={token ?? ''} selection={selection} onSelect={select} commentMode={commentMode}
+            <PublicDiagramCanvas data={data} token={token ?? ''} selection={selection} onSelect={select} onOpenResource={openResource} commentMode={commentMode}
                                  commentsEnabled={data.commentsEnabled} comments={comments} selectedCommentId={selectedCommentId}
                                  onCommentTarget={chooseCommentTarget} onCommentOpen={id => {
                 setSelectedCommentId(id);
@@ -165,9 +175,13 @@ function PublicShareView({token}: { token: string | undefined }) {
                     <Button ref={semanticButton} size="icon" className="h-10 w-10" icon={ListTree}
                             aria-label={showSemantic ? 'Ocultar vista semántica' : 'Mostrar vista semántica'}
                             aria-expanded={showSemantic} onClick={() => setSemanticOpen(value => !value)}/>
-                    {selection && !detailsOpen &&
-                        <Button size="icon" className="h-11 w-11" icon={PanelRightOpen} aria-label="Mostrar detalles"
-                                onClick={() => setDetailsOpen(true)}/>}
+                    {selection &&
+                        <Button size="icon" className="h-10 w-10" icon={Info} aria-label={detailsOpen ? 'Ocultar contexto' : 'Ver contexto'}
+                                title={detailsOpen ? 'Ocultar contexto' : 'Ver contexto'} aria-expanded={detailsOpen}
+                                onClick={() => detailsOpen ? closeInspector() : setDetailsOpen(true)}/>}
+                    {selectedResource && <Button size="icon" className="h-10 w-10" icon={Maximize2}
+                        title="Abrir recurso" aria-label={`Abrir recurso ${selectedResource.title}`}
+                        onClick={() => openResource(selectedResource.id)}/>}
                     <Button ref={optionsButton} size="icon" className="h-10 w-10" icon={MoreHorizontal}
                             aria-label="Opciones del mapa" aria-expanded={optionsOpen}
                             aria-controls="public-map-options" onClick={() => setOptionsOpen(value => !value)}/>
@@ -189,7 +203,10 @@ function PublicShareView({token}: { token: string | undefined }) {
                     <Button size="icon" className="absolute right-3 top-3 z-10 h-9 w-9" icon={X} aria-label="Cerrar vista semántica"
                             onClick={() => setSemanticOpen(false)}/>}
                 <PublicSemanticList resources={data.resources} relations={data.relations}
-                                    visualNodes={data.layout.nodes} selection={selection} onSelect={select}
+                                    visualNodes={data.layout.nodes} selection={selection} onSelect={value => {
+                                        select(value);
+                                        if (value?.kind === 'resource') openResource(value.id);
+                                    }}
                                     commentsEnabled={data.commentsEnabled} onCommentTarget={chooseCommentTarget}/>
             </aside>}
             {commentsOpen && <button type="button" tabIndex={-1} aria-hidden="true"
@@ -207,15 +224,25 @@ function PublicShareView({token}: { token: string | undefined }) {
         {detailsOpen && <aside ref={inspector} tabIndex={-1} role={selection ? 'dialog' : undefined}
                                aria-modal={selection ? window.matchMedia?.('(max-width: 1023px)').matches : undefined}
                                aria-label="Detalles del mapa"
-                               className={`${selection ? 'fixed inset-x-0 bottom-0 z-[80] max-h-[82dvh] overflow-y-auto rounded-t-xl bg-background p-4 md:inset-y-0 md:left-auto md:w-[min(24rem,100vw)] md:max-h-none md:rounded-none' : 'hidden'} min-w-0 space-y-3 outline-offset-2 focus-visible:outline-2 focus-visible:outline-primary lg:relative lg:inset-auto lg:z-0 lg:block lg:h-full lg:w-[304px] lg:shrink-0 lg:overflow-y-auto lg:rounded-none lg:bg-surface-variant/35 lg:p-4 [overflow-wrap:anywhere]`}>
+                               className={`${selection ? 'fixed inset-x-0 bottom-0 z-[80] max-h-[82dvh] overflow-y-auto rounded-t-xl bg-surface/95 p-4 backdrop-blur-md' : 'hidden'} min-w-0 space-y-3 outline-offset-2 focus-visible:outline-2 focus-visible:outline-primary lg:absolute lg:bottom-20 lg:left-auto lg:right-3 lg:top-20 lg:z-50 lg:block lg:max-h-none lg:w-76 lg:rounded-xl [overflow-wrap:anywhere]`}>
             <div className="flex items-center justify-between"><h2 className="text-sm font-semibold">Detalles</h2>
-                <Button size="icon" className="h-11 w-11" icon={PanelRightClose}
+                <Button size="icon" className="h-9 w-9" icon={X}
                         aria-label={selection ? 'Cerrar detalle' : 'Ocultar detalles'} onClick={closeInspector}/></div>
             {!selectedResource && !selectedRelation && !selectedFolder &&
                 <p className="text-sm text-outline">Selecciona un recurso o una relación para ver sus detalles.</p>}
-            {selectedResource && token &&
-                <PublicResourceDetail key={`${token}:${selectedResource.id}`} resource={selectedResource}
-                                      token={token}/>}
+            {selectedResource && <div className="space-y-4">
+                <h3 className="text-base font-semibold">{selectedResource.title}</h3>
+                {selectedResource.description && <p className="whitespace-pre-wrap text-sm">{selectedResource.description}</p>}
+                {data.layout.nodes.filter(node => node.resourceId === selectedResource.id && node.caption).map(node =>
+                    <p key={node.id} className="text-sm text-outline">{node.caption}</p>)}
+                <Button icon={Maximize2} className="justify-start" onClick={() => openResource(selectedResource.id)}>Abrir recurso</Button>
+                <section className="space-y-2"><h4 className="text-sm font-medium">Relaciones en este mapa</h4>
+                    {data.relations.filter(relation => relation.sourceResourceId === selectedResource.id || relation.targetResourceId === selectedResource.id)
+                        .map(relation => <button key={relation.id} type="button"
+                            className="block min-h-11 w-full rounded-md px-2 py-2 text-left text-sm hover:bg-surface-variant"
+                            onClick={() => select({kind: 'relation', id: relation.id})}>{publicRelationLabel(relation)}</button>)}
+                </section>
+            </div>}
             {selectedFolder && <div className="space-y-2"><h3
                 className="text-lg font-semibold">{selectedFolder.folderName ?? 'Carpeta'}</h3><p
                 className="text-sm text-outline">Acceso a carpeta · {selectedFolder.folderCount ?? 0} recursos. Su contenido no se comparte automáticamente.</p>{selectedFolder.caption &&
@@ -238,5 +265,9 @@ function PublicShareView({token}: { token: string | undefined }) {
                     <p>{item.note}</p>}</li>)}</ul>
             </div>}
         </aside>}
+        {viewerResource && <ResourceViewerDialog key={`${token}:${viewerResource.id}:${viewerRequest}`}
+            resource={viewerResource} url={viewerRequest ? `${viewerUrl}?retry=${viewerRequest}` : viewerUrl}
+            downloadUrl={viewerUrl ? `${viewerUrl}?download=1` : undefined}
+            onRetry={() => setViewerRequest(value => value + 1)} onClose={() => setViewerResourceId(null)}/>}
     </main>;
 }
