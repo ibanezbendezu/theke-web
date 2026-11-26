@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { PublicCommentsPanel } from '../src/pages/PublicCommentsPanel';
 
@@ -115,12 +115,15 @@ it('edita solo un comentario propio sin cambiar el anclaje ni crear otro', async
   render(<PublicCommentsPanel token="edit-token" enabled open onClose={() => {}}/>);
   await screen.findByText('Texto inicial');
   expect(screen.getAllByRole('button', { name: 'Editar comentario' })).toHaveLength(1);
+  fireEvent.change(screen.getByRole('textbox', { name: 'Comentario' }), { target: { value: 'Comentario nuevo sin publicar' } });
   fireEvent.click(screen.getByRole('button', { name: 'Editar comentario' }));
   expect(screen.getByRole('textbox', { name: 'Comentario' })).toHaveValue('Texto inicial');
   expect(screen.getByText('Editando · Fuente')).toBeInTheDocument();
   fireEvent.change(screen.getByRole('textbox', { name: 'Comentario' }), { target: { value: 'Texto corregido' } });
   fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }));
   expect(fetchMock).toHaveBeenCalledTimes(1);
+  expect(screen.getByRole('textbox', { name: 'Comentario' })).toHaveValue('Comentario nuevo sin publicar');
+  expect(screen.getByRole('textbox', { name: 'Comentario' })).toHaveFocus();
   fireEvent.click(screen.getByRole('button', { name: 'Editar comentario' }));
   fireEvent.change(screen.getByRole('textbox', { name: 'Comentario' }), { target: { value: 'Texto corregido' } });
   const updated = { ...own, content: 'Texto corregido', revision: 2, editedAt: new Date().toISOString() };
@@ -128,12 +131,16 @@ it('edita solo un comentario propio sin cambiar el anclaje ni crear otro', async
   fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }));
   await screen.findByText('Texto corregido');
   const patch = fetchMock.mock.calls.find(([, options]) => options?.method === 'PATCH');
+  expect(new URL(String(patch?.[0])).pathname).toBe('/v1/public/shares/edit-token/comments/own-1');
   expect(patch?.[1]).toMatchObject({ credentials: 'include', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': 'csrf-value' } });
   expect(JSON.parse(patch?.[1]?.body as string)).toEqual({ content: 'Texto corregido', expectedRevision: 1 });
   expect(screen.getByText(/Editado/)).toBeInTheDocument();
 });
 
-it('muestra el texto vigente ante un conflicto y conserva el borrador hasta que el visitante decida', async () => {
+it.each([
+  ['Conservar mi borrador', 'Mi borrador'],
+  ['Usar texto vigente', 'Texto vigente'],
+])('muestra el conflicto y aplica la decisión «%s»', async (action, finalContent) => {
   const own = { id: 'own-2', displayName: 'Ana', content: 'Versión inicial', createdAt: new Date().toISOString(), editedAt: null, revision: 1, editable: true, anchor: { type: 'diagram', x: 1, y: 2 } };
   fetchMock.mockResolvedValueOnce(reply({ identity: { displayName: 'Ana' }, csrfToken: 'csrf-value', comments: [own] }));
   render(<PublicCommentsPanel token="conflict-token" enabled open onClose={() => {}}/>);
@@ -142,15 +149,61 @@ it('muestra el texto vigente ante un conflicto y conserva el borrador hasta que 
   fireEvent.change(screen.getByRole('textbox', { name: 'Comentario' }), { target: { value: 'Mi borrador' } });
   fetchMock.mockResolvedValueOnce({ ok: false, status: 409, statusText: 'Conflict', headers: { get: () => 'request-1' }, text: async () => JSON.stringify({ error: { code: 'REQUEST_FAILED', message: 'Conflicto', requestId: 'request-1', details: { current: { content: 'Texto vigente', revision: 2, editedAt: null } } } }) });
   fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }));
-  expect(await screen.findByText('Texto vigente')).toBeInTheDocument();
+  const conflictPanel = await screen.findByRole('region', {name: 'Conflicto de edición'});
+  expect(within(conflictPanel).getByText('Texto vigente')).toBeInTheDocument();
   expect(screen.getByRole('textbox', { name: 'Comentario' })).toHaveValue('Mi borrador');
-  fireEvent.click(screen.getByRole('button', { name: 'Conservar mi borrador' }));
-  const updated = { ...own, content: 'Mi borrador', revision: 3, editedAt: new Date().toISOString() };
+  fireEvent.click(screen.getByRole('button', { name: action }));
+  expect(screen.getByRole('textbox', { name: 'Comentario' })).toHaveValue(finalContent);
+  const updated = { ...own, content: finalContent, revision: 3, editedAt: new Date().toISOString() };
   fetchMock.mockResolvedValueOnce(reply(updated));
   fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }));
-  await screen.findByText('Mi borrador');
+  await screen.findByText('Comentario actualizado.');
   const patches = fetchMock.mock.calls.filter(([, options]) => options?.method === 'PATCH');
-  expect(JSON.parse(patches[1]?.[1]?.body as string).expectedRevision).toBe(2);
+  expect(JSON.parse(patches[1]?.[1]?.body as string)).toEqual({content: finalContent, expectedRevision: 2});
+});
+
+it('mantiene el borrador y la revisión confirmada durante un guardado y una lectura anterior', async () => {
+  const own = {id: 'mine', displayName: 'Ana', content: 'Texto anterior', createdAt: new Date().toISOString(), editedAt: null,
+    revision: 1, editable: true, anchor: {type: 'diagram'}};
+  const initial = {identity: {displayName: 'Ana'}, csrfToken: 'csrf', comments: [own]};
+  let finishRefresh!: (value: ReturnType<typeof reply>) => void;
+  let finishSave!: (value: ReturnType<typeof reply>) => void;
+  const refresh = new Promise<ReturnType<typeof reply>>(resolve => { finishRefresh = resolve; });
+  const save = new Promise<ReturnType<typeof reply>>(resolve => { finishSave = resolve; });
+  fetchMock.mockResolvedValueOnce(reply({...initial, nextCursor: 'more'}))
+    .mockReturnValueOnce(refresh).mockReturnValueOnce(save);
+  render(<PublicCommentsPanel token="pending-edit" enabled open onClose={() => {}}/>);
+  await screen.findByText(own.content);
+  fireEvent.click(screen.getByRole('button', {name: 'Cargar comentarios anteriores'}));
+  const field = screen.getByRole('textbox', {name: 'Comentario'});
+  fireEvent.change(field, {target: {value: 'Borrador de otro comentario'}});
+  fireEvent.click(screen.getByRole('button', {name: 'Editar comentario'}));
+  fireEvent.change(field, {target: {value: 'Texto corregido'}});
+  fireEvent.click(screen.getByRole('button', {name: 'Guardar cambios'}));
+  expect(screen.getByRole('button', {name: 'Cancelar'})).toBeDisabled();
+  fireEvent.keyDown(field, {key: 'Escape'});
+  expect(field).toHaveValue('Texto corregido');
+  await act(async () => finishSave(reply({...own, content: 'Texto corregido', revision: 2})));
+  expect(field).toHaveValue('Borrador de otro comentario');
+  await act(async () => finishRefresh(reply(initial)));
+  expect(screen.getByText('Texto corregido')).toBeInTheDocument();
+  expect(screen.queryByText(own.content)).not.toBeInTheDocument();
+});
+
+it('explica la pérdida de identidad al refrescar y conserva la edición para copiar', async () => {
+  const own = {id: 'mine', displayName: 'Ana', content: 'Texto anterior', createdAt: new Date().toISOString(),
+    editedAt: null, revision: 1, editable: true, anchor: {type: 'diagram'}};
+  fetchMock.mockResolvedValueOnce(reply({identity: {displayName: 'Ana'}, csrfToken: 'csrf', comments: [own], nextCursor: 'more'}))
+    .mockResolvedValueOnce(reply({identity: null, csrfToken: null, comments: [{...own, editable: false}]}));
+  render(<PublicCommentsPanel token="expired-edit" enabled open onClose={() => {}}/>);
+  await screen.findByText(own.content);
+  fireEvent.click(screen.getByRole('button', {name: 'Editar comentario'}));
+  const field = screen.getByRole('textbox', {name: 'Comentario'});
+  fireEvent.change(field, {target: {value: 'Texto para conservar'}});
+  fireEvent.click(screen.getByRole('button', {name: 'Cargar comentarios anteriores'}));
+  expect(await screen.findByRole('alert')).toHaveTextContent('Tu identidad de comentario ya no está disponible');
+  expect(field).toHaveValue('Texto para conservar');
+  expect(screen.getByRole('button', {name: 'Guardar cambios'})).toBeDisabled();
 });
 
 it('vincula la cookie vigente a Clerk y publica con la cuenta verificada', async () => {

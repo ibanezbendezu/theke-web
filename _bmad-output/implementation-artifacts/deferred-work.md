@@ -61,3 +61,9 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-6-2-anadir-un-comentario-contextual.md`
   summary: Validar en escritorio y móvil el comentario sobre una Relación y su marcador en un Compartido real.
   evidence: PostgreSQL comprueba los anclajes y la geometría publicada. Las pruebas web focalizadas no miden la arista renderizada ni ejercitan el clic sobre su botón.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-3-editar-comentarios-propios.md`
+  summary: Revisar si se debe omitir una edición cuando el texto normalizado coincide con el que ya está guardado.
+  evidence: Un guardado idéntico incrementa la revisión y consume cuota. La historia conserva el comportamiento de un guardado explícito mientras se define el tratamiento de cambios idénticos.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-3-editar-comentarios-propios.md`
+  summary: Separar formalmente la verificación PostgreSQL obligatoria del conjunto que se ejecuta sin base de datos.
+  evidence: La integración de comentarios se omite al faltar DATABASE_URL. La revisión local usa PostgreSQL de forma explícita y conviene disponer de una entrada independiente para exigirlo en CI.

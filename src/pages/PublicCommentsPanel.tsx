@@ -9,6 +9,11 @@ import {anchorLabel, type CommentTarget, type PublicComment} from './publicComme
 type CommentsData = { identity: { displayName: string } | null; csrfToken: string | null; comments: PublicComment[]; nextCursor?: string | null };
 type Draft = { name: string; content: string; target: CommentTarget | null };
 type EditConflict = { content: string; revision: number; editedAt: string | null };
+function withNewerRevision(comment: PublicComment, update?: EditConflict): PublicComment {
+    if (!update || update.revision <= comment.revision) return comment;
+    return {...comment, content: update.content, revision: update.revision, editedAt: update.editedAt};
+}
+
 type Props = {
     token: string;
     enabled: boolean;
@@ -55,6 +60,7 @@ export function PublicCommentsPanel({
     const [announcement, setAnnouncement] = useState('');
     const [editing, setEditing] = useState<PublicComment | null>(null);
     const [conflict, setConflict] = useState<EditConflict | null>(null);
+    const [editBlocked, setEditBlocked] = useState(false);
     const previousComposer = useRef('');
     const panelRef = useRef<HTMLElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -137,7 +143,12 @@ export function PublicCommentsPanel({
                 nextCursor = next.data.data.nextCursor;
             }
             if (!controller.signal.aborted) {
-                setData({...firstPage, comments, nextCursor});
+                setData(current => {
+                    const previous = new Map(current?.comments.map(comment => [comment.id, comment]));
+                    return {...firstPage, nextCursor, comments: comments.map(comment =>
+                        withNewerRevision(comment, previous.get(comment.id))
+                    )};
+                });
                 setLoadError(false);
             }
         };
@@ -178,22 +189,26 @@ export function PublicCommentsPanel({
         setDraftAvailable(false);
     };
     const startEditing = (comment: PublicComment) => {
+        if (busy) return;
         if (content.trim()) saveDraft({name: '', content, target});
         previousComposer.current = content;
         setEditing(comment);
         setConflict(null);
+        setEditBlocked(false);
         setContent(comment.content);
         setContentError('');
         setPublishError('');
         requestAnimationFrame(() => textareaRef.current?.focus());
     };
-    const cancelEditing = () => {
+    const finishEditing = () => {
         setEditing(null);
         setConflict(null);
+        setEditBlocked(false);
         setContent(previousComposer.current);
         previousComposer.current = '';
         setPublishError('');
         setContentError('');
+        if (open) (textareaRef.current ?? panelRef.current)?.focus();
     };
     const conflictFrom = (value: unknown): EditConflict | null => {
         if (!value || typeof value !== 'object' || !('current' in value) || !value.current || typeof value.current !== 'object') return null;
@@ -206,9 +221,18 @@ export function PublicCommentsPanel({
             } : null;
     };
 
+    const identityExpired = Boolean(editing && authLoaded && isSignedIn !== true && data && !data.csrfToken);
+    const submitDisabled = !enabled || !data || !authLoaded || busy || loadError || editBlocked || Boolean(conflict)
+        || Boolean(!isSignedIn && data.identity && !data.csrfToken) || identityExpired;
+    const updateCommentRevision = (id: string, revision: EditConflict) => {
+        setData(current => current ? {...current, comments: current.comments.map(comment =>
+            comment.id === id ? withNewerRevision(comment, revision) : comment
+        )} : current);
+    };
+
     const publish = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (!data || busy || loadError || (!isSignedIn && (data.identity || editing) && !data.csrfToken)) return;
+        if (!data || submitDisabled) return;
         const nextContent = content.trim();
         const invalidContent = !nextContent || [...nextContent].length > 5000;
         setContentError(invalidContent ? 'Escribe un comentario de hasta 5.000 caracteres.' : '');
@@ -230,14 +254,9 @@ export function PublicCommentsPanel({
                     headers,
                     body: JSON.stringify({content: nextContent, expectedRevision: editing.revision}),
                 });
-                setData(current => current ? {...current, comments: current.comments.map(comment =>
-                    comment.id === editing.id && comment.revision < result.data.data.revision ? result.data.data : comment
-                )} : current);
+                updateCommentRevision(editing.id, result.data.data);
                 setAnnouncement('Comentario actualizado.');
-                setEditing(null);
-                setConflict(null);
-                setContent(previousComposer.current);
-                previousComposer.current = '';
+                finishEditing();
                 return;
             }
             const result = await thekeFetch<{
@@ -260,12 +279,16 @@ export function PublicCommentsPanel({
             setRetry(value => value + 1);
         } catch (error) {
             const current = editing && error instanceof ApiError && error.status === 409 ? conflictFrom(error.payload.error.details) : null;
-            if (current) {
+            if (editing && current) {
+                updateCommentRevision(editing.id, current);
                 setConflict(current);
                 setPublishError('Este comentario cambió en otra pestaña. Compara ambos textos antes de guardar.');
             } else {
                 setPublishError(error instanceof ApiError && error.status === 429 ? 'Se alcanzó el límite de comentarios. Inténtalo más tarde; tu texto sigue aquí.' : error instanceof ApiError && error.status === 403 && editing ? 'Tu identidad de comentario expiró o no pudo verificarse. Copia tu texto antes de salir.' : error instanceof ApiError && error.status === 409 ? 'Este enlace ya no acepta cambios. Tu texto sigue aquí.' : error instanceof ApiError && error.status === 404 && editing ? 'El comentario o el enlace ya no está disponible. Copia tu texto antes de salir.' : error instanceof ApiError && error.status === 404 ? 'El enlace o el destino ya no está disponible. Tu texto sigue aquí.' : 'No se pudo guardar. Tu texto sigue aquí para intentarlo de nuevo.');
-                if (editing && error instanceof ApiError && (error.status === 403 || error.status === 404)) setRetry(value => value + 1);
+                if (editing && error instanceof ApiError) {
+                    if (error.status === 404 || error.status === 409) setEditBlocked(true);
+                    if (error.status === 403 || error.status === 404) setRetry(value => value + 1);
+                }
             }
         } finally {
             setBusy(false);
@@ -274,7 +297,9 @@ export function PublicCommentsPanel({
     const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
         if (event.key === 'Escape') {
             event.preventDefault();
-            if (editing) cancelEditing(); else onClose();
+            if (editing) {
+                if (!busy) finishEditing();
+            } else onClose();
             return;
         }
         if (event.key !== 'Tab') return;
@@ -324,7 +349,7 @@ export function PublicCommentsPanel({
                     className="mt-2 whitespace-pre-wrap break-words">{comment.content}</p>{comment.editable && enabled &&
                     <button type="button"
                             className="mt-2 min-h-11 rounded-md px-2 text-xs font-medium hover:bg-background/70 focus-visible:outline-2 focus-visible:outline-primary"
-                            disabled={Boolean(editing)} onClick={() => startEditing(comment)}>Editar
+                            disabled={busy || Boolean(editing)} onClick={() => startEditing(comment)}>Editar
                         comentario</button>}</li>)}</ol>
                 {data.nextCursor && <button type="button" className="mt-3 min-h-11 rounded-md px-2 text-sm font-medium underline focus-visible:outline-2 focus-visible:outline-primary" onClick={() => setPageCount(count => count + 1)}>Cargar comentarios anteriores</button>}
             </>}
@@ -363,21 +388,26 @@ export function PublicCommentsPanel({
                             setEditing(current => current ? {...current, revision: conflict.revision} : null);
                             setConflict(null);
                             setPublishError('');
+                            textareaRef.current?.focus();
                         }}>Usar texto vigente
                         </button>
                         <button type="button" className="min-h-11 rounded-md px-2 hover:bg-background" onClick={() => {
                             setEditing(current => current ? {...current, revision: conflict.revision} : null);
                             setConflict(null);
                             setPublishError('');
+                            textareaRef.current?.focus();
                         }}>Conservar mi borrador
                         </button>
                     </div>
                 </section>}
-                {publishError && <p role="alert" className="text-xs text-red-600 dark:text-red-400">{publishError}</p>}
+                {(publishError || identityExpired || (editing && !enabled)) && <p role="alert"
+                    className="text-xs text-red-600 dark:text-red-400">{publishError
+                    || (identityExpired ? 'Tu identidad de comentario ya no está disponible. Puedes copiar tu texto antes de salir.' :
+                        'Este enlace ya no acepta cambios. Puedes copiar tu texto antes de salir.')}</p>}
                 <p role="status" aria-live="polite" className="sr-only">{announcement}</p>
                 <div className="flex flex-wrap items-center gap-2"><Button type="submit" variant="secondary"
-                                                                           loading={busy} disabled={!data || loadError || Boolean(!isSignedIn && (data.identity || editing) && !data.csrfToken) || Boolean(conflict)}>{busy ? 'Guardando…' : editing ? 'Guardar cambios' : 'Publicar comentario'}</Button>{editing &&
-                    <Button type="button" onClick={cancelEditing}>Cancelar</Button>}</div>
+                                                                           loading={busy} disabled={submitDisabled}>{busy ? 'Guardando…' : editing ? 'Guardar cambios' : 'Publicar comentario'}</Button>{editing &&
+                    <Button type="button" disabled={busy} onClick={finishEditing}>Cancelar</Button>}</div>
             </form>}
         {!enabled && !editing &&
             <p className="bg-background/70 px-4 py-3 text-xs text-outline">Este enlace no acepta comentarios
