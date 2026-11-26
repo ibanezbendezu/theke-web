@@ -76,3 +76,15 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-6-4-recibir-y-localizar-comentarios-como-autor.md`
   summary: Probar la migración de avisos con datos previos en una base PostgreSQL aislada.
   evidence: La integración usa el esquema final. Falta comprobar que la migración 0028 incorpora un comentario activo anterior con su fecha y excluye un comentario eliminado.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-5-resolver-eliminar-y-conservar-comentarios-sin-anclaje.md`
+  summary: Distinguir múltiples representaciones del mismo recurso o relación al comentar.
+  evidence: La reconciliación actual sigue el identificador público de recurso o relación. Si el mapa tiene varias instancias no puede inferir cuál se eligió, y el contrato necesitará una identidad estable para cada instancia.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-5-resolver-eliminar-y-conservar-comentarios-sin-anclaje.md`
+  summary: Reconciliar los anclajes históricos ya migrados y probar el backfill desde antes de 0029.
+  evidence: La proyección debe reconstruirse para actualizar un comentario con coordenadas cuyo objetivo histórico ya no existe. El caso necesita un backfill y verificación con una base aislada.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-5-resolver-eliminar-y-conservar-comentarios-sin-anclaje.md`
+  summary: Hacer que el cursor de comentarios públicos sobreviva a una purga física.
+  evidence: La eliminación lógica ya conserva la paginación. Pasado el plazo de retención, el cursor UUID depende de una fila que se puede purgar y debe evolucionar a una clave autocontenida que admita los clientes existentes.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-5-resolver-eliminar-y-conservar-comentarios-sin-anclaje.md`
+  summary: Hacer durable la sincronización del Compartido cuando el guardado privado se confirma pero el encolado falla.
+  evidence: El mapa privado y la solicitud de sincronización no se guardan en la misma transacción. Un fallo al encolar puede dejar la proyección y sus anclajes desactualizados hasta el próximo cambio.

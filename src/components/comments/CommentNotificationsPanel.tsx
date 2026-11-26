@@ -21,6 +21,10 @@ export function CommentNotificationsPanel({diagramId, selectedId, onOpen}: {
 }) {
     const navigate = useNavigate();
     const location = useLocation();
+    const currentLocation = useRef(location);
+    useEffect(() => {
+        currentLocation.current = location;
+    }, [location]);
     const [filter, setFilter] = useState<CommentNotificationFilter>('all');
     const [page, setPage] = useState(1);
     const list = useCommentNotifications(page, filter, diagramId);
@@ -47,14 +51,14 @@ export function CommentNotificationsPanel({diagramId, selectedId, onOpen}: {
         focusedComment.current = selectedId;
     }, [selectedId, selectedRowId]);
     useEffect(() => {
-        if (!selectedRowId) {
+        if (!selectedId) {
             readAttempt.current = null;
             return;
         }
-        if (selectedReadAt || readAttempt.current === selectedRowId) return;
+        if (!selectedRowId || readAttempt.current === selectedRowId) return;
         readAttempt.current = selectedRowId;
-        markRead(selectedRowId);
-    }, [selectedRowId, selectedReadAt, markRead]);
+        if (!selectedReadAt) markRead(selectedRowId);
+    }, [selectedId, selectedRowId, selectedReadAt, markRead]);
     const open = (item: CommentNotification) => {
         if (onOpen) onOpen(item);
         else navigate(`/projects/${item.projectId}/diagrams/${item.diagramId}?comment=${item.commentId}`);
@@ -65,7 +69,13 @@ export function CommentNotificationsPanel({diagramId, selectedId, onOpen}: {
             await moderate.mutateAsync({id: item.id, action});
             if (action === 'delete') {
                 setDeleting(null);
-                if (selectedId === item.commentId) navigate(location.pathname, {replace: true});
+                const current = currentLocation.current;
+                const params = new URLSearchParams(current.search);
+                if (current.key === location.key && params.get('comment') === item.commentId) {
+                    params.delete('comment');
+                    const search = params.toString();
+                    navigate({pathname: current.pathname, search: search ? `?${search}` : '', hash: current.hash}, {replace: true});
+                }
             }
         } catch {
             setActionError('No se pudo actualizar el comentario. Inténtalo de nuevo.');
@@ -114,12 +124,14 @@ export function CommentNotificationsPanel({diagramId, selectedId, onOpen}: {
             <button type="button" className="rounded-md px-2 py-1 hover:bg-surface-variant disabled:opacity-40" disabled={!list.data?.hasMore}
                     onClick={() => setPage(value => value + 1)}>Siguiente</button>
         </div>
-        {deleting && <Dialog titleId="delete-comment-title" onClose={() => setDeleting(null)} className="max-w-sm" shadow={false}>
+        {deleting && <Dialog titleId="delete-comment-title" onClose={() => {
+            if (!moderate.isPending) setDeleting(null);
+        }} className="max-w-sm" shadow={false}>
             <h2 id="delete-comment-title" className="text-base font-semibold">Eliminar comentario</h2>
             <p className="mt-2 text-sm text-outline">El comentario desaparecerá del mapa compartido y de la lista activa. Su eliminación quedará registrada.</p>
             {actionError && <p role="alert" className="mt-2 text-sm text-red-600 dark:text-red-400">{actionError}</p>}
             <div className="mt-5 flex justify-end gap-2 text-sm">
-                <button type="button" className="rounded-md px-3 py-2 hover:bg-surface-variant" onClick={() => setDeleting(null)}>Cancelar</button>
+                <button type="button" disabled={moderate.isPending} className="rounded-md px-3 py-2 hover:bg-surface-variant" onClick={() => setDeleting(null)}>Cancelar</button>
                 <button type="button" disabled={moderate.isPending} className="rounded-md bg-on-background px-3 py-2 text-background disabled:opacity-50"
                         onClick={() => void changeStatus(deleting, 'delete')}>{moderate.isPending ? 'Eliminando…' : 'Eliminar'}</button>
             </div>
