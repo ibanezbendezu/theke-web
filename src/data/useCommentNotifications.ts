@@ -22,18 +22,18 @@ export type CommentNotification = {
 export type CommentNotificationFilter = 'all' | 'pending' | 'resolved' | 'anchored' | 'unanchored';
 type Page = {items: CommentNotification[]; page: number; hasMore: boolean; unreadCount: number};
 
-export function useCommentNotifications(page = 1, filter: CommentNotificationFilter = 'all', diagramId?: string, commentId?: string) {
+export function useCommentNotifications(page = 1, filter: CommentNotificationFilter = 'all', diagramId?: string, commentId?: string | null) {
     const {getToken, userId} = useAuth();
     return useQuery({
-        queryKey: ['comment-notifications', userId, diagramId ?? 'all', commentId ?? 'all', filter, page],
-        enabled: Boolean(userId),
+        queryKey: ['comment-notifications', userId, diagramId ?? null, commentId ?? null, filter, page],
+        enabled: Boolean(userId) && commentId !== null,
         refetchInterval: 20_000,
-        queryFn: async () => {
+        queryFn: async ({signal}) => {
             const params = new URLSearchParams({page: String(page), filter});
             if (diagramId) params.set('diagramId', diagramId);
             if (commentId) params.set('commentId', commentId);
             const response = await thekeFetch<{data: {data: Page}}>(`/v1/comment-notifications?${params}`, {
-                headers: {Authorization: `Bearer ${await getToken()}`}, cache: 'no-store'
+                headers: {Authorization: `Bearer ${await getToken()}`}, cache: 'no-store', signal
             });
             return response.data.data;
         }
@@ -86,7 +86,7 @@ export function useCommentNotificationStream() {
                     while (!controller.signal.aborted) {
                         const {done, value} = await reader.read();
                         if (done) break;
-                        pending += decoder.decode(value, {stream: true}).replace(/\r\n/g, '\n');
+                        pending = (pending + decoder.decode(value, {stream: true})).replace(/\r\n/g, '\n');
                         let end = pending.indexOf('\n\n');
                         while (end !== -1) {
                             if (pending.slice(0, end).split('\n').some(line => line.startsWith('data:'))) {

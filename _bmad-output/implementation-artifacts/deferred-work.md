@@ -67,3 +67,12 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-6-3-editar-comentarios-propios.md`
   summary: Separar formalmente la verificación PostgreSQL obligatoria del conjunto que se ejecuta sin base de datos.
   evidence: La integración de comentarios se omite al faltar DATABASE_URL. La revisión local usa PostgreSQL de forma explícita y conviene disponer de una entrada independiente para exigirlo en CI.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-4-recibir-y-localizar-comentarios-como-autor.md`
+  summary: Verificar y habilitar la eliminación de comentarios entre orígenes en la historia 6.5.
+  evidence: La moderación usa DELETE, método que no figura entre los métodos CORS permitidos por el arranque de la API.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-4-recibir-y-localizar-comentarios-como-autor.md`
+  summary: Usar un cursor estable al recorrer avisos que cambian entre páginas.
+  evidence: La API actual pagina con offset. Si una notificación cambia de posición o sale del filtro mientras el autor pagina, una fila puede faltar o repetirse.
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-4-recibir-y-localizar-comentarios-como-autor.md`
+  summary: Probar la migración de avisos con datos previos en una base PostgreSQL aislada.
+  evidence: La integración usa el esquema final. Falta comprobar que la migración 0028 incorpora un comentario activo anterior con su fecha y excluye un comentario eliminado.

@@ -72,7 +72,7 @@ export type RelationEdgeGeometry = {
     offset?: { x: number; y: number };
 };
 
-function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPickFiles, onCreateRelation, commentNotifications, selectedCommentId, onCommentOpen, onInitialized}: {
+function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPickFiles, onCreateRelation, commentNotifications, selectedCommentId, onCommentOpen, flowInitialized, onInitialized}: {
     viewport?: DiagramDocument['viewport'];
     onAddResource?: (position?: { x: number; y: number }) => void;
     onDropResource?: (resourceId: string, position: { x: number; y: number }) => void;
@@ -83,6 +83,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
     selectedCommentId?: string | null;
     onCommentOpen?: (item: CommentNotification) => void;
     onInitialized?: () => void;
+    flowInitialized: boolean;
 }) {
     const {
         nodes,
@@ -166,15 +167,18 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
         });
     }, [edges, nodes]);
     useEffect(() => {
-        if (selectedCommentX === null || selectedCommentY === null) return;
-        void setCenter(selectedCommentX, selectedCommentY, {
-            zoom: getZoom(),
-            duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 300
-        });
-    }, [selectedCommentId, selectedCommentX, selectedCommentY, getZoom, setCenter]);
+        if (flowInitialized && viewport) void setViewport(viewport);
+    }, [flowInitialized, viewport, setViewport]);
     useEffect(() => {
-        if (viewport) void setViewport(viewport);
-    }, [viewport, setViewport]);
+        if (!flowInitialized || selectedCommentX === null || selectedCommentY === null) return;
+        const frame = requestAnimationFrame(() => {
+            void setCenter(selectedCommentX, selectedCommentY, {
+                zoom: getZoom(),
+                duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 300
+            });
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [flowInitialized, selectedCommentId, selectedCommentX, selectedCommentY, viewport, getZoom, setCenter]);
     useEffect(() => {
         if (!focusRequest || focusRequest.nonce === initialFocusRequest.current) return;
         const nodes = useCanvasStore.getState().nodes;
@@ -490,7 +494,7 @@ function CanvasCore({viewport, onAddResource, onDropResource, onDropFiles, onPic
                         <button key={item.id} type="button" data-tooltip={item.displayName}
                                 aria-label={`Comentario de ${item.displayName}: ${item.content}`}
                                 aria-pressed={item.commentId === selectedCommentId}
-                                className={`nodrag nopan absolute z-10 flex h-8 min-w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-1 rounded-full px-1.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${item.commentId === selectedCommentId ? 'bg-on-background text-background ring-2 ring-background' : 'bg-surface/90 text-outline ring-1 ring-border hover:bg-surface hover:text-on-background'}`}
+                                className={`nodrag nopan pointer-events-auto absolute z-10 flex h-8 min-w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-1 rounded-full px-1.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${item.commentId === selectedCommentId ? 'bg-on-background text-background ring-2 ring-background' : 'bg-surface/90 text-outline ring-1 ring-border hover:bg-surface hover:text-on-background'}`}
                                 style={{left: item.anchor.x, top: item.anchor.y}}
                                 onClick={() => onCommentOpen?.(item)}><MessageCircle size={12}/>{index + 1}</button>
                         : null)}</ViewportPortal>}
@@ -720,7 +724,7 @@ export function CanvasEditor({
                 <CanvasCore viewport={document?.viewport} onAddResource={onAddResource} onDropResource={onDropResource}
                             onDropFiles={onDropFiles} onPickFiles={onPickFiles} onCreateRelation={onCreateRelation}
                             commentNotifications={commentNotifications} selectedCommentId={selectedCommentId} onCommentOpen={onCommentOpen}
-                            onInitialized={() => setFlowInitialized(true)}/>
+                            flowInitialized={flowInitialized} onInitialized={() => setFlowInitialized(true)}/>
                 <CanvasPaintObserver active={Boolean(document) && flowInitialized} onReady={onReady}/>
                 <CanvasToolbar onAddResource={onAddResource}
                                onCreateRelation={onCreateRelation ? () => onCreateRelation() : undefined}/>

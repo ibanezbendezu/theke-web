@@ -24,20 +24,38 @@ export function CommentNotificationsPanel({diagramId, selectedId, onOpen}: {
     const [filter, setFilter] = useState<CommentNotificationFilter>('all');
     const [page, setPage] = useState(1);
     const list = useCommentNotifications(page, filter, diagramId);
-    const selected = useCommentNotifications(1, 'all', diagramId, selectedId ?? undefined);
-    const items = [...(list.data?.items ?? [])];
-    const selectedItem = selectedId ? selected.data?.items[0] : undefined;
-    if (selectedItem && !items.some(item => item.id === selectedItem.id)) items.unshift(selectedItem);
+    const selected = useCommentNotifications(1, 'all', diagramId, selectedId ?? null);
+    const rows = list.data?.items ?? [];
+    const selectedInPage = rows.find(item => item.commentId === selectedId);
+    const selectedItem = selectedInPage ?? selected.data?.items.find(item => item.commentId === selectedId);
+    const pinned = selectedItem && !selectedInPage ? selectedItem : null;
+    const items = pinned ? [pinned, ...rows] : rows;
     const read = useReadCommentNotification();
     const moderate = useModerateCommentNotification();
     const [deleting, setDeleting] = useState<CommentNotification | null>(null);
     const [actionError, setActionError] = useState('');
     const selectedRef = useRef<HTMLButtonElement>(null);
+    const focusedComment = useRef<string | null>(null);
+    const readAttempt = useRef<string | null>(null);
+    const selectedRowId = selectedItem?.id;
+    const selectedReadAt = selectedItem?.readAt;
+    const markRead = read.mutate;
     useEffect(() => {
-        if (selectedId) selectedRef.current?.focus();
-    }, [selectedId, selectedItem]);
+        if (!selectedId) focusedComment.current = null;
+        if (!selectedId || !selectedRowId || focusedComment.current === selectedId) return;
+        selectedRef.current?.focus();
+        focusedComment.current = selectedId;
+    }, [selectedId, selectedRowId]);
+    useEffect(() => {
+        if (!selectedRowId) {
+            readAttempt.current = null;
+            return;
+        }
+        if (selectedReadAt || readAttempt.current === selectedRowId) return;
+        readAttempt.current = selectedRowId;
+        markRead(selectedRowId);
+    }, [selectedRowId, selectedReadAt, markRead]);
     const open = (item: CommentNotification) => {
-        if (!item.readAt) read.mutate(item.id);
         if (onOpen) onOpen(item);
         else navigate(`/projects/${item.projectId}/diagrams/${item.diagramId}?comment=${item.commentId}`);
     };
@@ -63,10 +81,16 @@ export function CommentNotificationsPanel({diagramId, selectedId, onOpen}: {
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-2" aria-live="polite">
             {actionError && <p role="alert" className="px-2 py-2 text-xs text-red-600 dark:text-red-400">{actionError}</p>}
+            {selectedId && !selectedItem && (selected.isError ?
+                <p role="alert" className="px-2 py-2 text-xs">No se pudo cargar el comentario enlazado. <button type="button" className="underline" onClick={() => void selected.refetch()}>Reintentar enlace</button></p>
+                : selected.isSuccess ? <p role="status" className="px-2 py-2 text-xs text-outline">El comentario enlazado ya no está disponible.</p> : null)}
+            {selectedRowId && !selectedReadAt && read.isError && read.variables === selectedRowId &&
+                <p role="alert" className="px-2 py-2 text-xs">No se pudo marcar el aviso como leído. <button type="button" className="underline" onClick={() => markRead(selectedRowId)}>Reintentar lectura</button></p>}
             {list.isPending && <div className="px-2 py-4"><InlineLoading label="Cargando comentarios…"/></div>}
             {list.isError && <p role="alert" className="px-2 py-4">No se pudieron cargar. <button className="underline" onClick={() => void list.refetch()}>Reintentar</button></p>}
-            {items.length === 0 && list.data && <p className="px-2 py-4 text-outline">No hay comentarios en este filtro.</p>}
-            {items.map(item => <div key={item.id} className={`mb-1 rounded-md ${item.commentId === selectedId ? 'bg-surface-variant' : 'hover:bg-surface-variant/60'}`}><button ref={item.commentId === selectedId ? selectedRef : undefined}
+            {items.map(item => <div key={item.id} className={`mb-1 rounded-md ${item.commentId === selectedId ? 'bg-surface-variant' : 'hover:bg-surface-variant/60'}`}>
+                {item.id === pinned?.id && <p className="px-3 pt-2 text-xs font-medium text-outline">Seleccionado fuera de esta página o filtro</p>}
+                <button ref={item.commentId === selectedId ? selectedRef : undefined}
                 type="button" aria-current={item.commentId === selectedId ? 'true' : undefined}
                 className="w-full rounded-md px-3 py-2 text-left focus-visible:outline-2 focus-visible:outline-primary"
                 onClick={() => open(item)}>
@@ -81,6 +105,7 @@ export function CommentNotificationsPanel({diagramId, selectedId, onOpen}: {
                 <button type="button" disabled={moderate.isPending} className="rounded-md px-2 py-1 text-red-600 hover:bg-background/70 disabled:opacity-50 dark:text-red-400"
                         onClick={() => setDeleting(item)}>Eliminar</button>
             </div></div>)}
+            {rows.length === 0 && list.data && <p className="px-2 py-4 text-outline">No hay comentarios en este filtro.</p>}
         </div>
         <div className="flex shrink-0 items-center justify-between px-4 py-3 text-xs text-outline">
             <button type="button" className="rounded-md px-2 py-1 hover:bg-surface-variant disabled:opacity-40" disabled={page === 1}

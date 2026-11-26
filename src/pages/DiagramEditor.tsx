@@ -42,7 +42,7 @@ import {CanvasSemanticView} from '../features/canvas/CanvasSemanticView';
 import {CanvasRelationInspector} from '../features/canvas/CanvasRelationInspector';
 import {SharePreviewDialog} from '../features/canvas/SharePreviewDialog';
 import {CommentNotificationsPanel} from '../components/comments/CommentNotificationsPanel';
-import {useCommentNotifications, useCommentNotificationStream, useReadCommentNotification, type CommentNotification} from '../data/useCommentNotifications';
+import {useCommentNotifications, useCommentNotificationStream, type CommentNotification} from '../data/useCommentNotifications';
 
 const textPanelLabels: Record<VisualTextPanel, string> = {
     paragraph: 'Párrafo', appearance: 'Apariencia', position: 'Posición'
@@ -60,14 +60,14 @@ function DiagramEditorCore() {
     const selectedCommentId = new URLSearchParams(location.search).get('comment');
     const diagram = useDiagram(diagramId);
     const organization = useOrganizationActions(projectId ?? '');
-    const [leftPanel, setLeftPanel] = useState<'resources' | 'semantic' | 'comments' | null>(selectedCommentId ? 'comments' : null);
+    const [activePanel, setLeftPanel] = useState<'resources' | 'semantic' | 'comments' | null>(null);
+    const leftPanel = selectedCommentId ? 'comments' : activePanel;
     const [visualPanel, setVisualPanel] = useState<{kind: 'text' | 'shape' | 'line'; section: VisualTextPanel | VisualElementPanel} | null>(null);
     const commentPage = useCommentNotifications(1, 'all', diagramId);
     useCommentNotificationStream();
-    const readComment = useReadCommentNotification();
-    const selectedCommentPage = useCommentNotifications(1, 'all', diagramId, selectedCommentId ?? undefined);
+    const selectedCommentPage = useCommentNotifications(1, 'all', diagramId, selectedCommentId);
     const commentNotifications = [...(commentPage.data?.items ?? [])];
-    const linkedComment = selectedCommentPage.data?.items[0];
+    const linkedComment = selectedCommentPage.data?.items.find(item => item.commentId === selectedCommentId);
     if (linkedComment && !commentNotifications.some(item => item.id === linkedComment.id)) commentNotifications.push(linkedComment);
     const clearSelectedComment = () => {
         if (!selectedCommentId) return;
@@ -85,7 +85,6 @@ function DiagramEditorCore() {
         setLeftPanel(leftPanel === panel ? null : panel);
     };
     const openComment = (item: CommentNotification) => {
-        if (!item.readAt) readComment.mutate(item.id);
         if (window.matchMedia('(max-width: 767px)').matches) setVisualPanel(null);
         setLeftPanel('comments');
         const params = new URLSearchParams(location.search);
@@ -233,7 +232,8 @@ function DiagramEditorCore() {
     return <main className={`theke-map-stage relative flex h-dvh min-h-0 bg-background text-on-background ${mapReady ? 'is-ready' : ''}`}>
         <section className="relative min-w-0 flex-1" aria-label="Lienzo">{diagram.data.archivedAt ?
             <div className="relative h-full">
-                <div className="pointer-events-none h-full"><CanvasEditor document={diagram.data.document} onReady={canvasReady}/></div>
+                <div className="pointer-events-none h-full"><CanvasEditor document={diagram.data.document} onReady={canvasReady}
+                    commentNotifications={commentNotifications} selectedCommentId={selectedCommentId} onCommentOpen={openComment}/></div>
                 <p role="status"
                    className="absolute right-3 top-20 rounded-lg bg-surface/90 px-3 py-2 text-sm backdrop-blur-md">Diagrama
                     archivado. Restáuralo desde proyectos para editar.</p></div> :
@@ -303,7 +303,9 @@ function DiagramEditorCore() {
             {!openingIssueVisible && resourceError && <p role="alert"
                                  className="absolute left-3 top-20 z-50 rounded-md bg-surface/95 px-3 py-2 text-xs text-red-600">{resourceError}</p>}
             {leftPanel && !openingIssueVisible && <div
-                className={`absolute left-3 top-20 z-50 w-[min(19rem,calc(100%-1.5rem))] overflow-hidden rounded-xl bg-surface/95 backdrop-blur-md ${selectedAnnotation ? 'bottom-32 md:bottom-20' : 'bottom-3'}`}
+                className={`absolute left-3 z-50 overflow-hidden rounded-xl bg-surface/95 backdrop-blur-md ${leftPanel === 'comments'
+                    ? 'bottom-3 h-[min(42dvh,24rem)] w-[calc(100%-1.5rem)] md:top-20 md:h-auto md:w-76'
+                    : `top-20 w-[min(19rem,calc(100%-1.5rem))] ${selectedAnnotation ? 'bottom-32 md:bottom-20' : 'bottom-3'}`}`}
                 aria-label={leftPanel === 'resources' ? 'Panel de recursos' : leftPanel === 'comments' ? 'Panel de comentarios' : 'Panel de vista semántica'}>
                 <Button size="icon" className="absolute right-2 top-2 z-10 h-9 w-9" title="Cerrar panel"
                         aria-label="Cerrar panel" icon={X} onClick={closeLeftPanel}/>
